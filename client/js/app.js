@@ -1091,7 +1091,6 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 }
 
                 $("#inventorycontent").html(inventoryHtml);
-                _this.highlightInventoryChanges(consumablesInventory);
                 let inventorySlots = _this.settings.getInventorySlots();
 
                 if (inventorySlots) {
@@ -1345,17 +1344,32 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             }
         },
 
-        highlightInventoryChanges: function (items) {
-            const session = this.storage.sessionId;
-            const previous = this.inventoryFeedbackSession === session ? this.inventoryFeedbackCounts : undefined;
-            const counts = Object.fromEntries(Object.entries(items || {})
-                .map(([item, value]) => [item, Number(value.qty) || 0]));
-            this.inventoryFeedbackSession = session;
-            this.inventoryFeedbackCounts = counts;
-            if (!previous) return;
-            for (const item of new Set([...Object.keys(previous), ...Object.keys(counts)])) {
-                if ((counts[item] || 0) !== (previous[item] || 0)) this.highlightInventoryChange(item);
+        acknowledgePickup: function (item) {
+            if (document.hidden || !item) return;
+            const bar = document.getElementById('bar-container');
+            if (!bar) return;
+            let toast = document.getElementById('hud-pickup');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'hud-pickup';
+                toast.setAttribute('role', 'status');
+                toast.setAttribute('aria-live', 'polite');
+                const icon = document.createElement('img');
+                icon.alt = '';
+                icon.addEventListener('error', () => { icon.hidden = true; });
+                toast.appendChild(icon);
+                toast.appendChild(document.createElement('span'));
+                bar.appendChild(toast);
             }
+            const icon = toast.querySelector('img');
+            icon.hidden = false;
+            icon.src = item.sprite?.filepath || 'img/1/' + item.getSpriteName() + '.png';
+            toast.querySelector('span').textContent = item.getLootMessage() || 'Item collected';
+            toast.hidden = false;
+            clearTimeout(this.pickupToastTimer);
+            this.pickupToastTimer = setTimeout(() => { toast.hidden = true; }, 2400);
+            this.highlightInventoryChange(item.kind);
+            this.refreshConsumableHud?.(250);
         },
 
         hideTooltip: function() {

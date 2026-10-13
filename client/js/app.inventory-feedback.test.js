@@ -18,34 +18,43 @@ function setup() {
 }
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => jest.useRealTimers());
-test('first load is quiet; changed and newly collected quantities highlight on the next readback', () => {
-    const {app, elements} = setup();
-    app.highlightInventoryChanges({7: {qty: 3}});
-    expect(elements.size).toBe(0);
-    app.highlightInventoryChanges({7: {qty: 2}, 8: {qty: 1}});
-    expect(elements.get('count_7').classList.add).toHaveBeenCalledWith('inventory-changed');
-    expect(elements.get('item_8').classList.add).toHaveBeenCalledTimes(1);
-    jest.advanceTimersByTime(900);
-    expect(elements.get('count_7').classList.remove).toHaveBeenCalledTimes(1);
-    app.highlightInventoryChanges({7: {qty: 2}, 8: {qty: 1}});
-    expect(elements.get('item_8').classList.add).toHaveBeenCalledTimes(1);
-});
-test('last-item removal still acknowledges the change through the inventory button', () => {
-    const {app, elements} = setup();
-    app.highlightInventoryChanges({7: {qty: 1}});
-    app.isInventoryVisible = false;
-    app.highlightInventoryChanges({});
-    expect(elements.get('inventorybutton').classList.add).toHaveBeenCalledTimes(1);
-    expect(elements.has('item_7')).toBe(false);
-});
-test('changing sessions resets the baseline; background updates stay quiet', () => {
+test('closed inventory gets a pickup status and bag cue immediately, then hides it', () => {
     const {app, doc, elements} = setup();
-    app.highlightInventoryChanges({7: {qty: 1}});
-    app.storage.sessionId = 'two';
-    app.highlightInventoryChanges({7: {qty: 20}});
+    function element() {
+        return {children: [], hidden: false, setAttribute: jest.fn(), addEventListener: jest.fn(),
+            appendChild(child) { this.children.push(child); },
+            querySelector(type) { return this.children[type === 'img' ? 0 : 1]; }};
+    }
+    doc.createElement = element;
+    const bar = element();
+    elements.set('bar-container', bar);
+    const get = doc.getElementById;
+    doc.getElementById = id => id === 'hud-pickup' ? bar.children[0] || null : get(id);
+    app.isInventoryVisible = false;
+    app.refreshConsumableHud = jest.fn();
+    app.acknowledgePickup({kind: 7, getSpriteName: () => 'item-pie', getLootMessage: () => 'You pick up a pie'});
+    const toast = bar.children[0];
+    expect(toast.hidden).toBe(false);
+    expect(toast.children[1].textContent).toBe('You pick up a pie');
+    expect(toast.children[0].src).toBe('img/1/item-pie.png');
+    expect(elements.get('inventorybutton').classList.add).toHaveBeenCalledWith('inventory-changed');
+    expect(elements.has('item_7')).toBe(false);
+    expect(app.refreshConsumableHud).toHaveBeenCalledWith(250);
+    jest.advanceTimersByTime(2400);
+    expect(toast.hidden).toBe(true);
+    app.acknowledgePickup({kind: 8, getLootMessage: () => '<b>Collected</b>', sprite: {filepath: 'existing.png'}});
+    expect(toast.hidden).toBe(false);
+    expect(toast.children[1].textContent).toBe('<b>Collected</b>');
+    expect(bar.children).toHaveLength(1);
+});
+test('background and missing-HUD pickups remain quiet', () => {
+    const {app, doc, elements} = setup();
     doc.hidden = true;
-    app.highlightInventoryChanges({7: {qty: 19}});
+    app.acknowledgePickup({kind: 7});
     expect(elements.size).toBe(0);
+    doc.hidden = false;
+    doc.getElementById = () => null;
+    expect(() => app.acknowledgePickup({kind: 7})).not.toThrow();
 });
 test.each([true, false])('consumption only acknowledges a confirmed result: consumed=%s', async consumed => {
     const {app, axios, elements} = setup();

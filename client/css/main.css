@@ -531,6 +531,25 @@ body.upscaled.game {background:#000;}
     border-radius: 15px;
 }
 
+#hud-pickup {
+    position: absolute;
+    right: 8px;
+    bottom: calc(100% + 56px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: min(340px, calc(100vw - 32px));
+    padding: 7px 10px;
+    background: #341e28;
+    color: #ffe3a1;
+    border: 2px solid #b99761;
+    font: 14px GraphicPixel, sans-serif;
+    pointer-events: none;
+}
+#hud-pickup[hidden] { display: none; }
+#hud-pickup img { width: 20px; height: 20px; object-fit: cover; object-position: 100% 0; image-rendering: pixelated; }
+#hud-pickup img[hidden] { display: none; }
+
 #resources.hidden {
     display: none;
 }
