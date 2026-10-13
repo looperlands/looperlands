@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback', 'pickupfeedback',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', 'pickupfeedback', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback, PickupFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime) {
+              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime, PickupFeedback) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
