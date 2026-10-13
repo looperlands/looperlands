@@ -946,11 +946,15 @@ body.inventory .inventorySidebar {
     image-rendering: pixelated;
     border-image-width: 12px;
     font-family: 'GraphicPixel', arial, sans-serif;
-    transition: ease-in-out 500ms;
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
     opacity: 100;
 }
 
-.panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: ease-in-out 500ms;}
+.panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: opacity 120ms ease-out;}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel, .panel.hidden, .panelBorder.hidden { transition: none; }
+}
 
 .panel .panelTitle,
 .panelBorder .panelTitle{
