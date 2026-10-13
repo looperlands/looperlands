@@ -3,8 +3,8 @@ const quests = [
     {
         id: "SDU_QUEST_1",
         name: "Concert in The Cellar", 
-        startText: "Hey, my band Old Kids has a show at The Cellar this weekend. You should come out!",
-        longText: "Old Kids has a show in The Cellar this weekend but the wind just blew the flyers all over the parking lot! This city is so windy, the flyers are everywhere! If you can help pick up the flyers, Chase said he would add your name to the list so you can get into the show.",
+        startText: "Hey, my band <span class=\"dialogue-wave\">Old Kids</span> has a show at The Cellar this weekend. You should come out!",
+        longText: "<span class=\"dialogue-wave\">Old Kids</span> has a show in The Cellar this weekend but the wind just blew the <span class=\"dialogue-item\">flyers</span> all over the parking lot! This city is so windy, the flyers are everywhere! If you can help pick up the flyers, Chase said he would add your name to the list so you can get into the show.",
         endText: "Chase: You're a lifesaver! I'll put your name on the list.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.DEVON,

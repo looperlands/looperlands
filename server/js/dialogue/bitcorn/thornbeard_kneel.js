@@ -23,7 +23,7 @@ const dialogue = {
       ]
     },
     "barren_greenhouse": {
-      "text": "This masterpiece, of course! I call it 'The Frustration of Adam'. Real complicated stuff. I plant, they ignore me. Except for one... *He gestures to a the tiny sprout* That's Bud. Been stickin' it out with me, poor fella. Ain't much to look at, but he's tryin. *Leans closer to the plant and mutters*: 'I know... I'm tryin', Bud. I'll get you a family, one way or another.'",
+      "text": "This masterpiece, of course! I call it 'The Frustration of Adam'. Real complicated stuff. I plant, they ignore me. Except for one... *He gestures to a the tiny sprout* <span class=\"dialogue-wave\">That's Bud</span>. Been stickin' it out with me, poor fella. Ain't much to look at, but he's tryin. *Leans closer to the plant and mutters*: 'I know... I'm tryin', Bud. I'll get you a family, one way or another.'",
       "options": [
 	      { "text": "Why does it matter so much to you?", "goto": "deeper_motivation" },
         { "text": "Why keep trying if nothing grows?", "goto": "mysterious_reason" },
@@ -31,11 +31,11 @@ const dialogue = {
       ]
     },
 	"deeper_motivation": {
-	  "text": "This ain't just about plants, sapling. It's about seein' somethin' grow. It's about not lettin' things wither away... not again.<br><br>When you spend your days chasin' life, you learn somethin': everything worth havin' takes time.",
+	  "text": "This ain't just about plants, sapling. It's about seein' somethin' grow. It's about not lettin' things wither away... <span class=\"dialogue-shake\">not again</span>.<br><br>When you spend your days chasin' life, you learn somethin': everything worth havin' takes time.",
 	  "goto": "mysterious_reason"
 	},
     "mysterious_reason": {
-      "text": "Let's just say... I made a promise and I keep my promises.<br>Besides, some things are worth fightin' for... even if they feel impossible.",
+      "text": "Let's just say... <span class=\"dialogue-item\">I made a promise</span> and I keep my promises.<br>Besides, some things are worth fightin' for... even if they feel impossible.",
       "options": [
         { "text": "A promise to who?", "goto": "hint_at_eve" },
         { "text": "I get it. Anything I can do to help?", "goto": "nudge_to_bitcorn" }
@@ -46,7 +46,7 @@ const dialogue = {
       "goto": "nudge_to_bitcorn"
     },
     "nudge_to_bitcorn": {
-      "text": "Y'know, bitcorn's always spinnin yarns—I've heard that ol yap talk of a golden kernel that can breathe life into the deadest dirt.<br><br>Now, I ain't sayin I believe him... but if there's even a sliver of truth to it, it might be our only shot at growin somethin worth lookin at.<br><br>Course, as with life, no good thing comes easy. bitcorn says some mutated beast—a turtle, if you believe it—swallowed the thing. Now, it's just... marinatin' in some muck on the back of its shell.",
+      "text": "Y'know, bitcorn's always spinnin yarns—I've heard that ol yap talk of a <span class=\"dialogue-item\">golden kernel</span> that can breathe life into the deadest dirt.<br><br>Now, I ain't sayin I believe him... but if there's even a sliver of truth to it, it might be our only shot at growin somethin worth lookin at.<br><br>Course, as with life, no good thing comes easy. bitcorn says some <span class=\"dialogue-danger\">mutated beast</span>—a turtle, if you believe it—swallowed the thing. Now, it's just... marinatin' in some muck on the back of its shell.",
       "actions": [
         { "type": "handout_quest", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT" }
       ],
@@ -73,7 +73,7 @@ const dialogue = {
     },
 	// Branch for when the player completes the quest
     "quest_complete_response": {
-      "text": "Well, I'll be... you actually did it. Maybe there's hope for this place after all.<br>Thank you, sapling. You don't know what this means to me.",
+      "text": "Well, I'll be... you actually did it. Maybe there's <span class=\"dialogue-wave\">hope for this place</span> after all.<br>Thank you, sapling. You don't know what this means to me.",
       "options": [
         { "text": "Happy to help, Thornbeard.", "goto": "second_farewell" }
       ]

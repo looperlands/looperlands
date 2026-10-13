@@ -7,7 +7,8 @@ const root = path.resolve(__dirname, '..');
 process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
-const data = path.join(os.tmpdir(), 'looperlands-npc-preview');
+// Set a separate directory for a fresh test session without resetting other previews.
+const data = process.env.NPC_PREVIEW_DATA_DIR || path.join(os.tmpdir(), 'looperlands-npc-preview');
 fs.mkdirSync(data, {recursive: true});
 Object.assign(process.env, {
     NODE_ENV: 'development', APP_URL: 'http://127.0.0.1:' + port, GAMESERVER_NAME: 'local-npc-preview',

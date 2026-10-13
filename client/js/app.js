@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText) {
 
     var App = Class.extend({
         init: function () {
@@ -355,7 +355,18 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         showChoicesPopup(npcId, dialogue) {
             let self = this;
             let playerChoicePopup = $('#dialogue-popup');
+            this.dialogueText?.cancel();
+            if (!playerChoicePopup.hasClass('active')) this.previousDialogueFocus = document.activeElement;
+            const npc = this.game.getEntityById?.(npcId);
+            playerChoicePopup.find('#dialogue-speaker').text(npc?.name || 'Conversation');
+            playerChoicePopup.attr({'aria-hidden': 'false', 'aria-label': npc?.name ? 'Conversation with ' + npc.name : 'Conversation'});
             let avatarDiv = playerChoicePopup.find('#avatar');
+            const setPortraitFrames = (rest, talking) => {
+                avatarDiv[0].style.setProperty('--dialogue-rest-position', rest);
+                avatarDiv[0].style.setProperty('--dialogue-talking-position', talking);
+            };
+            const sprite = npc?.normalSprite;
+            const spriteScale = sprite?.width > 0 && sprite?.height > 0 ? 60 / Math.max(sprite.width, sprite.height) : 0;
             
             // Enable avatar if provided otherwise reset
             if (dialogue.custom_css && dialogue.custom_css.avatar) {
@@ -365,6 +376,18 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                     "background-position": dialogue.custom_css.background_position || '',
                     "background-size": dialogue.custom_css.background_size || '',
                 });
+                setPortraitFrames(dialogue.custom_css.background_position || '0px 0px',
+                    dialogue.custom_css.talking_background_position || dialogue.custom_css.background_position || '0px 0px');
+            } else if (spriteScale && sprite.image?.src) {
+                const row = sprite.animationData?.idle_down?.row || 0;
+                avatarDiv.css({
+                    display: 'block',
+                    'background-image': 'url("' + sprite.image.src + '")',
+                    'background-position': '0px ' + (-row * sprite.height * spriteScale) + 'px',
+                    'background-size': (sprite.image.width / (sprite.scale || 1) * spriteScale) + 'px ' + (sprite.image.height / (sprite.scale || 1) * spriteScale) + 'px'
+                });
+                setPortraitFrames('0px ' + (-row * sprite.height * spriteScale) + 'px',
+                    (sprite.animationData?.idle_down?.length > 1 ? -sprite.width * spriteScale : 0) + 'px ' + (-row * sprite.height * spriteScale) + 'px');
             } else {
                 avatarDiv.css({
                     display: 'none', 
@@ -382,15 +405,14 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 top: dialogue.custom_css?.top || ''
             });
             
-            if(Array.isArray(dialogue.text)) dialogue.text = dialogue.text[dialogue.text.length - 1];
-
-            playerChoicePopup.find('#question').html(dialogue.text);
+            const question = playerChoicePopup.find('#question');
+            question.html(Array.isArray(dialogue.text) ? dialogue.text.join('<br><br>') : dialogue.text);
             playerChoicePopup.find('#choices').empty();
 
             for (let i = 0; i < dialogue.options.length; i++) {
                 let option = dialogue.options[i];
 
-                let choice = $('<div class="choice"></div>').html(option.text);
+                let choice = $('<button type="button" class="choice" disabled></button>').html(option.text);
                 choice.click((e) => {
                     this.closeChoicesPopup();
                     this.game.makeChoice(npcId, option.goto);
@@ -406,7 +428,38 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             }
             playerChoicePopup.scrollTop(0);
             playerChoicePopup.removeClass("hidden").addClass('active');
-            playerChoicePopup.find('#close-dialogue-popup').click(function(e) {
+            const reveal = playerChoicePopup.find('#dialogue-reveal').prop('hidden', false);
+            playerChoicePopup.find('#dialogue-ready').prop('hidden', true);
+            this.dialogueText = new DialogueText(question[0], {
+                onSpeaking: speaking => avatarDiv.toggleClass('dialogue-speaking', speaking),
+                onComplete: () => {
+                    playerChoicePopup.find('.choice').prop('disabled', false);
+                    const wasFocused = document.activeElement === reveal[0];
+                    reveal.prop('hidden', true);
+                    playerChoicePopup.find('#dialogue-ready').prop('hidden', false);
+                    if (wasFocused) playerChoicePopup.find('.choice.selected').focus();
+                }
+            });
+            reveal.off('click.dialogue').on('click.dialogue', event => {
+                this.dialogueText.finish();
+                event.preventDefault(); event.stopImmediatePropagation();
+            });
+            question.off('click.dialogue').on('click.dialogue', event => {
+                if (this.dialogueText.isTyping) {
+                    this.dialogueText.finish();
+                    event.preventDefault(); event.stopImmediatePropagation();
+                }
+            });
+            playerChoicePopup.off('keydown.dialogue').on('keydown.dialogue', event => {
+                if (event.key !== 'Tab') return;
+                const controls = playerChoicePopup.find('button:enabled:visible, a:visible');
+                const first = controls[0], last = controls[controls.length - 1];
+                if (event.shiftKey && (document.activeElement === first || document.activeElement === playerChoicePopup[0])) { last?.focus(); event.preventDefault(); }
+                else if (!event.shiftKey && document.activeElement === last) { first?.focus(); event.preventDefault(); }
+            });
+            if (this.dialogueText.isTyping) playerChoicePopup.attr('tabindex', '-1').focus();
+            else playerChoicePopup.find('.choice.selected').focus();
+            playerChoicePopup.find('#close-dialogue-popup').off('click.dialogue').on('click.dialogue', function(e) {
                 self.closeChoicesPopup();
                 e.preventDefault();
                 e.stopImmediatePropagation();
@@ -494,12 +547,26 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         closeChoicesPopup() {
+            this.dialogueText?.cancel();
             this.game?.conversationHold?.stop();
             let playerChoicePopup = $('#dialogue-popup');
             playerChoicePopup.addClass('hidden').removeClass('active');
+            document.getElementById('dialogue-popup')?.setAttribute('aria-hidden', 'true');
+            this.previousDialogueFocus?.focus?.();
+            this.previousDialogueFocus = null;
         },
 
         handleChoiceKeyboardInput(event) {
+            if (!['w', 's', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'e', ' ', 'Escape'].includes(event.key)) return;
+            if (event.repeat && ['Enter', 'e', ' '].includes(event.key)) {
+                event.stopImmediatePropagation(); event.preventDefault();
+                return;
+            }
+            if (this.dialogueText?.isTyping && event.key !== 'Escape') {
+                if (['Enter', 'e', ' '].includes(event.key)) this.dialogueText.finish();
+                event.stopImmediatePropagation(); event.preventDefault();
+                return;
+            }
             // on W or up arrow, select the previous choice, on no selected choice, select the last choice
             // on S or down arrow, select the next choice, on no selected choice, select the first choice
             // on Enter, make selected choice
@@ -534,6 +601,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                     break;
                 case 'Enter':
                 case 'e':
+                case ' ':
                     if(selectedChoice !== null) {
                         selectedChoice.click();
                     }
@@ -545,6 +613,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
 
             $('#choices .selected').removeClass('selected');
             $(choices[selectedIndex]).addClass('selected');
+            if (event.key !== 'Escape') choices[selectedIndex]?.focus?.();
 
             event.stopImmediatePropagation();
             event.preventDefault();

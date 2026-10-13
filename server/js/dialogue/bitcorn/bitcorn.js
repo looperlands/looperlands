@@ -73,7 +73,7 @@ const dialogue = {
       ]
     },
     "ask_about_bitcorn": {
-      "text": "Ohhh, a story you say? Now you're speaking my language—this is where things get... puzzling.<br><br>See, I spend most nights wanderin' and ponderin'—I call it my 'corntemplation' time... and during one of these sessions... enchworm crawled into my mind.",
+      "text": "Ohhh, a story you say? Now you're speaking my language—this is where things get... puzzling.<br><br>See, I spend most nights wanderin' and ponderin'—I call it my 'corntemplation' time... and during one of these sessions... <span class=\"dialogue-wave\">enchworm crawled into my mind</span>.",
       "options": [
         { "text": "Enchworm? Tell me more.", "goto": "enchworm_explanation" },
         { "text": "Oh! There's something else I wanted to ask you.", "goto": "other_questions" }
@@ -83,7 +83,7 @@ const dialogue = {
       "custom_css": {
         "width": "69%"
       },
-      "text": "I... I remember it came to me almost like a dream. Like... It slithered into my brain. And... Since then, parts of my brain just feel locked down. Inaccessible...<br><br>Seems like I was just the messenger and the real message is beyond me. Whenever I think about it, I feel I'm chasin' my own tail and get this strange sense I'm somehow droppin' hints while this thing keeps even me in the dark.",
+      "text": "I... I remember it came to me almost like a dream. Like... It slithered into my brain. And... Since then, parts of my brain just feel <span class=\"dialogue-shake\">locked down</span>. Inaccessible...<br><br>Seems like I was just the messenger and the real message is beyond me. Whenever I think about it, I feel I'm chasin' my own tail and get this strange sense I'm somehow droppin' hints while this thing keeps even me in the dark.",
       "options": [
         { "text": "So, what even is this Enchworm thing?", "goto": "enchworm_info" },
         { "text": "Oh! There's something else I wanted to ask you.", "goto": "other_questions" }
@@ -99,7 +99,7 @@ const dialogue = {
       ]
     },
     "enchworm_mystery_message": {
-      "text": "I know that I know it, but I couldn't tell you. It's like this damn worm is playin' keep-away in my own brain. I swear the things not just a puzzle, it's gotta be alive.",
+      "text": "I know that I know it, but I couldn't tell you. It's like this damn worm is playin' keep-away in my own brain. I swear the things not just a puzzle, <span class=\"dialogue-shake\">it's gotta be alive</span>.",
       "options": [
         { "text": "That's... unsettling.", "goto": "enchworm_mystery" },
         { "text": "Well, enough worm talk, let's talk about something else.", "goto": "other_questions" }
@@ -151,14 +151,14 @@ const dialogue = {
     },
     // GOLDEN_KERNEL_QUEST_TALKTOBIT
     "kernel_legend": {
-      "text": "Ah, the golden kernel... It wasn't just a seed—it was our failsafe. I kept it hidden, figured it was safest that way—at least until we needed it.<br><br>See, that kernel's got more power than just growin' crops—it can magnify the luck of whoever holds it. If used with good intentions, it'll bring positive change. But if used for selfish reasons... bad things tend to happen, just like the night of the crash.",
+      "text": "Ah, the <span class=\"dialogue-item\">golden kernel</span>... It wasn't just a seed—it was our failsafe. I kept it hidden, figured it was safest that way—at least until we needed it.<br><br>See, that kernel's got more power than just growin' crops—it can magnify the luck of whoever holds it. If used with good intentions, it'll bring positive change. But if used for selfish reasons... bad things tend to happen, just like the night of the crash.",
       "options": [
         { "text": "What happened on the night of the crash?", "goto": "shadow_crash" },
         { "text": "Can it really grow anything?", "goto": "kernel_growth_power" }
       ]
     },
     "shadow_crash": {
-      "text": "I saw someone... or something. A shadowy figure. They found where I'd hidden the kernel, and that's when things started to go wrong.<br><br>The ship's systems started failin'—lights flickerin', engines sputterin'. We lost control fast.<br><br>I saw the kernel get knocked loose and tumble into a ravine, and that shadowy figure slipped away into the dark.",
+      "text": "I saw someone... or something. A <span class=\"dialogue-danger dialogue-shake\">shadowy figure</span>. They found where I'd hidden the kernel, and that's when things started to go wrong.<br><br>The ship's systems started failin'—lights flickerin', engines sputterin'. We <span class=\"dialogue-shake\">lost control fast</span>.<br><br>I saw the kernel get knocked loose and tumble into a ravine, and that shadowy figure slipped away into the dark.",
       "options": [
         { "text": "Do you know where the kernel is now?", "goto": "turdle_encounter" },
         { "text": "Any idea who the shadow was?", "goto": "shadow_identity" }
@@ -172,7 +172,7 @@ const dialogue = {
       ]
     },
     "turdle_encounter": {
-      "text": "I tried to recover the kernel after things settled, but that's when I saw it—a big ol' turtle, I gave it the nickname TURDle... for reasons.<br><br>Well, sittin' on its back was... the largest turd I've ever seen. And... right in the middle that big ol' plopper, glowin' through the muck, lay the golden kernel. I tried to wrestle it myself, but I was unarmed... I mean, I literally don't have arms",
+      "text": "I tried to recover the kernel after things settled, but that's when I saw it—a big ol' turtle, I gave it the nickname <span class=\"dialogue-danger\">TURDle</span>... for reasons.<br><br>Well, sittin' on its back was... the largest turd I've ever seen. And... right in the middle that big ol' plopper, glowin' through the muck, lay the <span class=\"dialogue-item\">golden kernel</span>. I tried to wrestle it myself, but I was unarmed... I mean, I literally don't have arms",
       "options": [
         { "text": "So the kernel is on the TURDle's back?", "goto": "assign_quest" },
         { "text": "Can you tell me more about Thornbeard?", "goto": "thornbeard_hint" },
@@ -180,7 +180,7 @@ const dialogue = {
       ]
     },
     "kernel_growth_power": {
-      "text": "Oh yeah. Drop that thing in dead dirt, and you'll have crops sproutin' by sunrise.<br><br>But it's more than just farming. It can restore life in ways you wouldn't believe... if, of course, the one holdin' it has their heart in the right place.",
+      "text": "Oh yeah. Drop that thing in dead dirt, and you'll have crops sproutin' by sunrise.<br><br>But it's more than just farming. It can <span class=\"dialogue-wave\">restore life</span> in ways you wouldn't believe... if, of course, the one holdin' it has their heart in the right place.",
       "options": [
         { "text": "Do you know where the kernel is now?", "goto": "turdle_encounter" },
         { "text": "What happened on the night of the crash?", "goto": "shadow_crash" }
@@ -207,7 +207,7 @@ const dialogue = {
       ]
     },
     "assign_quest": {
-      "text": "If you're willin' to face that thing, bring back the kernel. Whether it's luck, magic, or just plain hope—we need it.<br><br>Now, it might sound strange, but this moon... it's alive in its own way. The CORNhole tapped into its 'internal plumbing' to handle waste—clever, huh?<br><br>Anyway, you'll wanna start at the toilet. It's not just porcelain—it's a one-way trip to places you wouldn't believe.",
+      "text": "If you're willin' to face that thing, bring back the kernel. Whether it's luck, magic, or just plain hope—we need it.<br><br>Now, it might sound strange, but this moon... it's alive in its own way. The CORNhole tapped into its 'internal plumbing' to handle waste—clever, huh?<br><br>Anyway, you'll wanna <span class=\"dialogue-item\">start at the toilet</span>. It's not just porcelain—it's a one-way trip to places you wouldn't believe.",
       "actions": [
         { "type": "handout_quest", "quest": "GOLDEN_KERNEL_QUEST" }
       ],

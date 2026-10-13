@@ -3,8 +3,8 @@ const quests = [
     {
         id: "GOLDEN_KERNEL_QUEST_TALKTOBIT",
         name: "Talk to bitcorn about Golden Kernel", 
-        startText: "Go. Talk. bitcorn.",
-        longText: "Yeah, so like totally go and talk to that friendly lil bugger named bitcorn.",
+        startText: "Go. Talk. <span class=\"dialogue-item\">bitcorn</span>.",
+        longText: "Yeah, so like totally go and talk to that friendly lil bugger named <span class=\"dialogue-item\">bitcorn</span>.",
         endText: "Noice.",
         eventType: "NPC_TALKED",
         npc: Types.Entities.BITNPC_THORNBEARD_KNEEL,
@@ -15,9 +15,9 @@ const quests = [
     {
         id: "GOLDEN_KERNEL_QUEST",
         name: "Get Dat Kernel", 
-        startText: "Hey. Gimme Dat Kernel",
-        longText: "Venture down into the depths of turds and come out a golden kernel heavier.",
-        endText: "Hey. Nice Kernel, wanna be friends?",
+        startText: "Hey. Gimme <span class=\"dialogue-item\">Dat Kernel</span>",
+        longText: "Venture down into the depths of turds and come out a <span class=\"dialogue-item\">golden kernel</span> heavier.",
+        endText: "Hey. <span class=\"dialogue-item\">Nice Kernel</span>, wanna be friends?",
         eventType: "KILL_MOB",
         npc: Types.Entities.BITNPC_BITCORN,
         target: Types.Entities.KINGSLIME,

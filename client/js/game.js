@@ -8596,6 +8596,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              *
              */
             makeNpcTalk: function (npc) {
+                const dialogueText = npc && this.bubbleManager?.getBubbleById(npc.id)?.dialogueText;
+                if (dialogueText?.isTyping) { dialogueText.finish(); return; }
 
                 now = new Date().getTime();
 
@@ -8688,7 +8690,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 if (npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
                     npc.hasTalked();
-                    self.createBubble(npc.id, message);
+                    self.createBubble(npc.id, message, undefined, {dialogue: true});
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc");
 
@@ -8732,7 +8734,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             }
                         }
                         npc.hasTalked();
-                        self.createBubble(npc.id, message);
+                        self.createBubble(npc.id, message, undefined, {dialogue: true});
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
                     } else {
@@ -8748,7 +8750,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 self.app.openShop(shopId, shopName)
                             } else {
                                 npc.hasTalked();
-                                self.createBubble(npc.id, msg);
+                                self.createBubble(npc.id, msg, undefined, {dialogue: true});
                                 self.assignBubbleTo(npc);
                                 self.audioManager.playSound("npc");
                             }
@@ -9884,8 +9886,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.client.sendEmotion(emotion);
             },
 
-            createBubble: function (id, message, showCheck) {
-                this.bubbleManager.create(id, message, this.currentTime, showCheck);
+            createBubble: function (id, message, showCheck, presentation) {
+                this.bubbleManager.create(id, message, this.currentTime, showCheck, presentation);
             },
 
             destroyBubble: function (id) {

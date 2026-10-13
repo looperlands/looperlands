@@ -39,7 +39,7 @@ class KeyBoardHandler {
     handleConversationKey(event) {
         if (!this.game.started || this.game.player.isDead || this.inputHasFocus() || this.hasOpenPanel() || event.ctrlKey || event.metaKey || event.altKey) return;
         if ($('#dialogue-popup').hasClass('active')) {
-            if (!['w', 's', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'e', 'Escape'].includes(event.key)) return;
+            if (!['w', 's', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'e', ' ', 'Escape'].includes(event.key)) return;
             this.handleBlur();
             if (!event.repeat) this.app.handleChoiceKeyboardInput(event);
         }
