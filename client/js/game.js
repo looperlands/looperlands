@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', 'pickupfeedback', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime, PickupFeedback) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -80,6 +80,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.infoManager = new InfoManager(this);
                 this.combatFeedback = new CombatFeedback(this);
                 this.toolImpactFeedback = new ToolImpactFeedback(this);
+                this.pickupFeedback = new PickupFeedback(this);
 
                 // zoning
                 this.currentZoning = null;
@@ -6301,6 +6302,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.tileStageRevisions = {};
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
+                this.pickupFeedback?.clear();
                 this.infoManager.clear();
 
                 if (this.map) this.map.stopStreamCheck();
@@ -7023,6 +7025,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.renderer.camera.follow(this.player, this.currentTime);
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
+                    this.pickupFeedback?.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
                         this.gamepadListener.update();
@@ -7047,6 +7050,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.isStopped = true;
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
+                this.pickupFeedback?.clear();
                 this.infoManager.clear();
             },
 
@@ -8236,6 +8240,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onDisconnected(function (message) {
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
+                        self.pickupFeedback?.clear();
                         self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
@@ -8510,6 +8515,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (!aboutToEquipWeaponButHasNFTWeapon) {
                                 this.player.loot(item);
                                 this.client.sendLoot(item); // Notify the server that this item has been looted
+                                this.pickupFeedback?.add(item, this.currentTime);
                                 this.removeItem(item);
                                 this.showNotification(item.getLootMessage());
 
