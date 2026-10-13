@@ -36,4 +36,10 @@ test('only a requested combat swing receives the profile; authored speeds win', 
     expect(authored.setAnimation.mock.calls[0][1]).toBe(50);
     methods.animate.call(ordinary, 'atk', 75, 1);
     expect(ordinary.setAnimation.mock.calls[1][1]).toBe(75);
+    const cached = actor();
+    cached.currentAnimation = {name: 'idle_down'};
+    const animation = {name: 'atk_down', setSpeed: jest.fn()};
+    cached.setAnimation = () => { cached.currentAnimation = animation; };
+    methods.animate.call(cached, 'atk', 50, 1, undefined, true);
+    expect(animation.setSpeed).toHaveBeenCalledWith(profile(50, 5));
 });

@@ -100,10 +100,15 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
             }
 
             // Sprite-authored timing and non-combat actions retain their own pace.
-            if (shapeAttackTiming && this.sprite.animationData?.[animation]?.speed === undefined) {
+            const defaultCombatTiming = shapeAttackTiming && this.sprite.animationData?.[animation]?.speed === undefined;
+            if (defaultCombatTiming) {
                 speed = attackTiming(speed, this.animations[animation]?.length);
             }
             this.setAnimation(animation, speed, count, onEndCount);
+            // A prior cast may have populated Entity's cached animation speed.
+            if (defaultCombatTiming && this.currentAnimation?.name === animation) {
+                this.currentAnimation.setSpeed(speed);
+            }
         },
 
         turnTo: function(orientation) {
