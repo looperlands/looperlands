@@ -216,7 +216,21 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                     }
                 }
 
-                sound.play();
+                // Keep repeated combat/collection sounds lively without changing music or UI cues.
+                const varied = ['hit1', 'hit2', 'hurt', 'kill1', 'kill2', 'loot', 'watersplash'].includes(name);
+                const rate = varied ? 0.96 + Math.random() * 0.08 : 1;
+                if (effect) {
+                    const id = effect.play();
+                    if (varied) effect.rate?.(rate, id);
+                } else {
+                    sound.playbackRate = rate;
+                    if (varied) {
+                        sound.preservesPitch = false;
+                        if ('webkitPreservesPitch' in sound) sound.webkitPreservesPitch = false;
+                        if ('mozPreservesPitch' in sound) sound.mozPreservesPitch = false;
+                    }
+                    sound.play();
+                }
             }
         },
 
