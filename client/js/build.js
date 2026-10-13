@@ -24,7 +24,10 @@
         {
             name: "home",
             // Exclude the jquery module since it is included already in require-jquery.js
-            exclude: ["jquery", "game"]
+            exclude: ["jquery"],
+            // main initializes app before loading game. Keep shared dependencies
+            // such as dialoguetext available during that startup sequence.
+            excludeShallow: ["game"]
         }
     ],
     
