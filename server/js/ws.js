@@ -1274,7 +1274,11 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                const player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+                if (!player?.hasEnteredGame) {
+                    res.status(409).json({consumed: false, error: 'Player is not connected'});
+                    return;
+                }
 
                 let consumed = player.consumeItem(item);
                 let itemsOnCooldown = [];

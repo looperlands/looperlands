@@ -109,6 +109,16 @@ test('assigned consumables stay on the HUD while the inventory is closed, with c
     jest.advanceTimersByTime(250);
     expect(insert).not.toHaveBeenCalled(); // Retain keyboard focus during the ticker.
 });
+
+test('consumables stay disabled until the game finishes joining', () => {
+    const {hud, app} = setup();
+    app.game.started = false;
+    hud.sync({7: pie});
+    expect(hud.buttons.get('7').button.disabled).toBe(true);
+    app.game.started = true;
+    hud.tick(1000);
+    expect(hud.buttons.get('7').button.disabled).toBe(false);
+});
 test('shared cooldowns block every affected item, count down outside inventory, then cue readiness once', () => {
     const {hud, app} = setup([7, 8]);
     hud.sync({7: {...pie, cooldown: 7000}, 8: {...pie, cooldown: 7000}});
