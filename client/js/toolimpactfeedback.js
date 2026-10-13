@@ -35,8 +35,11 @@ define(function () {
             const clamp = (value, fallback, min, max) => Number.isFinite(value)
                 ? Math.max(min, Math.min(max, value)) : fallback;
             const frames = animation?.length || 5;
+            const material = state.animationSprite === 'tool-watering-can' ? 'water'
+                : state.animationSprite === 'tool-shovel' ? 'soil' : 'generic';
             const config = {
                 colors,
+                material,
                 impactFrame: Math.floor(clamp(effect.impactFrame, 3, 0, frames - 1)),
                 count: Math.floor(clamp(effect.count, 8, 1, 16)),
                 lifetimeMs: clamp(effect.lifetimeMs, 450, 100, 1500),
@@ -57,12 +60,15 @@ define(function () {
         emit(action, time) {
             const {config, x, y, entity} = action;
             for (let i = 0; i < config.count; i++) {
+                const water = config.material === 'water';
+                const size = water ? 1 : 1 + Math.floor(this.random() * 2);
                 this.particles.push({owner: entity.id, x, y, startedAt: time,
-                    vx: (this.random() * 2 - 1) * config.speed,
-                    vy: -(0.5 + this.random()) * config.speed,
-                    size: 1 + Math.floor(this.random() * 2),
+                    vx: (this.random() * 2 - 1) * config.speed * (water ? 0.65 : 1),
+                    vy: -(water ? 0.2 + this.random() * 0.4 : 0.5 + this.random()) * config.speed,
+                    size, width: config.material === 'soil' ? size + 1 : size,
+                    height: water ? 2 : size,
                     color: config.colors[Math.floor(this.random() * config.colors.length)],
-                    gravity: config.gravity, lifetimeMs: config.lifetimeMs});
+                    gravity: config.gravity * (water ? 1.5 : 1), lifetimeMs: config.lifetimeMs});
             }
             if (this.particles.length > MAX_PARTICLES) this.particles.splice(0, this.particles.length - MAX_PARTICLES);
         }
@@ -93,7 +99,8 @@ define(function () {
                 const seconds = age / 1000;
                 return {x: particle.x + particle.vx * seconds,
                     y: particle.y + particle.vy * seconds + 0.5 * particle.gravity * seconds * seconds,
-                    size: particle.size, color: particle.color, alpha: 1 - age / particle.lifetimeMs};
+                    size: particle.size, width: particle.width, height: particle.height,
+                    color: particle.color, alpha: 1 - age / particle.lifetimeMs};
             });
         }
 
