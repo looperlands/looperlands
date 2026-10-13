@@ -61,7 +61,7 @@ test.each([[picnic.SHARE, 'share', 'shared', picnic.QUIET, 'quiet'],
         expect(picnic.progress(data.gameData)).toContain('Picnic ready');
         const returning = setup(JSON.parse(JSON.stringify(data)));
         expect(returning.talk(watch).text).toContain(picnicChoice === picnic.QUIET ? 'quiet picnic' : 'join the songs');
-        expect(returning.talk(adam).text).toContain(basketChoice === picnic.SHARE ? 'sharing idea' : 'return my basket');
+        expect(returning.talk(adam).text.replace(/<[^>]*>/g, '')).toContain(basketChoice === picnic.SHARE ? 'sharing idea' : 'return my basket');
         expect(returning.data.gameData.quests.COMPLETED).toHaveLength(3);
         expect(setup().talk(watch).text.join(' ')).toContain('Help Adam first');
     });

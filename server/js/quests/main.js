@@ -3,8 +3,8 @@ const quests = [
     {
         id: "KING_QUEST_1",
         name: "The King's Kill Request",
-        startText: "The King has requested that you slay 100 rats.",
-        inProgressText: "You are doing great! Keep it up, {{remaining}} to go! Come back for another quest when you have killed 100 rats.",
+        startText: "The King has requested that you slay <span class=\"dialogue-danger\">100 rats</span>.",
+        inProgressText: "You are doing great! Keep it up, {{remaining}} to go! Come back for another quest when you have killed <span class=\"dialogue-danger\">100 rats</span>.",
         endText: ["Thanks for killing the rats", "Here is your next quest"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KING,
@@ -17,8 +17,8 @@ const quests = [
     {
         id: "KING_QUEST_2",
         name: "The King's Loot Request",
-        startText: "The King has requested that you use 100 potions",
-        inProgressText: "You are doing great! Keep it up! Collect {{remaining}} more potions to finish the quest.",
+        startText: "The King has requested that you use <span class=\"dialogue-item\">100 potions</span>",
+        inProgressText: "You are doing great! Keep it up! Collect <span class=\"dialogue-item\">{{remaining}} more potions</span> to finish the quest.",
         endText: "Thanks for using the potions",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KING,
@@ -31,7 +31,7 @@ const quests = [
     {
         id: "TEST_DIALOG_QUEST",
         name: "Test dialog quest 1",
-        startText: "Can you please kill 1 rat!",
+        startText: "Can you please kill <span class=\"dialogue-danger\">1 rat</span>!",
         inProgressText: ["Come on, you can do it", 'Really, I trust you!'],
         endText: "Thanks for killing that rat for me",
         eventType: "KILL_MOB",
@@ -46,7 +46,7 @@ const quests = [
     {
         id: "TEST_DIALOG_QUEST_2",
         name: "Test dialog quest 2",
-        startText: "Can you please kill 1 more rat!",
+        startText: "Can you please kill <span class=\"dialogue-danger\">1 more rat</span>!",
         inProgressText: ["Come on, you can do it", 'Really, I trust you!'],
         endText: "Thanks for killing that rat for me",
         eventType: "KILL_MOB",
@@ -60,8 +60,8 @@ const quests = [
     {
         id: "JIMI_QUEST",
         name: "DIMMILIZATION ON THE BRINK",
-        startText: "A mysterious being known to the Dimmie's as Bright Lord has conjured up a being so strong, it could be mean the end of Dimmie kind as we know it. Prepare yourself for Big Brimmie's arrival by collecting 10 ore which can be used to craft bullets! Visit Jimi Again when complete.",
-        endText: "This should help you on your journey, Looper! Should you find yourself a ranged weapon, this Iron can be used to craft ammo! Be sure to tell Jimi you're ready.",
+        startText: "A mysterious being known to the Dimmie's as Bright Lord has conjured up a being so strong, it could be mean the end of Dimmie kind as we know it. Prepare yourself for <span class=\"dialogue-danger dialogue-shake\">Big Brimmie</span>'s arrival by collecting <span class=\"dialogue-item\">10 ore</span> which can be used to craft bullets! Visit Jimi Again when complete.",
+        endText: "This should help you on your journey, Looper! Should you find yourself a ranged weapon, <span class=\"dialogue-item\">this Iron</span> can be used to craft ammo! Be sure to tell Jimi you're ready.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.BEACHNPC,
         target: Types.Entities.ORE,

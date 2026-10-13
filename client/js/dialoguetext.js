@@ -18,10 +18,10 @@ define(function () {
     }
 
     function delayAfter(character, next) {
-        if (character === '…') return 350;
-        if (/[.!?]/.test(character) && !/[.!?]/.test(next || '')) return 300;
-        if (/[,;:]/.test(character)) return 140;
-        return 30;
+        if (character === '…') return 220;
+        if (/[.!?]/.test(character) && !/[.!?]/.test(next || '')) return 180;
+        if (/[,;:]/.test(character)) return 90;
+        return 15;
     }
 
     class DialogueText {
@@ -94,7 +94,7 @@ define(function () {
             glyph.classList.add('revealed');
             if (this.index === this.glyphs.length) { this.finish(false); return; }
             const delay = delayAfter(glyph.textContent, this.glyphs[this.index].textContent);
-            if (delay > 30) this.speak(false);
+            if (delay > 15) this.speak(false);
             this.timer = setTimeout(() => this.revealNext(), delay);
         }
 

@@ -34,10 +34,10 @@ test('punctuation pauses once and the portrait rests during the pause', () => {
     const speaking = jest.fn(), complete = jest.fn();
     const state = line('A, B.', {onSpeaking: speaking, onComplete: complete});
     expect(state.glyphs[0].classList.contains('revealed')).toBe(true);
-    jest.advanceTimersByTime(30);
+    jest.advanceTimersByTime(15);
     expect(state.glyphs[1].classList.contains('revealed')).toBe(true);
     expect(speaking).toHaveBeenLastCalledWith(false);
-    jest.advanceTimersByTime(139);
+    jest.advanceTimersByTime(89);
     expect(state.glyphs[2].classList.contains('revealed')).toBe(false);
     jest.advanceTimersByTime(1);
     expect(speaking).toHaveBeenLastCalledWith(true);
@@ -45,9 +45,9 @@ test('punctuation pauses once and the portrait rests during the pause', () => {
     expect(complete).toHaveBeenCalledTimes(1);
     expect(state.controller.isTyping).toBe(false);
     expect(jest.getTimerCount()).toBe(0);
-    expect(state.DialogueText.delayAfter('.', '.')).toBe(30);
-    expect(state.DialogueText.delayAfter('.', ' ')).toBe(300);
-    expect(state.DialogueText.delayAfter('…', ' ')).toBe(350);
+    expect(state.DialogueText.delayAfter('.', '.')).toBe(15);
+    expect(state.DialogueText.delayAfter('.', ' ')).toBe(180);
+    expect(state.DialogueText.delayAfter('…', ' ')).toBe(220);
 });
 
 test('skip reveals the entire line once without leaving a scheduled reveal', () => {

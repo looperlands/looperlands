@@ -3,7 +3,7 @@ const quests = [
     {
         id: "COB_COLLECT_LOGS",
         name: "Maintaining the campfire",
-        startText: "We are running out of wood! Find 20 logs to keep the fire going.",
+        startText: "We are running out of wood! Find <span class=\"dialogue-item\">20 logs</span> to keep the fire going.",
         endText: "Thanks to you it will not be dark here tonight!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.COBLUMBERJACK,
@@ -16,8 +16,8 @@ const quests = [
     {
         id: "COB_BLUE_SLIMES",
         name: "Finding the lucky clover",
-        startText: "The blue slimes stole my lucky clover! Kill 40 of them, get it back!",
-        endText: "Thank you! It weren't the blue slimes after all...",
+        startText: "The <span class=\"dialogue-danger\">blue slimes</span> stole my <span class=\"dialogue-item\">lucky clover</span>! Kill 40 of them, get it back!",
+        endText: "Thank you! It weren't the <span class=\"dialogue-danger\">blue slimes</span> after all...",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMEBLUE,
@@ -28,7 +28,7 @@ const quests = [
     {
         id: "COB_YELLOW_SLIMES",
         name: "Finding the lucky clover again",
-        startText: "My bad! It was the yellow ones! Kill 40 of them, they must have the clover!",
+        startText: "My bad! It was the <span class=\"dialogue-danger\">yellow ones</span>! Kill 40 of them, they must have the clover!",
         endText: "Well, at least it's less slimes here!",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
@@ -41,7 +41,7 @@ const quests = [
     {
         id: "COB_RED_SLIMES",
         name: "Still finding the lucky clover",
-        startText: "Yellow, red... it's all the same! Kill 60 red ones, one of them has it!",
+        startText: "Yellow, red... it's all the same! Kill <span class=\"dialogue-danger\">60 red ones</span>, one of them has it!",
         endText: "Where's the clover? Will we ever find it again?",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
@@ -54,7 +54,7 @@ const quests = [
     {
         id: "COB_RAINBOW_SLIME",
         name: "Finally finding the lucky clover",
-        startText: "Now I remember! It was ALL OF THEM! Get the rainbow slime!",
+        startText: "Now I remember! It was <span class=\"dialogue-shake\">ALL OF THEM!</span> Get the <span class=\"dialogue-danger\">rainbow slime</span>!",
         endText: "Thank you so much! This clover means a lot to me.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.COBHILLSNPC,
@@ -67,7 +67,7 @@ const quests = [
     {
         id: "COB_MISSING_EGGS",
         name: "Missing eggs",
-        startText: ["Our eggs have been mysteriously disappearing.",
+        startText: ["Our <span class=\"dialogue-item\">eggs</span> have been mysteriously disappearing.",
         "Could you investigate what's happening?"],
         questLogText: "Figure out what happened to the missing eggs.",
         endText: "Good find!",
@@ -82,8 +82,8 @@ const quests = [
     {
         id: "COB_RETRIEVE_EGGS",
         name: "Retrieve the stolen eggs",
-        startText: ["Because of the Coblins we are running short on eggs!",
-        "Can you retrieve them from the hidden cave?"],
+        startText: ["Because of the <span class=\"dialogue-danger\">Coblins</span> we are running short on <span class=\"dialogue-item\">eggs</span>!",
+        "Can you retrieve them from the <span class=\"dialogue-item\">hidden cave</span>?"],
         questLogText: "Retrieve 50 stolen eggs",
         endText: "Good job!",
         eventType: "LOOT_ITEM",
@@ -97,7 +97,7 @@ const quests = [
     {
         id: "COB_KILL_COBLINS",
         name: "Fending off the Coblins",
-        startText: ["Coblins invaded our farm last night.",
+        startText: ["<span class=\"dialogue-danger\">Coblins</span> invaded our farm last night.",
         "Could you kill 40 of them to send a clear message?"],
         questLogText: "Kill 40 Coblins",
         endText: "Thank you! That will show them!",
@@ -112,7 +112,7 @@ const quests = [
     {
         id: "COB_KILL_COBANES",
         name: "Scaring off the Cobanes",
-        startText: ["Those Cobanes won't learn!",
+        startText: ["Those <span class=\"dialogue-danger\">Cobanes</span> won't learn!",
         "They're causing chaos amongst the animals...",
         "Kill 40 of them, that will teach them a lesson!"],
         questLogText: "Kill 40 Cobanes",
@@ -128,7 +128,7 @@ const quests = [
     {
         id: "COB_KILL_COBOGRE",
         name: "Defeat the Ogre Leader",
-        startText: ["Their ogre leader is orchestrating all this.",
+        startText: ["Their <span class=\"dialogue-danger dialogue-shake\">ogre leader</span> is orchestrating all this.",
         "He lurks deep in the cave.",
         "Can you take him down?"],
         questLogText: "Kill the Ogre Leader",
