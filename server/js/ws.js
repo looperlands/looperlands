@@ -45,6 +45,7 @@ const {buildActivityCatalog} = require('./activitycatalog');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
 const {InventorySyncController} = require("./inventorysynccontroller.js");
+const {getConsumableEffects} = require('./consumableeffects');
 const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
@@ -572,7 +573,8 @@ WS.socketIOServer = Server.extend({
                 special: special,
                 items: items,
                 bots: bots,
-                resources: resources
+                resources: resources,
+                ...getConsumableEffects(self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId))
             });
         });
 
@@ -1288,7 +1290,8 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
-                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown};
+                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown,
+                    ...getConsumableEffects(player)};
                 res.status(200).send(response);
             }
         });

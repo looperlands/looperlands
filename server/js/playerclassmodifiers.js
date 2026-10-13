@@ -18,6 +18,8 @@ class PlayerClassModifiers {
         this._fishing = 1
 
         this._temporaryModifiers = {};
+        this._temporaryModifierExpirations = {};
+        this._temporaryModifierTimeouts = {};
         this.loadModifierData();
     }
 
@@ -136,10 +138,20 @@ class PlayerClassModifiers {
     }
 
     applyTemporaryModifierWithTimeout(modifierName, value, duration) {
+        clearTimeout(this._temporaryModifierTimeouts[modifierName]);
         this._temporaryModifiers[modifierName] = value;
-        setTimeout(() => {
+        this._temporaryModifierExpirations[modifierName] = Date.now() + duration;
+        this._temporaryModifierTimeouts[modifierName] = setTimeout(() => {
             delete this._temporaryModifiers[modifierName];
+            delete this._temporaryModifierExpirations[modifierName];
+            delete this._temporaryModifierTimeouts[modifierName];
         }, duration);
+    }
+
+    getActiveTemporaryModifiers(now = Date.now()) {
+        return Object.entries(this._temporaryModifiers)
+            .filter(([name]) => this._temporaryModifierExpirations[name] > now)
+            .map(([name, value]) => ({name, value, expiresAt: this._temporaryModifierExpirations[name]}));
     }
 }
 

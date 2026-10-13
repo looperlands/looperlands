@@ -6,6 +6,8 @@ define(function () {
             this.cooling = new Map();
             this.readyUntil = new Map();
             this.pending = new Set();
+            this.effects = new Map();
+            this.effectPanels = new Map();
             const bar = document.getElementById('bar-container');
             if (!bar) return;
             this.anchor = document.createElement('div');
@@ -13,24 +15,18 @@ define(function () {
             bar.insertAdjacentElement('beforebegin', this.anchor);
             this.root = document.createElement('div');
             this.root.id = 'consumable-hud';
-            this.root.setAttribute('aria-label', 'Consumables and active effect');
+            this.root.setAttribute('aria-label', 'Consumables and active effects');
             // Clicking the HUD must not send a move or attack through to the map.
             for (const type of ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend', 'click']) {
                 this.root.addEventListener(type, event => event.stopPropagation());
             }
             this.slots = document.createElement('div');
             this.slots.className = 'hud-consumables';
-            this.effectLabel = document.createElement('div');
-            this.effectLabel.className = 'hud-effect';
-            this.effectLabel.setAttribute('aria-label', 'Active effect');
-            this.effectName = document.createElement('span');
-            this.effectName.className = 'hud-effect-name';
-            this.effectTimer = document.createElement('span');
-            this.effectTimer.className = 'hud-effect-timer';
-            this.effectLabel.appendChild(this.effectName);
-            this.effectLabel.appendChild(this.effectTimer);
+            this.effectsRoot = document.createElement('div');
+            this.effectsRoot.className = 'hud-effects';
+            this.effectsRoot.setAttribute('aria-label', 'Active effects');
             this.root.appendChild(this.slots);
-            this.root.appendChild(this.effectLabel);
+            this.root.appendChild(this.effectsRoot);
             this.anchor.appendChild(this.root);
             this.buttons = new Map();
             this.tick(Date.now());
@@ -47,9 +43,53 @@ define(function () {
         }
 
         setEffect(stat, percent, duration) {
-            this.effect = duration > 0 ? {stat, percent, expires: Date.now() + duration,
-                minuteCells: String(Math.floor(Math.ceil(duration / 1000) / 60)).length} : null;
+            // The legacy socket message describes only the fish buff.
+            if (duration > 0) this.effects.set('fish', {label: '+' + percent + '% ' + stat, expires: Date.now() + duration,
+                minuteCells: String(Math.floor(Math.ceil(duration / 1000) / 60)).length});
+            else this.effects.delete('fish');
             this.tick(Date.now());
+        }
+
+        syncEffects(effects, serverTime = Date.now()) {
+            if (!Array.isArray(effects) || !Number.isFinite(serverTime) || serverTime < (this.effectsSyncedAt || 0)) return [];
+            const now = Date.now(), next = new Map(), changed = [];
+            for (const effect of effects) {
+                if (!effect || typeof effect.id !== 'string' || typeof effect.label !== 'string' || !Number.isFinite(effect.expiresAt)) continue;
+                const duration = effect.expiresAt - serverTime;
+                if (duration <= 0) continue;
+                const previous = this.effects.get(effect.id);
+                const expires = now + duration;
+                next.set(effect.id, {label: effect.label, expires,
+                    minuteCells: Math.max(previous?.minuteCells || 1, String(Math.floor(Math.ceil(duration / 1000) / 60)).length)});
+                if (!previous || previous.label !== effect.label || expires > previous.expires + 1000) {
+                    changed.push({...effect, duration});
+                }
+            }
+            this.effectsSyncedAt = serverTime;
+            this.effects = next;
+            this.tick(now);
+            return changed;
+        }
+
+        createEffectPanel(id) {
+            const label = document.createElement('div');
+            label.className = 'hud-effect';
+            label.dataset.effect = id;
+            const name = document.createElement('span');
+            name.className = 'hud-effect-name';
+            const timer = document.createElement('span');
+            timer.className = 'hud-effect-timer';
+            const timeGroup = document.createElement('span');
+            timeGroup.className = 'hud-effect-time';
+            const separator = document.createElement('span');
+            separator.textContent = '·';
+            separator.setAttribute('aria-hidden', 'true');
+            timeGroup.appendChild(separator);
+            timeGroup.appendChild(timer);
+            label.appendChild(name);
+            label.appendChild(timeGroup);
+            this.effectsRoot.appendChild(label);
+            return {label, name, timer};
         }
 
         createButton(id) {
@@ -118,23 +158,32 @@ define(function () {
                     (seconds ? ', ready in ' + seconds + ' seconds' : ', ready'));
                 slot.button.title = name + (seconds ? ' · ' + seconds + 's' : key >= 0 ? ' · ' + (key + 1) : '');
             }
-            if (this.effect && this.effect.expires <= now) this.effect = null;
-            this.effectLabel.hidden = !this.effect;
-            if (this.effect) {
-                const seconds = Math.ceil((this.effect.expires - now) / 1000);
-                const name = '+' + this.effect.percent + '% ' + this.effect.stat + ' ·';
-                if (this.effectName.textContent !== name) this.effectName.textContent = name;
-                const timer = String(Math.floor(seconds / 60)).padStart(this.effect.minuteCells, '\u00a0') +
+            for (const [id, effect] of this.effects) {
+                if (effect.expires <= now) this.effects.delete(id);
+            }
+            for (const [id, panel] of this.effectPanels) {
+                if (!this.effects.has(id)) { panel.label.remove(); this.effectPanels.delete(id); }
+            }
+            for (const [id, effect] of this.effects) {
+                if (!this.effectPanels.has(id)) this.effectPanels.set(id, this.createEffectPanel(id));
+                const panel = this.effectPanels.get(id);
+                const seconds = Math.ceil((effect.expires - now) / 1000);
+                const name = effect.label;
+                if (panel.name.textContent !== name) panel.name.textContent = name;
+                panel.label.title = effect.label;
+                panel.label.setAttribute('aria-label', effect.label + ', ' + seconds + ' seconds remaining');
+                const timer = String(Math.floor(seconds / 60)).padStart(effect.minuteCells, '\u00a0') +
                     ':' + String(seconds % 60).padStart(2, '0');
-                if (this.effectTimer.textContent !== timer) {
-                    this.effectTimer.replaceChildren(...Array.from(timer, character => {
+                if (panel.timer.textContent !== timer) {
+                    panel.timer.replaceChildren(...Array.from(timer, character => {
                         const cell = document.createElement('span');
                         cell.textContent = character;
                         return cell;
                     }));
                 }
             }
-            this.root.hidden = !ids.length && !this.effect;
+            this.effectsRoot.hidden = !this.effects.size;
+            this.root.hidden = !ids.length && !this.effects.size;
         }
 
         destroy() {

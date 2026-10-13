@@ -1295,10 +1295,12 @@ module.exports = Player = Character.extend({
             self.invincible = true;
         }
 
+        self.invincibilityExpiresAt = Date.now() + Types.timeouts[Types.Entities.FIREFOX];
         self.loopringTimeout = setTimeout(function () {
             self.broadcast(self.equip(self.armor), false); // return to normal
             self.loopringTimeout = null;
             self.invincible = false;
+            delete self.invincibilityExpiresAt;
         }, Types.timeouts[Types.Entities.FIREFOX]);
     },
 
@@ -1337,9 +1339,13 @@ module.exports = Player = Character.extend({
     },
 
     setDropOverride: function (item, timeout) {
+        clearTimeout(this.dropOverrideTimeout);
         this.dropOverride = item;
-        setTimeout(() => {
+        this.dropOverrideExpiresAt = Date.now() + timeout;
+        this.dropOverrideTimeout = setTimeout(() => {
             delete this.dropOverride;
+            delete this.dropOverrideExpiresAt;
+            delete this.dropOverrideTimeout;
         }, timeout);
     },
 
@@ -1359,9 +1365,9 @@ module.exports = Player = Character.extend({
 
     getBot: function() {
         let playerCache = this.server.server.cache.get(this.sessionId);
-        if (playerCache.botSessionId) {
+        if (playerCache?.botSessionId) {
             let botCache = this.server.server.cache.get(playerCache.botSessionId);
-            let bot = this.server.getPlayerById(botCache.entityId);
+            let bot = botCache && this.server.getPlayerById(botCache.entityId);
             return bot
         }
     }

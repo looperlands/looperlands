@@ -12436,6 +12436,8 @@ Types.getKindFromString = function(kind) {
 
 const getKindAsStringCache = {}
 Types.getKindAsString = function(kind) {
+    // Inventory keys and HTTP parameters carry numeric kinds as strings.
+    if (typeof kind === 'string' && /^\d+$/.test(kind)) kind = Number(kind);
     let cached = getKindAsStringCache[kind];
     if (cached !== undefined) {
         return cached;
