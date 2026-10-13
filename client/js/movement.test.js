@@ -57,7 +57,7 @@ test.each([
     frame(60);
     expect(character[axis]).toBe(direction * 8);
     frame(130);
-    expect(character[axis]).toBe(direction * 17);
+    expect(character[axis]).toBeCloseTo(direction * 130 * 16 / 120, 8);
     expect(character.movement.startTime).toBe(120);
     frame(240);
     expect(character[axis]).toBe(direction * 32);
@@ -68,15 +68,15 @@ test.each([60, 120, 144])('movement follows elapsed time at %i Hz across multipl
     const {character, frame} = walking(Array.from({length: 12}, (_, x) => [x, 0]));
     for (let time = 0; time < 1000; time += 1000 / refreshRate) {
         frame(time);
-        expect(character.x).toBe(Math.round(time * 16 / 120));
+        expect(character.x).toBeCloseTo(time * 16 / 120, 8);
     }
 });
 
-test('rounded positions do not finish a tile before its duration expires', () => {
+test('positions stay fractional until a tile finishes at its scheduled time', () => {
     const {character, frame} = walking([[0, 0], [1, 0]]);
     frame(0);
     frame(117);
-    expect(character.x).toBe(16);
+    expect(character.x).toBeCloseTo(15.6, 8);
     expect(character.movement.inProgress).toBe(true);
     frame(120);
     expect(character.movement.inProgress).toBe(false);
@@ -169,8 +169,8 @@ test.each([[1, 1], [-1, 1], [1, -1], [-1, -1]])('diagonal (%i,%i) moves both axe
     expect(character.y).toBe(dy * 8);
     expect(character.movement.duration).toBeCloseTo(duration);
     frame(duration + 30);
-    expect(character.x).toBe(dx * 19);
-    expect(character.y).toBe(dy * 19);
+    expect(character.x).toBeCloseTo(dx * (16 + 30 * 16 / duration), 8);
+    expect(character.y).toBeCloseTo(dy * (16 + 30 * 16 / duration), 8);
     expect(character.gridX).toBe(dx);
     expect(character.gridY).toBe(dy);
     frame(duration * 2);
@@ -185,7 +185,7 @@ test('level 100 diagonal movement stays straight across tile boundaries', () => 
     for (let time = 0; time < 1000; time += 1000 / 60) {
         frame(time);
         expect(character.x).toBe(character.y);
-        expect(character.x).toBe(Math.round(time * 16 / (87 * Math.SQRT2)));
+        expect(character.x).toBeCloseTo(time * 16 / (87 * Math.SQRT2), 8);
     }
 });
 
@@ -220,7 +220,7 @@ test.each([60, 120, 144])('manual acceleration follows elapsed time at %i Hz and
     for (let time = 0; time < 1000; time += 1000 / hz) {
         frame(time);
         const distance = time < 200 ? time * time / 400 : time - 100;
-        expect(character.x).toBe(Math.round(distance * 16 / 87));
+        expect(character.x).toBeCloseTo(distance * 16 / 87, 8);
     }
     expect(character.movement.duration).toBeCloseTo(87);
 });
@@ -234,7 +234,7 @@ test('manual acceleration preserves normalized diagonal speed', () => {
         frame(time);
         const distance = time < 200 ? time * time / 400 : time - 100;
         expect(character.x).toBe(character.y);
-        expect(character.x).toBe(Math.round(distance * 16 / (87 * Math.SQRT2)));
+        expect(character.x).toBeCloseTo(distance * 16 / (87 * Math.SQRT2), 8);
     }
 });
 

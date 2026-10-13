@@ -749,6 +749,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         "text": entityData,
                         "x": (entity.x + 8) * this.scale,
                         "y": (entity.y + oy) * this.scale,
+                        "pixelAligned": true,
                         "centered": true,
                         "color": color,
                         "globalAlpha": opacity
@@ -762,6 +763,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                                 "text": entity.title,
                                 "x": (entity.x + 8) * this.scale,
                                 "y": (entity.y + entity.nameOffsetY + 5) * this.scale,
+                                "pixelAligned": true,
                                 "centered": true,
                                 "color": "white",
                                 "title": true
@@ -773,6 +775,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                                 "text": entity.title,
                                 "x": (entity.x + 8) * this.scale,
                                 "y": (entity.y + oy + 6) * this.scale,
+                                "pixelAligned": true,
                                 "centered": true,
                                 "color": "orange",
                                 "title" : true
@@ -1047,7 +1050,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             setCameraView: function(ctx) {
-                ctx.translate(-this.camera.x * this.scale, -this.camera.y * this.scale);
+                ctx.translate(Math.round(-this.camera.x) * this.scale, Math.round(-this.camera.y) * this.scale);
             },
     
             clearScreen: function(ctx) {

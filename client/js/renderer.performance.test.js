@@ -29,7 +29,7 @@ function setup() {
     };
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
-    const api = vm.runInContext(`({render, drawText, drawLightSource, updateAnimatedLightSource, scheduleNextFrame,
+    const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, updateAnimatedLightSource, scheduleNextFrame,
         addToImageCache, clearImageCache, clearTextCache,
         state: () => ({cacheBytes, cacheKeys: cacheKeys.slice(), labels: labelCache.size, labelBytes,
             terrain: terrainCache.size, lightScratch, shadowScratch, gradientScratch}),
@@ -143,6 +143,25 @@ test('text reuses glyphs when positions or opacity change and clears departed la
     worker.fontReady(); worker.send(frame(1,0,1,[entry]));
     expect(worker.state().labels).toBe(1);
     expect(worker.allocations.length).toBe(warm + 1);
+});
+
+test('avatar names and titles share the body screen position on the art grid', () => {
+    const worker = setup(), scale = 3;
+    for (const [x, y, cameraX, cameraY] of [[32.2, 48.7, 20.6, 30.1], [32.8, 49.2, 21.1, 30.6]]) {
+        const message = frame(cameraX, cameraY);
+        const entities = message.renderData.find(data => data.type === 'entities');
+        entities.entityData[0].translateX = x * scale;
+        entities.entityData[0].translateY = y * scale;
+        const names = [{text: 'Looper', x: (x + 8) * scale, y: (y - 12) * scale,
+            centered: true, pixelAligned: true}];
+        message.renderData.find(data => data.type === 'text').textData = names;
+        worker.send(message);
+        const label = worker.cachedLabel('Looper', 20, 5, 'white', '#373737');
+        const [, nameX, nameY] = worker.canvases.text.ctx.drawImage.mock.calls.at(-1);
+        const [bodyX, bodyY] = worker.canvases.entities.ctx.translate.mock.calls.at(-1);
+        expect(nameX + label.x + label.advance / 2 - bodyX).toBeCloseTo(8 * scale, 8);
+        expect(nameY + label.y - bodyY).toBeCloseTo(-12 * scale, 8);
+    }
 });
 
 test('fire flicker never changes the map light or compounds radius, intensity and position over time', () => {

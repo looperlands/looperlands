@@ -162,7 +162,7 @@ test.each([1, 2, 3])('combat overlays use pixel-aligned world coordinates and re
     draw(ctx, {cameraX: 20.25, cameraY: 40.25, scale,
         target: {x: 32, y: 64, width: 20, height: 20},
         impacts: [{x: 40, y: 72, progress: 0.5}]});
-    expect(ctx.translate).toHaveBeenCalledWith(-Math.round(20.25 * scale), -Math.round(40.25 * scale));
+    expect(ctx.translate).not.toHaveBeenCalled();
     expect(ctx.fillRect).toHaveBeenCalled();
     for (const call of ctx.fillRect.mock.calls) expect(call.every(Number.isInteger)).toBe(true);
     expect(ctx.save).toHaveBeenCalledTimes(1);

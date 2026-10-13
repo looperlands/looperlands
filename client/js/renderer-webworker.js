@@ -329,7 +329,7 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
         terrainCache.set(id, cached);
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(cached.canvas, cached.x - cameraX, cached.y - cameraY);
+    ctx.drawImage(cached.canvas, Math.round(cached.x - cameraX), Math.round(cached.y - cameraY));
     tileLights.push(...cached.lights);
 }
 
@@ -347,7 +347,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         ctx.save();
-        ctx.translate(-cameraX * scale, -cameraY * scale);
+        ctx.translate(Math.round(-cameraX) * scale, Math.round(-cameraY) * scale);
 
         const tilesLength = tiles.length;
 
@@ -555,10 +555,13 @@ function drawText(renderData) {
     if (key === textFrameKey) return;
     textFrameKey = key;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save(); ctx.translate(-cameraX * scale, -cameraY * scale);
+    ctx.save();
     for (const entry of textData) {
         const {text, x, y} = entry;
         if (!text || !Number.isFinite(x) || !Number.isFinite(y)) continue;
+        const grid = entry.pixelAligned ? scale : 1;
+        const screenX = Math.round((x - cameraX * scale) / grid) * grid;
+        const screenY = Math.round((y - cameraY * scale) / grid) * grid;
         const fontSize = entry.title ? [0, 5, 10, 15][scale]
             : entry.fontSize || [0, 10, 13, 20][scale];
         const label = cachedLabel(text, fontSize, scale === 3 ? 5 : 3, entry.color || 'white', entry.strokeColor || '#373737', entry.fontWeight || 'normal');
@@ -566,13 +569,13 @@ function drawText(renderData) {
         if (entry.textScale !== undefined || entry.rotation) {
             // Transform the cached bitmap so animation never allocates a label per frame.
             ctx.save();
-            ctx.translate(x, y);
+            ctx.translate(screenX, screenY);
             ctx.rotate(entry.rotation || 0);
             ctx.scale(entry.textScale ?? 1, entry.textScale ?? 1);
             ctx.drawImage(label.canvas, -label.x - (entry.centered ? label.advance / 2 : 0), -label.y);
             ctx.restore();
         } else {
-            ctx.drawImage(label.canvas, x - label.x - (entry.centered ? label.advance / 2 : 0), y - label.y);
+            ctx.drawImage(label.canvas, screenX - label.x - (entry.centered ? label.advance / 2 : 0), screenY - label.y);
         }
     }
     ctx.restore();
@@ -593,17 +596,16 @@ function drawEntities(drawEntitiesData) {
     ctx.save();
     if (composingWorld) {
         ctx.drawImage(canvases.background, 0, 0);
-        rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1});
+        rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1,
+            cameraX: -Math.round(-cameraX), cameraY: -Math.round(-cameraY)});
         ctx.scale(1 / scale, 1 / scale);
     }
-    ctx.translate(-cameraX * scale, -cameraY * scale);
     highCtx.clearRect(0, 0, highCanvas.width, highCanvas.height);
     highCtx.save();
     if (composingWorld) {
         highCtx.drawImage(canvases.high, 0, 0);
         highCtx.scale(1 / scale, 1 / scale);
     }
-    highCtx.translate(-cameraX * scale, -cameraY * scale);
 
     const entityCount = drawEntitiesData.entityData.length;
 
@@ -617,8 +619,12 @@ function drawEntities(drawEntitiesData) {
             highCtx.globalAlpha = entityData.globalAlpha;
         }
 
-        ctx.translate(entityData.translateX, entityData.translateY);
-        highCtx.translate(entityData.translateX, entityData.translateY);
+        // Snap the composed actor-camera transform once, on the native art grid.
+        // Body, equipment, shadow and indicators share this same screen position.
+        const screenX = Math.round(entityData.translateX / scale - cameraX) * scale;
+        const screenY = Math.round(entityData.translateY / scale - cameraY) * scale;
+        ctx.translate(screenX, screenY);
+        highCtx.translate(screenX, screenY);
         if (entityData.scaleX !== undefined && entityData.scaleY !== undefined) {
             ctx.scale(entityData.scaleX, entityData.scaleY);
             highCtx.scale(entityData.scaleX, entityData.scaleY);
@@ -1025,10 +1031,10 @@ const IMPACT_RAYS = [
 function drawCombatFeedback(ctx, feedback) {
     if (!feedback) return;
     ctx.save();
-    ctx.translate(-Math.round(feedback.cameraX * feedback.scale), -Math.round(feedback.cameraY * feedback.scale));
     const scale = feedback.scale;
     const rect = (x, y, width, height) => ctx.fillRect(
-        Math.round(x * scale), Math.round(y * scale), width * scale, height * scale);
+        Math.round(x - feedback.cameraX) * scale, Math.round(y - feedback.cameraY) * scale,
+        width * scale, height * scale);
     const corners = (target, thickness, extension) => {
         const {x, y, width, height} = target;
         for (const [cx, cy, dx, dy] of [
