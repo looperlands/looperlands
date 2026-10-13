@@ -318,7 +318,7 @@ body.upscaled.game {background:#000;}
 #bar-container {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:relative;width:100%;z-index:10;}
 #healthbar {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;}
 #hitpoints {background:#d83939;transition:none;}
-#bar-container #hitpoints-trail {background:#edc985;border-color:#edc985;z-index:9;pointer-events:none;transition:none;}
+#bar-container #hitpoints-trail {background:#fff;border-color:#fff;z-index:9;pointer-events:none;transition:none;}
 #bar-container #hitpoints-trail.settling {transition:width 280ms ease-out;}
 @media (prefers-reduced-motion: reduce) {
     #bar-container #hitpoints-trail.settling {transition:none;}
