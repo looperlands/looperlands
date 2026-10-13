@@ -935,6 +935,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 botsInventory = [];
 
             axios.get(inventoryQuery).then(function(response) {
+                _this.hideWindows();
+                _this.isInventoryVisible = true;
                 _this.inventoryToolTips = {};
                 if (response.data){
                     weaponInventory = response.data.inventory;
@@ -1265,9 +1267,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 })
 
 
-                _this.hideWindows();
                 $('body').addClass('inventory');
-                _this.isInventoryVisible = true;
             }).catch(function(error) {
                 console.error(error);
             });
