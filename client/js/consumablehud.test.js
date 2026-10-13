@@ -11,6 +11,11 @@ function element() {
             child.parent = this;
         },
         appendChild(child) { this.insertBefore(child, null); },
+        replaceChildren(...children) {
+            this.children.forEach(child => { child.parent = null; });
+            this.children = [];
+            children.forEach(child => this.appendChild(child));
+        },
         remove() {
             if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1);
             this.parent = null;
@@ -29,6 +34,7 @@ function setup(slots = [7]) {
     return {hud: new Hud(app), app, document, slots, bar};
 }
 const pie = {image: 'item-pie', description: 'Pie', qty: 3, consumable: true};
+const effectText = hud => hud.effectName.textContent + ' ' + hud.effectTimer.children.map(cell => cell.textContent).join('');
 beforeEach(() => {jest.useFakeTimers(); jest.setSystemTime(1000);});
 afterEach(() => jest.useRealTimers());
 test('assigned consumables stay on the HUD while the inventory is closed, with count and keyboard hint', () => {
@@ -93,14 +99,23 @@ test('long cooldowns fit a compact badge while quantities remain separate', () =
 test('active effects have a visible countdown and clear on expiry or cancellation', () => {
     const {hud} = setup([]);
     hud.setEffect('attack', 10, 60000);
-    expect(hud.effectLabel.textContent).toBe('+10% attack · 1:00');
+    expect(effectText(hud)).toBe('+10% attack · 1:00');
     jest.advanceTimersByTime(1000);
-    expect(hud.effectLabel.textContent).toBe('+10% attack · 0:59');
+    expect(effectText(hud)).toBe('+10% attack · 0:59');
     hud.setEffect('attack', 10, 0);
     expect(hud.root.hidden).toBe(true);
     hud.setEffect('defense', 5, 1000);
     jest.advanceTimersByTime(1000);
     expect(hud.effectLabel.hidden).toBe(true);
+});
+test('timer character count stays fixed across minute digit changes', () => {
+    const {hud} = setup([]);
+    hud.setEffect('attack', 10, 600000);
+    expect(effectText(hud)).toBe('+10% attack · 10:00');
+    const cells = hud.effectTimer.children.length;
+    jest.advanceTimersByTime(1000);
+    expect(effectText(hud)).toBe('+10% attack · \u00a09:59');
+    expect(hud.effectTimer.children).toHaveLength(cells);
 });
 test('unassigned cooldowns appear temporarily, empty and non-consumable slots stay out, and cues stay quiet in background', () => {
     const {hud, document} = setup([2]);

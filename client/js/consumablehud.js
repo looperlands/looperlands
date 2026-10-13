@@ -23,6 +23,12 @@ define(function () {
             this.effectLabel = document.createElement('div');
             this.effectLabel.className = 'hud-effect';
             this.effectLabel.setAttribute('aria-label', 'Active effect');
+            this.effectName = document.createElement('span');
+            this.effectName.className = 'hud-effect-name';
+            this.effectTimer = document.createElement('span');
+            this.effectTimer.className = 'hud-effect-timer';
+            this.effectLabel.appendChild(this.effectName);
+            this.effectLabel.appendChild(this.effectTimer);
             this.root.appendChild(this.slots);
             this.root.appendChild(this.effectLabel);
             this.anchor.appendChild(this.root);
@@ -41,7 +47,8 @@ define(function () {
         }
 
         setEffect(stat, percent, duration) {
-            this.effect = duration > 0 ? {stat, percent, expires: Date.now() + duration} : null;
+            this.effect = duration > 0 ? {stat, percent, expires: Date.now() + duration,
+                minuteCells: String(Math.floor(Math.ceil(duration / 1000) / 60)).length} : null;
             this.tick(Date.now());
         }
 
@@ -115,9 +122,17 @@ define(function () {
             this.effectLabel.hidden = !this.effect;
             if (this.effect) {
                 const seconds = Math.ceil((this.effect.expires - now) / 1000);
-                const text = '+' + this.effect.percent + '% ' + this.effect.stat + ' · ' +
-                    Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
-                if (this.effectLabel.textContent !== text) this.effectLabel.textContent = text;
+                const name = '+' + this.effect.percent + '% ' + this.effect.stat + ' ·';
+                if (this.effectName.textContent !== name) this.effectName.textContent = name;
+                const timer = String(Math.floor(seconds / 60)).padStart(this.effect.minuteCells, '\u00a0') +
+                    ':' + String(seconds % 60).padStart(2, '0');
+                if (this.effectTimer.textContent !== timer) {
+                    this.effectTimer.replaceChildren(...Array.from(timer, character => {
+                        const cell = document.createElement('span');
+                        cell.textContent = character;
+                        return cell;
+                    }));
+                }
             }
             this.root.hidden = !ids.length && !this.effect;
         }

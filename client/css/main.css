@@ -398,7 +398,10 @@ body.upscaled.game {background:#000;}
 .hud-key { top: -2px; left: -2px; }
 .hud-count { bottom: -2px; right: -2px; }
 .hud-cooldown { position: absolute; inset: 9px 0; text-align: center; padding: 3px 0; background: rgba(52, 30, 40, .7); color: #fff2bf; }
-.hud-effect { display: flex; align-items: center; height: 44px; box-sizing: border-box; max-width: 180px; padding: 4px 8px; border: 2px solid #b99761; background: #341e28; line-height: 16px; }
+.hud-effect { display: flex; align-items: center; gap: 6px; height: 44px; box-sizing: border-box; max-width: 180px; padding: 4px 8px; border: 2px solid #b99761; background: #341e28; line-height: 16px; }
+.hud-effect-name { min-width: 0; }
+.hud-effect-timer { display: inline-flex; flex: none; white-space: pre; }
+.hud-effect-timer > span { display: inline-block; flex: none; width: 1ch; text-align: center; }
 @media (max-width: 480px) {
     #consumable-hud { gap: 4px; }
     .hud-effect { max-width: 110px; font-size: 12px; padding: 4px; }
