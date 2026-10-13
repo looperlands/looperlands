@@ -100,7 +100,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
             }
 
             // Uniform sprite timing can be shaped too; custom per-frame beats stay intact.
-            const originalSpeed = this.sprite.animationData?.[animation]?.speed ?? speed;
+            const originalSpeed = this.sprite?.animationData?.[animation]?.speed ?? speed;
             const combatSpeed = shapeAttackTiming ? attackTiming(originalSpeed, this.animations[animation]?.length) : originalSpeed;
             const shapedCombatTiming = shapeAttackTiming && combatSpeed !== originalSpeed;
             if (shapedCombatTiming) speed = combatSpeed;
