@@ -9,9 +9,19 @@ vm.runInNewContext(fs.readFileSync(require.resolve('./worldserver'), 'utf8'), {
         if (name === './lib/class') return {Class: {extend: methods => methods}};
         if (name === 'underscore') return _;
         if (name === './properties') return {rat: {}};
+        if (name === './message') return {Damage: function (entity, points, critical) {Object.assign(this, {entity, points, critical});}};
         if (name === '../../shared/js/gametypes') return {getKindAsString: () => 'rat', Entities: {}};
         return {};
     },
+});
+
+test.each([false, true])('critical=%s survives the world notification boundary', critical => {
+    const world = Object.create(moduleStub.exports);
+    world.pushToPlayer = jest.fn();
+    const mob = {id: 7, type: 'mob', hitPoints: 100};
+    const attacker = {id: 1, type: 'player'};
+    world.handleHurtEntity(mob, attacker, 20, critical);
+    expect(world.pushToPlayer).toHaveBeenCalledWith(attacker, expect.objectContaining({entity: mob, points: 20, critical}));
 });
 
 test('an enemy death reaches its own and adjacent groups once, before loot', () => {

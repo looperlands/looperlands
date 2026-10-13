@@ -181,14 +181,17 @@ Messages.Teleport = Message.extend({
 });
 
 Messages.Damage = Message.extend({
-    init: function(entity, points) {
+    init: function(entity, points, critical = false) {
         this.entity = entity;
         this.points = points;
+        this.critical = critical === true;
     },
     serialize: function() {
-        return [Types.Messages.DAMAGE,
+        const packet = [Types.Messages.DAMAGE,
                 this.entity.id,
                 this.points];
+        if (this.critical) packet.push({critical: true});
+        return packet;
     }
 });
 

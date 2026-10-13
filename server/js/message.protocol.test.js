@@ -31,6 +31,7 @@ const cases = [
     ['Chat', [actor, 'Your basket is ready.'], 'chat_callback', [81, 'Your basket is ready.', undefined]],
     ['Emote', [actor, 'happy'], 'emotion_callback', [81, 'happy']],
     ['Damage', [actor, 9], 'dmg_callback', [81, 9]],
+    ['Damage', [actor, 27, true], 'dmg_callback', [81, 27, true]],
     ['Population', [2, 25], 'population_callback', [2, 25]],
     ['Kill', [{kind: Types.Entities.RAT}, 4], 'kill_callback', [Types.Entities.RAT, 4]],
     ['List', [[81, 82]], 'list_callback', [[81, 82]]],
@@ -59,6 +60,14 @@ test.each(cases)('%s survives server serialization and client dispatch', (name, 
     const packet = JSON.parse(JSON.stringify(new Messages[name](...args).serialize()));
     game.receiveAction(packet);
     expect(game[callback]).toHaveBeenCalledWith(...expected);
+});
+
+test('ordinary damage keeps the legacy packet and critical damage adds optional metadata', () => {
+    expect(new Messages.Damage(actor, 9).serialize()).toEqual([Types.Messages.DAMAGE, 81, 9]);
+    expect(new Messages.Damage(actor, 27, true).serialize()).toEqual([Types.Messages.DAMAGE, 81, 27, {critical: true}]);
+    const game = client(); game.dmg_callback = jest.fn();
+    game.receiveAction([Types.Messages.DAMAGE, 81, 27, {critical: 'true'}]);
+    expect(game.dmg_callback).toHaveBeenCalledWith(81, 27);
 });
 
 test('loot drops keep player attribution through the transport boundary', () => {

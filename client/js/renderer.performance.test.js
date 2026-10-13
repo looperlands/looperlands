@@ -234,3 +234,23 @@ test('staged terrain does not grow its visible array, and farming changes invali
     renderer.game.tileStages = {}; renderer.game.terrainRevision++;
     expect(renderer.drawTerrain().tiles).toHaveLength(1);
 });
+
+test('combat number scaling and rotation reuse one bitmap and isolate transforms from normal labels', () => {
+    const worker = setup();
+    const number = {text: '500!', x: 96, y: 72, centered: true, fontSize: 30, fontWeight: 'bold', textScale: 1.8, rotation: -0.08};
+    const name = {text: 'Local Looper', x: 96, y: 96, centered: true};
+    worker.send(frame(0, 0, 1, [number, name]));
+    const warm = worker.allocations.length;
+    const ctx = worker.canvases.text.ctx;
+    expect(ctx.scale).toHaveBeenCalledWith(1.8, 1.8);
+    expect(ctx.rotate).toHaveBeenCalledWith(-0.08);
+    for (let index = 0; index < 60; index++) {
+        worker.send(frame(0, 0, 1, [{...number, textScale: 1.8 - index / 100, rotation: -0.08 + index / 1000}, name]));
+    }
+    expect(worker.allocations).toHaveLength(warm);
+    expect(worker.state().labels).toBe(2);
+    expect(ctx.save.mock.calls.length).toBe(ctx.restore.mock.calls.length);
+    const calls = worker.operations.filter(operation => operation.id === 'text');
+    const lastName = calls.map(operation => operation.method).lastIndexOf('drawImage');
+    expect(calls[lastName - 1].method).toBe('restore');
+});

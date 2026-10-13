@@ -104,7 +104,7 @@ test('confirmed mob damage produces exactly one effect and passes the target ide
     self.handler(7, 5);
     expect(self.combatFeedback.addImpact).toHaveBeenCalledTimes(1);
     expect(self.combatFeedback.addImpact).toHaveBeenCalledWith(mob, 5, 1200);
-    expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(5, 32, 33, 'inflicted', 7);
+    expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(5, 32, 33, 'inflicted', 7, false);
 });
 
 test('late damage for an already removed entity is ignored', () => {
@@ -137,4 +137,11 @@ test.each(['reduced', 'disabled', 'map', 'death', 'despawn', 'stop'])('recoil cl
     if (reason === 'despawn') delete game.entities[mob.id];
     if (reason === 'stop') game.isStopped = true;
     expect(feedback.getOffset(mob, 1010)).toEqual({x: 0, y: 0});
+});
+
+test('confirmed critical damage passes its status to the number without duplicating the hit effect', () => {
+    const self = damageHandler({id: 7, x: 32, y: 48});
+    self.handler(7, 15, true);
+    expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(15, 32, 33, 'inflicted', 7, true);
+    expect(self.combatFeedback.addImpact).toHaveBeenCalledTimes(1);
 });
