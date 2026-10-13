@@ -11,22 +11,23 @@ function routes(consumed = true) {
     const handlers = new Map();
     const data = {mapId: 'main', entityId: 1, nftId: 'avatar', walletId: 'local',
         gameData: {items: {[Types.Entities.M88NTACO]: 2}}};
-    const player = {nftId: 'avatar', getBot: () => undefined,
+    const player = {nftId: 'avatar', hasEnteredGame: true, getBot: () => undefined,
         playerClassModifiers: new PlayerClassModifiers({getLooperModifierData: async () => ({xp: 1})}, 'avatar', 'fighter'),
         consumeItem(item) {if (consumed) Collectables.consume(item, this); return consumed;}};
     const world = {getPlayerById: () => player, getConsumeGroupCooldown: () => 121000,
         consumeCooldowns: {avatar: {xpPotions: 121000}}};
+    const worlds = {main: world};
     const inventoryStart = source.indexOf('        app.get("/session/:sessionId/inventory"');
     const inventoryEnd = source.indexOf('        app.get("/session/:sessionId/quests"', inventoryStart);
     const consumeStart = source.indexOf('        app.get("/session/:sessionId/consumeItem/');
     const consumeEnd = source.indexOf('        // MINIGAME CONTROLLER', consumeStart);
     vm.runInNewContext(source.slice(inventoryStart, inventoryEnd) + source.slice(consumeStart, consumeEnd), {
         app: {get: (url, handler) => handlers.set(url, handler)},
-        self: {worldsMap: {main: world}}, cache: {get: () => structuredClone(data)},
+        self: {worldsMap: worlds}, cache: {get: () => structuredClone(data)},
         dao: {getInventory: async () => ({})}, _, Types, Collectables, Properties, getConsumableEffects
     });
     const res = {status: jest.fn().mockReturnThis(), json: jest.fn(), send: jest.fn()};
-    return {player, world, res, consume: () => handlers.get('/session/:sessionId/consumeItem/:item')({
+    return {player, world, worlds, res, consume: () => handlers.get('/session/:sessionId/consumeItem/:item')({
         params: {sessionId: 'local', item: String(Types.Entities.M88NTACO)}}, res),
     inventory: () => handlers.get('/session/:sessionId/inventory')({params: {sessionId: 'local'}}, res)};
 }
@@ -57,4 +58,16 @@ test('an inventory request before a player joins returns an empty effect snapsho
     s.world.getPlayerById = () => undefined;
     await s.inventory();
     expect(s.res.json).toHaveBeenCalledWith(expect.objectContaining({effects: [], effectsUpdatedAt: 1000}));
+});
+
+test.each(['missing player', 'handshake pending', 'missing world'])('%s refuses consumption without throwing', async reason => {
+    const s = routes();
+    const consume = jest.spyOn(s.player, 'consumeItem');
+    if (reason === 'handshake pending') s.player.hasEnteredGame = false;
+    else if (reason === 'missing player') s.world.getPlayerById = () => undefined;
+    else delete s.worlds.main;
+    await expect(s.consume()).resolves.toBeUndefined();
+    expect(s.res.status).toHaveBeenCalledWith(409);
+    expect(s.res.json).toHaveBeenCalledWith({consumed: false, error: 'Player is not connected'});
+    expect(consume).not.toHaveBeenCalled();
 });

@@ -150,7 +150,8 @@ define(function () {
                 slot.timer.textContent = seconds >= 60 ? Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0')
                     : seconds ? String(seconds) + 's' : '';
                 slot.timer.hidden = !seconds;
-                slot.button.disabled = Boolean(seconds || !(Number(item.qty) > 0) || this.pending.has(id) || this.app.game?.player?.isDead);
+                slot.button.disabled = Boolean(seconds || !(Number(item.qty) > 0) || this.pending.has(id) ||
+                    this.app.game?.started === false || this.app.game?.player?.isDead);
                 slot.button.classList.toggle('cooling', seconds > 0);
                 slot.button.classList.toggle('cooldown-ready', now < (this.readyUntil.get(id) || 0));
                 const name = item.description || 'Consumable';
