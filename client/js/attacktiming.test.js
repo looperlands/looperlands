@@ -12,10 +12,12 @@ test.each([3, 5, 8, 12])('shapes %s frames without changing the swing duration',
     expect(frames[Math.floor(length / 2)]).toBeLessThan(frames[0]);
     expect(frames[length - 1]).toBeGreaterThan(frames[Math.floor(length / 2)]);
 });
-test('short animations and custom speed arrays keep their timing', () => {
+test('short animations and varied speed arrays keep their timing; uniform arrays receive a snap', () => {
     const authored = [100, 20, 80];
     expect(profile(authored, 3)).toBe(authored);
     expect(profile(50, 2)).toBe(50);
+    expect(profile([50, 50, 50], 3)).toEqual(profile(50, 3));
+    expect(profile(50, 5)[2]).toBeLessThan(profile(50, 5)[0] / 5);
 });
 function actor(authoredSpeed) {
     return {orientation: 2, sprite: {animationData: {atk_down: {speed: authoredSpeed}}},
@@ -34,6 +36,9 @@ test('only a requested combat swing receives the profile; authored speeds win', 
     const authored = actor([100, 10, 20, 40, 80]);
     methods.animate.call(authored, 'atk', 50, 1, undefined, true);
     expect(authored.setAnimation.mock.calls[0][1]).toBe(50);
+    const uniform = actor(100);
+    methods.animate.call(uniform, 'atk', 50, 1, undefined, true);
+    expect(uniform.setAnimation.mock.calls[0][1]).toEqual(profile(100, 5));
     methods.animate.call(ordinary, 'atk', 75, 1);
     expect(ordinary.setAnimation.mock.calls[1][1]).toBe(75);
     const cached = actor();
