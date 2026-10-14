@@ -38,7 +38,6 @@ define(function () {
                     this.distance %= 12;
                     this.lastStep = time;
                     const surface = surfaceFor(player.getScene()?.name);
-                    this.game.audioManager?.playFootstep(surface);
                     if (!reduced && effects && surface !== 'stone') {
                         this.steps.push({x: player.x + 8, y: player.y + 14, startedAt: time,
                             surface, lifetime: surface === 'sand' ? 650 : 380});

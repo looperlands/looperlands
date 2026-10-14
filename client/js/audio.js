@@ -14,7 +14,6 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             this.musicPlayer = new MusicPlayer();
             this.streamMusic = new MusicPlayer();
             this.areas = [];
-            this.setupFootsteps();
             this.musicNames = [
                 // MAIN MUSIC    
                 "village", "full", "fluteguitar", "guitar", "exploration", "beach", "forest", "cave", "desert", "lavaland", "boss",
@@ -186,56 +185,6 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 sound = this.sounds[name][0];
             }
             return sound;
-        },
-
-        setupFootsteps: function () {
-            const unlock = () => {
-                if (!this.enabled) return;
-                const Context = window.AudioContext || window.webkitAudioContext;
-                if (!Context && !window.Howler?.ctx) return;
-                try {
-                    const context = this.footstepContext || window.Howler?.ctx || new Context();
-                    this.footstepContext = context;
-                    const release = () => {
-                        if (context.state !== 'running') return;
-                        document.removeEventListener('pointerdown', unlock);
-                        document.removeEventListener('keydown', unlock);
-                    };
-                    if (context.state === 'running') release();
-                    else context.resume().then(release).catch(() => {});
-                } catch (_) { /* Audio failure cannot interrupt movement. */ }
-            };
-            document.addEventListener?.('pointerdown', unlock);
-            document.addEventListener?.('keydown', unlock);
-        },
-
-        playFootstep: function (surface) {
-            const context = this.footstepContext;
-            if (!this.enabled || !context || context.state !== 'running' || document.hidden) return;
-            const now = context.currentTime;
-            if (Number.isFinite(this.lastFootstepAudioAt) && now - this.lastFootstepAudioAt < 0.09) return;
-            this.lastFootstepAudioAt = now;
-            if (!this.footstepBuffer) {
-                this.footstepBuffer = context.createBuffer(1, Math.ceil(context.sampleRate * 0.04), context.sampleRate);
-                const data = this.footstepBuffer.getChannelData(0);
-                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-            }
-            const source = context.createBufferSource();
-            const filter = context.createBiquadFilter();
-            const gain = context.createGain();
-            const frequencies = {grass: 400, sand: 1100, stone: 1800, ground: 850};
-            filter.type = 'lowpass';
-            filter.frequency.value = frequencies[surface] || frequencies.ground;
-            source.buffer = this.footstepBuffer;
-            source.playbackRate.value = 0.92 + Math.random() * 0.16;
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(surface === 'stone' ? 0.025 : 0.018, now + 0.004);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
-            source.connect(filter);
-            filter.connect(gain);
-            gain.connect(context.destination);
-            source.onended = () => {source.disconnect(); filter.disconnect(); gain.disconnect();};
-            source.start(now);
         },
 
         playSound: function (name, lowerMusicVolume) {
