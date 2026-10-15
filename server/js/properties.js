@@ -4755,6 +4755,18 @@ let Properties = {
         respawnDelay: 9900000
     },
 
+    m88ncandycorn: {
+        collectable: true,
+        inventoryDescription: "Candycorn",
+        respawnDelay: 9900000
+    },
+
+    m88nfig: {
+        collectable: true,
+        inventoryDescription: "Fig",
+        respawnDelay: 9900000
+    },
+
     // Personal progression and achievement items. This flag applies across maps.
     KEY_ARACHWEAVE: {transferable: false},
     THUDKEY: {transferable: false},

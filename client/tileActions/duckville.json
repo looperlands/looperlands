@@ -298,7 +298,7 @@
         },
         "xp": 125,
         "seedReturnChance": 0.30,
-        "displayName": "Orange tree",
+        "displayName": "Orange Tree",
         "rareDrops": [
           {
             "item": "M88NSNAIL",
@@ -326,7 +326,7 @@
         },
         "xp": 125,
         "seedReturnChance": 0.30,
-        "displayName": "Cherry tree",
+        "displayName": "Cherry Tree",
         "rareDrops": [
           {
             "item": "M88NSNAIL",
@@ -347,14 +347,14 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "M88NCHERRY",
+        "yieldItem": "M88NFIG",
         "yield": {
           "min": 2,
           "max": 4
         },
         "xp": 125,
         "seedReturnChance": 0.30,
-        "displayName": "Purple fruit tree",
+        "displayName": "Fig Tree",
         "rareDrops": [
           {
             "item": "M88NSNAIL",
@@ -382,7 +382,7 @@
         },
         "xp": 125,
         "seedReturnChance": 0.30,
-        "displayName": "Lemon tree",
+        "displayName": "Lemon Tree",
         "rareDrops": [
           {
             "item": "M88NSNAIL",
