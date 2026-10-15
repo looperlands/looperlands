@@ -780,6 +780,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     "item-m88nzombieseeds",
                     "item-m88nzombiesushi",
                     "item-m88ngrain",
+                    "item-m88ncandycorn",
+                    "item-m88nfig",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

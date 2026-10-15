@@ -2994438,7 +2994438,7 @@
   <object id="1055" type="main" x="736" y="2992" width="144" height="48"/>
  </objectgroup>
  <objectgroup id="80" name="triggers"/>
- <objectgroup id="115" name="scenes" locked="1">
+ <objectgroup id="115" name="scenes">
   <object id="740" name="Duckville" x="288" y="6576" width="1360" height="1120">
    <properties>
     <property name="bg" value="rgb(13 12 9)"/>
@@ -2994454,7 +2994454,7 @@
     <property name="bg" value="rgb(13 12 9)"/>
    </properties>
   </object>
-  <object id="743" name="The Garden" x="0" y="592" width="1424" height="2640">
+  <object id="743" name="Butterfly Grove Garden" x="0" y="592" width="1424" height="2640">
    <properties>
     <property name="bg" value="rgb(13 12 9)"/>
    </properties>
