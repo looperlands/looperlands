@@ -939,6 +939,24 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXANHAZMAT1] = function(id) {
         return new Mobs.nexanhazmat1(id);
     };
+    EntityFactory.builders[Types.Entities.NEXAN55] = function(id) {
+        return new Mobs.nexan55(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANZENMONK] = function(id) {
+        return new Mobs.nexanzenmonk(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANMINI1] = function(id) {
+        return new Mobs.nexanmini1(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANMINI2] = function(id) {
+        return new Mobs.nexanmini2(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANMINI3] = function(id) {
+        return new Mobs.nexanmini3(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANMINI4] = function(id) {
+        return new Mobs.nexanmini4(id);
+    };
     
     
     //Short Destroyers

@@ -381,6 +381,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     "nexanzombie1",
                     "m88ngrimreaper",
                     "nexanhazmat1",
+                    "nexan55",
+                    "nexanzenmonk",
+                    "nexanmini1",
+                    "nexanmini2",
+                    "nexanmini3",
+                    "nexanmini4",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",
