@@ -540,7 +540,13 @@ Types = {
         NEXANZOMBIECAT: 78000129,
         M88NGRIMREAPER: 78000138,
         NEXANHAZMAT1: 78000145,
-        
+        NEXAN55: 78000146,
+        NEXANZENMONK: 78000147,
+        NEXANMINI1: 78000148,
+        NEXANMINI2: 78000149,
+        NEXANMINI3: 78000150,
+        NEXANMINI4: 78000151,
+
         //m88n Items
         M88NMAP: 78000100,
         M88NEGG1: 78000200,
@@ -6482,6 +6488,12 @@ var kinds = {
     nexanzombie1: [Types.Entities.NEXANZOMBIE1, "mob"],
     m88ngrimreaper: [Types.Entities.M88NGRIMREAPER, "mob"],
     nexanhazmat1: [Types.Entities.NEXANHAZMAT1, "mob"],
+    nexan55: [Types.Entities.NEXAN55, "mob"],
+    nexanzenmonk: [Types.Entities.NEXANZENMONK, "mob"],
+    nexanmini1: [Types.Entities.NEXANMINI1, "mob"],
+    nexanmini2: [Types.Entities.NEXANMINI2, "mob"],
+    nexanmini3: [Types.Entities.NEXANMINI3, "mob"],
+    nexanmini4: [Types.Entities.NEXANMINI4, "mob"],
 
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
