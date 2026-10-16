@@ -1556,7 +1556,7 @@ WS.socketIOServer = Server.extend({
 
         })
 
-        http.listen(port, function () {
+        http.listen(port, process.env.LOOPERLANDS_BIND_ADDRESS, function () {
             console.log('listening on *:' + port);
         });
     },

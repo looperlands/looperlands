@@ -178,3 +178,69 @@ test.each([1, 2, 3])('combat transforms and a defined font size reach the render
     expect(combat).toMatchObject({fontSize: 10 * scale, fontWeight: 'bold', textScale: expect.any(Number), rotation: expect.any(Number)});
     expect(xp).toMatchObject({fontSize: 10 * scale, text: '+10 XP', fontWeight: 'bold', textScale: expect.any(Number), rotation: expect.any(Number)});
 });
+
+
+test.each([false,true])('combo labels share combat lanes, expire, and respect reduced motion=%s',reducedMotion=>{
+    const {info,game}=setup(reducedMotion);
+    info.addDamageInfo('+125 XP',32,48,'xp',1);
+    info.addDamageInfo('2x combo',32,48,'combo',1);
+    const labels=Object.values(info.infos), combo=labels[1];
+    expect(combo.combat).toBe(true);expect(combo.fillColor).toBe('#fce045');
+    expect(combo.initialY).not.toBe(labels[0].initialY);
+    info.update(game.currentTime+40);
+    expect(combo.textScale).toBe(reducedMotion?1:1.45);
+    info.update(game.currentTime+650);expect(Object.values(info.infos)).toHaveLength(0);
+});
+
+
+test.each([false,true])('combo emphasis survives animation and reduced motion=%s',reducedMotion=>{
+    const {info,game}=setup(reducedMotion);
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,{scale:1.4});
+    const combo=Object.values(info.infos)[0];
+    info.update(game.currentTime+40);
+    expect(combo.textScale).toBeCloseTo(1.4*(reducedMotion?1:1.45));
+    info.update(game.currentTime+200);
+    expect(combo.textScale).toBeCloseTo(1.4);
+});
+
+
+test.each([false,true])('praise is a separate delayed tilted popup beside its combo with reduced motion=%s',reducedMotion=>{
+    const {info,game}=setup(reducedMotion);
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,{scale:1.4,praise:'Awesome!',color:'#ffad49'});
+    info.addDamageInfo('+175 XP',32,48,'xp',1);
+    const [combo,praise,xp]=Object.values(info.infos);
+    expect(combo).toMatchObject({fillColor:'#ffad49',strokeColor:'#352137',tilt:0,initialY:36});
+    expect(praise).toMatchObject({value:'Awesome!',fontSize:7,initialX:combo.initialX+10,initialY:combo.initialY+14,opacity:0});
+    expect(xp.initialY).toBe(16);
+    info.update(game.currentTime+110);
+    expect(praise.opacity).toBe(1);
+    expect(praise.rotation).toEqual(reducedMotion?0:expect.any(Number));
+    if (!reducedMotion) expect(praise.rotation).toBeLessThan(0);
+    const sandbox={define:(dependencies,factory)=>{sandbox.Renderer=factory();}};
+    vm.createContext(sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'lib/class.js'),'utf8'),sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'renderer.js'),'utf8'),sandbox);
+    const renderer=Object.assign(Object.create(sandbox.Renderer.prototype),{scale:3,game:{infoManager:info}});
+    const data=renderer.drawCombatInfo();
+    expect(data).toHaveLength(3);
+    expect(data[0]).toMatchObject({text:'4x combo',color:'#ffad49',fontSize:30});
+    expect(data[1]).toMatchObject({text:'Awesome!',fontSize:21});
+});
+
+test.each([[false,false],[true,false],[false,true],[true,true]])('counter text stays close and separated: reduced motion %s, label first %s',(reduced,labelFirst)=>{
+    const {info}=setup(reduced);
+    const addDamage=()=>info.addDamageInfo(22,64,49,'inflicted',100,true);
+    const addLabel=()=>info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
+    const pair=labelFirst ? [addLabel(),addDamage()] : [addDamage(),addLabel()];
+    const [damage,label]=labelFirst ? pair.reverse() : pair;
+    expect(label.x-damage.x).toBe(20);expect(damage.y-label.y).toBe(24);
+    const gap=label.x-damage.x;
+    info.update(1300);
+    if(reduced)expect(label.x-damage.x).toBe(gap);
+    else {
+        expect(label.x-damage.x).toBeGreaterThan(gap);
+        expect(label.x-damage.x).toBeLessThanOrEqual(gap+8);
+        expect(Math.abs(label.y-label.initialY)).toBeLessThan(6);
+        expect(Math.abs(damage.y-damage.initialY)).toBeLessThan(6);
+    }
+});

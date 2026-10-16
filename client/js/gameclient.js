@@ -415,7 +415,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 dmg = data[2];
         
             if(this.dmg_callback) {
-                if (data[3]?.critical === true) this.dmg_callback(id, dmg, true);
+                if (Number.isFinite(data[3]?.hp)) this.dmg_callback(id,dmg,data[3].critical===true,data[3]);
+                else if (data[3]?.critical === true) this.dmg_callback(id, dmg, true);
                 else this.dmg_callback(id, dmg);
             }
         },

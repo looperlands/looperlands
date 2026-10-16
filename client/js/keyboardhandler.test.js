@@ -376,3 +376,16 @@ test('an entity sharing an item tile still blocks keyboard continuation', () => 
     state.game.getEntityAt.mockReturnValue({ id: 'mob' });
     expect(state.handler.getContinuationPath()).toBeNull();
 });
+
+
+test('Space attacks ordinary targets unless a usable training opening is available; holding it does not chain techniques',()=>{
+    const {handler,game}=createMovementGame();
+    game.highlightedTarget={id:200};game.makePlayerAttack=jest.fn();
+    game.combatPrototype={canTechnique:()=>false,technique:jest.fn()};
+    handler.engageTarget();expect(game.makePlayerAttack).toHaveBeenCalledWith(game.highlightedTarget);
+    game.makePlayerAttack.mockClear();game.combatPrototype.canTechnique=()=>true;
+    handler.engageTarget();expect(game.combatPrototype.technique).toHaveBeenCalledTimes(1);
+    handler.engageTarget({repeat:true,preventDefault:jest.fn(),stopImmediatePropagation:jest.fn()});
+    expect(game.combatPrototype.technique).toHaveBeenCalledTimes(1);
+    expect(game.makePlayerAttack).not.toHaveBeenCalled();
+});

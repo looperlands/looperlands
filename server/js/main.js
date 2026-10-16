@@ -45,7 +45,9 @@ function main(config) {
         var world, // the one in which the player will be spawned
             connect = function() {
                 if(world) {
-                    world.connect_callback(new Player(connection, world));
+                    const player = new Player(connection, world);
+                    world.combat?.bind(player);
+                    world.connect_callback(player);
                 }
             };
         let mapId = connection._connection.handshake.query.mapId;
@@ -70,6 +72,7 @@ function main(config) {
     _.each(config.maps, function(map) {
         try {
             let world = new WorldServer('world_'+ map, config.nb_players_per_world, server);
+            new (require('./combatcontroller'))(world);
             server.worldsMap[map] = world;
             world.run(config.map_directory+"world_server_"+ map + ".json");
             worlds.push(world);

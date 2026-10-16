@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, '..');
 process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
+const combatPreview = process.env.COMBAT_PREVIEW === '1';
 // Set a separate directory for a fresh test session without resetting other previews.
 const data = process.env.NPC_PREVIEW_DATA_DIR || path.join(os.tmpdir(), 'looperlands-npc-preview');
 fs.mkdirSync(data, {recursive: true});
@@ -27,7 +28,15 @@ const api = express();
 api.use(express.json());
 const avatars = [1, 2].map(id => '0x' + String(id).padStart(64, '0'));
 const wallets = [1, 2].map(id => '0x' + String(id).padStart(40, '0'));
+// Give the combat feel test enough damage to chain nearby mobs quickly.
+const combatWeapon = '0x82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741';
+const experienceAtLevel = level => Math.floor(100 * (9 * level ** 3 - 51 * level ** 2 + 126 * level - 108)) + 1;
+const previewExperience = new Map([
+    ...avatars.map(nft => [nft, combatPreview ? experienceAtLevel(30) : 100]),
+    [combatWeapon, experienceAtLevel(24)]
+]);
 const gameDataFile = path.join(data, 'lantern-game-data.json');
+if (combatPreview) process.env.ACTIVITY_SPOOL_PATH = path.join(data, 'activity.jsonl');
 const savedGameData = fs.existsSync(gameDataFile) ? JSON.parse(fs.readFileSync(gameDataFile, 'utf8')) : {};
 const gameData = new Map(avatars.map(nft => [nft, savedGameData[nft] || {kills: {}, items: [], quests: [], choices: []}]));
 function saveGameData() {
@@ -38,9 +47,13 @@ function saveGameData() {
 const picnic = require('../server/npc-behaviors/lantern-picnic');
 
 let previewWorld;
+let previewCombat;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
+    combat: [...(previewCombat?.encounters.values() || [])].map(e => ({phase:e.phase, until:e.until, serverNow:Date.now(),
+        ...previewCombat.fieldAttacks.state(e), combo:e.combo, comboUntil:e.comboUntil, streak:e.streak, streakUntil:e.streakUntil, streakBonusPercent:previewCombat.streakBonus(e), chargeHit:e.chargeHit, correction:e.correction, lastCorrection:e.lastCorrection, xp:previewWorld.server.cache.get(e.player.sessionId)?.xp, stats:e.stats, event:e.event, lane:e.lane,
+        player:{x:e.player.x,y:e.player.y,hp:e.player.hitPoints},mob:e.mob?{id:e.mob.id,x:e.mob.x,y:e.mob.y,hp:e.mob.hitPoints}:null})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
@@ -53,11 +66,18 @@ api.get('/preview/player/:index', async (req, res) => {
     catch (error) { res.status(500).send(error.message); }
 });
 api.get('/api/asset/nft/:nft/owns', (req, res) => res.json(avatars.some((nft, index) =>
-    nft === req.params.nft && wallets[index] === String(req.query.wallet).toLowerCase())));
-api.get('/api/asset/nft/:nft', (req, res) => res.json({
-    name: 'Local Looper', assetType: 'looper', token: {tokenHash: req.params.nft, tokenId: req.params.nft}
-}));
-api.get('/api/game/asset/equipped/:nft', (req, res) => res.json({weapon: 'sword1'}));
+    (nft === req.params.nft || combatPreview && req.params.nft === combatWeapon) && wallets[index] === String(req.query.wallet).toLowerCase())));
+api.get(['/api/asset/nft/:nft', '/api/game/asset/info/:nft'], (req, res) => {
+    const weapon = combatPreview && req.params.nft === combatWeapon;
+    res.json({name: weapon ? 'Local level 24 sword' : 'Local Looper', assetType: weapon ? 'weapon' : 'looper',
+        xp: previewExperience.get(req.params.nft), trait: weapon ? 'speed' : 'rogue', class: weapon ? 'sword' : undefined,
+        token: {tokenHash: req.params.nft, tokenId: req.params.nft}});
+});
+api.get('/api/game/asset/equipped/:nft', (req, res) => res.json({weapon: combatPreview ? combatWeapon : 'sword1'}));
+api.post('/api/game/asset/xp', (req, res) => {
+    const xp = (previewExperience.get(req.body.nftId) || 0) + req.body.xp;
+    previewExperience.set(req.body.nftId, xp); res.json({success: true, xp});
+});
 api.get('/api/game/asset/data/:nft', (req, res) => res.json(gameData.get(req.params.nft) || {}));
 api.get('/api/maps/:map/flow', (req, res) => res.json([]));
 api.get('/api/maps/:map/music', (req, res) => res.json([]));
@@ -103,6 +123,7 @@ api.post('/api/game/asset/kill', (req, res) => {
     saveGameData();
     res.json({success: true});
 });
+api.post('/api/game/activity', (req, res) => res.json({accepted: req.body.map(row => row.id)}));
 api.get(/.*/, (req, res) => res.json([]));
 api.post(/.*/, (req, res) => res.json({success: true, xp: 0}));
 api.put(/.*/, (req, res) => res.json({success: true}));
@@ -115,7 +136,7 @@ async function createSession(index) {
     const response = await fetch(process.env.APP_URL + '/session', {
         method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': process.env.LOOPWORMS_API_KEY},
         body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: 'Local Looper ' + (index + 1),
-            xp: 100, mapId: 'main', checkpointId: '2', f2p: false, trait: 'rogue'})
+            xp: previewExperience.get(avatars[index]), mapId: 'main', ...(combatPreview ? {x:20,y:150} : {checkpointId:'2'}), f2p: false, trait: 'rogue'})
     });
     const session = await response.json();
     if (!response.ok || !session.sessionId) throw new Error('Could not create local NPC session');
@@ -130,18 +151,32 @@ api.listen(fixturePort, '127.0.0.1', () => {
     server.worldsMap = {};
     const world = new World('world_main', 20, server);
     previewWorld = world;
+    if (combatPreview) {
+        if (process.env.COMBAT_LIVE_PREVIEW !== '1') {
+            const {CombatPrototype} = require('../server/js/combatprototype');
+            previewCombat = new CombatPrototype(world);
+        }
+
+        server.app.get('/__combat_preview/play', async (req, res) => {
+            try { res.redirect(await createSession(0)); }
+            catch (error) { res.status(500).send(error.message); }
+        });
+    }
+    if (!combatPreview || process.env.COMBAT_LIVE_PREVIEW === '1') {
+        previewCombat = new (require('../server/js/combatcontroller'))(world);
+    }
     const Messages = require('../server/js/message');
     const packetFor = player => ({...world.npcBehavior.ambienceFor(player), ...world.scenes.packet(player),
         particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
         serverTime: Date.now(), epoch: 0,
-        previewPicnic: picnicScene?.state || null,
-        previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
+        previewPicnic: combatPreview ? null : picnicScene?.state || null,
+        previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
             canReplay: picnicScene?.completed(player) && (!picnicScene.state || picnicScene.state.phase === 'finished')}});
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1'});
         for (const player of Object.values(world.players)) {
             world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
@@ -165,12 +200,13 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.scenes.get('lantern-picnic');
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true,
-            previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1',
+            previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();
     setInterval(() => {
 
+        if (combatPreview) return;
         for (const player of Object.values(world.players)) {
             const packet = packetFor(player);
             const goal = packet.previewStory.goal + packet.previewStory.event;
@@ -185,7 +221,11 @@ api.listen(fixturePort, '127.0.0.1', () => {
         }
         for (const id of storyGoals.keys()) if (!world.players[id]) storyGoals.delete(id);
     }, 1000);
-    server.onConnect(function(connection) { world.connect_callback(new Player(connection, world)); });
+    server.onConnect(function(connection) {
+        const player = new Player(connection, world);
+        world.combat?.bind(player);
+        world.connect_callback(player);
+    });
     server.onRequestStatus(() => JSON.stringify([world.playerCount]));
     server.onError(error => console.error(error));
     // The server's handlers wait for the map; sessions are printed after setup.

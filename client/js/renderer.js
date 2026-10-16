@@ -392,6 +392,11 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     ds = this.upscaledRendering ? this.scale : 1;
     
                 if(anim && sprite) {
+                    const healthTargetId = this.game.combatPrototype?.getHealthTargetId() ?? this.game.player?.target?.id;
+                    if (entity instanceof Mob && entity.id === healthTargetId && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob?.id) {
+                        entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+3,
+                            hp:entity.hitPoints,maxHp:entity.maxHitPoints};
+                    }
                     let	frame = anim.currentFrame,
                         s = this.scale,
                         x = frame.x * os,
@@ -732,6 +737,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             drawEntityName: function(entity, oy) {
                 let textData = [];
     
+                if (entity.id === this.game.combatPrototype?.state?.mob?.id) return textData;
                 if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                     let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                     let opacity = (entity.id === this.game.playerId || entity.attackingMode || entity.followingMode || entity.inCombat) ? 1.0 : 0.5;
@@ -989,7 +995,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         "color": info.fillColor,
                         "strokeColor": info.strokeColor,
                         "globalAlpha": info.opacity,
-                        "fontSize": fontSize
+                        "fontSize": info.fontSize ? info.fontSize * self.scale : fontSize
                     }
                     if (info.combat) {
                         textData.fontWeight = 'bold';
@@ -1109,6 +1115,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     "type": "entities",
                     "id": "entities",
                     "entityData": entityDrawData,
+                    "healthTime": this.game.currentTime,
+                    "reducedMotion": this.game.app.settings.getReducedMotion(),
                     "cameraX": this.camera.x,
                     "cameraY": this.camera.y,
                     "scale": this.scale
@@ -1121,7 +1129,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let combatInfoTextData = this.drawCombatInfo();
                 let textData = []
                 if (renderText) {
-                    textData = entityTextData.concat(combatInfoTextData);
+                    textData = entityTextData;
                 }
     
                 let textDataCmd = {
@@ -1133,6 +1141,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     "scale": this.scale
                 }
                 renderData.push(textDataCmd);
+                renderData.push({...textDataCmd, type: 'combatText', textData: renderText ? combatInfoTextData : []});
     
                 this.drawToggledLayers(this.context, true, false);
                 this.drawToggledLayers(this.context, true, true);

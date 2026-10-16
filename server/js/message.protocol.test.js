@@ -87,3 +87,11 @@ test('late NPC spawns preserve the indicator and routine state at their original
     expect(spawned[0].showIndicator).toBe(true);
     expect(spawned.slice(1, 3)).toEqual([42, 216]);
 });
+
+
+test('mob damage carries an authoritative HP snapshot without changing legacy fields',()=>{
+    const mob={...actor,type:'mob',hitPoints:30,maxHitPoints:100};
+    const packet=new Messages.Damage(mob,20,true);mob.hitPoints=10;
+    const game=client();game.dmg_callback=jest.fn();game.receiveAction(packet.serialize());
+    expect(game.dmg_callback).toHaveBeenCalledWith(actor.id,20,true,{critical:true,hp:30,maxHp:100});
+});

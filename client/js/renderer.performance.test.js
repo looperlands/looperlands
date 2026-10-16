@@ -273,3 +273,22 @@ test('combat number scaling and rotation reuse one bitmap and isolate transforms
     const lastName = calls.map(operation => operation.method).lastIndexOf('drawImage');
     expect(calls[lastName - 1].method).toBe('restore');
 });
+
+
+test('combat labels render above foreground overlays every frame without clearing the world',()=>{
+    const worker=setup(), message=frame();
+    vm.runInContext("rendererExtensions = {draw(layer,ctx){if(layer==='foreground')ctx.fillRect(1,2,3,4);}}",worker.sandbox);
+    const entry={text:'Awesome!',x:100,y:120,fontSize:30,color:'#fff',strokeColor:'#333'};
+    message.renderData.push({type:'combatText',id:'text',cameraX:0,cameraY:0,scale:3,textData:[entry]});
+    message.combatFeedback={shake:{x:2,y:-1},scale:3,impacts:[],target:null};
+    for(let i=0;i<2;i++){
+        worker.canvases.combined.ctx.clearRect.mockClear();
+        worker.send(message);
+        const ctx=worker.canvases.combined.ctx,label=worker.cachedLabel('Awesome!',30,5,'#fff','#333');
+        expect(ctx.drawImage.mock.calls.at(-1)[0]).toBe(label.canvas);
+        expect(ctx.clearRect).toHaveBeenCalledTimes(1);
+        expect(ctx.translate).toHaveBeenCalledWith(6,-3);
+        expect(ctx.drawImage.mock.invocationCallOrder.at(-1)).toBeGreaterThan(ctx.fillRect.mock.invocationCallOrder.at(-1));
+    }
+    expect(message.renderData.find(data=>data.type==='entities').cameraX).toBe(0);
+});

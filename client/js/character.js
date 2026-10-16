@@ -163,8 +163,10 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                 }
                 else {
                     let self = this;
+                    const requestId = this.pathRequestId = (this.pathRequestId || 0) + 1;
                     try {
                         this.requestPathfindingTo(x, y).then(function(path){
+                            if (self.pathRequestId !== requestId) return;
                             self.followPath(path);
                         })
                     } catch (e) {
@@ -285,7 +287,9 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
         				x = this.newDestination.x;
         				y = this.newDestination.y;
                         let self = this;
+                        const requestId = this.pathRequestId = (this.pathRequestId || 0) + 1;
                         this.requestPathfindingTo(x, y).then(function(path){
+                            if (self.pathRequestId !== requestId) return;
                             self.newDestination = null;
                             if(path.length < 2) {
                                 // This response arrives after nextStep has returned.
@@ -296,6 +300,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                                 self.followPath(path);
                             }
                         }, function(error) {
+                            if (self.pathRequestId !== requestId) return;
                             self.newDestination = null;
                             self.finishPath();
                             console.error(error);
@@ -315,6 +320,19 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
         		}
         	}
     	},
+
+        cancelPath: function() {
+            // Corrections must invalidate pending worker replies as well as the active tween.
+            this.pathRequestId = (this.pathRequestId || 0) + 1;
+            this.path = null;
+            this.newDestination = null;
+            this.destination = null;
+            this.nextGridX = -1;
+            this.nextGridY = -1;
+            this.interrupted = false;
+            this.manualMovementTime = undefined;
+            this.movement.stop();
+        },
 
         finishPath: function() {
             this.path = null;

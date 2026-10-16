@@ -185,12 +185,14 @@ Messages.Damage = Message.extend({
         this.entity = entity;
         this.points = points;
         this.critical = critical === true;
+        this.health = entity.type === 'mob' && Number.isFinite(entity.hitPoints) && Number.isFinite(entity.maxHitPoints)
+            ? {hp:entity.hitPoints,maxHp:entity.maxHitPoints} : null;
     },
     serialize: function() {
         const packet = [Types.Messages.DAMAGE,
                 this.entity.id,
                 this.points];
-        if (this.critical) packet.push({critical: true});
+        if (this.critical || this.health) packet.push({...this.health,...(this.critical ? {critical:true} : {})});
         return packet;
     }
 });

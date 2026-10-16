@@ -336,6 +336,8 @@ module.exports = Player = Character.extend({
                         //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
 
                         function handleDamage(mob, totalLevel, multiplier, critical = false) {
+                            // Local trainers use fixed encounter damage, including when caught in splash.
+                            if (self.server.combatPrototype?.mobIds.has(Number(mob.id))) return 0;
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                             dmg *= multiplier;
                             dmg = Math.round(dmg);
@@ -508,6 +510,10 @@ module.exports = Player = Character.extend({
                 function teleport() {
                     if (_self.server.isValidPosition(x, y)) {
                         _self.setPosition(x, y);
+                        // End local practice only after a teleport is authorized and accepted.
+                        // Keep the destination and current HP; discard old movement/combo state.
+                        if (_self.server.combatPrototype) _self.server.combatPrototype.disable(_self, false);
+                        else _self.server.combat?.teleport(_self);
                         _self.clearTarget();
 
                         _self.broadcast(new Messages.Teleport(_self));

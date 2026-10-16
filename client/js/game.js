@@ -1,11 +1,11 @@
 define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -17,6 +17,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.playerPositionReady = false;
                 this.worldAmbience = new WorldAmbience();
                 this.worldFx = new WorldFx(this);
+                this.combatPrototype = new CombatPrototype(this);
                 this.footstepFeedback = new FootstepFeedback(this);
 
                 this.renderer = null;
@@ -6313,6 +6314,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
                 this.worldFx?.clear?.();
+                this.combatPrototype?.clear();
                 this.pickupFeedback?.clear();
                 this.infoManager.clear();
                 this.footstepFeedback?.clear();
@@ -7226,6 +7228,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.player.name = name;
                     console.log(self.storage);
                     self.player.setGridPosition(x, y);
+                    self.combatPrototype?.connect(self.client.connection);
                     self.playerPositionReady = true;
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;
@@ -7317,6 +7320,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onStep(function () {
+                        self.combatPrototype?.reportPosition();
                         if (self.keyboardMovement) self.lootItemAt(self.player.gridX, self.player.gridY);
 
                         self.handleScene(self.player)
@@ -7403,6 +7407,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onStopPathing(function (x, y) {
+                        self.combatPrototype?.reportPosition();
                         if (self.player.hasTarget()) {
                             self.player.lookAtTarget();
                         }
@@ -8066,11 +8071,14 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                     });
 
-                    self.client.onPlayerDamageMob(function (mobId, points, critical = false) {
+                    self.client.onPlayerDamageMob(function (mobId, points, critical = false, health) {
                         var mob = self.getEntityById(mobId);
+                        if (mob && health && Number.isFinite(health.hp) && health.maxHp > 0) {
+                            mob.hitPoints=health.hp;mob.maxHitPoints=health.maxHp;
+                        }
                         if (mob && points > 0) {
                             self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted", mob.id, critical);
-                            self.combatFeedback.addImpact(mob, points, self.currentTime);
+                            self.combatFeedback.addImpact(mob, points, self.currentTime, critical);
                         }
                     });
 
@@ -8079,7 +8087,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         let mobName = AltNames.getName(kindString);
 
                         setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp");
+                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
                         }, 200);
 
                         self.renderStatistics();
@@ -8210,6 +8218,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.previewTimeMode = config?.previewTimeMode;
                         self.worldAmbience.setConfig(config);
                         self.worldFx?.configure?.(config);
+                        self.combatPrototype?.configure(config);
                         WorldScenery.update(self.renderer, config, self);
                     });
 
@@ -8260,6 +8269,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
                         self.worldFx?.clear?.();
+                        self.combatPrototype?.clear();
                         self.pickupFeedback?.clear();
                         self.infoManager.clear();
                         self.footstepFeedback?.clear();
@@ -8296,7 +8306,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
                         self.showQuestCompleteNotification(questName, endText, xpReward, medal);
                         setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp");
+                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
                         }, 200);
                     });
 
@@ -8602,6 +8612,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              *
              */
             makePlayerAttack: function (mob) {
+                if (this.combatPrototype?.select(mob)) return;
                 this.player.previousTarget = null;
                 this.player.disengage();
                 this.createAttackLink(this.player, mob);
@@ -9252,6 +9263,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              * Processes game logic when the user triggers a click/touch event during the game.
              */
             click: function (pos) {
+                if (this.combatPrototype?.locked()) return;
 
                 if ($('body').hasClass('inventory')
                     || $('body').hasClass('settings')
@@ -9722,6 +9734,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              *
              */
             onCharacterUpdate: function (character) {
+                if (character === this.player) this.combatPrototype?.update();
+                if (this.combatPrototype?.owns(character)) {
+                    character.lastUpdate = this.currentTime;
+                    return;
+                }
                 var time = this.currentTime,
                     self = this;
 

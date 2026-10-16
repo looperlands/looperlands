@@ -248,3 +248,35 @@ test('click-to-move remains at constant speed and clears manual acceleration', (
     expect(character.x).toBe(8);
     expect(character.manualMovementTime).toBeUndefined();
 });
+
+
+test('cancelling a path invalidates an outstanding click pathfinding reply',async()=>{
+    const {character}=walking([[0,0],[1,0]]);
+    character.cancelPath();
+    let resolve;
+    character.onRequestPath(()=>new Promise(done=>{resolve=done;}));
+    character.moveTo_(3,0);
+    character.cancelPath();character.setGridPosition(8,8);
+    resolve([[0,0],[1,0],[2,0],[3,0]]);await Promise.resolve();
+    expect(character.path).toBeNull();expect([character.gridX,character.gridY]).toEqual([8,8]);
+    expect(character.movement.inProgress).toBe(false);
+    expect([character.nextGridX,character.nextGridY]).toEqual([-1,-1]);
+});
+
+test('cancelling a path invalidates an outstanding mid-walk reroute reply',async()=>{
+    const {character,frame}=walking([[0,0],[1,0],[2,0]]);
+    let resolve;
+    character.onRequestPath(()=>new Promise(done=>{resolve=done;}));
+    character.continueTo(3,0);frame(0);frame(120);
+    character.cancelPath();character.setGridPosition(8,8);
+    resolve([[1,0],[2,0],[3,0]]);await Promise.resolve();
+    expect(character.path).toBeNull();expect([character.gridX,character.gridY]).toEqual([8,8]);
+});
+
+test('movement callbacks report both tiles completed in a single slow frame',()=>{
+    const {character,frame}=walking([[0,0],[1,0],[2,0],[3,0]]);
+    const steps=[];
+    character.onStep(()=>steps.push([character.gridX,character.gridY]));
+    frame(0);frame(250);
+    expect(steps).toEqual([[1,0],[2,0]]);
+});
