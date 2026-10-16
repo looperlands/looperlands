@@ -52,7 +52,7 @@ define(function () {
                 button.setAttribute('aria-pressed', String(button.dataset.mode === (config.mode || 'cycle')));
                 button.style.background = button.dataset.mode === (config.mode || 'cycle') ? '#6b4953' : '#382632';
             }
-            const story = config.previewCombat ? null : config.story || config.previewStory;
+            const story = config.previewCombat || config.previewSlam ? null : config.story || config.previewStory;
             if (!story && this.story) this.story.style.display = 'none';
             if (story) {
                 if (!this.story) {

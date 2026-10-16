@@ -11,7 +11,7 @@ function setup() {
     const player={gridX:4,gridY:5,x:64,y:80,movement:{inProgress:false},cancelPath:jest.fn(),isMoving:()=>false,
         disengage:jest.fn(),stop:jest.fn(),idle:jest.fn(),follow:jest.fn(),isAdjacentNonDiagonal:()=>true,setAttackRate:jest.fn(),setGridPosition(x,y){this.gridX=x;this.gridY=y;},
         setOrientation:jest.fn(),getOrientationTo:()=>1,hit:jest.fn()};
-    const mob={id:100,gridX:4,gridY:4,x:64,y:64,hasMoved:jest.fn(),idle:jest.fn(),walk:jest.fn(),setOrientation(o){this.orientation=o;},getOrientationTo:()=>4,hit:jest.fn()};
+    const mob={id:100,gridX:4,gridY:4,x:64,y:64,setGridPosition(x,y){this.gridX=x;this.gridY=y;this.x=x*16;this.y=y*16;},hasMoved:jest.fn(),idle:jest.fn(),walk:jest.fn(),setOrientation(o){this.orientation=o;},getOrientationTo:()=>4,hit:jest.fn()};
     const renderer={registerExtension:jest.fn(),setExtensionData:jest.fn()};
     const game={player,renderer,getEntityById:()=>mob,unregisterEntityPosition:jest.fn(),registerEntityPosition:jest.fn(),
         audioManager:{playSound:jest.fn()},infoManager:{addDamageInfo:jest.fn()},showNotification:jest.fn()};
@@ -286,7 +286,7 @@ test('normal gameplay starts without trainer controls and keeps combat on across
     prototype.clear();prototype.toggle=null;prototype.reset=null;prototype.action=null;
     game.getEntityById=id=>id===100?mob:undefined;
     const socket={on:jest.fn(),off:jest.fn(),emit:jest.fn()};prototype.connect(socket);
-    expect(socket.emit).toHaveBeenCalledWith('combat',{action:'ready'});
+    expect(socket.emit).toHaveBeenCalledWith('combat',{action:'ready',patterns:['lunge','slam']});
     prototype.receive({...packet,live:true,mob:null,combo:null,event:null,phase:'field',fieldAttacks:[]});
     prototype.configure({});expect(prototype.enabled).toBe(true);
     expect(prototype.owns(game.player)).toBe(false);
@@ -312,4 +312,75 @@ test('live automatic counters preserve the normal target and attack loop',()=>{
     expect(prototype.liveSocket.emit).toHaveBeenCalledWith('combat',{action:'technique',mobId:100});
     expect(player.disengage).not.toHaveBeenCalled();expect(player.target).toBe(mob);
     expect(prototype.owns(player)).toBe(false);
+});
+
+
+test('Slam plants a held attack pose, plays impact once and restores animation timing on cleanup',()=>{
+    const {prototype,packet,player,mob,game}=setup();
+    player.id=1;game.getEntityById=id=>id===100?mob:undefined;mob.cancelPath=jest.fn();
+    const animation={speed:[80,100,120],setSpeed:jest.fn()};mob.hit=jest.fn(()=>{mob.currentAnimation=animation;});
+    const slam={id:5,pattern:'slam',phase:'windup',windup:1000,until:Date.now()+1000,direction:{x:0,y:1},lane:[],mob:packet.mob,targetId:1};
+    const state={...packet,live:true,mob:null,phase:'field',event:null,combo:null,fieldAttacks:[slam]};
+    prototype.receive(state);expect(animation.setSpeed).toHaveBeenCalledWith([1250,1250,1250]);
+    expect(mob.hit).toHaveBeenCalledTimes(1);prototype.receive(state);expect(mob.hit).toHaveBeenCalledTimes(1);
+    prototype.receive({...state,fieldAttacks:[{...slam,phase:'impact'}]});
+    expect(animation.setSpeed).toHaveBeenLastCalledWith([80,100,120]);expect(mob.hit).toHaveBeenCalledTimes(2);
+    prototype.clear();expect(mob.animationLock).toBe(false);
+});
+test('escaping Slam then returning in range uses the existing automatic counter without changing targets',()=>{
+    const {prototype,packet,player,mob,game}=setup();
+    game.getEntityById=id=>id===100?mob:undefined;prototype.autoTechniques=true;prototype.liveSocket={emit:jest.fn()};
+    player.target={id:999};player.gridY=6;
+    prototype.receive({...packet,live:true,mob:null,phase:'field',event:null,combo:null,fieldAttacks:[],
+        fieldCombo:{kind:'counter',until:Date.now()+1250,mob:packet.mob}});
+    expect(prototype.liveSocket.emit).not.toHaveBeenCalled();player.gridY=5;prototype.update();prototype.update();
+    expect(prototype.liveSocket.emit.mock.calls).toEqual([['combat',{action:'technique',mobId:100}]]);
+    expect(player.target.id).toBe(999);
+});
+
+
+test('local pattern control uses fixture API, stays compact and does not add trainer controls',async()=>{
+    let Prototype;
+    const select={style:{},options:[],setAttribute:jest.fn(),appendChild(o){this.options.push(o);},
+        addEventListener(e,fn){this[e]=fn;},remove:jest.fn(),blur:jest.fn()};
+    const document={createElement:tag=>tag==='select'?select:{style:{},setAttribute:jest.fn(),remove:jest.fn()}};
+    const fetch=jest.fn(async()=>({ok:true,json:async()=>({mode:'slam'})}));
+    vm.runInNewContext(fs.readFileSync(require.resolve('./combatprototype'),'utf8'),{define:f=>{Prototype=f();},document,fetch,Date});
+    const parent={style:{},appendChild:jest.fn(),insertBefore:jest.fn(),querySelector:()=>null,querySelectorAll:()=>[]};
+    const game={worldAmbience:{controls:parent},showNotification:jest.fn()};
+    const prototype=new Prototype(game);prototype.state={live:true};
+    prototype.configure({previewControls:true,previewSlam:true,previewAttackMode:'mixed'});
+    expect(select.options.map(o=>o.value)).toEqual(['mixed','lunge','slam']);expect(select.value).toBe('mixed');
+    expect(parent.style.flexWrap).toBe('nowrap');expect(prototype.toggle).toBeUndefined();
+    select.value='slam';await select.change();
+    expect(fetch).toHaveBeenCalledWith('/__combat_preview/patterns',expect.objectContaining({body:JSON.stringify({mode:'slam'})}));
+    expect(select.disabled).toBe(false);expect(select.blur).toHaveBeenCalled();
+    prototype.configure({previewControls:true,previewSlam:true,previewAttackMode:'slam'});
+    expect(parent.insertBefore).toHaveBeenCalledTimes(1);
+    fetch.mockResolvedValue({ok:false});select.value='lunge';await select.change();
+    expect(select.value).toBe('slam');expect(game.showNotification).toHaveBeenCalled();
+    prototype.configure({});expect(select.remove).toHaveBeenCalled();
+});
+
+
+test('local practice announces Slam escape and returning-counter cues without another HUD row',()=>{
+    const {prototype,packet,game,mob,player}=setup();player.id=1;
+    game.getEntityById=id=>id===100?mob:undefined;mob.cancelPath=jest.fn();prototype.patternStatus={textContent:''};
+    const attack={id:5,pattern:'slam',phase:'windup',windup:1000,until:Date.now()+1000,direction:{x:0,y:1},lane:[],mob:packet.mob,targetId:1};
+    const state={...packet,live:true,mob:null,phase:'field',event:null,combo:null,fieldAttacks:[attack]};
+    prototype.receive(state);expect(prototype.patternStatus.textContent).toBe('Slam: back away');
+    prototype.receive({...state,fieldAttacks:[],fieldCombo:{kind:'counter',until:Date.now()+1000,mob:packet.mob}});
+    expect(prototype.patternStatus.textContent).toBe('Counter ready');prototype.clear();
+    expect(prototype.patternStatus.textContent).toBe('');
+});
+
+
+test('a cancelled walk cannot leave the planted Slam sprite offset from its warned tile',()=>{
+    const {prototype,packet,game,mob,player}=setup();player.id=1;mob.cancelPath=jest.fn();
+    game.getEntityById=id=>id===100?mob:undefined;
+    mob.x=80;mob.y=48; // Grid already points at 4,4, while the old tween is elsewhere.
+    prototype.receive({...packet,live:true,mob:null,phase:'field',event:null,combo:null,fieldAttacks:[{
+        id:8,pattern:'slam',phase:'windup',windup:1000,until:Date.now()+1000,direction:{x:0,y:1},lane:[{x:4,y:4}],mob:packet.mob,targetId:1}]});
+    expect([mob.x,mob.y]).toEqual([64,64]);
+    expect(prototype.fieldMotions.get(100).from).toBeNull();
 });

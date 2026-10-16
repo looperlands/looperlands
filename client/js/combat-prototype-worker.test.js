@@ -47,3 +47,24 @@ test('unselected trainer keeps its name and attack warning but hides its health 
     expect(ctx.rects).toEqual([]);
     expect(ctx.fillText).toHaveBeenCalledWith('OPEN',88,133);
 });
+
+
+test('Slam warns exactly the surrounding square and distinguishes its label from Lunge',()=>{
+    const ctx=context();const lane=[];
+    for(let y=19;y<=21;y++)for(let x=9;x<=11;x++)lane.push({x,y});
+    const state={pattern:'slam',phase:'windup',mobX:160,mobY:320,mob:{id:2},ordinary:true,windup:1000,until:2000,now:1500,lane};
+    renderer.ground(ctx,state,{cameraX:80,cameraY:160});
+    expect(ctx.rects.filter(r=>r[2]===14&&r[3]===14)).toHaveLength(9);
+    expect(ctx.rects).toContainEqual([65,145,14,14]);
+    renderer.draw(ctx,state,{cameraX:80,cameraY:160,scale:1});
+    expect(ctx.fillText).toHaveBeenCalledWith('SLAM',88,133);
+    expect(ctx.fillText.mock.calls.flat()).not.toContain('LUNGE');
+});
+test.each([false,true])('Slam impact has a short ground burst and honors reduced motion=%s',reducedMotion=>{
+    const ctx=context();const state={pattern:'slam',phase:'impact',mobX:160,mobY:320,impactAt:1000,now:1100,reducedMotion,lane:[]};
+    renderer.ground(ctx,state,{cameraX:80,cameraY:160});
+    expect(ctx.ellipse).toHaveBeenCalledWith(88,174,reducedMotion?12:16,reducedMotion?5:7,0,0,Math.PI*2);
+    expect(ctx.rects).toHaveLength(reducedMotion?0:4);
+    ctx.ellipse.mockClear();state.now=1400;renderer.ground(ctx,state,{cameraX:80,cameraY:160});
+    expect(ctx.ellipse).not.toHaveBeenCalled();
+});

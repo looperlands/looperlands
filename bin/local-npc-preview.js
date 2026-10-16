@@ -8,6 +8,7 @@ process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
 const combatPreview = process.env.COMBAT_PREVIEW === '1';
+const slamPreview = combatPreview && process.env.COMBAT_SLAM_PREVIEW === '1';
 // Set a separate directory for a fresh test session without resetting other previews.
 const data = process.env.NPC_PREVIEW_DATA_DIR || path.join(os.tmpdir(), 'looperlands-npc-preview');
 fs.mkdirSync(data, {recursive: true});
@@ -51,6 +52,7 @@ let previewCombat;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
+    attackMode: previewCombat?.fieldAttacks.attackMode, slamEnabled: previewCombat?.fieldAttacks.slamEnabled,
     combat: [...(previewCombat?.encounters.values() || [])].map(e => ({phase:e.phase, until:e.until, serverNow:Date.now(),
         ...previewCombat.fieldAttacks.state(e), combo:e.combo, comboUntil:e.comboUntil, streak:e.streak, streakUntil:e.streakUntil, streakBonusPercent:previewCombat.streakBonus(e), chargeHit:e.chargeHit, correction:e.correction, lastCorrection:e.lastCorrection, xp:previewWorld.server.cache.get(e.player.sessionId)?.xp, stats:e.stats, event:e.event, lane:e.lane,
         player:{x:e.player.x,y:e.player.y,hp:e.player.hitPoints},mob:e.mob?{id:e.mob.id,x:e.mob.x,y:e.mob.y,hp:e.mob.hitPoints}:null})),
@@ -136,7 +138,7 @@ async function createSession(index) {
     const response = await fetch(process.env.APP_URL + '/session', {
         method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': process.env.LOOPWORMS_API_KEY},
         body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: 'Local Looper ' + (index + 1),
-            xp: previewExperience.get(avatars[index]), mapId: 'main', ...(combatPreview ? {x:20,y:150} : {checkpointId:'2'}), f2p: false, trait: 'rogue'})
+            xp: previewExperience.get(avatars[index]), mapId: 'main', ...(slamPreview ? {x:59,y:11} : combatPreview ? {x:20,y:150} : {checkpointId:'2'}), f2p: false, trait: 'rogue'})
     });
     const session = await response.json();
     if (!response.ok || !session.sessionId) throw new Error('Could not create local NPC session');
@@ -163,12 +165,13 @@ api.listen(fixturePort, '127.0.0.1', () => {
         });
     }
     if (!combatPreview || process.env.COMBAT_LIVE_PREVIEW === '1') {
-        previewCombat = new (require('../server/js/combatcontroller'))(world);
+        previewCombat = new (require('../server/js/combatcontroller'))(world, Date.now, {slam:slamPreview});
     }
     const Messages = require('../server/js/message');
     const packetFor = player => ({...world.npcBehavior.ambienceFor(player), ...world.scenes.packet(player),
         particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
         serverTime: Date.now(), epoch: 0,
+        previewSlam: slamPreview, previewAttackMode: previewCombat?.fieldAttacks.attackMode,
         previewPicnic: combatPreview ? null : picnicScene?.state || null,
         previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
@@ -176,11 +179,20 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1'});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode});
         for (const player of Object.values(world.players)) {
             world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
     };
+    if (slamPreview) server.app.post('/__combat_preview/patterns', (req,res) => {
+        if (!previewCombat.fieldAttacks.setMode(req.body.mode)) return res.sendStatus(400);
+        // Mode changes cancel warnings without resetting health, position, target or XP.
+        for (const encounter of previewCombat.encounters.values()) previewCombat.fieldAttacks.clear(encounter);
+        previewCombat.fieldAttacks.cooldowns.clear();
+        configureAmbience(world.npcBehavior.config.ambience.mode);
+        for (const encounter of previewCombat.encounters.values()) previewCombat.send(encounter);
+        res.json({mode:previewCombat.fieldAttacks.attackMode});
+    });
     server.app.post('/__npc_preview/ambience', (req, res) => {
         if (!['day', 'night', 'cycle'].includes(req.body.mode)) return res.sendStatus(400);
         configureAmbience(req.body.mode);
@@ -200,7 +212,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.scenes.get('lantern-picnic');
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1',
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode,
             previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();

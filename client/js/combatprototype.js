@@ -14,10 +14,11 @@ define(function () {
                 this.liveSocket=socket;
                 socket.on('combat',this.onPacket);
             }
-            socket.emit('combat',{action:'ready'});
+            socket.emit('combat',{action:'ready',patterns:['lunge','slam']});
         }
 
         configure(config) {
+            this.configurePatterns(config);
             if (!config?.previewControls || !config.previewCombat) {
                 if (!this.state?.live) this.clear();
                 return;
@@ -59,6 +60,45 @@ define(function () {
             }
         }
 
+        configurePatterns(config) {
+            if (!config?.previewControls || !config.previewSlam) {
+                this.patternSelect?.remove();this.patternSelect=null;
+                this.patternStatus?.remove();this.patternStatus=null;
+                return;
+            }
+            const parent=this.game.worldAmbience?.controls;
+            if (!parent) return;
+            if (!this.patternSelect) {
+                const select=document.createElement('select');
+                select.setAttribute('aria-label','Mob special moves');
+                select.title='Local preview: compare Lunge, Slam, or both mixed with normal attacks.';
+                select.style.cssText='font:inherit;font-size:12px;line-height:16px;padding:2px;color:#ffe3a1;background:#382632;border:1px solid #b99761;';
+                for (const [value,text] of [['mixed','Mixed'],['lunge','Lunge'],['slam','Slam']]) {
+                    const option=document.createElement('option');option.value=value;option.textContent=text;select.appendChild(option);
+                }
+                select.addEventListener('change',async()=>{
+                    select.disabled=true;
+                    try {
+                        const response=await fetch('/__combat_preview/patterns',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:select.value})});
+                        if (!response.ok) throw new Error('Could not change the preview moves.');
+                        const state=await response.json();select.value=state.mode;this.previewAttackMode=state.mode;
+                    } catch(error) { select.value=this.previewAttackMode;this.game.showNotification(error.message); }
+                    finally { select.disabled=false;select.blur(); }
+                });
+                parent.insertBefore(select,parent.querySelector('details'));this.patternSelect=select;
+                const status=document.createElement('span');status.setAttribute('role','status');
+                status.setAttribute('aria-live','polite');
+                status.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);';
+                parent.appendChild(status);this.patternStatus=status;
+                parent.style.flexWrap='nowrap';parent.style.maxWidth='calc(100% - 16px)';parent.style.width='auto';parent.style.gap='3px';
+                for (const button of parent.querySelectorAll('button[data-mode]')) {
+                    button.style.padding='2px 6px';button.style.lineHeight='16px';
+                }
+            }
+            this.previewAttackMode=config.previewAttackMode||'mixed';
+            this.patternSelect.value=this.previewAttackMode;
+        }
+
         send(action, values = {}) {
             if (this.state?.live) this.liveSocket?.emit('combat',{action,...values});
             else this.socket?.emit('combat-preview',{action,...values});
@@ -91,7 +131,7 @@ define(function () {
             const state=this.state;if(!state)return state;
             const combo=state.fieldCombo;
             const attack=combo ? state.fieldAttacks?.find(a=>a.mob.id===combo.mob.id)
-                : state.fieldAttacks?.find(a=>(!state.live || a.targetId===this.game.player.id) && ['windup','lunge'].includes(a.phase));
+                : state.fieldAttacks?.find(a=>(!state.live || a.targetId===this.game.player.id) && ['windup','lunge','impact'].includes(a.phase));
             if(!combo&&!attack)return state;
             return {...state,...attack,mob:combo?.mob||attack.mob,
                 combo:combo?.kind||null,comboUntil:combo?.until||0,
@@ -107,7 +147,7 @@ define(function () {
                 || state.phase === 'windup' && state.until-now <= 150)
                 && !state.lane.some(tile => tile.x === player.gridX && tile.y === player.gridY);
             if (!opening && !early) return false;
-            const target = state.phase === 'windup' ? state.lane[0] : state.mob;
+            const target = state.phase === 'windup' && state.pattern !== 'slam' ? state.lane[0] : state.mob;
             const adjacent = (x,y) => target && Math.abs(x-target.x)+Math.abs(y-target.y) === 1;
             return player.isMoving() ? adjacent(player.nextGridX,player.nextGridY) : adjacent(player.gridX,player.gridY);
         }
@@ -251,15 +291,19 @@ define(function () {
                 const mob=game.getEntityById(attack.mob.id);if(!mob)continue;
                 live.add(mob.id);
                 let motion=this.fieldMotions.get(mob.id);
+                const starting=!motion;
                 if(!motion){
                     motion={mob,attacking:mob.attackingMode,following:mob.followingMode};
                     this.fieldMotions.set(mob.id,motion);
                     game.unregisterEntityPosition(mob);mob.cancelPath();game.registerEntityPosition(mob);
                 }
                 mob.attackingMode=false;mob.followingMode=false;
-                if(mob.gridX!==attack.mob.x||mob.gridY!==attack.mob.y){
+                if(starting||mob.gridX!==attack.mob.x||mob.gridY!==attack.mob.y){
                     motion.from={x:mob.x,y:mob.y};motion.at=now;motion.duration=attack.phase==='lunge'?150:200;
                     game.unregisterEntityPosition(mob);mob.setGridPosition(attack.mob.x,attack.mob.y);game.registerEntityPosition(mob);
+                    // A cancelled walk can already have the destination grid but stale pixels.
+                    // Plant Slam at its warned tile immediately, including the first packet.
+                    if(attack.pattern==='slam'&&attack.phase==='windup')motion.from=null;
                 }
                 if(motion.from){
                     const t=Math.min(1,(now-motion.at)/motion.duration);
@@ -269,17 +313,30 @@ define(function () {
                 }
                 const d=attack.direction;
                 mob.setOrientation(d.x?(d.x>0?Types.Orientations.RIGHT:Types.Orientations.LEFT):(d.y>0?Types.Orientations.DOWN:Types.Orientations.UP));
-                if(motion.phase!==attack.phase){
-                    motion.phase=attack.phase;
-                    if(attack.phase==='lunge'){mob.animationLock=false;mob.currentAnimation=null;mob.hit();}
-                    else mob.idle();
+                const phase=attack.id+':'+attack.phase;
+                if(motion.phase!==phase){
+                    motion.restorePose?.();motion.phase=phase;
+                    if(attack.phase==='lunge'||attack.phase==='impact'){
+                        mob.animationLock=false;mob.currentAnimation=null;mob.hit();
+                        if(attack.phase==='impact')game.audioManager.playSound('hit1');
+                    }else if(attack.pattern==='slam'&&attack.phase==='windup'){
+                        // Hold the first attack pose, then restart the swing at impact.
+                        mob.animationLock=false;mob.currentAnimation=null;mob.hit();
+                        const animation=mob.currentAnimation;
+                        if(Array.isArray(animation?.speed)){
+                            const speed=[...animation.speed];
+                            animation.setSpeed(speed.map(()=>attack.windup+250));
+                            motion.restorePose=()=>{animation.setSpeed(speed);motion.restorePose=null;};
+                        }
+                    }else {mob.animationLock=false;mob.idle();}
                 }
-                frames.push({...attack,now,mobX:mob.x,mobY:mob.y,ordinary:true});
+                frames.push({...attack,now,mobX:mob.x,mobY:mob.y,ordinary:true,reducedMotion:game.app?.settings.getReducedMotion()||false});
             }
             for(const [id,motion] of this.fieldMotions){
                 if(live.has(id))continue;
+                motion.restorePose?.();
                 const mob=game.getEntityById(id);
-                if(mob){mob.attackingMode=motion.attacking;mob.followingMode=motion.following;}
+                if(mob){mob.animationLock=false;mob.attackingMode=motion.attacking;mob.followingMode=motion.following;}
                 this.fieldMotions.delete(id);
             }
             const event=this.state.fieldEvent;
@@ -300,6 +357,12 @@ define(function () {
             if (!this.enabled || !this.state || !this.game.player) return;
             const {game, state} = this, player = game.player, now = this.now();
             if (game.isStopped || player.isDead) { this.pendingTechnique = null; return; }
+            if(this.patternStatus){
+                const technique=this.techniqueState();
+                const label=technique.phase==='windup'?(technique.pattern==='slam'?'Slam: back away':'Lunge: sidestep')
+                    :technique.combo&&now<=technique.comboUntil?'Counter ready':technique.phase==='impact'?'Slam impact':'Normal combat';
+                if(this.patternStatus.textContent!==label)this.patternStatus.textContent=label;
+            }
             this.flushTechnique();
             this.autoTechnique();
             const fieldFrames=this.updateFieldAttacks(now);
@@ -373,6 +436,7 @@ define(function () {
 
         clear() {
             for(const motion of this.fieldMotions?.values() || []){
+                motion.restorePose?.();motion.mob.animationLock=false;
                 motion.mob.attackingMode=motion.attacking;motion.mob.followingMode=motion.following;
             }
             this.fieldMotions?.clear();this.lastFieldEvent=null;
@@ -383,6 +447,7 @@ define(function () {
             if (this.reset) this.reset.hidden = true;
             if (this.action) this.action.hidden = true;
             if (this.status) this.status.textContent = '';
+            if (this.patternStatus) this.patternStatus.textContent = '';
             this.renderer?.setExtensionData('combat-prototype-ground', null);
             this.renderer?.setExtensionData('combat-prototype', null);
         }
