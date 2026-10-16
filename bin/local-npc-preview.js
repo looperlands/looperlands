@@ -51,7 +51,7 @@ let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
     combat: [...(previewCombat?.encounters.values() || [])].map(e => ({phase:e.phase, until:e.until, serverNow:Date.now(),
-        combo:e.combo, comboUntil:e.comboUntil, streak:e.streak, streakUntil:e.streakUntil, streakBonusPercent:previewCombat.streakBonus(e), reward:e.reward, correction:e.correction, lastCorrection:e.lastCorrection, xp:previewWorld.server.cache.get(e.player.sessionId)?.xp, stats:e.stats, event:e.event, lane:e.lane,
+        ...previewCombat.fieldAttacks.state(e), combo:e.combo, comboUntil:e.comboUntil, streak:e.streak, streakUntil:e.streakUntil, streakBonusPercent:previewCombat.streakBonus(e), reward:e.reward, correction:e.correction, lastCorrection:e.lastCorrection, xp:previewWorld.server.cache.get(e.player.sessionId)?.xp, stats:e.stats, event:e.event, lane:e.lane,
         player:{x:e.player.x,y:e.player.y,hp:e.player.hitPoints},mob:{id:e.mob.id,x:e.mob.x,y:e.mob.y,hp:e.mob.hitPoints}})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({

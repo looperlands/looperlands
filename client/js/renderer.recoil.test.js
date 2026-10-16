@@ -27,3 +27,13 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
     expect(data.drawData.find(draw => draw.spriteName === 'shadow16').dx).toBe(0);
     expect(actor.x).toBe(32);
 });
+
+
+test('trainer uses only its custom level/nameplate, while ordinary mob labels remain', () => {
+    const actor=Object.assign(new Mob(), {id:7,name:'ogre',level:6,x:0,y:0});
+    const host={scale:2,getHpIndicatorColor:()=> '#fff',game:{combatPrototype:{state:{mob:{id:7}}},
+        app:{settings:{getRenderText:()=>true}}}};
+    expect(renderer.drawEntityName.call(host,actor,-20)).toEqual([]);
+    actor.id=8;
+    expect(renderer.drawEntityName.call(host,actor,-20)[0].text).toBe('6 ogre');
+});

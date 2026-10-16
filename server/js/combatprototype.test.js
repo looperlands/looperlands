@@ -13,7 +13,7 @@ function setup() {
     const packet = function(...args) { this.args = args; };
     const exported = {exports:{}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./combatprototype'), 'utf8'), {
-        module: exported, require: name => name.endsWith('gametypes') ? {Messages:M,Entities:{OGRE:9}}
+        module: exported, require: name => name === './combatfieldattacks' ? class {constructor(){this.attacks=new Map();} tick(){} clear(){} state(){return {};} intercept(){return false;}} : name.endsWith('gametypes') ? {Messages:M,Entities:{OGRE:9}}
             : name==='./mob' ? Mob : {Damage:packet,Move:packet,Teleport:packet},
     });
     const {CombatPrototype,TIMING} = exported.exports;
@@ -282,4 +282,10 @@ test('ordinary actor destinations do not reject visible free tiles, but the trai
     s.advance(120);s.move(12,11);
     expect([s.player.x,s.player.y]).toEqual([11,11]);
     expect(s.encounter.stats.corrections).toBe(1);
+});
+
+
+test('training packets expose the actual mob level for the nameplate',()=>{
+    const s=setup();s.encounter.mob.level=12;s.controller.send(s.encounter);
+    expect(s.socket.emit).toHaveBeenLastCalledWith('combat-preview',expect.objectContaining({mob:expect.objectContaining({level:12})}));
 });

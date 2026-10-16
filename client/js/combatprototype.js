@@ -49,7 +49,7 @@ define(function () {
         send(action, values = {}) { this.socket?.emit('combat-preview', {action, ...values}); }
         now() { return Date.now() + (this.offset || 0); }
         locked() { return this.enabled && this.state && (this.now() < this.state.lockUntil || this.now() < (this.pendingTechnique?.until || 0)); }
-        owns(entity) { return this.enabled && (entity.id === this.state?.mob.id || entity === this.game.player && (this.selected || this.locked())); }
+        owns(entity) { return this.enabled && (this.state?.fieldAttacks?.some(a=>Number(a.mob.id)===Number(entity.id)) || entity.id === this.state?.mob.id || entity === this.game.player && (this.selected || this.locked())); }
 
         select(entity) {
             if (!this.enabled) return false;
@@ -66,8 +66,19 @@ define(function () {
             return this.selected;
         }
 
+        techniqueState() {
+            const state=this.state;if(!state)return state;
+            const combo=state.fieldCombo;
+            const attack=combo ? state.fieldAttacks?.find(a=>a.mob.id===combo.mob.id)
+                : state.fieldAttacks?.find(a=>['windup','lunge'].includes(a.phase));
+            if(!combo&&!attack)return state;
+            return {...state,...attack,mob:combo?.mob||attack.mob,
+                combo:combo && combo.kind!=='commit'?combo.kind:null,comboUntil:combo?.until||0,
+                phase:combo?.kind==='commit'?'finisher':attack?.phase||'recovery',lane:attack?.lane||[]};
+        }
+
         canTechnique() {
-            const {player} = this.game, state = this.state, now = this.now();
+            const {player} = this.game, state = this.techniqueState(), now = this.now();
             if (!this.enabled || !state || now < state.lockUntil) return false;
             const opening = state.combo && now <= state.comboUntil;
             // Buffer a press just before impact, but only after leaving the warned lane.
@@ -84,14 +95,15 @@ define(function () {
             if (!this.canTechnique()) return false;
             this.selected = true;
             this.game.player.disengage();
-            this.pendingTechnique = {combo:this.state.combo || 'counter',until:this.now()+350};
+            const state=this.techniqueState();
+            this.pendingTechnique = {mobId:state.mob.id,combo:state.combo || 'counter',until:this.now()+350};
             if (this.game.player.isMoving()) this.game.player.stop();
             this.flushTechnique();
             return true;
         }
 
         flushTechnique() {
-            const pending = this.pendingTechnique, state = this.state, player = this.game.player;
+            const pending = this.pendingTechnique, state = this.techniqueState(), player = this.game.player;
             if (!pending) return;
             if (this.now() > pending.until || !this.enabled || !state
                 || ['round','finisher'].includes(state.phase)
@@ -99,10 +111,10 @@ define(function () {
                 this.pendingTechnique = null;
                 return;
             }
-            if (state.combo !== pending.combo || this.now() > state.comboUntil || player.isMoving()
+            if (state.mob.id !== pending.mobId || state.combo !== pending.combo || this.now() > state.comboUntil || player.isMoving()
                 || Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) !== 1) return;
             this.pendingTechnique = null;
-            this.send('technique');
+            this.send('technique', state.mob.id === this.state.mob.id ? {} : {mobId:state.mob.id});
         }
 
         playStrike(player, mob, label) {
@@ -154,9 +166,9 @@ define(function () {
             this.lastReport = null;
         }
 
-        showCombatInfo(text, scale = 1) {
+        showCombatInfo(text, presentation = {}) {
             const {player,infoManager} = this.game;
-            infoManager.addDamageInfo(text,player.x,player.y-15,'combo',player.id,false,scale);
+            infoManager.addDamageInfo(text,player.x,player.y-15,'combo',player.id,false,presentation);
         }
 
         receive(packet) {
@@ -178,11 +190,70 @@ define(function () {
                 this.showCombatInfo(`Combo! +${packet.reward.xp} XP`);
             }
             if (packet.streak >= 2 && (packet.streak !== previous?.streak || packet.streakUntil !== previous?.streakUntil)) {
-                this.showCombatInfo(`${packet.streak}x combo`, 1 + Math.min(1, (packet.streak-2)*0.2));
+                const tier = packet.streak >= 7 ? ['Unstoppable!','#ff85be']
+                    : packet.streak >= 5 ? ['Amazing!','#ff875f']
+                        : packet.streak >= 4 ? ['Awesome!','#ffad49']
+                            : packet.streak >= 3 ? ['Great!','#ffd16a'] : ['Nice!','#fce045'];
+                this.showCombatInfo(`${packet.streak}x combo`, {
+                    scale:1 + Math.min(1, (packet.streak-2)*0.2), praise:tier[0], color:tier[1]
+                });
             }
             this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
             this.reset.hidden = false;
             this.update();
+        }
+
+        updateFieldAttacks(now) {
+            const game=this.game, attacks=this.state.fieldAttacks||[], live=new Set();
+            this.fieldMotions ||= new Map();
+            const frames=[];
+            for(const attack of attacks){
+                const mob=game.getEntityById(attack.mob.id);if(!mob)continue;
+                live.add(mob.id);
+                let motion=this.fieldMotions.get(mob.id);
+                if(!motion){
+                    motion={mob,attacking:mob.attackingMode,following:mob.followingMode};
+                    this.fieldMotions.set(mob.id,motion);
+                    game.unregisterEntityPosition(mob);mob.cancelPath();game.registerEntityPosition(mob);
+                }
+                mob.attackingMode=false;mob.followingMode=false;
+                if(mob.gridX!==attack.mob.x||mob.gridY!==attack.mob.y){
+                    motion.from={x:mob.x,y:mob.y};motion.at=now;motion.duration=attack.phase==='lunge'?150:200;
+                    game.unregisterEntityPosition(mob);mob.setGridPosition(attack.mob.x,attack.mob.y);game.registerEntityPosition(mob);
+                }
+                if(motion.from){
+                    const t=Math.min(1,(now-motion.at)/motion.duration);
+                    mob.x=motion.from.x+(attack.mob.x*16-motion.from.x)*t;
+                    mob.y=motion.from.y+(attack.mob.y*16-motion.from.y)*t;mob.hasMoved();
+                    if(t===1)motion.from=null;
+                }
+                const d=attack.direction;
+                mob.setOrientation(d.x?(d.x>0?Types.Orientations.RIGHT:Types.Orientations.LEFT):(d.y>0?Types.Orientations.DOWN:Types.Orientations.UP));
+                if(motion.phase!==attack.phase){
+                    motion.phase=attack.phase;
+                    if(attack.phase==='lunge'){mob.animationLock=false;mob.currentAnimation=null;mob.hit();}
+                    else mob.idle();
+                }
+                frames.push({...attack,now,mobX:mob.x,mobY:mob.y,ordinary:true});
+            }
+            for(const [id,motion] of this.fieldMotions){
+                if(live.has(id))continue;
+                const mob=game.getEntityById(id);
+                if(mob){mob.attackingMode=motion.attacking;mob.followingMode=motion.following;}
+                this.fieldMotions.delete(id);
+            }
+            const event=this.state.fieldEvent;
+            if(event&&event.id!==this.lastFieldEvent){
+                this.lastFieldEvent=event.id;
+                if(event.label==='Counter ready')this.showCombatInfo('Counter ready');
+                else{
+                    const mob=game.getEntityById(event.mobId);
+                    if(mob)this.playStrike(game.player,mob,event.label);
+                    if(event.label==='Counter')this.showCombatInfo('Counter!');
+                    game.audioManager.playSound('hit1');
+                }
+            }
+            return frames;
         }
 
         update() {
@@ -190,6 +261,7 @@ define(function () {
             const {game, state} = this, player = game.player, now = this.now();
             if (game.isStopped || player.isDead) { this.pendingTechnique = null; return; }
             this.flushTechnique();
+            const fieldFrames=this.updateFieldAttacks(now);
             const mob = game.getEntityById(state.mob.id);
             if (mob) {
                 mob.isAggressive = false; mob.attackingMode = false; mob.followingMode = false;
@@ -236,11 +308,12 @@ define(function () {
                     }
                 }
             }
-            const combo = state.combo && now <= state.comboUntil ? state.combo : null;
-            const phaseLabel = state.phase === 'windup' ? 'Sidestep now' : combo === 'counter' ? 'Counter ready'
+            const technique = this.techniqueState();
+            const combo = technique.combo && now <= technique.comboUntil ? technique.combo : null;
+            const phaseLabel = technique.phase === 'windup' ? 'Sidestep now' : combo === 'counter' ? 'Counter ready'
                 : combo === 'finisher' ? 'Finisher ready' : state.phase === 'round' ? state.event.label : 'Trainer ' + state.phase;
             if (this.status && this.status.textContent !== phaseLabel) this.status.textContent = phaseLabel;
-            const adjacent = Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) === 1;
+            const adjacent = Math.abs(player.gridX-technique.mob.x)+Math.abs(player.gridY-technique.mob.y) === 1;
             this.action.hidden = !combo;
             this.action.disabled = !this.canTechnique();
             const key = game.gamepadListener?.isActive() ? 'A' : game.touchListener?.hasTouchInput ? '' : 'Space';
@@ -250,12 +323,16 @@ define(function () {
                 this.renderer = game.renderer;
                 this.renderer.registerExtension('combat-prototype-worker.js');
             }
-            const frame = {...state, now, mobX:mob?.x ?? state.mob.x*16, mobY:mob?.y ?? state.mob.y*16, playerX:player.x, playerY:player.y};
+            const frame = {...state, now, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? state.mob.x*16, mobY:mob?.y ?? state.mob.y*16, playerX:player.x, playerY:player.y};
             this.renderer?.setExtensionData('combat-prototype-ground', frame);
             this.renderer?.setExtensionData('combat-prototype', frame);
         }
 
         clear() {
+            for(const motion of this.fieldMotions?.values() || []){
+                motion.mob.attackingMode=motion.attacking;motion.mob.followingMode=motion.following;
+            }
+            this.fieldMotions?.clear();this.lastFieldEvent=null;
             this.restoreStrike?.();
             this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null; this.pendingTechnique = null;
             if (this.toggle) { this.toggle.textContent = 'Combat off'; this.toggle.setAttribute('aria-pressed','false'); }

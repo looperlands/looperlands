@@ -195,10 +195,34 @@ test.each([false,true])('combo labels share combat lanes, expire, and respect re
 
 test.each([false,true])('combo emphasis survives animation and reduced motion=%s',reducedMotion=>{
     const {info,game}=setup(reducedMotion);
-    info.addDamageInfo('4x combo',32,48,'combo',1,false,1.4);
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,{scale:1.4});
     const combo=Object.values(info.infos)[0];
     info.update(game.currentTime+40);
     expect(combo.textScale).toBeCloseTo(1.4*(reducedMotion?1:1.45));
     info.update(game.currentTime+200);
     expect(combo.textScale).toBeCloseTo(1.4);
+});
+
+
+test.each([false,true])('praise is a separate delayed tilted popup beside its combo with reduced motion=%s',reducedMotion=>{
+    const {info,game}=setup(reducedMotion);
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,{scale:1.4,praise:'Awesome!',color:'#ffad49'});
+    info.addDamageInfo('+175 XP',32,48,'xp',1);
+    const [combo,praise,xp]=Object.values(info.infos);
+    expect(combo).toMatchObject({fillColor:'#ffad49',strokeColor:'#352137',tilt:0,initialY:36});
+    expect(praise).toMatchObject({value:'Awesome!',fontSize:7,initialX:combo.initialX+10,initialY:combo.initialY+14,opacity:0});
+    expect(xp.initialY).toBe(16);
+    info.update(game.currentTime+110);
+    expect(praise.opacity).toBe(1);
+    expect(praise.rotation).toEqual(reducedMotion?0:expect.any(Number));
+    if (!reducedMotion) expect(praise.rotation).toBeLessThan(0);
+    const sandbox={define:(dependencies,factory)=>{sandbox.Renderer=factory();}};
+    vm.createContext(sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'lib/class.js'),'utf8'),sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'renderer.js'),'utf8'),sandbox);
+    const renderer=Object.assign(Object.create(sandbox.Renderer.prototype),{scale:3,game:{infoManager:info}});
+    const data=renderer.drawCombatInfo();
+    expect(data).toHaveLength(3);
+    expect(data[0]).toMatchObject({text:'4x combo',color:'#ffad49',fontSize:30});
+    expect(data[1]).toMatchObject({text:'Awesome!',fontSize:21});
 });

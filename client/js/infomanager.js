@@ -15,7 +15,7 @@ define(function() {
             this.damageStacks = {};
         },
     
-        addDamageInfo: function(value, x, y, type, entityId, critical = false, textScale = 1) {
+        addDamageInfo: function(value, x, y, type, entityId, critical = false, presentation = {}) {
             const time = this.game.currentTime;
             const combat = ['inflicted', 'received', 'healed'].includes(type);
             const amount = combat ? Number(value) : NaN;
@@ -35,22 +35,37 @@ define(function() {
 
             const id = ++this.nextId;
             const info = new DamageInfo(id, value, x, y, COMBAT_TEXT_DURATION, type);
-            if (combat || type === 'xp' || type === 'combo') {
+            if (combat || type === 'xp' || type === 'combo' || type === 'comboPraise') {
                 // Animated combat and XP labels share lanes to keep bursts readable.
                 const previous = this.damageLanes[targetKey];
                 const lane = previous && time - previous.time < COMBAT_TEXT_DURATION ? previous.lane + 1 : 0;
-                this.damageLanes[targetKey] = {lane: lane, time: time};
+                if (type === 'combo' && presentation.praise) {
+                    info.praise = presentation.praise;
+                    info.fillColor = presentation.color || info.fillColor;
+                    info.strokeColor = '#352137';
+                }
+                if (type !== 'comboPraise') this.damageLanes[targetKey] = {lane: lane + (info.praise ? 1 : 0), time: time};
                 if (combat) this.damageStacks[key] = {id: id, time: time};
                 info.x += [-4, 4, -8, 8][lane % 4];
                 info.combat = true;
-                info.baseScale = Number.isFinite(textScale) ? Math.max(1, Math.min(2, textScale)) : 1;
+                info.baseScale = Number.isFinite(presentation.scale) ? Math.max(1, Math.min(2, presentation.scale)) : 1;
                 info.startedAt = time;
                 info.poppedAt = time;
                 info.initialX = info.x;
-                info.initialY = y - (lane % 4) * 16;
+                info.initialY = y - (lane % 4) * 16 - (info.praise ? 12 : 0);
                 info.drift = [-4, 4, -6, 6][lane % 4];
                 info.lift = [16, 18, 17, 19][lane % 4];
-                info.tilt = [-0.08, 0.08, -0.12, 0.12][lane % 4];
+                info.tilt = info.praise ? 0 : [-0.08, 0.08, -0.12, 0.12][lane % 4];
+                if (type === 'comboPraise' && presentation.anchor) {
+                    const anchor = presentation.anchor;
+                    info.praiseMotion = true;
+                    info.fontSize = 7;
+                    info.baseScale = Math.min(1.4,anchor.baseScale);
+                    info.initialX = anchor.initialX + 10;
+                    info.initialY = anchor.initialY + 14;
+                    info.drift = 10; info.lift = 12;
+                    info.startedAt = info.poppedAt = time + 70;
+                }
                 info.critical = combat && critical === true;
                 info.reducedMotion = this.game.app.settings.getReducedMotion();
                 if (Number.isFinite(amount)) info.setAmount(amount);
@@ -61,6 +76,8 @@ define(function() {
                 this.destroyQueue.push(id);
             });
             this.infos[id] = info;
+            if (info.praise) this.addDamageInfo(info.praise,x,y,'comboPraise',entityId,false,{anchor:info});
+            return info;
         },
     
         forEachInfo: function(callback) {
@@ -116,6 +133,7 @@ define(function() {
             fill: "rgb(0, 0, 255)",
             stroke: "white",
         },
+        "comboPraise": {fill:"#fff1cf",stroke:"#352137"},
         "combo": {
             fill: "#fce045",
             stroke: "#533642"
@@ -167,15 +185,15 @@ define(function() {
         update: function(time) {
             if (this.combat) {
                 const progress = Math.min(1, Math.max(0, (time - this.startedAt) / this.duration));
-                const pop = Math.min(1, Math.max(0, (time - this.poppedAt) / POP_DURATION));
+                const pop = Math.min(1, Math.max(0, (time - this.poppedAt) / (this.praiseMotion ? 240 : POP_DURATION)));
                 // A fast overshoot settles in 160 ms; the flight stays anchored at the hit.
                 const pulse = pop < 0.25 ? 0.85 + 0.6 * (1 - Math.pow(1 - pop / 0.25, 3))
                     : 1 + 0.45 * Math.pow((1 - pop) / 0.75, 3);
                 this.textScale = (this.baseScale || 1) * (this.reducedMotion ? 1 : pulse);
-                this.rotation = this.reducedMotion ? 0 : this.tilt * (1 - progress);
+                this.rotation = this.reducedMotion ? 0 : this.praiseMotion ? -0.18 + 0.12 * progress : this.tilt * (1 - progress);
                 this.x = this.initialX + (this.reducedMotion ? 0 : this.drift * progress);
                 this.y = this.initialY - (this.reducedMotion ? 0 : this.lift * progress - 10 * progress * progress);
-                this.opacity = progress <= FADE_START ? 1 : Math.pow((1 - progress) / (1 - FADE_START), 2);
+                this.opacity = time < this.startedAt ? 0 : progress <= FADE_START ? 1 : Math.pow((1 - progress) / (1 - FADE_START), 2);
                 if (progress >= 1) this.destroy();
                 return;
             }

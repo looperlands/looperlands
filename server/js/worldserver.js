@@ -1157,6 +1157,7 @@ module.exports = World = cls.Class.extend({
     },
 
     moveEntity: function (entity, x, y) {
+        if (this.combatPrototype?.fieldAttacks.held(entity)) return;
         if (entity) {
             entity.setPosition(x, y);
             this.handleEntityGroupMembership(entity);

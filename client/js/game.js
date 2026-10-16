@@ -8070,8 +8070,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                     });
 
-                    self.client.onPlayerDamageMob(function (mobId, points, critical = false) {
+                    self.client.onPlayerDamageMob(function (mobId, points, critical = false, health) {
                         var mob = self.getEntityById(mobId);
+                        if (mob && health && Number.isFinite(health.hp) && health.maxHp > 0) {
+                            mob.hitPoints=health.hp;mob.maxHitPoints=health.maxHp;
+                        }
                         if (mob && points > 0) {
                             self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted", mob.id, critical);
                             self.combatFeedback.addImpact(mob, points, self.currentTime);

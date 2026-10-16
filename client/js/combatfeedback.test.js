@@ -145,3 +145,9 @@ test('confirmed critical damage passes its status to the number without duplicat
     expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(15, 32, 33, 'inflicted', 7, true);
     expect(self.combatFeedback.addImpact).toHaveBeenCalledTimes(1);
 });
+
+
+test('authoritative remaining HP updates the mob immediately instead of estimating from damage',()=>{
+    const mob={id:7,x:32,y:48,hitPoints:100,maxHitPoints:100};const self=damageHandler(mob);
+    self.handler(7,15,false,{hp:70,maxHp:100});expect(mob.hitPoints).toBe(70);
+});

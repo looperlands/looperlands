@@ -16,8 +16,8 @@ test('ground warnings use native world pixels and the current camera position',(
 test('foreground health and labels use display scale so they stay attached to the mob',()=>{
     const ctx=context();renderer.draw(ctx,{mobX:160,mobY:320,mob:{hp:80,maxHp:160},phase:'recovery'},
         {cameraX:80,cameraY:160,scale:3});
-    expect(ctx.rects[0]).toEqual([213,405,102,9]);
-    expect(ctx.rects[1]).toEqual([213,405,51,9]);
+    expect(ctx.rects[0]).toEqual([213,402,102,15]);
+    expect(ctx.rects[2]).toEqual([216,405,48,9]);
     expect(ctx.fillText).toHaveBeenCalledWith('OPEN',88,133);
 });
 
@@ -29,5 +29,15 @@ test('charge pulse remains, without a separate kills or haste display',()=>{
     renderer.draw(ctx,{phase:'windup',mobX:160,mobY:320,mob:{hp:160,maxHp:160},now:1800,until:1850,
         playerX:176,playerY:320,streak:2,streakUntil:7800},{cameraX:80,cameraY:160,scale:1});
     expect(ctx.fillText).toHaveBeenCalledWith('CHARGING',88,133);
-    expect(ctx.fillText.mock.calls.map(call=>call[0])).toEqual(['CHARGING']);
+    expect(ctx.fillText.mock.calls.map(call=>call[0])).toEqual(['LUNGER','CHARGING']);
+});
+
+
+test('trainer name and actual level stay visible while its attack status changes',()=>{
+    for (const phase of ['chase','windup','lunge','recovery','stagger']) {
+        const ctx=context();
+        renderer.draw(ctx,{mobX:160,mobY:320,mob:{hp:160,maxHp:160,level:12},phase,now:1000,until:1850},
+            {cameraX:80,cameraY:160,scale:3});
+        expect(ctx.fillText).toHaveBeenCalledWith('Lv. 12 LUNGER',88,125);
+    }
 });

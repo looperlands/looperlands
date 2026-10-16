@@ -192,7 +192,33 @@ test('combo count labels grow with the streak and cap their visual size',()=>{
     for (const streak of [2,3,4,7,20]) {
         prototype.receive({...packet,streak,streakUntil:Date.now()+1500});
     }
-    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>[call[0],call[6]])).toEqual([
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>[call[0],call[6].scale])).toEqual([
         ['2x combo',1],['3x combo',1.2],['4x combo',1.4],['7x combo',2],['20x combo',2]
     ]);
+});
+
+
+test('combo praise and colors advance with the kill count',()=>{
+    const {prototype,packet,game}=setup();game.infoManager.addDamageInfo.mockClear();
+    for (const streak of [2,3,4,5,7]) prototype.receive({...packet,streak,streakUntil:Date.now()+1500});
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>[call[6].praise,call[6].color])).toEqual([
+        ['Nice!','#fce045'],['Great!','#ffd16a'],['Awesome!','#ffad49'],['Amazing!','#ff875f'],['Unstoppable!','#ff85be']
+    ]);
+});
+
+
+test('ordinary-mob openings target that mob and return it to normal AI afterward',()=>{
+    const {prototype,packet,player,mob,game}=setup();
+    const ordinary={...mob,id:200,target:player,attackingMode:true,followingMode:true,cancelPath:jest.fn(),
+        setGridPosition(x,y){this.gridX=x;this.gridY=y;this.x=x*16;this.y=y*16;}};
+    game.getEntityById=id=>id===200?ordinary:mob;
+    const state={...packet,combo:null,fieldAttacks:[{id:1,phase:'recovery',until:Date.now()+1000,direction:{x:0,y:1},lane:[],mob:{id:200,x:4,y:4,hp:80,maxHp:100}}],
+        fieldCombo:{kind:'counter',until:Date.now()+1000,mob:{id:200,x:4,y:4}}};
+    prototype.receive(state);expect(prototype.owns(ordinary)).toBe(true);
+    expect(ordinary.attackingMode).toBe(false);expect(ordinary.cancelPath).toHaveBeenCalledTimes(1);
+    prototype.socket.emit.mockClear();expect(prototype.technique()).toBe(true);
+    expect(prototype.socket.emit).toHaveBeenCalledWith('combat-preview',{action:'technique',mobId:200});
+    const newTarget={id:999};ordinary.target=newTarget;
+    prototype.receive({...packet,combo:null,fieldAttacks:[],fieldCombo:null});
+    expect(prototype.owns(ordinary)).toBe(false);expect(ordinary.attackingMode).toBe(true);expect(ordinary.target).toBe(newTarget);
 });

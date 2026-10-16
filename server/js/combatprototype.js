@@ -1,6 +1,7 @@
 // Opt-in local training encounter. Installed only by bin/local-npc-preview.js.
 const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
+const FieldAttacks = require('./combatfieldattacks');
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const same = (a, b) => a.x === b.x && a.y === b.y;
 const TIMING = {windup: 850, lunge: 180, recovery: 1250, followup: 1100, commit: 380, stagger: 900, attack: 800, streak: 1500};
@@ -12,6 +13,7 @@ class CombatPrototype {
         this.encounters = new Map();
         this.mobIds = new Set();
         world.combatPrototype = this;
+        this.fieldAttacks = new FieldAttacks(this);
     }
 
     bind(player) {
@@ -48,6 +50,10 @@ class CombatPrototype {
         if (this.mobIds.has(Number(message[1])) && combat.includes(type)) return true;
         const encounter = this.encounters.get(player.id);
         if (!encounter) return false;
+        if (type === Types.Messages.HURT && !message[2]) {
+            const mob = this.world.entities[message[1]];
+            if (mob && this.fieldAttacks.intercept(encounter,mob,this.now())) return true;
+        }
         if (this.now() < encounter.lockUntil && combat.includes(type)) return true;
         // MOVE contains the path destination, not the tile currently occupied.
         // Training instead accepts completed adjacent steps with a speed check.
@@ -91,6 +97,9 @@ class CombatPrototype {
         if (command.action === 'reset') { this.reset(encounter); return; }
         if (command.action === 'move') { this.move(encounter, command, now); return; }
         if (command.action === 'select') { encounter.selected = Number(command.mobId) === Number(encounter.mob.id); return; }
+        if (command.action === 'technique' && command.mobId && Number(command.mobId) !== Number(encounter.mob.id)) {
+            this.fieldAttacks.technique(encounter,command.mobId,now); return;
+        }
         if (command.action !== 'technique' || now < encounter.lockUntil || now > encounter.comboUntil
             || distance(player, encounter.mob) !== 1 || encounter.phase === 'round') return;
         if (encounter.combo === 'counter') {
@@ -136,6 +145,7 @@ class CombatPrototype {
 
     reset(encounter, repositionPlayer = true) {
         const {player, mob, center} = encounter;
+        if (repositionPlayer) this.fieldAttacks.clear(encounter);
         const now = this.now();
         const spawn = repositionPlayer ? {x:center.x,y:center.y-1}
             : [[0,-2],[2,0],[0,2],[-2,0],[1,-1],[-1,1]].map(([dx,dy])=>({x:player.x+dx,y:player.y+dy}))
@@ -158,6 +168,7 @@ class CombatPrototype {
     disable(player, restore = true) {
         const encounter = this.encounters.get(player.id);
         if (!encounter) return;
+        this.fieldAttacks.clear(encounter);
         this.encounters.delete(player.id); this.mobIds.delete(Number(encounter.mob.id));
         this.world.pushBroadcast(encounter.mob.despawn());
         this.world.removeEntity(encounter.mob);
@@ -276,11 +287,17 @@ class CombatPrototype {
 
     tick() {
         const now = this.now();
+        this.fieldAttacks.tick(now);
         for (const encounter of this.encounters.values()) {
             const {player, mob} = encounter;
             if (this.world.players[player.id] !== player || player.isDead) { this.disable(player, false); continue; }
             if (now >= encounter.streakUntil) encounter.streak = 0;
             if (encounter.combo && now > encounter.comboUntil) encounter.combo = null;
+            if (encounter.fieldCombo || [...this.fieldAttacks.attacks.values()].some(a=>a.encounter===encounter)) {
+                // Avoid stacking the practice lunge on top of an ordinary mob's warning.
+                encounter.until = Math.max(encounter.until,now+300);
+                encounter.nextAttack = Math.max(encounter.nextAttack,now+300);
+            }
             if (now >= encounter.until) {
                 if (encounter.phase === 'round') { this.reset(encounter,false); continue; }
                 if (encounter.phase === 'chase') {
@@ -346,12 +363,12 @@ class CombatPrototype {
 
     send(encounter) {
         const {player, mob} = encounter;
-        player.connection._connection.emit('combat-preview', {enabled: true, serverNow: this.now(),
+        player.connection._connection.emit('combat-preview', {enabled: true, serverNow: this.now(), ...this.fieldAttacks.state(encounter),
             phase: encounter.phase, until: encounter.until, combo: encounter.combo, comboUntil: encounter.comboUntil,
             lockUntil: encounter.lockUntil, lane: encounter.lane, event: encounter.event, correction: encounter.correction,
             direction: encounter.direction, attackRate: player.getAttackRate(),
             streak: encounter.streak, streakUntil: encounter.streakUntil, streakBonusPercent: this.streakBonus(encounter), reward:encounter.reward,
-            player: {x:player.x, y:player.y}, mob: {id:mob.id,x:mob.x,y:mob.y,hp:mob.hitPoints,maxHp:160}});
+            player: {x:player.x, y:player.y}, mob: {id:mob.id,x:mob.x,y:mob.y,level:mob.level,hp:mob.hitPoints,maxHp:160}});
     }
 }
 module.exports = {CombatPrototype, TIMING};

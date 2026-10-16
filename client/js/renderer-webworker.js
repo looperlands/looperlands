@@ -581,6 +581,7 @@ function drawText(renderData) {
     ctx.restore();
 }
 
+let mobHealthBars;
 function drawEntities(drawEntitiesData) {
     let id = drawEntitiesData.id;
     let ctx = contexes[id];
@@ -675,6 +676,11 @@ function drawEntities(drawEntitiesData) {
         }
         ctx.restore();
         highCtx.restore();
+    }
+    const healthBars = drawEntitiesData.entityData.map(entity=>entity.healthBar).filter(Boolean);
+    if (healthBars.length || mobHealthBars) {
+        if (!mobHealthBars) { importScripts('mobhealthbar-worker.js'); mobHealthBars = new self.MobHealthBars.Bars(); }
+        mobHealthBars.draw(ctx,healthBars,drawEntitiesData,drawEntitiesData.healthTime || 0,drawEntitiesData.reducedMotion);
     }
     ctx.restore();
     highCtx.restore();
