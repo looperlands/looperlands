@@ -3,7 +3,8 @@
 NPC speech bubbles and choice popups reveal text at approximately 67 graphemes
 per second. Commas, semicolons and colons pause for 90 ms; sentence endings pause
 for 180 ms; an ellipsis pauses for 220 ms. Repeated punctuation pauses once, at the
-end. Every revealed letter has a short pop. Spaces and hidden letters reserve
+end. Every revealed letter rises 4px, briefly grows to 118%, and settles at its
+normal size over 180ms. Spaces and hidden letters reserve
 their final space so wrapping and bubble position do not jump while typing.
 
 Clicking the same NPC while its bubble is typing reveals the current line. It
@@ -18,8 +19,9 @@ conversation, and Tab stays inside the popup. All paragraphs are preserved.
 
 ## Authoring emphasis
 
-Dialogue body text and response buttons use a readable 16px font without the
-HUD text outline; speaker names keep the pixel font. Wave and shake effects are
+Dialogue body text, authored paragraphs, speech bubbles and response buttons
+use the existing GraphicPixel font at 16px without the HUD text outline.
+Speaker names use the same pixel font at 18px. Wave and shake effects are
 small and slow enough to keep emphasized words readable.
 
 Existing HTML, paragraph breaks and links are preserved. Add these classes to
