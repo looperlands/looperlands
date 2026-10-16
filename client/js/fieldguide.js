@@ -1,4 +1,4 @@
-define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
+define(['jquery', 'sprites'], function ($, sprites) {
     const categories = {items: ['Items', 'collected'], fish: ['Fish', 'caught'], monsters: ['Monsters', 'defeated']};
     function node(tag, className, text) {
         const element = document.createElement(tag);
@@ -18,14 +18,26 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
     function remaining(entry) {
         return entry.state === 'unknown' ? entry.hint : {obtain: 'Collect this item', loot: 'Loot from a defeated monster', catch: 'Catch one yourself', defeat: 'Defeat this monster'}[entry.completion];
     }
-    function spriteStyle(name) {
+    function spriteStyle(name, maxSize = 40, maxScale = 2) {
         const definition = sprites[name];
         if (!definition) return null;
-        const scale = Math.min(2, 40 / Math.max(definition.width, definition.height));
+        const scale = Math.min(maxScale, maxSize / Math.max(definition.width, definition.height));
         return {width: definition.width + 'px', height: definition.height + 'px',
             backgroundImage: 'url("img/1/' + name + '.png")',
             backgroundPosition: '0px ' + (-(definition.animations?.idle_down?.row || 0) * definition.height) + 'px',
             transform: 'scale(' + scale + ')'};
+    }
+    function popoverPosition(anchor, popup, viewport) {
+        const margin = 12, gap = 8;
+        const clamp = (value, size, extent) => Math.max(margin, Math.min(value, extent - size - margin));
+        let left, top = anchor.top;
+        if (anchor.right + gap + popup.width <= viewport.width - margin) left = anchor.right + gap;
+        else if (anchor.left - gap - popup.width >= margin) left = anchor.left - gap - popup.width;
+        else {
+            left = anchor.left + (anchor.width - popup.width) / 2;
+            top = anchor.top - popup.height - gap >= margin ? anchor.top - popup.height - gap : anchor.bottom + gap;
+        }
+        return {left: clamp(left, popup.width, viewport.width), top: clamp(top, popup.height, viewport.height)};
     }
     function medalStyle(value) {
         if (!Number.isInteger(value) || value < 1 || value > 20) return null;
@@ -42,17 +54,17 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
     class Journal {
         constructor(app) {
             this.app = app; this.opened = false; this.request = 0; this.data = null;
-            this.selected = null; this.pinned = null;
+            this.selected = null;
             this.view = 'quests'; this.quests = null; this.questFilter = 'IN_PROGRESS'; this.selectedQuest = null;
             this.root = node('div', 'field-guide'); this.root.hidden = true;
             this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'true'); this.root.setAttribute('aria-label', 'Journal');
             for (const type of ['click', 'mousedown', 'touchstart', 'touchend', 'wheel']) this.root.addEventListener(type, event => event.stopPropagation());
             document.body.append(this.root);
-            this.reminder = node('aside', 'fg-reminder'); this.reminder.hidden = true;
-            this.reminder.setAttribute('aria-label', 'Pinned discovery');
-            document.body.append(this.reminder);
             this.onKeyboard = event => this.keyboard(event);
             document.addEventListener('keydown', this.onKeyboard, true);
+            this.onDetailsPosition = () => this.positionDetails();
+            this.root.addEventListener('scroll', this.onDetailsPosition, true);
+            window.addEventListener('resize', this.onDetailsPosition);
             this.timer = setInterval(() => {
                 if (this.opened && (!app.game.started || app.game.player?.isDead)) this.close();
                 else if (this.opened && this.mapId !== app.game.mapId) {this.mapId = app.game.mapId; this.data = null; this.selected = null; this.render('Opening this map…'); this.load();}
@@ -95,8 +107,6 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 }
                 const unchanged = JSON.stringify(this.data) === JSON.stringify(response.data);
                 this.data = response.data;
-                const pinned = this.data.entries.find(entry => entry.id === this.pinned?.id);
-                if (pinned?.state === 'completed') this.pin(null);
                 if (!quiet || !unchanged || this.error) this.render();
                 this.error = false;
             } catch (error) {
@@ -126,7 +136,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
         render(message, failure = false) {
             const active = document.activeElement, focus = active?.dataset?.fgFocus;
             const wasInside = this.root.contains(active);
-            const scroll = this.root.querySelector('.fg-sections')?.scrollTop || 0;
+            const scroll = {root: this.root.scrollTop, grids: [...this.root.querySelectorAll('.fg-sections, .fg-section')].map(element => element.scrollTop)};
             this.root.replaceChildren();
             const panel = node('section', 'fg-panel');
             panel.append(node('h1', 'fg-title', 'Journal'));
@@ -163,13 +173,16 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 panel.append(legend);
             }
             this.root.append(panel);
+            const selected = this.data?.entries.find(entry => entry.id === this.selected);
+            if (selected) this.root.append(this.entryDetails(selected));
             this.restoreFocus(focus, wasInside, scroll);
+            this.positionDetails();
         }
         restoreFocus(focus, wasInside, scroll) {
             const next = [...this.root.querySelectorAll('[data-fg-focus]')].find(element => element.dataset.fgFocus === focus);
-            (next || (wasInside ? this.root.querySelector('button') : null))?.focus();
-            const sections = this.root.querySelector('.fg-sections');
-            if (sections) sections.scrollTop = scroll;
+            (next || (wasInside ? this.root.querySelector('button') : null))?.focus({preventScroll: true});
+            this.root.scrollTop = scroll.root;
+            [...this.root.querySelectorAll('.fg-sections, .fg-section')].forEach((element, index) => {element.scrollTop = scroll.grids[index] || 0;});
         }
         renderQuests(panel, message, failure) {
             const tools = node('div', 'journal-quest-tools');
@@ -245,6 +258,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             for (const entry of entries) {
                 const slot = button('', () => {this.selected = this.selected === entry.id ? null : entry.id; this.render();}, 'fg-slot' + (this.selected === entry.id ? ' fg-selected' : ''));
                 slot.dataset.fgFocus = entry.id; slot.setAttribute('aria-pressed', String(entry.id === this.selected));
+                if (entry.id === this.selected) slot.setAttribute('aria-controls', 'fg-entry-details');
                 slot.setAttribute('aria-label', (entry.name || 'Undiscovered entry') + ' · ' + status(entry)); slot.title = (entry.name || 'Undiscovered') + ' · ' + status(entry);
                 const style = entry.sprite && spriteStyle(entry.sprite);
                 if (style) {const viewport = node('span', 'fg-sprite-viewport'), sprite = node('span', 'fg-sprite'); Object.assign(sprite.style, style); viewport.append(sprite); slot.append(viewport);}
@@ -254,32 +268,51 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             }
             section.append(slots);
             if (!entries.length) section.append(node('p', 'fg-empty', 'No entries published.'));
-            const selected = entries.find(entry => entry.id === this.selected);
-            if (selected) {
-                const details = node('aside', 'fg-parchment'); details.setAttribute('aria-label', 'Entry details');
-                details.append(node('h3', '', selected.name || 'Undiscovered'), node('p', '', status(selected)), node('p', 'fg-requirement', selected.state === 'completed' ? 'Entry complete' : remaining(selected)));
-                if (selected.state !== 'unknown') details.append(node('p', '', selected.hint));
-                if (selected.bonus) details.append(node('p', '', 'Bonus discovery · Outside standard completion.'));
-                if (selected.state !== 'completed') {
-                    const pin = button(this.pinned?.id === selected.id ? 'Unpin discovery' : this.pinned ? 'Replace pinned discovery' : 'Pin discovery', () => {this.pin(this.pinned?.id === selected.id ? null : selected); this.render();});
-                    pin.dataset.fgFocus = 'pin-' + selected.id; details.append(pin);
-                }
-                section.append(details);
-            }
             return section;
         }
-        pin(entry) {
-            this.pinned = entry ? {...entry, map: this.mapId} : null;
-            this.reminder.replaceChildren(); this.reminder.hidden = !entry;
-            if (entry) this.reminder.append(node('strong', '', 'Pinned discovery · ' + (mapNames[this.mapId] || this.mapId)), node('span', '', entry.name ? remaining(entry) + ' · ' + entry.name : entry.hint), button('Unpin', () => {this.pin(null); if (this.opened) this.render();}));
-            this.reminder.onclick = event => event.stopPropagation();
+        entryDetails(selected) {
+            const details = node('aside', 'fg-entry-popover');
+            details.id = 'fg-entry-details'; details.setAttribute('aria-label', 'Entry details');
+            const header = node('div', 'fg-detail-header');
+            const style = selected.state !== 'unknown' && selected.sprite && spriteStyle(selected.sprite, 96, 6);
+            if (style) {
+                const preview = node('div', 'fg-detail-preview'), sprite = node('span', 'fg-sprite');
+                preview.setAttribute('aria-hidden', 'true'); Object.assign(sprite.style, style); preview.append(sprite); header.append(preview);
+            }
+            const heading = node('div', 'fg-detail-heading');
+            heading.append(node('h3', '', selected.name || 'Undiscovered'));
+            if (selected.state !== 'unknown') heading.append(node('p', 'fg-detail-status' + (selected.state === 'completed' ? ' fg-detail-complete' : ''), status(selected)));
+            header.append(heading); details.append(header);
+            const body = node('div', 'fg-detail-body');
+            if (selected.state === 'discovered') body.append(node('p', 'fg-detail-requirement', remaining(selected)));
+            body.append(node('p', 'fg-detail-hint', selected.hint));
+            if (selected.bonus) body.append(node('p', 'fg-detail-bonus', 'Bonus discovery · Outside standard completion.'));
+            details.append(body);
+            return details;
+        }
+        positionDetails() {
+            const anchor = this.root.querySelector('.fg-selected'), details = this.root.querySelector('.fg-entry-popover');
+            if (!anchor || !details || !this.opened) return;
+            const rect = anchor.getBoundingClientRect();
+            const viewport = {width: document.documentElement.clientWidth, height: window.innerHeight};
+            const visible = {left: Math.max(0, rect.left), right: Math.min(viewport.width, rect.right), top: Math.max(0, rect.top), bottom: Math.min(viewport.height, rect.bottom)};
+            for (let parent = anchor.parentElement; parent && parent !== this.root; parent = parent.parentElement) {
+                const style = getComputedStyle(parent), bounds = parent.getBoundingClientRect();
+                if (/auto|scroll|hidden|clip/.test(style.overflowX)) {visible.left = Math.max(visible.left, bounds.left); visible.right = Math.min(visible.right, bounds.right);}
+                if (/auto|scroll|hidden|clip/.test(style.overflowY)) {visible.top = Math.max(visible.top, bounds.top); visible.bottom = Math.min(visible.bottom, bounds.bottom);}
+            }
+            details.hidden = visible.right <= visible.left || visible.bottom <= visible.top;
+            if (details.hidden) return;
+            const position = popoverPosition(rect, details.getBoundingClientRect(), viewport);
+            Object.assign(details.style, {left: position.left + 'px', top: position.top + 'px'});
         }
         destroy() {
             this.close(); clearInterval(this.timer); this.request++;
             document.removeEventListener('keydown', this.onKeyboard, true);
-            this.root.remove(); this.reminder.remove();
+            window.removeEventListener('resize', this.onDetailsPosition);
+            this.root.remove();
         }
     }
-    Journal.status = status; Journal.spriteStyle = spriteStyle; Journal.medalStyle = medalStyle;
+    Journal.status = status; Journal.spriteStyle = spriteStyle; Journal.medalStyle = medalStyle; Journal.popoverPosition = popoverPosition;
     return Journal;
 });
