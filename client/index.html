@@ -312,103 +312,123 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 				</article>										
 				<article id="settings" class="panel">
 					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
-					<div class="settings-tools">
-					<button id="toggleInstructionsButton" type="submit" class="panelBorder">Instructions</button>
-					<button id="toggleMiniMapButton" type="submit" class="panelBorder">Map</button>
-					<small>Disable centered camera and/or animated tiles for performance.</small>
+					<div class="settings-tabs" role="tablist" aria-label="Settings sections">
+						<button type="button" class="panelBorder" role="tab" id="settings-tab-combat" data-settings-tab="combat" aria-controls="settings-panel-combat" aria-selected="true" tabindex="0">Combat</button>
+						<button type="button" class="panelBorder" role="tab" id="settings-tab-display" data-settings-tab="display" aria-controls="settings-panel-display" aria-selected="false" tabindex="-1">Display</button>
+						<button type="button" class="panelBorder" role="tab" id="settings-tab-interface" data-settings-tab="interface" aria-controls="settings-panel-interface" aria-selected="false" tabindex="-1">Interface</button>
+						<button type="button" class="panelBorder" role="tab" id="settings-tab-audio" data-settings-tab="audio" aria-controls="settings-panel-audio" aria-selected="false" tabindex="-1">Audio</button>
 					</div>
 					<form id="settingsForm">
 						<div class="settings-options">
-						<ul>
-							<li>
-								<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
-								<label for="musicEnabled">Game Music Enabled</label>
-							</li>
-							<li>
-								<input type="checkbox" id="streamMusicEnabled" name="streamMusicEnabled" value="true">
-								<label for="streamMusicEnabled">Stream Music Enabled</label>
-							</li>							
-							<li>
-								<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
-								<label for="centeredCamera">Centered Camera</label>
-							</li>
-							<li>
-								<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
-								<label for="animatedTiles">Animated Tiles</label>
-							</li>
-							<li>
-								<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
-								<label for="highlightTargetTiles">Highlight Target Tiles</label>
-							</li>
-							<li>
-								<input type="checkbox" id="combatEffectsEnabled" name="combatEffectsEnabled" value="true">
-								<label for="combatEffectsEnabled">Combat &amp; Tool Impact Effects</label>
-							</li>
-							<li>
-								<input type="checkbox" id="effectTimersEnabled" name="effectTimersEnabled" value="true">
-								<label for="effectTimersEnabled">Effect Timers</label>
-							</li>
-							<li>
-								<input type="checkbox" id="cursor" name="cursor" value="true">
-								<label for="cursor">Draw Cursor</label>
-							</li>							
-							<li>
-								<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
-								<label for="fullscreen">Fullscreen</label>
-							</li>
-							<li>
-								<input type="checkbox" id="renderMyText" name="renderMyText" value="true">
-								<label for="renderMyText">Show My Name/Info</label>
-							</li>
-							<li>
-								<input type="checkbox" id="renderText" name="renderText" value="true">
-								<label for="renderText">Show Others' Name/Combat Info</label>
-							</li>
-						</ul>
-						<ul>
-							<li class="settings-section">Combat feedback</li>
-							<li>
-								<input type="checkbox" id="mobHealthBarsEnabled" name="mobHealthBarsEnabled" value="true">
-								<label for="mobHealthBarsEnabled">Mob Health Bars</label>
-							</li>
-							<li>
-								<input type="checkbox" id="hitTargetIndicatorEnabled" name="hitTargetIndicatorEnabled" value="true">
-								<label for="hitTargetIndicatorEnabled">Hit Target Indicator</label>
-							</li>
-							<li>
-								<input type="checkbox" id="damageNumbersEnabled" name="damageNumbersEnabled" value="true">
-								<label for="damageNumbersEnabled">Damage &amp; Healing Numbers</label>
-							</li>
-							<li>
-								<input type="checkbox" id="experiencePopupsEnabled" name="experiencePopupsEnabled" value="true">
-								<label for="experiencePopupsEnabled">XP Popups</label>
-							</li>
-							<li>
-								<input type="checkbox" id="comboMessagesEnabled" name="comboMessagesEnabled" value="true">
-								<label for="comboMessagesEnabled">Combo &amp; Counter Messages</label>
-							</li>
-							<li>
-								<input type="checkbox" id="comboPraiseEnabled" name="comboPraiseEnabled" value="true">
-								<label for="comboPraiseEnabled">Combo Praise (Awesome, etc.)</label>
-							</li>
-							<li>
-								<input type="checkbox" id="cameraShakeEnabled" name="cameraShakeEnabled" value="true">
-								<label for="cameraShakeEnabled">Camera Shake</label>
-							</li>
-						<li class="settings-section">Shadows &amp; lighting</li>
-							<li>
-								<input type="checkbox" id="renderShadows" name="renderShadows" value="true">
-								<label for="renderShadows">Show Others' Shadows</label>
-							</li>
-							<li>
-								<input type="checkbox" id="renderPlayerShadow" name="renderPlayerShadow" value="true">
-								<label for="renderPlayerShadow">Show Player Shadow</label>
-							</li>
-							<li>
-								<input type="checkbox" id="enableDynamicLights" name="enableDynamicLights" value="true">
-								<label for="enableDynamicLights">Enable Dynamic Lights</label>
-							</li>
-							</ul>
+							<section class="settings-panel" role="tabpanel" id="settings-panel-combat" data-settings-panel="combat" aria-labelledby="settings-tab-combat" tabindex="0">
+								<h2>Combat feedback</h2>
+								<ul class="settings-list">
+									<li>
+										<input type="checkbox" id="mobHealthBarsEnabled" name="mobHealthBarsEnabled" value="true">
+										<label for="mobHealthBarsEnabled">Mob Health Bars</label>
+									</li>
+									<li>
+										<input type="checkbox" id="hitTargetIndicatorEnabled" name="hitTargetIndicatorEnabled" value="true">
+										<label for="hitTargetIndicatorEnabled">Hit Target Indicator</label>
+									</li>
+									<li>
+										<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
+										<label for="highlightTargetTiles">Highlight Target Tiles</label>
+									</li>
+									<li>
+										<input type="checkbox" id="damageNumbersEnabled" name="damageNumbersEnabled" value="true">
+										<label for="damageNumbersEnabled">Damage &amp; Healing Numbers</label>
+									</li>
+									<li>
+										<input type="checkbox" id="experiencePopupsEnabled" name="experiencePopupsEnabled" value="true">
+										<label for="experiencePopupsEnabled">XP Popups</label>
+									</li>
+									<li>
+										<input type="checkbox" id="comboMessagesEnabled" name="comboMessagesEnabled" value="true">
+										<label for="comboMessagesEnabled">Combo &amp; Counter Messages</label>
+									</li>
+									<li>
+										<input type="checkbox" id="comboPraiseEnabled" name="comboPraiseEnabled" value="true">
+										<label for="comboPraiseEnabled">Combo Praise (Awesome, etc.)</label>
+									</li>
+									<li>
+										<input type="checkbox" id="combatEffectsEnabled" name="combatEffectsEnabled" value="true">
+										<label for="combatEffectsEnabled">Combat &amp; Tool Impact Effects</label>
+									</li>
+									<li>
+										<input type="checkbox" id="cameraShakeEnabled" name="cameraShakeEnabled" value="true">
+										<label for="cameraShakeEnabled">Camera Shake</label>
+									</li>
+								</ul>
+							</section>
+							<section class="settings-panel" role="tabpanel" id="settings-panel-display" data-settings-panel="display" aria-labelledby="settings-tab-display" tabindex="0" hidden>
+								<h2>Display &amp; performance</h2>
+								<p class="settings-hint">Disable centered camera and/or animated tiles for performance.</p>
+								<ul class="settings-list">
+									<li>
+										<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
+										<label for="fullscreen">Fullscreen</label>
+									</li>
+									<li>
+										<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
+										<label for="centeredCamera">Centered Camera</label>
+									</li>
+									<li>
+										<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
+										<label for="animatedTiles">Animated Tiles</label>
+									</li>
+									<li>
+										<input type="checkbox" id="cursor" name="cursor" value="true">
+										<label for="cursor">Draw Cursor</label>
+									</li>
+									<li>
+										<input type="checkbox" id="renderShadows" name="renderShadows" value="true">
+										<label for="renderShadows">Show Others' Shadows</label>
+									</li>
+									<li>
+										<input type="checkbox" id="renderPlayerShadow" name="renderPlayerShadow" value="true">
+										<label for="renderPlayerShadow">Show Player Shadow</label>
+									</li>
+									<li>
+										<input type="checkbox" id="enableDynamicLights" name="enableDynamicLights" value="true">
+										<label for="enableDynamicLights">Enable Dynamic Lights</label>
+									</li>
+								</ul>
+							</section>
+							<section class="settings-panel" role="tabpanel" id="settings-panel-interface" data-settings-panel="interface" aria-labelledby="settings-tab-interface" tabindex="0" hidden>
+								<h2>Interface</h2>
+								<ul class="settings-list">
+									<li>
+										<input type="checkbox" id="renderMyText" name="renderMyText" value="true">
+										<label for="renderMyText">Show My Name/Info</label>
+									</li>
+									<li>
+										<input type="checkbox" id="renderText" name="renderText" value="true">
+										<label for="renderText">Show Others' Name/Combat Info</label>
+									</li>
+									<li>
+										<input type="checkbox" id="effectTimersEnabled" name="effectTimersEnabled" value="true">
+										<label for="effectTimersEnabled">Effect Timers</label>
+									</li>
+								</ul>
+								<div class="settings-tools">
+									<button id="toggleInstructionsButton" type="button" class="panelBorder">Instructions</button>
+									<button id="toggleMiniMapButton" type="button" class="panelBorder">Map</button>
+								</div>
+							</section>
+							<section class="settings-panel" role="tabpanel" id="settings-panel-audio" data-settings-panel="audio" aria-labelledby="settings-tab-audio" tabindex="0" hidden>
+								<h2>Audio</h2>
+								<ul class="settings-list">
+									<li>
+										<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
+										<label for="musicEnabled">Game Music Enabled</label>
+									</li>
+									<li>
+										<input type="checkbox" id="streamMusicEnabled" name="streamMusicEnabled" value="true">
+										<label for="streamMusicEnabled">Stream Music Enabled</label>
+									</li>
+								</ul>
+							</section>
 						</div>
 						<div class="settings-actions">
 							<button type="submit" class="panelBorder">Save Settings</button>

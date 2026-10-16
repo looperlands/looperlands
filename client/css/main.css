@@ -2986,13 +2986,13 @@ footer div  {display:inline-block;}
     background-color: #3f2a35 !important;
 }
 #settings .panelTitle { flex-shrink: 0; }
-#settings .settings-tools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-#settings .settings-tools small { padding-top: 0; font-size: 12px; line-height: 1.4; text-align: left; }
+#settings .settings-tools { display: flex; gap: 8px; margin-top: 20px; }
+#settings .settings-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; flex-shrink: 0; }
+#settings .settings-tabs button { padding: 8px 4px; min-height: 32px; }
+#settings .settings-tabs button[aria-selected="true"] { color: #fff2cf; background-color: #6b4353 !important; text-decoration: underline; text-underline-offset: 6px; text-decoration-color: #f1ce92; }
+#settings .settings-tabs button:focus-visible, #settings .settings-panel:focus-visible { outline: 2px solid #f1ce92; outline-offset: 2px; }
 #settingsForm { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 #settings .settings-options {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 12px;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -3000,12 +3000,18 @@ footer div  {display:inline-block;}
     scrollbar-color: #b99761 #3f2a35;
     scrollbar-width: thin;
 }
-#settings .settings-options ul { text-align: left; margin: 12px 0; }
-#settings .settings-section { color: #f1ce92; padding-top: 4px; }
+#settings .settings-panel { text-align: left; padding: 0 4px 8px; }
+#settings .settings-panel[hidden] { display: none; }
+#settings .settings-panel h2 { color: #f1ce92; font-size: 20px; line-height: 1.2; margin: 16px 0 12px; }
+#settings .settings-hint { color: #d3bec9; font-size: 12px; line-height: 1.4; margin: 0 0 12px; }
+#settings .settings-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 12px; margin: 0; }
+#settings .settings-list li { display: flex; align-items: flex-start; gap: 8px; min-height: 32px; line-height: 1.4; }
+#settings .settings-list input { flex-shrink: 0; margin: 5px 0; }
+#settings .settings-list label { padding: 3px 0; }
 #settings .settings-actions { flex-shrink: 0; padding-top: 8px; }
 #settingsForm label { cursor: pointer; }
 #settingsForm input:focus-visible { outline: 2px solid #f1ce92; outline-offset: 2px; }
 #settingsForm input:disabled + label { opacity: .55; cursor: default; }
 @media (max-width: 1000px) {
-    #settings .settings-tools small { display: none; }
+    #settings .settings-list { grid-template-columns: minmax(0, 1fr); }
 }

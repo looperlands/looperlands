@@ -61,9 +61,7 @@ class GameSettings {
 
         for (const key of COMBAT_VISUAL_SETTINGS) {
             if (localStorage.getItem(key) === null) {
-                // Preserve the old effects opt-out when introducing a separate shake control.
-                const enabled = key !== 'cameraShakeEnabled' || this.getCombatEffectsEnabled();
-                localStorage.setItem(key, enabled ? 'true' : 'false');
+                localStorage.setItem(key, 'true');
             }
             document.getElementById(key).checked = this.getCombatVisualEnabled(key);
         }
@@ -90,6 +88,8 @@ class GameSettings {
         document.getElementById('renderPlayerShadow').checked = this.getRenderPlayerShadow();
         document.getElementById('enableDynamicLights').checked = this.getEnableDynamicLights();
 
+        this.bindSections();
+
         // Add event listener to save settings when the form is submitted
         const form = document.getElementById('settingsForm');
         form.addEventListener('submit', (event) => {
@@ -97,6 +97,38 @@ class GameSettings {
             this.setSettings();
             app.toggleSettings();
         });
+    }
+
+    bindSections() {
+        this.sectionTabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
+        this.sectionPanels = Array.from(document.querySelectorAll('[data-settings-panel]'));
+        for (const [index, tab] of this.sectionTabs.entries()) {
+            tab.addEventListener('click', () => this.selectSection(tab.dataset.settingsTab));
+            tab.addEventListener('keydown', event => {
+                let next;
+                if (event.key === 'ArrowRight') next = (index + 1) % this.sectionTabs.length;
+                else if (event.key === 'ArrowLeft') next = (index + this.sectionTabs.length - 1) % this.sectionTabs.length;
+                else if (event.key === 'Home') next = 0;
+                else if (event.key === 'End') next = this.sectionTabs.length - 1;
+                else return;
+                event.preventDefault();
+                event.stopPropagation();
+                this.selectSection(this.sectionTabs[next].dataset.settingsTab);
+                this.sectionTabs[next].focus();
+            });
+        }
+        this.selectSection('combat');
+    }
+
+    selectSection(section) {
+        if (!this.sectionTabs.some(tab => tab.dataset.settingsTab === section)) return;
+        for (const tab of this.sectionTabs) {
+            const selected = tab.dataset.settingsTab === section;
+            tab.setAttribute('aria-selected', String(selected));
+            tab.tabIndex = selected ? 0 : -1;
+        }
+        for (const panel of this.sectionPanels) panel.hidden = panel.dataset.settingsPanel !== section;
+        document.querySelector('#settings .settings-options').scrollTop = 0;
     }
 
     // Methods to get and set each setting
