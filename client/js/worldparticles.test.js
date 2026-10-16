@@ -1,5 +1,23 @@
 const WorldParticles = require('./worldparticles-worker');
 
+test('reactive fireflies use world coordinates without mutating procedural positions', () => {
+    const point = {x: 40, y: 40, scale: 2, seed: 1};
+    const fx = {actor: {x: 22, y: 28, vx: 80, vy: 0}, flags: {fireflies: true, leaves: true}};
+    const moved = WorldParticles.react(point, 'fireflies', 1, {cameraX: 10, cameraY: 10}, fx);
+    expect(moved.x).toBeGreaterThan(point.x); expect(point.x).toBe(40);
+    expect(WorldParticles.react(point, 'fireflies', 1, {cameraX: 10, cameraY: 10}, {...fx, flags: {}})).toBe(point);
+});
+
+test('leaf wake reacts only to a moving nearby player and remains camera-continuous', () => {
+    const point = {x: 40, y: 40, scale: 2, seed: 1};
+    const fx = {actor: {x: 22, y: 28, vx: 80, vy: 0}, flags: {leaves: true}};
+    const moved = WorldParticles.react(point, 'leaves', 1, {cameraX: 10, cameraY: 10}, fx);
+    const panned = WorldParticles.react({...point, x: 20}, 'leaves', 1, {cameraX: 20, cameraY: 10}, fx);
+    expect(moved.x).not.toBe(point.x); expect(moved.x - 20).toBeCloseTo(panned.x);
+    expect(WorldParticles.react(point, 'leaves', 1, {cameraX: 10, cameraY: 10}, {...fx, actor: {...fx.actor, vx: 0}})).toEqual(point);
+    expect(WorldParticles.react(point, 'leaves', 1, {cameraX: 500, cameraY: 10}, fx)).toBe(point);
+});
+
 function draw(type, daylight) {
     const pixels = [];
     const context = {

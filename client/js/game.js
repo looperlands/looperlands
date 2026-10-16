@@ -1,11 +1,11 @@
 define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', 'pickupfeedback', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime, PickupFeedback) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -16,6 +16,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.scenePollingInterval = null;
                 this.playerPositionReady = false;
                 this.worldAmbience = new WorldAmbience();
+                this.worldFx = new WorldFx(this);
                 this.footstepFeedback = new FootstepFeedback(this);
 
                 this.renderer = null;
@@ -6311,6 +6312,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.tileStageRevisions = {};
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
+                this.worldFx?.clear?.();
                 this.pickupFeedback?.clear();
                 this.infoManager.clear();
                 this.footstepFeedback?.clear();
@@ -6688,6 +6690,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 item.setGridPosition(x, y);
                 item.setAnimation("idle", 150);
                 this.addEntity(item);
+                if (item.wasDropped) this.worldFx?.drop?.(item);
             },
 
             addFieldEffect: function (fieldEffect, x, y) {
@@ -7036,6 +7039,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         this.renderer.camera.follow(this.player, this.currentTime);
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
+                    this.worldFx?.render?.(this.renderer, this.currentTime);
                     this.pickupFeedback?.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
@@ -7061,6 +7065,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.isStopped = true;
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
+                this.worldFx?.clear?.();
                 this.pickupFeedback?.clear();
                 this.infoManager.clear();
                 this.footstepFeedback?.clear();
@@ -7430,6 +7435,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                                     });
                                 } else {
+                                    _self.worldFx?.teleport?.(_self.player, dest.x, dest.y);
                                     _self.player.setGridPosition(dest.x, dest.y);
                                     _self.player.nextGridX = dest.x;
                                     _self.player.nextGridY = dest.y;
@@ -8204,6 +8210,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onWorldAmbience(config => {
                         self.previewTimeMode = config?.previewTimeMode;
                         self.worldAmbience.setConfig(config);
+                        self.worldFx?.configure?.(config);
                         WorldScenery.update(self.renderer, config, self);
                     });
 
@@ -8253,6 +8260,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onDisconnected(function (message) {
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
+                        self.worldFx?.clear?.();
                         self.pickupFeedback?.clear();
                         self.infoManager.clear();
                         self.footstepFeedback?.clear();
@@ -8499,6 +8507,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              */
             makeCharacterTeleportTo: function (character, x, y) {
                 if (!this.map.isOutOfBounds(x, y)) {
+                    this.worldFx?.teleport?.(character, x, y);
                     this.unregisterEntityPosition(character);
 
                     character.setGridPosition(x, y);
@@ -9593,6 +9602,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             handleTileStage(stage) {
+                if (stage.particlesOnly) { this.worldFx?.tileChanged?.(stage); return; }
                 const self = this;
                 self.terrainRevision = (self.terrainRevision || 0) + 1;
                 const baseKey = stage.x + '.' + stage.y;

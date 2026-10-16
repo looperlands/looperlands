@@ -10,6 +10,14 @@ function setup() {
         map: {stagedTiles: {}, isAnimatedTile: () => false, tilesize: 16, tilesetColumns: 64},
         renderer: {scale: 1, tileset: {width: 1024}}};
 }
+test('transient particles cannot replace staged tiles or increment terrain revisions', () => {
+    const game = setup(); game.worldFx = {tileChanged: jest.fn()};
+    const event = {x: 1, y: 2, particlesOnly: true, particles: 'soil'};
+    game.handleTileStage(event);
+    expect(game.worldFx.tileChanged).toHaveBeenCalledWith(event);
+    expect(game.tileStages).toEqual({}); expect(game.terrainRevision).toBeUndefined();
+    expect(game.tileStageRevisions).toBeUndefined();
+});
 test('staged farming tiles use the receiving game instance without global self', () => {
     const game = setup();
     game.handleTileStage({x: 1, y: 2, tile: 123, stage: 0});
