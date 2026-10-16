@@ -15,7 +15,7 @@ define(function() {
             this.damageStacks = {};
         },
     
-        addDamageInfo: function(value, x, y, type, entityId, critical = false) {
+        addDamageInfo: function(value, x, y, type, entityId, critical = false, textScale = 1) {
             const time = this.game.currentTime;
             const combat = ['inflicted', 'received', 'healed'].includes(type);
             const amount = combat ? Number(value) : NaN;
@@ -43,6 +43,7 @@ define(function() {
                 if (combat) this.damageStacks[key] = {id: id, time: time};
                 info.x += [-4, 4, -8, 8][lane % 4];
                 info.combat = true;
+                info.baseScale = Number.isFinite(textScale) ? Math.max(1, Math.min(2, textScale)) : 1;
                 info.startedAt = time;
                 info.poppedAt = time;
                 info.initialX = info.x;

@@ -128,9 +128,9 @@ test('normal swings animate once and the server attack interval remains unchange
 
 test('streak and combo XP use existing combat info once per reward, not every state packet',()=>{
     const {prototype,packet,game}=setup();game.infoManager.addDamageInfo.mockClear();
-    const earned={...packet,streak:2,streakUntil:Date.now()+2500,streakBonusPercent:25,reward:{id:1,xp:25}};
+    const earned={...packet,streak:2,streakUntil:Date.now()+1500,streakBonusPercent:25,reward:{id:1,xp:25}};
     prototype.receive(earned);prototype.receive(earned);prototype.update();
-    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['Combo! +25 XP','2X']);
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['Combo! +25 XP','2x combo']);
     for (const call of game.infoManager.addDamageInfo.mock.calls) expect(call[3]).toBe('combo');
 });
 
@@ -184,4 +184,15 @@ test('counter restarts a locked attack animation and uses a fast swing',()=>{
     expect(animation.setSpeed).toHaveBeenCalledWith([45,45,45,45]);
     animation.endcount_callback();
     expect(animation.setSpeed).toHaveBeenLastCalledWith([100,100,100,100]);
+});
+
+
+test('combo count labels grow with the streak and cap their visual size',()=>{
+    const {prototype,packet,game}=setup();game.infoManager.addDamageInfo.mockClear();
+    for (const streak of [2,3,4,7,20]) {
+        prototype.receive({...packet,streak,streakUntil:Date.now()+1500});
+    }
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>[call[0],call[6]])).toEqual([
+        ['2x combo',1],['3x combo',1.2],['4x combo',1.4],['7x combo',2],['20x combo',2]
+    ]);
 });

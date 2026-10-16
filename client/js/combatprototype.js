@@ -154,9 +154,9 @@ define(function () {
             this.lastReport = null;
         }
 
-        showCombatInfo(text) {
+        showCombatInfo(text, scale = 1) {
             const {player,infoManager} = this.game;
-            infoManager.addDamageInfo(text,player.x,player.y-15,'combo',player.id);
+            infoManager.addDamageInfo(text,player.x,player.y-15,'combo',player.id,false,scale);
         }
 
         receive(packet) {
@@ -178,7 +178,7 @@ define(function () {
                 this.showCombatInfo(`Combo! +${packet.reward.xp} XP`);
             }
             if (packet.streak >= 2 && (packet.streak !== previous?.streak || packet.streakUntil !== previous?.streakUntil)) {
-                this.showCombatInfo(`${packet.streak}X`);
+                this.showCombatInfo(`${packet.streak}x combo`, 1 + Math.min(1, (packet.streak-2)*0.2));
             }
             this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
             this.reset.hidden = false;

@@ -183,11 +183,22 @@ test.each([1, 2, 3])('combat transforms and a defined font size reach the render
 test.each([false,true])('combo labels share combat lanes, expire, and respect reduced motion=%s',reducedMotion=>{
     const {info,game}=setup(reducedMotion);
     info.addDamageInfo('+125 XP',32,48,'xp',1);
-    info.addDamageInfo('2-kill streak +25% XP',32,48,'combo',1);
+    info.addDamageInfo('2x combo',32,48,'combo',1);
     const labels=Object.values(info.infos), combo=labels[1];
     expect(combo.combat).toBe(true);expect(combo.fillColor).toBe('#fce045');
     expect(combo.initialY).not.toBe(labels[0].initialY);
     info.update(game.currentTime+40);
     expect(combo.textScale).toBe(reducedMotion?1:1.45);
     info.update(game.currentTime+650);expect(Object.values(info.infos)).toHaveLength(0);
+});
+
+
+test.each([false,true])('combo emphasis survives animation and reduced motion=%s',reducedMotion=>{
+    const {info,game}=setup(reducedMotion);
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,1.4);
+    const combo=Object.values(info.infos)[0];
+    info.update(game.currentTime+40);
+    expect(combo.textScale).toBeCloseTo(1.4*(reducedMotion?1:1.45));
+    info.update(game.currentTime+200);
+    expect(combo.textScale).toBeCloseTo(1.4);
 });

@@ -3,7 +3,7 @@ const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const same = (a, b) => a.x === b.x && a.y === b.y;
-const TIMING = {windup: 850, lunge: 180, recovery: 1250, followup: 1100, commit: 380, stagger: 900, attack: 800, streak: 2500};
+const TIMING = {windup: 850, lunge: 180, recovery: 1250, followup: 1100, commit: 380, stagger: 900, attack: 800, streak: 1500};
 
 class CombatPrototype {
     constructor(world, now = Date.now) {

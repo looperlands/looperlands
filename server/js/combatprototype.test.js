@@ -164,7 +164,7 @@ test('attacking other mobs keeps normal combat messages and following callbacks 
     expect(s.controller.intercept(s.player,[s.M.HIT,200])).toBe(true);
 });
 
-test('kill streak XP grows within 2.5 seconds, caps at 75 percent, and matches the normal XP packet',()=>{
+test('kill streak XP grows within 1.5 seconds, caps at 75 percent, and matches the normal XP packet',()=>{
     const s=setup();
     const kill=id=>{
         const mob={id,type:'mob',hitPoints:0,level:1,dmgTakenArray:[{id:1,dmg:10}]};s.world.entities[id]=mob;
@@ -177,7 +177,8 @@ test('kill streak XP grows within 2.5 seconds, caps at 75 percent, and matches t
     expect(kill(204)).toBe(175);expect(kill(205)).toBe(175);
     expect(s.player.handleExperience.mock.calls.map(([xp])=>xp)).toEqual([100,125,150,175,175]);
     expect(s.player.getAttackRate()).toBe(800);
-    s.advance(2500);expect(s.encounter.streak).toBe(0);
+    s.advance(1499);expect(s.encounter.streak).toBe(5);
+    s.advance(1);expect(s.encounter.streak).toBe(0);
     expect(kill(206)).toBe(100);expect(s.encounter.streak).toBe(1);
 });
 
