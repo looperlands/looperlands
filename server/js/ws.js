@@ -25,6 +25,7 @@ const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
 const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
+const {FieldGuide} = require('./fieldguide');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
 const { NpcMemory } = require('./npcmemory');
 const path = require('path');
@@ -176,12 +177,16 @@ WS.socketIOServer = Server.extend({
 
         this.cache = cache;
         this.activity = new ActivityTracker(platformClient);
-        platformClient.beforeShutdown = () => this.activity.close();
+        this.fieldGuide = new FieldGuide(cache, () => this.worldsMap || {}, platformClient);
+        const closeFieldGuide = () => this.fieldGuide.close().catch(error => console.error('[field-guide]', error.message));
+        platformClient.beforeShutdown = () => Promise.all([this.activity.close(), closeFieldGuide()]);
         this.eventEquipment = new EventEquipment(platformClient);
         process.once('beforeExit', () => this.activity.close());
+        process.once('beforeExit', closeFieldGuide);
         // Configured platform clients own shutdown and await beforeShutdown above.
         if (!platformClient.platformDefined) for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => {
             await this.activity.close();
+            await closeFieldGuide();
             process.kill(process.pid, signal);
         });
         this.npcMemory = new NpcMemory(process.env.NPC_MEMORY_FILE || path.resolve(__dirname, '../../data/chat/npcs/memory.json'));
@@ -207,6 +212,7 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        app.get('/session/:sessionId/field-guide', (req, res) => self.fieldGuide.list(req, res));
         app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName, Collectables.isTransferable)));
 
         const eventBoard = new EventBoardController(cache, () => self.worldsMap, platformClient, data => {
@@ -1258,6 +1264,7 @@ WS.socketIOServer = Server.extend({
             // Store changes in session data
             sessionData.gameData = gameData;
             cache.set(sessionId, sessionData);
+            self.fieldGuide.observe(player, 'obtain', providedItem, providedAmount);
 
             res.status(200).send({});
         });

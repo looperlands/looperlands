@@ -41,6 +41,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <link rel="stylesheet" href="css/social-chat.css" type="text/css">
         <link rel="stylesheet" href="css/event-board.css" type="text/css">
+        <link rel="stylesheet" href="css/field-guide.css" type="text/css">
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
 		<link rel="stylesheet" href="css/dialogue.css" type="text/css">
 		<link rel="stylesheet" href="css/selection-popup.css" type="text/css">
@@ -226,7 +227,8 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 							<h2>Game Functions</h2>
 							<ul>
 								<li><span>Z</span>: Toggle Inventory</li>
-								<li><span>X</span>: Toggle Achievements</li>
+								<li><span>X</span>: Journal and quest log</li>
+                                <li><span>J</span>: Journal Field Guide</li>
 								<li><span>C</span>: Toggle Settings</li>
 								<li><span>V</span>: Toggle Weapon Information</li>
 								<li><span>B</span>: Toggle Avatar Information</li>
@@ -473,7 +475,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     </div>
                     <div id="barbuttons">
                         <div id="chatbutton" class="barbutton clickable"></div>
-                        <div id="achievementsbutton" class="barbutton clickable"></div>
+                        <div id="achievementsbutton" class="barbutton clickable" role="button" tabindex="0" aria-label="Journal" title="Journal: quests and Field Guide (X / J)"></div>
                         <div id="inventorybutton" class="barbutton clickable"></div>
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
@@ -485,7 +487,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                         <div class="sc-panel-controls">
                             <button id="chat-overlay" type="button" title="Show incoming messages over the map">Map overlay</button>
                             <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
-                            <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat">−</button>
+                            <button id="chat-minimize" type="button" aria-label="Close chat" title="Close chat"><span class="sc-close-sprite" aria-hidden="true"></span></button>
                         </div>
                     </header>
                     <div class="sc-panel-content">

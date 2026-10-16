@@ -6,7 +6,7 @@ async function completeFishingCatch(player, success, bullseye, {lakes, messages,
 
     const quantity = fish.double ? 2 : 1;
     const experience = (bullseye === true ? Math.round(fish.exp * 1.5) : fish.exp) * quantity;
-    await player.playerEventBroker.lootEvent({kind: fish.name}, quantity);
+    await player.playerEventBroker.lootEvent({kind: fish.name}, quantity, {source: 'catch'});
     const activity = {target: String(fish.name), quantity, lake: fish.lakeName, rarity: lakes[fish.lakeName].fish[fish.name]};
     player.server.server.activity?.record(player, 'fishing', activity);
     player.incrementNFTSpecialItemExperience(experience);

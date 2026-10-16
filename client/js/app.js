@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide) {
 
     var App = Class.extend({
         init: function () {
@@ -58,6 +58,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
+            this.fieldGuide?.destroy();
+            if (typeof FieldGuide === 'function') this.fieldGuide = new FieldGuide(this);
             this.consumableHud?.destroy();
             if (typeof ConsumableHud === 'function') {
                 this.consumableHud = new ConsumableHud(this);
@@ -313,6 +315,12 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         toggleAchievements: function () {
+            if (this.fieldGuide) {
+                if (this.fieldGuide.opened && this.fieldGuide.view !== 'quests') this.fieldGuide.switchView('quests');
+                else if (this.fieldGuide.opened) this.fieldGuide.close();
+                else this.fieldGuide.open('quests');
+                return;
+            }
             if ($('#instructions').hasClass('active')) {
                 this.toggleInstructions();
                 $('#inventorybutton').removeClass('active');
@@ -753,6 +761,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         hideWindows: function () {
+            this.fieldGuide?.close();
             if ($('#achievements').hasClass('active')) {
                 this.toggleAchievements();
                 $('#achievementsbutton').removeClass('active');

@@ -429,6 +429,17 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getFieldGuide(nftId) {
+        const response = await this.client.get('/api/game/asset/' + encodeURIComponent(nftId) + '/field-guide', {timeout: 10000});
+        if (!Array.isArray(response.data?.facts)) throw new Error('Invalid Field Guide response');
+        return response.data.facts;
+    }
+
+    async recordFieldGuide(nftId, facts) {
+        const response = await this.client.post('/api/game/asset/field-guide', {nftId, facts}, {timeout: 10000});
+        return response.data;
+    }
+
     async getCompanions(wallet) {
         try {
             const url = `/api/game/wallet/${wallet}/companions`;

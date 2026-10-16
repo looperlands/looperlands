@@ -12,7 +12,7 @@ beforeEach(() => {
 test('awarded catches use the server-selected fish, lake and quantity',async()=>{
     const data=await completeFishingCatch(player,true,false,dependencies);
     expect(data).toEqual({target:'cobguppy',quantity:1,lake:'cobFarmLake',rarity:'common'});
-    expect(player.playerEventBroker.lootEvent).toHaveBeenCalledWith({kind:'cobguppy'},1);
+    expect(player.playerEventBroker.lootEvent).toHaveBeenCalledWith({kind:'cobguppy'},1,{source:'catch'});
     expect(player.server.server.activity.record).toHaveBeenCalledWith(player,'fishing',data);
     expect(player.handleExperience).toHaveBeenCalledWith(10);
     expect(player.pendingFish).toBeNull();
@@ -28,7 +28,7 @@ test('double catches record two fish while retaining bullseye experience',async(
     player.pendingFish.double=true;
     expect((await completeFishingCatch(player,true,true,dependencies)).quantity).toBe(2);
     expect(player.handleExperience).toHaveBeenCalledWith(30);
-    expect(player.playerEventBroker.lootEvent).toHaveBeenCalledWith({kind:'cobguppy'},2);
+    expect(player.playerEventBroker.lootEvent).toHaveBeenCalledWith({kind:'cobguppy'},2,{source:'catch'});
 });
 test('duplicate results while the award is pending cannot grant another catch',async()=>{
     let finish;

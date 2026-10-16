@@ -2,10 +2,11 @@
 #chatbox.social-chat {
     display:none; position:absolute; inset:auto 20px 58px auto; margin:0;
     width:min(800px,calc(100% - 40px)); height:min(535px,calc(100% - 90px));
-    min-height:260px; z-index:90; background:#241b24; color:#e4d0b6;
-    border:2px solid #987453; border-radius:5px;
-    box-shadow:0 0 0 3px #201922,0 10px 35px #10101080,inset 0 0 0 2px #3e2b38;
-    font:16px/1.4 GraphicPixel,sans-serif; text-align:left; overflow:hidden;
+    min-height:260px; z-index:90; background:#3e2832; color:#e4d0b6;
+    border:12px solid transparent; border-image:url('../img/common/panel.png') 12 fill round;
+    border-radius:0; image-rendering:pixelated;
+    box-shadow:0 6px 18px #10101060;
+    font:16px/1.4 GraphicPixel,sans-serif; text-align:left; overflow:visible;
     user-select:text;
 }
 #chatbox.social-chat.active {display:flex; flex-direction:column; bottom:58px;}
@@ -18,12 +19,12 @@
 #chatbox.social-chat button:disabled {opacity:.45;cursor:default;}
 #chatbox.social-chat button:focus-visible,#chatbox.social-chat input:focus-visible,#chatbox.social-chat [tabindex]:focus-visible {outline:2px solid #fce045;outline-offset:-2px;}
 #chatbox.social-chat:focus-within {outline:none;}
-#chatbox.social-chat .sc-panel-heading {height:62px;flex-shrink:0;display:flex;align-items:center;gap:15px;padding:0 18px;border-bottom:1px solid #674653;background:#33242f;}
-#chatbox.social-chat .sc-panel-heading>strong {font:25px AdvoCut,GraphicPixel,sans-serif;color:#f2d99f;}
-#chatbox.social-chat .sc-panel-heading>span {font-size:12px;color:#d1b1a6;}
+#chatbox.social-chat .sc-panel-heading {height:48px;flex-shrink:0;display:flex;align-items:center;gap:15px;padding:4px 16px;border-bottom:1px solid #b86f50;background:#3e2832;}
+#chatbox.social-chat .sc-panel-heading>strong {position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:220px;padding:11px 16px;background:#533642;border:6px solid transparent;border-image:url('../img/common/panel.png') 12 round;text-align:center;font:23px/1 GraphicPixel,sans-serif;color:#d2ba2f;text-shadow:0 2px #120c10;}
+#chatbox.social-chat .sc-panel-heading>span {display:none;}
 #chatbox.social-chat .sc-panel-controls {display:flex;margin-left:auto;}
 #chatbox.social-chat .sc-panel-controls button {width:38px;height:40px;font-size:24px;}
-#chatbox.social-chat .sc-panel-content {display:flex;flex:1;min-height:0;}
+#chatbox.social-chat .sc-panel-content {display:flex;flex:1;min-height:0;overflow:hidden;}
 #chatbox.social-chat .sc-conversation {display:flex;flex-direction:column;flex:1;min-width:0;}
 #chatbox.social-chat .sc-tabs {display:flex;gap:8px;padding:0 16px;min-height:48px;border-bottom:1px solid #49303f;}
 #chatbox.social-chat .sc-tabs button {color:#cfb9bd;font-size:15px;padding:10px 8px;border-radius:0;border-bottom:2px solid transparent;}
@@ -191,6 +192,27 @@
 #chat-mini-messages p {margin:4px 0;padding:0;font:inherit;overflow-wrap:anywhere;white-space:pre-wrap;}
 #chat-mini-messages strong {color:#f2d99f;}
 #chatbox.social-chat .sc-panel-controls #chat-overlay {width:auto;padding:0 8px;font-size:14px;}
+
+/* Match the Inventory panel's raster frame and red close control. */
+#chatbox.social-chat .sc-conversation,#chatbox.social-chat .sc-roster{background:#3e2832}
+#chatbox.social-chat .sc-tabs,#chatbox.social-chat #chat-form{border-color:#b86f50;background:#3e2832}
+#chatbox.social-chat .sc-tabs button.active{color:#d2ba2f;background:#533642;border-bottom-color:#d2ba2f}
+#chatbox.social-chat .sc-panel-controls #chat-minimize{position:absolute;right:-21px;top:-21px;z-index:5;width:44px;height:44px;min-height:44px;padding:6px;display:grid;place-items:center;background:transparent!important;border:0}
+#chatbox.social-chat .sc-close-sprite{display:block;width:32px;height:32px;background:url('../img/1/spritesheet.png') -708px -252px;background-size:844px auto;image-rendering:pixelated}
+#chatbox.social-chat #chat-minimize:hover .sc-close-sprite{background-position:-740px -252px}
+#chatbox.social-chat #chat-minimize:active .sc-close-sprite{background-position:-772px -252px}
+#chatbox.social-chat .sc-profile-close{font-size:0;width:44px;height:44px;display:grid;place-items:center;background:transparent}
+#chatbox.social-chat .sc-profile-close:after{content:'';display:block;width:32px;height:32px;background:url('../img/1/spritesheet.png') -708px -252px;background-size:844px auto;image-rendering:pixelated}
+#chatbox.social-chat .sc-profile-close:hover:after{background-position:-740px -252px}
+#chatbox.social-chat .sc-profile-close:active:after{background-position:-772px -252px}
+@media(max-width:780px){
+    #chatbox.social-chat{border-width:8px;border-image-width:8px}
+    #chatbox.social-chat .sc-panel-heading>strong{top:-29px;width:170px;font-size:20px;padding:9px}
+    #chatbox.social-chat .sc-panel-controls #chat-minimize{right:-17px;top:-22px;width:48px;height:48px}
+    #chatbox.social-chat .sc-close-sprite{width:32px;height:32px;background-size:844px auto;background-position:-708px -252px}
+    #chatbox.social-chat #chat-minimize:hover .sc-close-sprite{background-position:-740px -252px}
+    #chatbox.social-chat #chat-minimize:active .sc-close-sprite{background-position:-772px -252px}
+}
 @media(max-width:780px) {#chat-mini {left:8px;width:min(320px,calc(100% - 16px));} #chat-mini button {min-height:44px;} #chat-mini-messages {max-height:95px;}}
 
 #chatbox.social-chat .sc-title {display:block;color:#c3acb7;font:12px/1.5 GraphicPixel,sans-serif;overflow-wrap:anywhere;}
