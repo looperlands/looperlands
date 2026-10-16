@@ -20,7 +20,7 @@ function createWorker({supportsFonts = true} = {}) {
     const log = jest.fn();
     const self = {FontFace: supportsFonts ? FontFace : undefined, fonts: {add: jest.fn()}};
     const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log}};
-    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name]});`, sandbox);
+    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name], getLights: () => lights});`, sandbox);
     return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self};
 }
 
@@ -29,6 +29,20 @@ function mockImage(worker, image = {bitmap: true}) {
     worker.createImageBitmap.mockResolvedValue(image);
     return image;
 }
+
+test.each([undefined, null, []])('clears previous map lights when setLights receives %p', lights => {
+    const worker = createWorker({supportsFonts: false});
+    const previousLights = [{x: 32, y: 48, radius: 4}];
+    worker.send({type: 'setLights', lights: previousLights});
+    expect(worker.getLights()).toEqual(previousLights);
+
+    worker.send({type: 'setLights', lights});
+    expect(worker.getLights()).toEqual([]);
+
+    const nextLights = [{x: 64, y: 80, radius: 2}];
+    worker.send({type: 'setLights', lights: nextLights});
+    expect(worker.getLights()).toEqual(nextLights);
+});
 
 test('shares one sprite fetch and decode across repeated pending loads and reuses the loaded image', async () => {
     const worker = createWorker();

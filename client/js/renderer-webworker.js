@@ -480,7 +480,7 @@ onmessage = (e) => {
     } else if (e.data.type === "loadSprite") {
         sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
     }  else if (e.data.type === "setLights") {
-        lights = e.data.lights;
+        lights = e.data.lights ?? [];
     } else if (e.data.type === "setObstacles") {
         obstacles = e.data.obstacles;
         obstacles = transformObstacles(obstacles);
