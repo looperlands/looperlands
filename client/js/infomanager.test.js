@@ -64,19 +64,50 @@ test.each([['healed', '+5', '+10'], ['received', -5, -10]])('%s retains its sign
     expect(Object.values(info.infos).map(number => number.value)).toEqual([total]);
 });
 
-test('labels that are not combat amounts remain independent and retain their old animation', () => {
+test('emote and fishing labels remain independent and retain their old animation', () => {
     const {info} = setup();
-    for (const type of ['xp', 'emote', 'fishTrait']) {
+    for (const type of ['emote', 'fishTrait']) {
         info.addDamageInfo('Hello', 32, 48, type);
         info.addDamageInfo('Hello', 32, 48, type);
     }
     info.update(1500);
-    expect(Object.values(info.infos)).toHaveLength(6);
+    expect(Object.values(info.infos)).toHaveLength(4);
     for (const label of Object.values(info.infos)) {
         expect(label.combat).toBeUndefined();
         expect(label.value).toBe('Hello');
         expect(label.y).toBe(47);
     }
+});
+
+test.each([false, true])('XP rewards use combat motion and fading with reduced motion=%s', reducedMotion => {
+    const {info} = setup(reducedMotion);
+    info.addDamageInfo('+10 XP', 32, 48, 'xp');
+    const xp = Object.values(info.infos)[0];
+    expect(xp.value).toBe('+10 XP');
+    expect(xp.fillColor).toBe('rgb(0, 0, 255)');
+    info.update(1040);
+    expect(xp.textScale).toBe(reducedMotion ? 1 : 1.45);
+    info.update(1325);
+    expect(xp.y).toBe(reducedMotion ? 48 : 42.5);
+    expect(xp.x).toBe(reducedMotion ? 28 : 26);
+    expect(xp.rotation).toBe(reducedMotion ? 0 : -0.04);
+    expect(xp.opacity).toBe(1);
+    info.update(1503.75);
+    expect(xp.opacity).toBeCloseTo(0.25);
+    info.update(1650);
+    expect(Object.values(info.infos)).toHaveLength(0);
+    expect(Object.keys(info.damageLanes)).toHaveLength(0);
+    expect(Object.keys(info.damageStacks)).toHaveLength(0);
+});
+
+test('simultaneous XP rewards stay distinct and use separate animation lanes', () => {
+    const {info} = setup();
+    info.addDamageInfo('+10 XP', 32, 48, 'xp');
+    info.addDamageInfo('+25 XP', 32, 48, 'xp');
+    const rewards = Object.values(info.infos);
+    expect(rewards.map(reward => reward.value)).toEqual(['+10 XP', '+25 XP']);
+    expect(new Set(rewards.map(reward => reward.initialY)).size).toBe(2);
+    expect(Object.keys(info.damageStacks)).toHaveLength(0);
 });
 
 test('combat text expires after a long frame gap and releases its lane state', () => {
@@ -145,7 +176,5 @@ test.each([1, 2, 3])('combat transforms and a defined font size reach the render
     const renderer = Object.assign(Object.create(sandbox.Renderer.prototype), {scale, game: {infoManager: info}});
     const [combat, xp] = renderer.drawCombatInfo();
     expect(combat).toMatchObject({fontSize: 10 * scale, fontWeight: 'bold', textScale: expect.any(Number), rotation: expect.any(Number)});
-    expect(xp).toMatchObject({fontSize: 10 * scale, text: '+10 XP'});
-    expect(xp.textScale).toBeUndefined();
-    expect(xp.fontWeight).toBeUndefined();
+    expect(xp).toMatchObject({fontSize: 10 * scale, text: '+10 XP', fontWeight: 'bold', textScale: expect.any(Number), rotation: expect.any(Number)});
 });

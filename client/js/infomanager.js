@@ -35,12 +35,12 @@ define(function() {
 
             const id = ++this.nextId;
             const info = new DamageInfo(id, value, x, y, COMBAT_TEXT_DURATION, type);
-            if (combat) {
-                // Damage, healing and criticals share lanes so their labels cannot occupy the same slot.
+            if (combat || type === 'xp') {
+                // Animated combat and XP labels share lanes to keep bursts readable.
                 const previous = this.damageLanes[targetKey];
                 const lane = previous && time - previous.time < COMBAT_TEXT_DURATION ? previous.lane + 1 : 0;
                 this.damageLanes[targetKey] = {lane: lane, time: time};
-                this.damageStacks[key] = {id: id, time: time};
+                if (combat) this.damageStacks[key] = {id: id, time: time};
                 info.x += [-4, 4, -8, 8][lane % 4];
                 info.combat = true;
                 info.startedAt = time;
@@ -50,7 +50,7 @@ define(function() {
                 info.drift = [-4, 4, -6, 6][lane % 4];
                 info.lift = [16, 18, 17, 19][lane % 4];
                 info.tilt = [-0.08, 0.08, -0.12, 0.12][lane % 4];
-                info.critical = critical === true;
+                info.critical = combat && critical === true;
                 info.reducedMotion = this.game.app.settings.getReducedMotion();
                 if (Number.isFinite(amount)) info.setAmount(amount);
                 info.update(time);
