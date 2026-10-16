@@ -174,7 +174,13 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         receiveAction: function(data) {
             var action = data[0];
             if(this.handlers[action] && _.isFunction(this.handlers[action])) {
-                this.handlers[action].call(this, data);
+                try {
+                    this.handlers[action].call(this, data);
+                } catch (error) {
+                    // One broken callback must not discard the remaining server actions,
+                    // especially despawns that remove already-dead mobs and opened chests.
+                    console.error("Failed to process game action", action, error);
+                }
             }
             else {
                 console.error("Unknown action : " + action);
