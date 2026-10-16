@@ -8,18 +8,12 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8'
 const unknown = {id: 'hidden', category: 'monsters', state: 'unknown', name: null, completion: 'defeat'};
 const encountered = {...unknown, id: 'known', name: 'Bat', state: 'discovered'};
 const completed = {...encountered, id: 'done', state: 'completed'};
-test('missing and completed filters distinguish encountering a monster from beating it', () => {
-    const rows = [unknown, encountered, completed];
-    expect(Guide.visible(rows, 'monsters', 'unfinished', '').map(row => row.id)).toEqual(['hidden', 'known']);
-    expect(Guide.visible(rows, 'monsters', 'undiscovered', '').map(row => row.id)).toEqual(['hidden']);
-    expect(Guide.visible(rows, 'monsters', 'completed', '').map(row => row.id)).toEqual(['done']);
+test('entry status distinguishes encountering a monster from beating it', () => {
     expect(Guide.status(encountered)).toBe('Encountered');
     expect(Guide.status(completed)).toBe('Defeated');
 });
-test('search only matches revealed names and receiving a fish does not label it caught', () => {
-    expect(Guide.visible([unknown, encountered], 'monsters', 'all', 'bat').map(row => row.id)).toEqual(['known']);
+test('receiving a fish does not label it caught', () => {
     expect(Guide.status({...encountered, category: 'fish', completion: 'catch'})).toBe('Obtained · Not caught');
-    expect(Guide.visible([encountered], 'fish', 'all', '')).toEqual([]);
 });
 test('tall sprite frames fit the slot without revealing other rows of the atlas', () => {
     const style = Guide.spriteStyle('bat');

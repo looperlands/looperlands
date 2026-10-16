@@ -18,11 +18,6 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
     function remaining(entry) {
         return entry.state === 'unknown' ? entry.hint : {obtain: 'Collect this item', loot: 'Loot from a defeated monster', catch: 'Catch one yourself', defeat: 'Defeat this monster'}[entry.completion];
     }
-    function visible(entries, category, filter, query) {
-        return entries.filter(entry => entry.category === category &&
-            (filter === 'all' || filter === 'undiscovered' && entry.state === 'unknown' || filter === 'unfinished' && entry.state !== 'completed' || filter === 'completed' && entry.state === 'completed') &&
-            (!query || entry.name?.toLowerCase().includes(query.toLowerCase())));
-    }
     function spriteStyle(name) {
         const definition = sprites[name];
         if (!definition) return null;
@@ -36,7 +31,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
     class Journal {
         constructor(app) {
             this.app = app; this.opened = false; this.request = 0; this.data = null;
-            this.filter = 'all'; this.query = ''; this.selected = null; this.pinned = null;
+            this.selected = null; this.pinned = null;
             this.view = 'quests'; this.quests = null; this.questFilter = 'IN_PROGRESS'; this.selectedQuest = null;
             this.root = node('div', 'field-guide'); this.root.hidden = true;
             this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'true'); this.root.setAttribute('aria-label', 'Journal');
@@ -117,7 +112,6 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
         switchView(view) {this.view = view; this.error = false; this.render(); this.load();}
         render(message, failure = false) {
             const active = document.activeElement, focus = active?.dataset?.fgFocus;
-            const position = active?.selectionStart;
             const wasInside = this.root.contains(active);
             const scroll = this.root.querySelector('.fg-sections')?.scrollTop || 0;
             this.root.replaceChildren();
@@ -133,20 +127,14 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             panel.append(tabs);
             if (this.view === 'quests') {
                 this.renderQuests(panel, message, failure);
-                this.root.append(panel); this.restoreFocus(focus, position, wasInside, scroll); return;
+                this.root.append(panel); this.restoreFocus(focus, wasInside, scroll); return;
             }
             const tools = node('div', 'fg-tools');
             const maps = node('select', 'fg-map'); maps.setAttribute('aria-label', 'Map'); maps.dataset.fgFocus = 'map';
             for (const map of this.data?.maps || [this.mapId]) {const option = node('option', '', mapNames[map] || map); option.value = map; maps.append(option);}
             maps.value = this.mapId;
             maps.addEventListener('change', () => {this.mapId = maps.value; this.selected = null; this.data = null; this.render('Opening this map…'); this.load();});
-            const search = node('input', 'fg-search'); search.type = 'search'; search.placeholder = 'Search discoveries…'; search.value = this.query;
-            search.setAttribute('aria-label', 'Search revealed entries'); search.dataset.fgFocus = 'search';
-            search.addEventListener('input', () => {this.query = search.value; this.render();});
-            const filter = node('select', 'fg-filter'); filter.setAttribute('aria-label', 'Entry status'); filter.dataset.fgFocus = 'filter';
-            for (const [value, text] of [['all', 'All'], ['undiscovered', 'Undiscovered'], ['unfinished', 'Unfinished'], ['completed', 'Completed']]) {const option = node('option', '', text); option.value = value; filter.append(option);}
-            filter.value = this.filter; filter.addEventListener('change', () => {this.filter = filter.value; this.render();});
-            tools.append(maps, search, filter);
+            tools.append(maps);
             if (this.data) {
                 const totals = this.data.totals, summary = node('div', 'fg-summary');
                 summary.append(node('span', '', totals.discovered + ' / ' + totals.total + ' discovered'), node('span', '', totals.completed + ' / ' + totals.total + ' completed'));
@@ -169,12 +157,11 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 panel.append(legend);
             }
             this.root.append(panel);
-            this.restoreFocus(focus, position, wasInside, scroll);
+            this.restoreFocus(focus, wasInside, scroll);
         }
-        restoreFocus(focus, position, wasInside, scroll) {
+        restoreFocus(focus, wasInside, scroll) {
             const next = [...this.root.querySelectorAll('[data-fg-focus]')].find(element => element.dataset.fgFocus === focus);
             (next || (wasInside ? this.root.querySelector('button') : null))?.focus();
-            if (next?.type === 'search' && position != null) next.setSelectionRange(position, position);
             const sections = this.root.querySelector('.fg-sections');
             if (sections) sections.scrollTop = scroll;
         }
@@ -223,7 +210,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             const [title, verb] = categories[category], section = node('section', 'fg-section'); section.setAttribute('aria-label', title);
             const required = this.data.entries.filter(entry => entry.category === category && !entry.bonus);
             section.append(node('h2', '', title), node('p', 'fg-category-progress', required.filter(entry => entry.state === 'completed').length + ' / ' + required.length + ' ' + verb));
-            const entries = visible(this.data.entries, category, this.filter, this.query), slots = node('div', 'fg-slots');
+            const entries = this.data.entries.filter(entry => entry.category === category), slots = node('div', 'fg-slots');
             for (const entry of entries) {
                 const slot = button('', () => {this.selected = this.selected === entry.id ? null : entry.id; this.render();}, 'fg-slot' + (this.selected === entry.id ? ' fg-selected' : ''));
                 slot.dataset.fgFocus = entry.id; slot.setAttribute('aria-pressed', String(entry.id === this.selected));
@@ -235,7 +222,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 slots.append(slot);
             }
             section.append(slots);
-            if (!entries.length) section.append(node('p', 'fg-empty', required.length ? 'No matching entries.' : 'No entries published.'));
+            if (!entries.length) section.append(node('p', 'fg-empty', 'No entries published.'));
             const selected = entries.find(entry => entry.id === this.selected);
             if (selected) {
                 const details = node('aside', 'fg-parchment'); details.setAttribute('aria-label', 'Entry details');
@@ -262,6 +249,6 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             this.root.remove(); this.reminder.remove();
         }
     }
-    Journal.visible = visible; Journal.status = status; Journal.spriteStyle = spriteStyle;
+    Journal.status = status; Journal.spriteStyle = spriteStyle;
     return Journal;
 });

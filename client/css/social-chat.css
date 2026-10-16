@@ -201,7 +201,7 @@
 #chatbox.social-chat .sc-conversation,#chatbox.social-chat .sc-roster{background:#3e2832}
 #chatbox.social-chat .sc-channel-heading,#chatbox.social-chat #chat-form{border-color:#b86f50;background:#3e2832}
 #chatbox.social-chat .sc-tabs button.active{color:#d2ba2f;background:#533642;border-bottom-color:#d2ba2f}
-#chatbox.social-chat .sc-panel-controls #chat-minimize{width:32px;height:32px;min-height:32px;padding:0;display:grid;place-items:center;background:transparent!important;border:0}
+#chatbox.social-chat .sc-panel-controls #chat-minimize{position:absolute;right:-21px;top:-21px;z-index:5;width:44px;height:44px;min-height:44px;padding:6px;display:grid;place-items:center;background:transparent!important;border:0}
 #chatbox.social-chat .sc-close-sprite{display:block;width:32px;height:32px;background:url('../img/1/spritesheet.png') -708px -252px;background-size:844px auto;image-rendering:pixelated}
 #chatbox.social-chat #chat-minimize:hover .sc-close-sprite{background-position:-740px -252px}
 #chatbox.social-chat #chat-minimize:active .sc-close-sprite{background-position:-772px -252px}
@@ -211,6 +211,7 @@
 #chatbox.social-chat .sc-profile-close:active:after{background-position:-772px -252px}
 @media(max-width:780px){
     #chatbox.social-chat{border-width:8px;border-image-width:8px}
+    #chatbox.social-chat .sc-panel-controls #chat-minimize{right:-17px;top:-17px}
     #chatbox.social-chat .sc-panel-heading>strong{top:-29px;width:160px;font-size:18px;padding:6px}
     #chatbox.social-chat .sc-panel-controls #chat-overlay{width:32px;padding:0}
     #chatbox.social-chat .sc-overlay-icon{display:block}

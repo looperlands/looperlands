@@ -4,7 +4,7 @@ Open the **Journal** from the existing quest-book button on the HUD. It contains
 
 Items, Fish, and Monsters use the Inventory panel's copper raster frame, compact sprite slots, yellow headings, parchment entry details, and original red close sprite at 32px inside a 44px interaction target. Chat shares the same frame, title plaque, and smaller close control.
 
-Select one visited map at a time. The guide shows discovered and completed totals, a search over revealed names, status filters, and a pinned discovery reminder. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
+Select one visited map at a time. The guide shows all published entries for that map, discovered and completed totals, and a pinned discovery reminder. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
 
 ## Progress and visibility
 
