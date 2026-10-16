@@ -483,16 +483,9 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                 <div id="emoteMenu" class="clickable" role="group" aria-label="Choose an emote"></div>
                 <section id="chatbox" class="social-chat" aria-label="Chat">
                     <header class="sc-panel-heading">
-                        <strong>Chat</strong><span>Good company. Great adventures.</span>
-                        <div class="sc-panel-controls">
-                            <button id="chat-overlay" type="button" title="Show incoming messages over the map">Map overlay</button>
-                            <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
-                            <button id="chat-minimize" type="button" aria-label="Close chat" title="Close chat"><span class="sc-close-sprite" aria-hidden="true"></span></button>
-                        </div>
+                        <strong>Chat</strong>
                     </header>
-                    <div class="sc-panel-content">
-                        <div class="sc-conversation">
-                            <div class="sc-channel-heading">
+                    <div class="sc-channel-heading">
                                 <nav id="chat-tabs" class="sc-tabs" aria-label="Chat channels" aria-describedby="chat-channel-info">
                                     <button type="button" data-chat-tab="world" class="active">World</button>
                                     <button type="button" data-chat-tab="map">My map</button>
@@ -500,7 +493,14 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                                 </nav>
                                 <div id="chat-channel-info" hidden></div>
                                 <button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button>
-                            </div>
+                                <div class="sc-panel-controls">
+                                    <button id="chat-overlay" type="button" aria-label="Map overlay" title="Show incoming messages over the map"><span class="sc-overlay-icon" aria-hidden="true"></span><span class="sc-overlay-label">Map overlay</span></button>
+                                    <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
+                                    <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat"><span class="sc-close-sprite" aria-hidden="true"></span></button>
+                                </div>
+                    </div>
+                    <div class="sc-panel-content">
+                        <div class="sc-conversation">
                             <div id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0"></div>
                             <p id="chat-error" role="status" hidden></p>
                             <form id="chat-form" class="sc-composer">
