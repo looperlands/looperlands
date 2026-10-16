@@ -44,7 +44,7 @@ define(function() {
                     info.fillColor = presentation.color || info.fillColor;
                     info.strokeColor = '#352137';
                 }
-                if (type !== 'comboPraise') this.damageLanes[targetKey] = {lane: lane + (info.praise ? 1 : 0), time: time};
+                if (type !== 'comboPraise' && presentation.motion !== 'counter') this.damageLanes[targetKey] = {lane: lane + (info.praise ? 1 : 0), time: time};
                 if (combat) this.damageStacks[key] = {id: id, time: time};
                 info.x += [-4, 4, -8, 8][lane % 4];
                 info.combat = true;
@@ -73,7 +73,11 @@ define(function() {
                     info.initialX = x - 10; info.drift = -4; info.lift = 12;
                 }
                 if (presentation.motion === 'counter') {
-                    info.initialX = x + 10; info.initialY = y - 24;
+                    // Socket events and queued damage can arrive in either order.
+                    const criticalStack = this.damageStacks['inflicted:' + targetKey + ':true'];
+                    const criticalInfo = criticalStack && this.infos[criticalStack.id];
+                    info.initialX = x + 10;
+                    info.initialY = (criticalInfo?.initialY ?? y - (lane % 4) * 16) - 24;
                     info.drift = 4; info.lift = 14; info.tilt = 0.04;
                 }
                 info.update(time);

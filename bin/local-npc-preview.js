@@ -53,7 +53,7 @@ api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
     combat: [...(previewCombat?.encounters.values() || [])].map(e => ({phase:e.phase, until:e.until, serverNow:Date.now(),
         ...previewCombat.fieldAttacks.state(e), combo:e.combo, comboUntil:e.comboUntil, streak:e.streak, streakUntil:e.streakUntil, streakBonusPercent:previewCombat.streakBonus(e), chargeHit:e.chargeHit, correction:e.correction, lastCorrection:e.lastCorrection, xp:previewWorld.server.cache.get(e.player.sessionId)?.xp, stats:e.stats, event:e.event, lane:e.lane,
-        player:{x:e.player.x,y:e.player.y,hp:e.player.hitPoints},mob:{id:e.mob.id,x:e.mob.x,y:e.mob.y,hp:e.mob.hitPoints}})),
+        player:{x:e.player.x,y:e.player.y,hp:e.player.hitPoints},mob:e.mob?{id:e.mob.id,x:e.mob.x,y:e.mob.y,hp:e.mob.hitPoints}:null})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
@@ -152,13 +152,18 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const world = new World('world_main', 20, server);
     previewWorld = world;
     if (combatPreview) {
-        const {CombatPrototype} = require('../server/js/combatprototype');
-        previewCombat = new CombatPrototype(world);
-        setInterval(() => previewCombat.tick(), 50).unref();
+        if (process.env.COMBAT_LIVE_PREVIEW !== '1') {
+            const {CombatPrototype} = require('../server/js/combatprototype');
+            previewCombat = new CombatPrototype(world);
+        }
+
         server.app.get('/__combat_preview/play', async (req, res) => {
             try { res.redirect(await createSession(0)); }
             catch (error) { res.status(500).send(error.message); }
         });
+    }
+    if (!combatPreview || process.env.COMBAT_LIVE_PREVIEW === '1') {
+        previewCombat = new (require('../server/js/combatcontroller'))(world);
     }
     const Messages = require('../server/js/message');
     const packetFor = player => ({...world.npcBehavior.ambienceFor(player), ...world.scenes.packet(player),
@@ -171,7 +176,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1'});
         for (const player of Object.values(world.players)) {
             world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
@@ -195,7 +200,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.scenes.get('lantern-picnic');
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview,
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1',
             previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();
@@ -218,7 +223,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     }, 1000);
     server.onConnect(function(connection) {
         const player = new Player(connection, world);
-        previewCombat?.bind(player);
+        world.combat?.bind(player);
         world.connect_callback(player);
     });
     server.onRequestStatus(() => JSON.stringify([world.playerCount]));

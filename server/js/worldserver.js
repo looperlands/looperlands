@@ -309,6 +309,7 @@ module.exports = World = cls.Class.extend({
             }
             if (self.npcBehavior) self.npcBehavior.tick();
             self.scenes?.tick();
+            self.combat?.tick();
             self.processGroups();
             self.processQueues();
 
@@ -1163,7 +1164,7 @@ module.exports = World = cls.Class.extend({
     },
 
     moveEntity: function (entity, x, y) {
-        if (this.combatPrototype?.fieldAttacks.held(entity)) return;
+        if (this.combat?.fieldAttacks.held(entity)) return;
         if (entity) {
             entity.setPosition(x, y);
             this.handleEntityGroupMembership(entity);
@@ -1365,8 +1366,8 @@ module.exports = World = cls.Class.extend({
                     accompliceShare = Math.round(accompliceShare * (100 + buff.percent) / 100);
                 }
                 accompliceShare = accompliceShare * accomplice.playerClassModifiers.xp;
-                if (self.combatPrototype) {
-                    accompliceShare = self.combatPrototype.killExperience(mob, accomplice, killer, accompliceShare);
+                if (self.combat) {
+                    accompliceShare = self.combat.killExperience(mob, accomplice, killer, accompliceShare);
                 }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));

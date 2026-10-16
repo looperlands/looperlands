@@ -8,8 +8,20 @@ define(function () {
             this.onPacket = packet => this.receive(packet);
         }
 
+        connect(socket) {
+            if (socket !== this.liveSocket) {
+                this.liveSocket?.off('combat',this.onPacket);
+                this.liveSocket=socket;
+                socket.on('combat',this.onPacket);
+            }
+            socket.emit('combat',{action:'ready'});
+        }
+
         configure(config) {
-            if (!config?.previewControls || !config.previewCombat) { this.clear(); return; }
+            if (!config?.previewControls || !config.previewCombat) {
+                if (!this.state?.live) this.clear();
+                return;
+            }
             const socket = this.game.client?.connection;
             if (socket && socket !== this.socket) {
                 this.socket?.off('combat-preview', this.onPacket);
@@ -47,10 +59,13 @@ define(function () {
             }
         }
 
-        send(action, values = {}) { this.socket?.emit('combat-preview', {action, ...values}); }
+        send(action, values = {}) {
+            if (this.state?.live) this.liveSocket?.emit('combat',{action,...values});
+            else this.socket?.emit('combat-preview',{action,...values});
+        }
         now() { return Date.now() + (this.offset || 0); }
         locked() { return this.enabled && this.state && (this.now() < this.state.lockUntil || this.now() < (this.pendingTechnique?.until || 0)); }
-        owns(entity) { return this.enabled && (this.state?.fieldAttacks?.some(a=>Number(a.mob.id)===Number(entity.id)) || entity.id === this.state?.mob.id || entity === this.game.player && (this.selected || this.locked())); }
+        owns(entity) { return this.enabled && (this.state?.fieldAttacks?.some(a=>Number(a.mob.id)===Number(entity.id)) || this.state?.mob && entity.id === this.state.mob.id || entity === this.game.player && !this.state?.live && (this.selected || this.locked())); }
 
         getHealthTargetId() {
             return this.game.player?.target?.id ?? (this.enabled && this.selected ? this.selectedMobId : null);
@@ -60,11 +75,11 @@ define(function () {
             if (!this.enabled) return false;
             this.pendingTechnique = null;
             this.selectedMobId = entity.id;
-            this.selected = Number(entity.id) === Number(this.state?.mob.id);
-            this.send('select', {mobId:entity.id});
+            this.selected = Number(entity.id) === Number(this.state?.mob?.id);
+            if (!this.state?.live) this.send('select', {mobId:entity.id});
             if (this.selected) {
                 this.game.player.disengage();
-                const mob = this.game.getEntityById(this.state.mob.id);
+                const mob = this.game.getEntityById(this.state.mob?.id);
                 if (mob && !this.game.player.isAdjacentNonDiagonal(mob)) {
                     this.game.player.follow(mob);
                 }
@@ -76,7 +91,7 @@ define(function () {
             const state=this.state;if(!state)return state;
             const combo=state.fieldCombo;
             const attack=combo ? state.fieldAttacks?.find(a=>a.mob.id===combo.mob.id)
-                : state.fieldAttacks?.find(a=>['windup','lunge'].includes(a.phase));
+                : state.fieldAttacks?.find(a=>(!state.live || a.targetId===this.game.player.id) && ['windup','lunge'].includes(a.phase));
             if(!combo&&!attack)return state;
             return {...state,...attack,mob:combo?.mob||attack.mob,
                 combo:combo?.kind||null,comboUntil:combo?.until||0,
@@ -100,16 +115,16 @@ define(function () {
         technique() {
             if (!this.canTechnique()) return false;
             this.selected = true;
-            this.game.player.disengage();
+            if (!this.state?.live) this.game.player.disengage();
             const state=this.techniqueState();
-            this.selectedMobId = state.mob.id;
-            this.pendingTechnique = {mobId:state.mob.id,combo:state.combo || 'counter',until:this.now()+350};
+            this.selectedMobId = state.mob?.id;
+            this.pendingTechnique = {mobId:state.mob?.id,combo:state.combo || 'counter',until:this.now()+350};
             if (this.game.player.isMoving()) this.game.player.stop();
             this.flushTechnique();
             return true;
         }
 
-        techniqueKey(state) { return `${state.mob.id}:${state.combo}:${state.comboUntil}`; }
+        techniqueKey(state) { return `${state.mob?.id}:${state.combo}:${state.comboUntil}`; }
 
         autoTechnique() {
             const state = this.techniqueState(), player = this.game.player;
@@ -128,13 +143,13 @@ define(function () {
                 this.pendingTechnique = null;
                 return;
             }
-            if (state.mob.id !== pending.mobId || state.combo !== pending.combo || this.now() > state.comboUntil || player.isMoving()
+            if (state.mob?.id !== pending.mobId || state.combo !== pending.combo || this.now() > state.comboUntil || player.isMoving()
                 || Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) !== 1) return;
             this.pendingTechnique = null;
             const key = this.techniqueKey(state);
             if (this.lastTechniqueKey === key) return;
             this.lastTechniqueKey = key;
-            this.send('technique', state.mob.id === this.state.mob.id ? {} : {mobId:state.mob.id});
+            this.send('technique', state.mob?.id === this.state.mob?.id ? {} : {mobId:state.mob?.id});
         }
 
         playStrike(player, mob, label) {
@@ -204,7 +219,7 @@ define(function () {
             }
             const starting = !this.enabled;
             this.enabled = true;
-            if (starting) this.selectedMobId = packet.mob.id;
+            if (starting) this.selectedMobId = packet.mob?.id;
             if (starting || packet.event?.kind === 'reset' && this.lastEvent !== packet.event.id) this.selected = true;
             this.offset = packet.serverNow - Date.now();
             if (starting || this.state?.correction !== packet.correction) this.correct(packet.player);
@@ -221,8 +236,10 @@ define(function () {
                     scale:1 + Math.min(1, (packet.streak-2)*0.2), praise:tier[0], color:tier[1]
                 });
             }
-            this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
-            this.reset.hidden = false;
+            if (!packet.live && this.toggle) {
+                this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
+                this.reset.hidden = false;
+            }
             this.update();
         }
 
@@ -286,7 +303,7 @@ define(function () {
             this.flushTechnique();
             this.autoTechnique();
             const fieldFrames=this.updateFieldAttacks(now);
-            const mob = game.getEntityById(state.mob.id);
+            const mob = game.getEntityById(state.mob?.id);
             if (mob) {
                 mob.isAggressive = false; mob.attackingMode = false; mob.followingMode = false;
                 mob.target = null; mob.path = null; mob.isFading = false;
@@ -332,22 +349,24 @@ define(function () {
                     }
                 }
             }
-            const technique = this.techniqueState();
-            const combo = technique.combo && now <= technique.comboUntil ? technique.combo : null;
-            const phaseLabel = technique.phase === 'windup' ? 'Sidestep now' : combo === 'counter' ? 'Counter ready'
-                : state.phase === 'round' ? state.event.label : 'Trainer ' + state.phase;
-            if (this.status && this.status.textContent !== phaseLabel) this.status.textContent = phaseLabel;
-            const adjacent = Math.abs(player.gridX-technique.mob.x)+Math.abs(player.gridY-technique.mob.y) === 1;
-            this.action.hidden = this.autoTechniques || !combo;
-            this.action.disabled = !this.canTechnique();
-            const key = game.gamepadListener?.isActive() ? 'A' : game.touchListener?.hasTouchInput ? '' : 'Space';
-            this.action.textContent = 'Counter' + (adjacent ? (key ? ' · ' + key : '') : ' · move closer');
-            this.action.title = 'Move: WASD / arrows / drag. Sidestep the marked tiles; Counter follows automatically while in range.';
+            if (!state.live) {
+                const technique = this.techniqueState();
+                const combo = technique.combo && now <= technique.comboUntil ? technique.combo : null;
+                const phaseLabel = technique.phase === 'windup' ? 'Sidestep now' : combo === 'counter' ? 'Counter ready'
+                    : state.phase === 'round' ? state.event.label : 'Trainer ' + state.phase;
+                if (this.status && this.status.textContent !== phaseLabel) this.status.textContent = phaseLabel;
+                const adjacent = Math.abs(player.gridX-technique.mob.x)+Math.abs(player.gridY-technique.mob.y) === 1;
+                this.action.hidden = this.autoTechniques || !combo;
+                this.action.disabled = !this.canTechnique();
+                const key = game.gamepadListener?.isActive() ? 'A' : game.touchListener?.hasTouchInput ? '' : 'Space';
+                this.action.textContent = 'Counter' + (adjacent ? (key ? ' · ' + key : '') : ' · move closer');
+                this.action.title = 'Move: WASD / arrows / drag. Sidestep the marked tiles; Counter follows automatically while in range.';
+            }
             if (game.renderer && this.renderer !== game.renderer) {
                 this.renderer = game.renderer;
                 this.renderer.registerExtension('combat-prototype-worker.js');
             }
-            const frame = {...state, now, showHealthBar:this.getHealthTargetId() === state.mob.id, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? state.mob.x*16, mobY:mob?.y ?? state.mob.y*16, playerX:player.x, playerY:player.y};
+            const frame = {...state, now, showHealthBar:this.getHealthTargetId() === state.mob?.id, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? (state.mob?.x||0)*16, mobY:mob?.y ?? (state.mob?.y||0)*16, playerX:player.x, playerY:player.y};
             this.renderer?.setExtensionData('combat-prototype-ground', frame);
             this.renderer?.setExtensionData('combat-prototype', frame);
         }

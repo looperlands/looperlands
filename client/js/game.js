@@ -7228,6 +7228,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.player.name = name;
                     console.log(self.storage);
                     self.player.setGridPosition(x, y);
+                    self.combatPrototype?.connect(self.client.connection);
                     self.playerPositionReady = true;
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;

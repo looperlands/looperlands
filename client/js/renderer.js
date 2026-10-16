@@ -393,7 +393,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                 if(anim && sprite) {
                     const healthTargetId = this.game.combatPrototype?.getHealthTargetId() ?? this.game.player?.target?.id;
-                    if (entity instanceof Mob && entity.id === healthTargetId && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob.id) {
+                    if (entity instanceof Mob && entity.id === healthTargetId && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob?.id) {
                         entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+3,
                             hp:entity.hitPoints,maxHp:entity.maxHitPoints};
                     }
@@ -737,7 +737,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             drawEntityName: function(entity, oy) {
                 let textData = [];
     
-                if (entity.id === this.game.combatPrototype?.state?.mob.id) return textData;
+                if (entity.id === this.game.combatPrototype?.state?.mob?.id) return textData;
                 if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                     let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                     let opacity = (entity.id === this.game.playerId || entity.attackingMode || entity.followingMode || entity.inCombat) ? 1.0 : 0.5;

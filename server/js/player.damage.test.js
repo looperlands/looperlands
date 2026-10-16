@@ -78,3 +78,16 @@ test.each([true,false])('door travel ends practice only when the teleport is acc
         expect(world.pushRelevantEntityListTo).toHaveBeenCalledWith(player);
     }else expect(world.combatPrototype.disable).not.toHaveBeenCalled();
 });
+
+
+test.each([true,false])('live door travel rebases combat only after destination acceptance: %s',allowed=>{
+    const {player,world,receive}=setup();
+    Object.assign(world,{map:{getRequiredNFT:()=>undefined,getDoorTrigger:()=>1},
+        checkTriggerActive:()=>allowed,isValidPosition:()=>true,
+        combat:{teleport:jest.fn()},handlePlayerVanish:jest.fn(),pushRelevantEntityListTo:jest.fn()});
+    Object.assign(player,{x:10,y:10,hitPoints:42,setPosition(x,y){this.x=x;this.y=y;},clearTarget:jest.fn(),broadcast:jest.fn()});
+    world.combat.teleport.mockImplementation(p=>expect([p.x,p.y,p.hitPoints]).toEqual([150,50,42]));
+    receive([Types.Messages.TELEPORT,150,50]);
+    expect([player.x,player.y]).toEqual(allowed?[150,50]:[10,10]);
+    expect(world.combat.teleport).toHaveBeenCalledTimes(allowed?1:0);
+});

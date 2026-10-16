@@ -12,10 +12,13 @@ function setup() {
     }
     const packet = function(...args) { this.args = args; };
     const exported = {exports:{}};
-    vm.runInNewContext(fs.readFileSync(require.resolve('./combatprototype'), 'utf8'), {
-        module: exported, require: name => name === './combatfieldattacks' ? class {constructor(){this.attacks=new Map();} tick(){} clear(){} state(){return {};} intercept(){return false;}} : name.endsWith('gametypes') ? {Messages:M,Entities:{OGRE:9}}
-            : name==='./mob' ? Mob : {Damage:packet,Move:packet,Teleport:packet,Destroy:packet},
-    });
+    const baseExport={exports:{}};
+    const dependencies = name => name === './combatcontroller' ? baseExport.exports
+        : name === './combatfieldattacks' ? class {constructor(){this.attacks=new Map();} tick(){} clear(){} state(){return {};} intercept(){return false;}}
+            : name.endsWith('gametypes') ? {Messages:M,Entities:{OGRE:9}}
+            : name==='./mob' ? Mob : {Damage:packet,Move:packet,Teleport:packet,Destroy:packet};
+    vm.runInNewContext(fs.readFileSync(require.resolve('./combatcontroller'),'utf8'),{module:baseExport,require:dependencies});
+    vm.runInNewContext(fs.readFileSync(require.resolve('./combatprototype'),'utf8'),{module:exported,require:dependencies});
     const {CombatPrototype,TIMING} = exported.exports;
     const socket = {emit:jest.fn(),on:jest.fn()};
     const player = {id:1,type:'player',x:10,y:10,hitPoints:45,maxHitPoints:100,hasEnteredGame:true,

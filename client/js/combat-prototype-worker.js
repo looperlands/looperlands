@@ -31,6 +31,7 @@
         },
         draw(ctx, state, view) {
             for (const attack of state.fieldAttacks || []) { ctx.save();renderer.draw(ctx,attack,view);ctx.restore(); }
+            if (!state.mob) return;
             ctx.scale(view.scale || 1, view.scale || 1);
             const x=state.mobX+8-view.cameraX, y=state.mobY-25-view.cameraY;
             const labels={chase:'',windup:'CHARGING',lunge:'LUNGE',recovery:'OPEN',round:state.event?.label || 'RESET'};

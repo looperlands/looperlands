@@ -279,3 +279,37 @@ test('counter label anchors to the struck mob with its own flight direction',()=
     prototype.receive({...packet,event:{id:2,kind:'attack',label:'Counter'}});
     expect(game.infoManager.addDamageInfo).toHaveBeenLastCalledWith('Counter!',mob.x,mob.y-15,'combo',mob.id,false,{motion:'counter'});
 });
+
+
+test('normal gameplay starts without trainer controls and keeps combat on across ambience updates',()=>{
+    const {prototype,packet,game,mob}=setup();
+    prototype.clear();prototype.toggle=null;prototype.reset=null;prototype.action=null;
+    game.getEntityById=id=>id===100?mob:undefined;
+    const socket={on:jest.fn(),off:jest.fn(),emit:jest.fn()};prototype.connect(socket);
+    expect(socket.emit).toHaveBeenCalledWith('combat',{action:'ready'});
+    prototype.receive({...packet,live:true,mob:null,combo:null,event:null,phase:'field',fieldAttacks:[]});
+    prototype.configure({});expect(prototype.enabled).toBe(true);
+    expect(prototype.owns(game.player)).toBe(false);
+    prototype.reportPosition();expect(socket.emit).toHaveBeenLastCalledWith('combat',expect.objectContaining({action:'move'}));
+});
+test('another player charge is visible but cannot create a local automatic counter',()=>{
+    const {prototype,packet,game,mob,player}=setup();
+    game.getEntityById=id=>id===100?mob:undefined;prototype.autoTechniques=true;
+    prototype.liveSocket={emit:jest.fn()};
+    mob.cancelPath=jest.fn();
+    prototype.receive({...packet,live:true,mob:null,combo:null,event:null,phase:'field',fieldAttacks:[{
+        id:1,targetId:999,phase:'windup',until:Date.now()+1000,direction:{x:0,y:1},lane:[],mob:packet.mob}]});
+    expect(prototype.owns(mob)).toBe(true);expect(prototype.owns(player)).toBe(false);
+    expect(prototype.canTechnique()).toBe(false);expect(prototype.liveSocket.emit).not.toHaveBeenCalled();
+});
+
+test('live automatic counters preserve the normal target and attack loop',()=>{
+    const {prototype,packet,game,mob,player}=setup();
+    prototype.liveSocket={emit:jest.fn()};prototype.autoTechniques=true;
+    game.getEntityById=id=>id===100?mob:undefined;player.target=mob;player.disengage.mockClear();
+    prototype.receive({...packet,live:true,mob:null,combo:null,event:null,phase:'field',fieldAttacks:[],
+        fieldCombo:{kind:'counter',until:Date.now()+1000,mob:packet.mob}});
+    expect(prototype.liveSocket.emit).toHaveBeenCalledWith('combat',{action:'technique',mobId:100});
+    expect(player.disengage).not.toHaveBeenCalled();expect(player.target).toBe(mob);
+    expect(prototype.owns(player)).toBe(false);
+});

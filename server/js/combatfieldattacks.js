@@ -1,4 +1,4 @@
-// Local-preview charges default on for mobile enemies, with narrow mechanic exclusions.
+// Charges default on for mobile enemies, with narrow mechanic exclusions.
 const Types=require('../../shared/js/gametypes');
 const Properties=require('./properties');
 const Formulas=require('./formulas');
@@ -47,7 +47,9 @@ class FieldAttacks {
     }
     strike(encounter,mob,multiplier,label){
         const player=encounter.player;
-        const points=Math.max(1,Math.round(Formulas.dmg(player.getLevel()+player.getWeaponLevel(),mob.armorLevel)*multiplier*player.playerClassModifiers.meleeDamageDealt));
+        const buff=player.getActiveBuff?.();
+        const power=(player.getLevel()+player.getWeaponLevel())*(buff?.stat==='atk' ? 1+buff.percent/100 : 1);
+        const points=Math.max(1,Math.round(Formulas.dmg(power,mob.armorLevel)*multiplier*player.playerClassModifiers.meleeDamageDealt));
         mob.receiveDamage(points,player.id);
         this.world.handleMobHate(mob.id,player.id,points*player.playerClassModifiers.hate);
         const previous=this.controller.activeAttack;
@@ -102,12 +104,17 @@ class FieldAttacks {
             encounter.fieldCombo=null;
         }
     }
+    mobState(mob){return {id:mob.id,x:mob.x,y:mob.y,hp:mob.hitPoints,maxHp:mob.maxHitPoints,level:mob.level};}
+    attackState(a){return {id:a.id,phase:a.phase,until:a.until,windup:a.windup,direction:a.direction,lane:a.lane,
+        targetId:a.encounter.player.id,mob:this.mobState(a.mob)};}
+    visibleState(player){
+        const entities=this.world.groups?.[player.group]?.entities || {};
+        return [...this.attacks.values()].filter(a=>a.encounter.player===player || entities[a.mob.id]===a.mob).map(a=>this.attackState(a));
+    }
     state(encounter){
-        const mobState=mob=>({id:mob.id,x:mob.x,y:mob.y,hp:mob.hitPoints,maxHp:mob.maxHitPoints,level:mob.level});
-        const attacks=[...this.attacks.values()].filter(a=>a.encounter===encounter).map(a=>({id:a.id,phase:a.phase,until:a.until,
-            windup:a.windup,direction:a.direction,lane:a.lane,mob:mobState(a.mob)}));
         const combo=encounter.fieldCombo;
-        return {fieldAttacks:attacks,fieldCombo:combo?{kind:combo.kind,until:combo.until,mob:mobState(combo.mob)}:null,fieldEvent:encounter.fieldEvent};
+        return {fieldAttacks:[...this.attacks.values()].filter(a=>a.encounter===encounter).map(a=>this.attackState(a)),
+            fieldCombo:combo?{kind:combo.kind,until:combo.until,mob:this.mobState(combo.mob)}:null,fieldEvent:encounter.fieldEvent};
     }
 }
 module.exports=FieldAttacks;

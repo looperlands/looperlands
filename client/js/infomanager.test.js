@@ -227,10 +227,12 @@ test.each([false,true])('praise is a separate delayed tilted popup beside its co
     expect(data[1]).toMatchObject({text:'Awesome!',fontSize:21});
 });
 
-test.each([false,true])('counter label and damage start separated and diverge with reduced motion %s',reduced=>{
+test.each([[false,false],[true,false],[false,true],[true,true]])('counter text stays close and separated: reduced motion %s, label first %s',(reduced,labelFirst)=>{
     const {info}=setup(reduced);
-    const damage=info.addDamageInfo(22,64,49,'inflicted',100,true);
-    const label=info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
+    const addDamage=()=>info.addDamageInfo(22,64,49,'inflicted',100,true);
+    const addLabel=()=>info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
+    const pair=labelFirst ? [addLabel(),addDamage()] : [addDamage(),addLabel()];
+    const [damage,label]=labelFirst ? pair.reverse() : pair;
     expect(label.x-damage.x).toBe(20);expect(damage.y-label.y).toBe(24);
     const gap=label.x-damage.x;
     info.update(1300);

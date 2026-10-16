@@ -27,6 +27,7 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
     expect(data.drawData.find(draw => draw.spriteName === 'shadow16').dx).toBe(0);
     expect(actor.x).toBe(32);
     expect(data.healthBar).toBeUndefined();
+    host.game.combatPrototype={state:{live:true,mob:null},getHealthTargetId:()=>host.game.player?.target?.id};
     host.game.player={target:actor};
     expect(renderer.drawEntity.call(host,actor)[1].healthBar).toMatchObject({id:7,hp:60,maxHp:100});
     host.game.player.target={id:8};
@@ -41,4 +42,13 @@ test('trainer uses only its custom level/nameplate, while ordinary mob labels re
     expect(renderer.drawEntityName.call(host,actor,-20)).toEqual([]);
     actor.id=8;
     expect(renderer.drawEntityName.call(host,actor,-20)[0].text).toBe('6 ogre');
+});
+
+test('live combat without a trainer renders avatar and mob names',()=>{
+    const host={scale:2,getHpIndicatorColor:()=> '#fff',game:{playerId:1,combatPrototype:{state:{live:true,mob:null}},
+        app:{settings:{getRenderText:()=>true,getRenderMyText:()=>true}}}};
+    for(const actor of [Object.assign(new Character(),{id:1,name:'Local Looper',level:30,x:0,y:0}),
+        Object.assign(new Mob(),{id:7,name:'spectre',level:6,x:0,y:0})]) {
+        expect(renderer.drawEntityName.call(host,actor,-20)[0].text).toBe(actor.level+' '+actor.name);
+    }
 });
