@@ -20,7 +20,15 @@ Milestones use `2x combo`, `3x combo`, etc.; the number counts kills, not an XP 
 
 Only the currently targeted mob shows a compact health bar, including bosses. Optional, backward-compatible damage metadata updates HP immediately. The bar follows player-health feedback: an immediate HP change, white lost-health trail held for 180 ms and settling over 280 ms, immediate healing/max-HP changes, reduced-motion support, and cleanup on despawn or target change. Unknown HP is not guessed.
 
-Confirmed weapon crits, counters, and mob charges that actually remove player HP trigger a 180 ms camera kick, capped at two world pixels. Rapid or simultaneous impacts share a pulse. HUD, cursor, pathfinding and gameplay coordinates do not move. Reduced motion or disabled combat effects suppresses shake. Combat info renders above scenery, overhead sprites, lighting, health bars and charge overlays.
+Confirmed weapon crits, counters, and mob charges that actually remove player HP trigger a 180 ms camera kick, capped at two world pixels. Rapid or simultaneous impacts share a pulse. HUD, cursor, pathfinding and gameplay coordinates do not move. Reduced motion or disabling Camera Shake suppresses shake. Combat info renders above scenery, overhead sprites, lighting, health bars and charge overlays.
+
+## Player display settings
+
+Open **Game Settings (C)** to choose combat feedback per browser. **Mob Health Bars**, **Hit Target Indicator**, **Damage & Healing Numbers**, **XP Popups**, **Combo & Counter Messages**, **Combo Praise (Awesome, etc.)**, **Camera Shake**, and **Effect Timers** each have their own saved checkbox. Save Settings applies the changes immediately; disabling a display does not change targeting, HP, XP rewards, automatic counters or the fixed 1.5-second kill window. Effect Timers hides the active-effect countdowns while retaining effect labels and consumable cooldowns; effects still expire normally. Praise only appears when combo messages are enabled. Emotes and fishing messages retain their existing controls.
+
+The existing **Combat & Tool Impact Effects** checkbox controls hit bursts and recoil. Camera Shake can be disabled separately; an older saved impact-effects opt-out also initializes the new shake preference to off. OS reduced motion continues to suppress motion.
+
+Charged-attack ground warnings and the charge cue remain visible. Lunge and Slam mark their tiles with a faint gold fill and short corner marks, leaving the center clear instead of drawing a boxed X. They strengthen toward impact while retaining the same tile coverage and timing.
 
 ## Runtime and compatibility
 

@@ -1,3 +1,8 @@
+const COMBAT_VISUAL_SETTINGS = Object.freeze([
+    'mobHealthBarsEnabled', 'hitTargetIndicatorEnabled', 'damageNumbersEnabled',
+    'experiencePopupsEnabled', 'comboMessagesEnabled', 'comboPraiseEnabled', 'cameraShakeEnabled', 'effectTimersEnabled'
+]);
+
 class GameSettings {
     constructor(app) {
         this.app = app;
@@ -53,6 +58,22 @@ class GameSettings {
         if (localStorage.getItem('combatEffectsEnabled') === null) {
             localStorage.setItem('combatEffectsEnabled', 'true');
         }
+
+        for (const key of COMBAT_VISUAL_SETTINGS) {
+            if (localStorage.getItem(key) === null) {
+                // Preserve the old effects opt-out when introducing a separate shake control.
+                const enabled = key !== 'cameraShakeEnabled' || this.getCombatEffectsEnabled();
+                localStorage.setItem(key, enabled ? 'true' : 'false');
+            }
+            document.getElementById(key).checked = this.getCombatVisualEnabled(key);
+        }
+
+        const comboMessages = document.getElementById('comboMessagesEnabled');
+        const syncPraiseControl = () => {
+            document.getElementById('comboPraiseEnabled').disabled = !comboMessages.checked;
+        };
+        comboMessages.addEventListener('change', syncPraiseControl);
+        syncPraiseControl();
 
         // Initialize checkbox states based on localStorage
         document.getElementById('combatEffectsEnabled').checked = this.getCombatEffectsEnabled();
@@ -206,11 +227,35 @@ class GameSettings {
         }
     }
 
+    getCombatVisualEnabled(key) {
+        return localStorage.getItem(key) !== 'false';
+    }
+
+    getMobHealthBarsEnabled() { return this.getCombatVisualEnabled('mobHealthBarsEnabled'); }
+    getHitTargetIndicatorEnabled() { return this.getCombatVisualEnabled('hitTargetIndicatorEnabled'); }
+    getDamageNumbersEnabled() { return this.getCombatVisualEnabled('damageNumbersEnabled'); }
+    getExperiencePopupsEnabled() { return this.getCombatVisualEnabled('experiencePopupsEnabled'); }
+    getComboMessagesEnabled() { return this.getCombatVisualEnabled('comboMessagesEnabled'); }
+    getComboPraiseEnabled() { return this.getCombatVisualEnabled('comboPraiseEnabled'); }
+    getCameraShakeEnabled() { return this.getCombatVisualEnabled('cameraShakeEnabled'); }
+    getEffectTimersEnabled() { return this.getCombatVisualEnabled('effectTimersEnabled'); }
+
+    isCombatInfoVisible(type) {
+        if (['inflicted', 'received', 'healed'].includes(type)) return this.getDamageNumbersEnabled();
+        if (type === 'xp') return this.getExperiencePopupsEnabled();
+        if (type === 'combo') return this.getComboMessagesEnabled();
+        if (type === 'comboPraise') return this.getComboMessagesEnabled() && this.getComboPraiseEnabled();
+        return true;
+    }
+
     getReducedMotion() {
         return !!(this.reducedMotionQuery && this.reducedMotionQuery.matches);
     }
 
     setSettings() {
+        for (const key of COMBAT_VISUAL_SETTINGS) {
+            localStorage.setItem(key, document.getElementById(key).checked ? 'true' : 'false');
+        }
         this.setCombatEffectsEnabled(document.getElementById('combatEffectsEnabled').checked);
         this.setMusicEnabled(document.getElementById('musicEnabled').checked);
         this.setStreamMusicEnabled(document.getElementById('streamMusicEnabled').checked);
@@ -224,5 +269,6 @@ class GameSettings {
         this.setRenderShadows(document.getElementById('renderShadows').checked);
         this.setRenderPlayerShadow(document.getElementById('renderPlayerShadow').checked);
         this.setEnableDynamicLights(document.getElementById('enableDynamicLights').checked);
+        this.app.consumableHud?.tick(Date.now());
     }
 }

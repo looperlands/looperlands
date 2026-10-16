@@ -18,9 +18,10 @@ define(['mob'], function (Mob) {
         }
 
         addImpact(entity, damage, time, critical = false) {
-            if (!(damage > 0) || !entity || !this.effectsEnabled()) return;
+            if (!(damage > 0) || !entity) return;
             this.syncMap();
             if (critical) this.addShake(time);
+            if (!this.effectsEnabled()) return;
             const source = this.game.player;
             const dx = Number.isFinite(source?.x) ? entity.x - source.x : 0;
             const dy = Number.isFinite(source?.y) ? entity.y - source.y : 0;
@@ -31,7 +32,7 @@ define(['mob'], function (Mob) {
         }
 
         addShake(time) {
-            if (!this.effectsEnabled()) return;
+            if (!this.shakeEnabled()) return;
             this.syncMap();
             // Simultaneous charge hits and rapid/AoE crits share one bounded pulse.
             if (this.shakeStartedAt === null || time - this.shakeStartedAt >= SHAKE_DURATION) this.shakeStartedAt = time;
@@ -40,6 +41,11 @@ define(['mob'], function (Mob) {
         effectsEnabled() {
             const settings = this.game.app.settings;
             return settings.getCombatEffectsEnabled() && !settings.getReducedMotion();
+        }
+
+        shakeEnabled() {
+            const settings = this.game.app.settings;
+            return (settings.getCameraShakeEnabled?.() ?? settings.getCombatEffectsEnabled()) && !settings.getReducedMotion();
         }
 
         syncMap() {
@@ -64,7 +70,7 @@ define(['mob'], function (Mob) {
 
         getShake(time) {
             const age = time - this.shakeStartedAt;
-            if (!this.effectsEnabled() || this.shakeStartedAt === null || age < 0 || age >= SHAKE_DURATION) {
+            if (!this.shakeEnabled() || this.shakeStartedAt === null || age < 0 || age >= SHAKE_DURATION) {
                 this.shakeStartedAt = null;
                 return {x: 0, y: 0};
             }
@@ -83,7 +89,7 @@ define(['mob'], function (Mob) {
                 ? this.impacts.filter(impact => time - impact.startedAt < IMPACT_DURATION)
                 : [];
             const target = this.game.player.target;
-            const activeTarget = target instanceof Mob && !target.isDead && !target.isFriendly
+            const activeTarget = this.game.app.settings.getHitTargetIndicatorEnabled?.() !== false && target instanceof Mob && !target.isDead && !target.isFriendly
                 && this.game.entities[target.id] === target && target.isVisible();
             return {
                 shake: this.getShake(time),

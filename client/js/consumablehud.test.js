@@ -198,3 +198,18 @@ test('unassigned cooldowns appear temporarily, empty and non-consumable slots st
     hud.destroy();
     expect(jest.getTimerCount()).toBe(0);
 });
+
+test('effect timers can hide without removing the active effect or consumable cooldown; expiry still works',()=>{
+    const {hud,app}=setup();app.settings.getEffectTimersEnabled=()=>false;
+    hud.sync({7:{...pie,cooldown:11000}});
+    hud.setEffect('attack',10,5000);
+    const panel=hud.effectPanels.get('fish');
+    expect(panel.timeGroup.hidden).toBe(true);
+    expect(panel.name.textContent).toBe('+10% attack');expect(hud.effects.size).toBe(1);
+    expect(hud.buttons.get('7').timer.hidden).toBe(false);expect(hud.buttons.get('7').button.disabled).toBe(true);
+    jest.advanceTimersByTime(1000);
+    app.settings.getEffectTimersEnabled=()=>true;hud.tick(Date.now());
+    expect(panel.timeGroup.hidden).toBe(false);expect(effectText(hud)).toBe('+10% attack · 0:04');
+    app.settings.getEffectTimersEnabled=()=>false;
+    jest.advanceTimersByTime(4000);expect(hud.effectPanels.size).toBe(0);expect(hud.effects.size).toBe(0);
+});

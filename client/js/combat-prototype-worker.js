@@ -8,6 +8,18 @@
     }
 })(typeof self !== 'undefined' ? self : null, function(HealthBars) {
     const healthBars = new HealthBars.Bars();
+    function warningTile(ctx,x,y,progress,impact) {
+        ctx.fillStyle = impact ? 'rgba(232,134,72,.24)' : `rgba(227,174,100,${.06+.08*progress})`;
+        ctx.fillRect(x+1,y+1,14,14);
+        ctx.strokeStyle = `rgba(239,192,123,${impact ? .8 : .4+.3*progress})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        // Small corner marks leave the center clear, without a full box or an X.
+        for (const [cx,cy,dx,dy] of [[1.5,1.5,1,1],[14.5,1.5,-1,1],[1.5,14.5,1,-1],[14.5,14.5,-1,-1]]) {
+            ctx.moveTo(x+cx,y+cy+dy*3);ctx.lineTo(x+cx,y+cy);ctx.lineTo(x+cx+dx*3,y+cy);
+        }
+        ctx.stroke();
+    }
     const renderer = {
         ground(ctx, state, view) {
             for (const attack of state.fieldAttacks || []) renderer.ground(ctx,attack,view);
@@ -22,24 +34,15 @@
             }
             for (const tile of state.lane || []) {
                 const x=tile.x*16-view.cameraX, y=tile.y*16-view.cameraY;
-                ctx.fillStyle = state.phase==='lunge'?'rgba(255,83,60,.65)':'rgba(255,174,65,.3)';
-                ctx.fillRect(x+1,y+1,14,14);
-                ctx.strokeStyle='#ffd183'; ctx.lineWidth=1;
-                ctx.strokeRect(x+1.5,y+1.5,13,13);
-                ctx.beginPath(); ctx.moveTo(x+5,y+5); ctx.lineTo(x+11,y+11);
-                ctx.moveTo(x+11,y+5); ctx.lineTo(x+5,y+11); ctx.stroke();
+                const progress=state.phase==='windup'?Math.max(0,Math.min(1,1-(state.until-state.now)/(state.windup||850))):1;
+                warningTile(ctx,x,y,progress,state.phase==='lunge');
             }
         },
         slamGround(ctx,state,view) {
             const progress=state.phase==='windup'?Math.max(0,Math.min(1,1-(state.until-state.now)/state.windup)):1;
             for(const tile of state.lane||[]){
                 const x=tile.x*16-view.cameraX,y=tile.y*16-view.cameraY;
-                ctx.fillStyle=state.phase==='impact'?'rgba(255,122,60,.65)':`rgba(255,155,54,${.12+progress*.25})`;
-                ctx.fillRect(x+1,y+1,14,14);
-                ctx.strokeStyle='#ffc378';ctx.lineWidth=1;ctx.strokeRect(x+1.5,y+1.5,13,13);
-                if(state.phase==='windup'){
-                    ctx.fillStyle='#ffd9a0';ctx.fillRect(x+3,y+13,10*progress,1);
-                }
+                warningTile(ctx,x,y,progress,state.phase==='impact');
             }
             const age=state.now-state.impactAt;
             if(!state.impactAt||age<0||age>=400)return;

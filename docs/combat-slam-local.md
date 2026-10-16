@@ -20,7 +20,7 @@ Changing modes cancels pending warnings and restarts their cooldowns. It does no
 
 Lunge and Slam both deal **4× normal melee damage**. An eligible normal swing has a **50%** chance to begin a special, with a **3–6 second** cooldown before another roll. Warning durations and the initial 1.2–3 second delay stay the same. Ordinary attacks and the player’s 1.5× counter damage remain unchanged.
 
-A Slam plants the mob, holds its first attack pose and warns its surrounding **3 × 3 tiles**, including diagonals, for **950–1,150 ms**. The shape and direction stay fixed. The hit resolves at the warning deadline, using **4× calculated normal melee damage**. A short ground impact replaces Lunge's forward travel, then the mob recovers for 1.5 seconds.
+A Slam plants the mob, holds its first attack pose and warns its surrounding **3 × 3 tiles** with faint shading and short corner marks, including diagonals, for **950–1,150 ms**. The shape and direction stay fixed. The hit resolves at the warning deadline, using **4× calculated normal melee damage**. A short ground impact replaces Lunge's forward travel, then the mob recovers for 1.5 seconds.
 
 Standing inside the square takes one hit. Moving sideways can leave you inside it. Back out one tile, wait for impact, then step in: the existing automatic counter becomes available to the evading target for 1.25 seconds and deals its existing single-target damage. You can keep attacking or select another mob throughout. Counter damage and streak XP rules are unchanged. The kill window remains fixed at 1.5 seconds, even in a crowd; AoE splash cannot build or refresh the combo.
 

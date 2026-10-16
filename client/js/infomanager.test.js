@@ -244,3 +244,30 @@ test.each([[false,false],[true,false],[false,true],[true,true]])('counter text s
         expect(Math.abs(damage.y-damage.initialY)).toBeLessThan(6);
     }
 });
+
+test('hidden popup categories never allocate text or occupy lanes; emotes and fishing still work',()=>{
+    const {info,game}=setup();
+    game.app.settings.isCombatInfoVisible=type=>['emote','fishTrait'].includes(type);
+    for(const type of ['inflicted','received','healed','xp','combo','comboPraise','emote','fishTrait']) info.addDamageInfo('5',32,48,type,1);
+    expect(Object.values(info.infos).map(i=>i.type)).toEqual(['emote','fishTrait']);
+    expect(info.damageLanes).toEqual({});expect(info.damageStacks).toEqual({});
+});
+test('hiding praise keeps the combo color and scale without a gap for invisible text',()=>{
+    const {info,game}=setup();game.app.settings.isCombatInfoVisible=type=>type!=='comboPraise';
+    info.addDamageInfo('4x combo',32,48,'combo',1,false,{scale:1.4,praise:'Awesome!',color:'#ffad49'});
+    const [combo]=Object.values(info.infos);
+    expect(Object.values(info.infos)).toHaveLength(1);
+    expect(combo).toMatchObject({value:'4x combo',fillColor:'#ffad49',baseScale:1.4,initialY:48});
+    info.addDamageInfo('+175 XP',32,48,'xp',1);expect(Object.values(info.infos)[1].initialY).toBe(32);
+});
+test('saving a popup preference hides an already active label on the next render',()=>{
+    const {info,game}=setup();info.addDamageInfo(25,32,48,'inflicted',7);info.addDamageInfo('+10 XP',32,48,'xp');
+    const sandbox={define:(dependencies,factory)=>{sandbox.Renderer=factory();}};
+    vm.createContext(sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'lib/class.js'),'utf8'),sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'renderer.js'),'utf8'),sandbox);
+    const renderer=Object.assign(Object.create(sandbox.Renderer.prototype),{scale:1,game:{infoManager:info,app:game.app}});
+    expect(renderer.drawCombatInfo()).toHaveLength(2);
+    game.app.settings.isCombatInfoVisible=type=>type!=='inflicted';
+    expect(renderer.drawCombatInfo().map(i=>i.text)).toEqual(['+10 XP']);
+});

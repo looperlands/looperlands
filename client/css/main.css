@@ -2970,3 +2970,42 @@ footer div  {display:inline-block;}
 @media(max-width:780px) {
     #shop-confirmation:not(.hidden) {left:50%;transform:translateX(-50%);width:min(200px,calc(100% - 80px));padding:24px;}
 }
+
+/* Keep feedback preferences inside the game view, including short screens. */
+#settings {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    max-width: 820px;
+    height: calc(100% - 32px);
+    padding: 0 20px 16px;
+    background-color: #3f2a35 !important;
+}
+#settings .panelTitle { flex-shrink: 0; }
+#settings .settings-tools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#settings .settings-tools small { padding-top: 0; font-size: 12px; line-height: 1.4; text-align: left; }
+#settingsForm { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#settings .settings-options {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: #b99761 #3f2a35;
+    scrollbar-width: thin;
+}
+#settings .settings-options ul { text-align: left; margin: 12px 0; }
+#settings .settings-section { color: #f1ce92; padding-top: 4px; }
+#settings .settings-actions { flex-shrink: 0; padding-top: 8px; }
+#settingsForm label { cursor: pointer; }
+#settingsForm input:focus-visible { outline: 2px solid #f1ce92; outline-offset: 2px; }
+#settingsForm input:disabled + label { opacity: .55; cursor: default; }
+@media (max-width: 1000px) {
+    #settings .settings-tools small { display: none; }
+}

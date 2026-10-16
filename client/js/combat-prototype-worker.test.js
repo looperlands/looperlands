@@ -68,3 +68,20 @@ test.each([false,true])('Slam impact has a short ground burst and honors reduced
     ctx.ellipse.mockClear();state.now=1400;renderer.ground(ctx,state,{cameraX:80,cameraY:160});
     expect(ctx.ellipse).not.toHaveBeenCalled();
 });
+
+test.each(['lunge','slam'])('%s warnings retain tile coverage using short corners without center crosses',pattern=>{
+    const ctx=context();
+    renderer.ground(ctx,{pattern,phase:'windup',mobX:160,mobY:320,now:1000,until:2000,windup:1000,lane:[{x:10,y:20}]},
+        {cameraX:80,cameraY:160,scale:1});
+    expect(ctx.rects).toEqual([[81,161,14,14]]);
+    expect(ctx.strokeRect).not.toHaveBeenCalled();
+    const starts=ctx.moveTo.mock.calls,ends=ctx.lineTo.mock.calls;
+    expect(starts).toHaveLength(4);expect(ends).toHaveLength(8);
+    for(let i=0;i<4;i++){
+        const a=starts[i],b=ends[i*2],c=ends[i*2+1];
+        expect(a[0]===b[0]||a[1]===b[1]).toBe(true);
+        expect(b[0]===c[0]||b[1]===c[1]).toBe(true);
+        expect(Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])).toBe(3);
+        expect(Math.abs(b[0]-c[0])+Math.abs(b[1]-c[1])).toBe(3);
+    }
+});

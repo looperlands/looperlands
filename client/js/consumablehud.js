@@ -89,7 +89,7 @@ define(function () {
             label.appendChild(name);
             label.appendChild(timeGroup);
             this.effectsRoot.appendChild(label);
-            return {label, name, timer};
+            return {label, name, timer, timeGroup};
         }
 
         createButton(id) {
@@ -171,7 +171,9 @@ define(function () {
                 const seconds = Math.ceil((effect.expires - now) / 1000);
                 const name = effect.label;
                 if (panel.name.textContent !== name) panel.name.textContent = name;
-                panel.label.title = effect.label;
+                const showTimer = this.app.settings.getEffectTimersEnabled?.() !== false;
+                panel.timeGroup.hidden = !showTimer;
+                panel.label.title = effect.label + (showTimer ? '' : ' · ' + seconds + 's remaining');
                 panel.label.setAttribute('aria-label', effect.label + ', ' + seconds + ' seconds remaining');
                 const timer = String(Math.floor(seconds / 60)).padStart(effect.minuteCells, '\u00a0') +
                     ':' + String(seconds % 60).padStart(2, '0');

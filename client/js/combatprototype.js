@@ -429,7 +429,7 @@ define(function () {
                 this.renderer = game.renderer;
                 this.renderer.registerExtension('combat-prototype-worker.js');
             }
-            const frame = {...state, now, showHealthBar:this.getHealthTargetId() === state.mob?.id, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? (state.mob?.x||0)*16, mobY:mob?.y ?? (state.mob?.y||0)*16, playerX:player.x, playerY:player.y};
+            const frame = {...state, now, showHealthBar:game.app?.settings.getMobHealthBarsEnabled?.() !== false && this.getHealthTargetId() === state.mob?.id, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? (state.mob?.x||0)*16, mobY:mob?.y ?? (state.mob?.y||0)*16, playerX:player.x, playerY:player.y};
             this.renderer?.setExtensionData('combat-prototype-ground', frame);
             this.renderer?.setExtensionData('combat-prototype', frame);
         }
