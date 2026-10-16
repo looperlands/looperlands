@@ -1,8 +1,8 @@
 # Procedural world FX
 
-Seven effects are enabled by default: tile-stage particles, loot bounce, teleport fragments, reactive fireflies, leaf wake, heat shimmer, and ambience particles. All use existing sprites or procedural drawing. Reduced Motion suppresses them. Fishing ripples, vegetation sway, clouds, rain, and water reflections are not part of this implementation.
+Six effects are enabled by default: tile-stage particles, loot bounce, reactive fireflies, leaf wake, heat shimmer, and ambience particles. All use existing sprites or procedural drawing. Reduced Motion suppresses them. Fishing ripples, vegetation sway, clouds, rain, and water reflections are not part of this implementation.
 
-Loot bounces only on fresh drops; loading existing items does not replay it. Teleport fragments use the avatar's current sprite frame inside the renderer worker. Both preserve collision and gameplay coordinates. Fireflies move away from nearby players; leaves swirl when players move through them.
+Loot bounces only on fresh drops; loading existing items does not replay it. The bounce preserves collision and gameplay coordinates. Fireflies move away from nearby players; leaves swirl when players move through them.
 
 ## Mapmaker ambience
 
@@ -16,7 +16,7 @@ Available types: `fireflies`, `leaves`, `pollen`, `dust`, `gusts`, `spray`, `san
 
 ## Scene overrides and heat shimmer
 
-Add a scene **String** property named `fx`, containing JSON. `enabled` supports the names `stage`, `loot`, `teleport`, `fireflies`, `leaves`, `heat`, and `ambience`. For example:
+Add a scene **String** property named `fx`, containing JSON. `enabled` supports the names `stage`, `loot`, `fireflies`, `leaves`, `heat`, and `ambience`. For example:
 
 ```json
 {"enabled":{"heat":false,"leaves":false}}
@@ -71,4 +71,4 @@ In a farm's stage definition, set `stageParticles` to `false` (or `{"enabled":fa
 
 `stages.default` overrides unspecified stages. Without an override, prepare uses soil, plant/harvest use leaves, water uses water, and grow uses pollen. Presets are `soil`, `leaves`, `water`, `pollen`, and `sparks`.
 
-Bounds: 0–48 particles, lifetime 100–2000 ms, speed 0–100, gravity −100–250, spread 0–40 map pixels, size 1–4, and 1–6 six-digit hex colors. Invalid visual configuration does not cancel a completed game action. The client limits simultaneous burst particles to 256, drops to 64, and teleport animations to eight with up to 180 sprite fragments each. Effects clear on map/session changes, disconnect, death, and stopping the game.
+Bounds: 0–48 particles, lifetime 100–2000 ms, speed 0–100, gravity −100–250, spread 0–40 map pixels, size 1–4, and 1–6 six-digit hex colors. Invalid visual configuration does not cancel a completed game action. The client limits simultaneous burst particles to 256 and drops to 64. Effects clear on map/session changes, disconnect, death, and stopping the game.

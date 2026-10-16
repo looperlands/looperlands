@@ -33,20 +33,6 @@
             ctx.fillStyle = p.color;
             ctx.fillRect(...xy(p.x, p.y), p.size * scale, p.size * scale);
         }
-        for (const warp of state.teleports) {
-            const frame = warp.frame, sprite = view.sprites?.[frame.spriteName];
-            if (!sprite?.image) continue;
-            const progress = Math.min(1, Math.max(0, (state.time - warp.startedAt) / 650));
-            for (const origin of [warp.from, warp.to]) {
-                const phase = origin === warp.from ? progress : 1 - progress;
-                ctx.globalAlpha = origin === warp.from ? 1 - progress : Math.min(1, progress * 2);
-                for (const p of warp.fragments) {
-                    ctx.drawImage(sprite.image, (frame.x + p.sx) * frame.scale, (frame.y + p.sy) * frame.scale,
-                        p.width * frame.scale, p.height * frame.scale,
-                        ...xy(origin.x + p.x + p.dx * phase, origin.y + p.y + p.dy * phase), p.width * scale, p.height * scale);
-                }
-            }
-        }
         ctx.globalAlpha = 1;
     }
     return {ground, draw};

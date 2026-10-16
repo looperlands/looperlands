@@ -454,7 +454,7 @@ onmessage = (e) => {
         if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
         combinedCtx.restore();
         composingWorld = false;
-        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, {...view, sprites});
+        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 

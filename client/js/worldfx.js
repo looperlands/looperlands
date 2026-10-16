@@ -8,7 +8,6 @@ define(['worldfxconfig'], function (Config) {
             this.sceneFlags = {};
             this.particles = [];
             this.drops = new Map();
-            this.teleports = [];
             this.mapId = game.mapId;
             this.sessionId = game.sessionId;
         }
@@ -26,7 +25,6 @@ define(['worldfxconfig'], function (Config) {
             }
             this.particles = [];
             this.drops.clear();
-            this.teleports = [];
             this.lastActor = null;
             this.actor = null;
             this.mapId = this.game.mapId;
@@ -99,30 +97,6 @@ define(['worldfxconfig'], function (Config) {
                     for (const draw of data.drawData) if (draw.spriteName !== 'shadow16') draw.dy -= Math.round(hop) * scale;
                 }
             }
-            const warp = this.teleports.find(w => w.entityId === entity.id && time - w.startedAt < 350);
-            if (warp && this.enabled('teleport')) data.globalAlpha = (data.globalAlpha ?? 1) * Math.min(1, 0.25 + (time - warp.startedAt) / 300);
-        }
-
-        teleport(entity, x, y) {
-            this.sync();
-            this.scene();
-            if (!this.enabled('teleport') || !entity?.sprite || !entity.currentAnimation?.currentFrame) return;
-            const sprite = entity.sprite, frame = entity.currentAnimation.currentFrame;
-            if (![sprite.width, sprite.height, x, y].every(Number.isFinite) || sprite.width <= 0 || sprite.height <= 0) return;
-            let step = Math.max(2, Math.ceil(Math.sqrt(sprite.width * sprite.height / 180)));
-            while (Math.ceil(sprite.width / step) * Math.ceil(sprite.height / step) > 180) step++;
-            const fragments = [];
-            for (let py = 0; py < sprite.height; py += step) for (let px = 0; px < sprite.width; px += step) {
-                fragments.push({sx: px, sy: py, x: px + sprite.offsetX, y: py + sprite.offsetY,
-                    width: Math.min(step, sprite.width - px), height: Math.min(step, sprite.height - py),
-                    dx: (this.random() - 0.5) * 65, dy: -this.random() * 40});
-            }
-            // NFT image pixels live exclusively in the renderer worker. Sample them there.
-            this.teleports.push({entityId: entity.id, from: {x: entity.x, y: entity.y}, to: {x: x * 16, y: y * 16},
-                startedAt: this.game.currentTime || Date.now(),
-                frame: {spriteName: sprite.name, x: frame.x, y: frame.y, scale: sprite.scale || 1}, fragments});
-            this.teleports = this.teleports.slice(-8);
-            if (entity === this.game.player) this.lastActor = null;
         }
 
         ambience(base) {
@@ -154,7 +128,6 @@ define(['worldfxconfig'], function (Config) {
                 vy: this.lastActor ? Math.max(-200, Math.min(200, (player.y - this.lastActor.y) / elapsed)) : 0};
             this.lastActor = {x: player.x, y: player.y, time};
             this.particles = this.particles.filter(p => time - p.startedAt < p.lifetimeMs && this.enabled('stage'));
-            this.teleports = this.teleports.filter(w => time - w.startedAt < 650 && this.enabled('teleport'));
             for (const [id, drop] of this.drops) if (!this.enabled('loot') || time - drop.startedAt > 800 || this.game.getEntityById(id) !== drop.entity) this.drops.delete(id);
             if (this.registeredRenderer !== renderer) {
                 renderer.registerExtension('world-fx-renderer-worker.js');
@@ -166,7 +139,7 @@ define(['worldfxconfig'], function (Config) {
                     color: p.color, size: p.size, alpha: 1 - age / p.lifetimeMs};
             });
             const data = {time, actor: this.actor, flags: Object.fromEntries(Object.keys(this.flags).map(id => [id, this.enabled(id)])),
-                scenery: this.scenery, particles, teleports: this.teleports};
+                scenery: this.scenery, particles};
             renderer.setExtensionData('world-fx', data);
             renderer.setExtensionData('world-fx-ground', data);
         }

@@ -1,7 +1,7 @@
 const create = require('./world-fx-renderer-worker');
 function setup() {
     const ctx = {canvas: {width: 480, height: 224}, drawImage: jest.fn(), fillRect: jest.fn()};
-    const state = {flags: {heat: true}, scenery: {}, time: 500, particles: [], teleports: []};
+    const state = {flags: {heat: true}, scenery: {}, time: 500, particles: []};
     const view = {cameraX: 32, cameraY: 48, scale: 3, sources: {background: {}}};
     return {fx: create(), ctx, state, view};
 }
@@ -30,16 +30,4 @@ test('heat draw work is bounded even with many overlapping fire lights', () => {
     const {fx, ctx, state, view} = setup();
     view.fireLights = Array.from({length: 500}, () => ({x: 80, y: 100, animation: 'fire'}));
     fx.ground(ctx, state, view); expect(ctx.drawImage).toHaveBeenCalledTimes(32 * 14);
-});
-test('teleports crop pieces from worker-owned sprite pixels', () => {
-    const {fx, ctx, state, view} = setup();
-    const image = {}; view.sprites = {avatar: {image}};
-    state.teleports = [{startedAt: 500, from: {x: 40, y: 60}, to: {x: 80, y: 60},
-        frame: {spriteName: 'avatar', x: 48, y: 96, scale: 1},
-        fragments: [{sx: 4, sy: 8, x: 0, y: 0, width: 4, height: 4, dx: 0, dy: 0}]}];
-    fx.draw(ctx, state, view);
-    expect(ctx.drawImage).toHaveBeenCalledWith(image, 52, 104, 4, 4, 24, 36, 12, 12);
-    expect(ctx.drawImage).toHaveBeenCalledTimes(2);
-    ctx.drawImage.mockClear(); delete view.sprites.avatar.image;
-    expect(() => fx.draw(ctx, state, view)).not.toThrow(); expect(ctx.drawImage).not.toHaveBeenCalled();
 });

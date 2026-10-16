@@ -14,8 +14,8 @@ function setup() {
     const fx = new WorldFx(game, () => 0.5);
     return {fx, game, renderer, settings, item};
 }
-test('only the seven approved effects are enabled by default', () => {
-    expect(Object.keys(setup().fx.flags)).toEqual(['stage', 'loot', 'teleport', 'fireflies', 'leaves', 'heat', 'ambience']);
+test('only the six approved effects are enabled by default', () => {
+    expect(Object.keys(setup().fx.flags)).toEqual(['stage', 'loot', 'fireflies', 'leaves', 'heat', 'ambience']);
     expect(Object.values(setup().fx.flags).every(Boolean)).toBe(true);
 });
 test('stage effects require a transient event and leave tile state alone', () => {
@@ -75,25 +75,13 @@ test('existing NPC ambience and its epoch are preserved when no scene override i
     const base = {effects: [{type: 'fireflies', count: 12}], epoch: 123, bounds: {x: 0, y: 0, width: 16, height: 16}};
     expect(fx.ambience(base)).toMatchObject(base);
 });
-test('reactive particle velocity resets after a local teleport', () => {
-    const {fx, game, renderer} = setup(); fx.render(renderer, 1000);
-    game.player.sprite = {name: 'NFT_avatar', width: 48, height: 48, offsetX: -16, offsetY: -20, scale: 1};
-    game.player.currentAnimation = {currentFrame: {x: 48, y: 96}};
-    fx.teleport(game.player, 20, 30); game.player.x = 320; game.player.y = 480;
-    fx.render(renderer, 1100); expect(fx.actor).toMatchObject({vx: 0, vy: 0});
-    expect(fx.teleports[0]).toMatchObject({frame: {spriteName: 'NFT_avatar', x: 48, y: 96, scale: 1}, to: {x: 320, y: 480}});
-    expect(fx.teleports[0].fragments.length).toBeLessThanOrEqual(180);
-    expect(fx.teleports[0].fragments.some(p => p.sy >= 40)).toBe(true);
-});
-test('teleport and drop budgets stay bounded and disabled teleports do not dim avatars', () => {
+test('drop budgets stay bounded without changing avatar opacity', () => {
     const {fx, game, renderer} = setup();
-    game.player.sprite = {name: 'NFT_avatar', width: 16, height: 512, offsetX: 0, offsetY: 0};
-    game.player.currentAnimation = {currentFrame: {x: 0, y: 0}};
-    for (let i = 0; i < 100; i++) { fx.teleport(game.player, i, 30); fx.drop({id: 100 + i}); }
-    expect(fx.teleports).toHaveLength(8); expect(fx.drops.size).toBe(64);
-    expect(fx.teleports[0].fragments.length).toBeLessThanOrEqual(180);
-    fx.flags.teleport = false; const data = {drawData: []}; fx.decorate(game.player, data, 3);
-    expect(data.globalAlpha).toBeUndefined(); fx.render(renderer, 2000); expect(fx.teleports).toHaveLength(0);
+    for (let i = 0; i < 100; i++) fx.drop({id: 100 + i});
+    expect(fx.drops.size).toBe(64);
+    const data = {drawData: [], globalAlpha: 0.8}; fx.decorate(game.player, data, 3);
+    expect(data.globalAlpha).toBe(0.8);
+    fx.render(renderer, 2000); expect(fx.drops.size).toBe(0);
 });
 test('scene flags revert on exit and map changes clear previous configuration', () => {
     const {fx, game, item} = setup(); fx.drop(item);

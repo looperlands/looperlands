@@ -4,7 +4,7 @@
     else if (typeof module === 'object' && module.exports) module.exports = factory();
     else root.WorldFxConfig = factory();
 })(typeof self !== 'undefined' ? self : globalThis, function () {
-    const names = {stage: 'Tile-stage particles', loot: 'Loot bounce', teleport: 'Teleport fragments',
+    const names = {stage: 'Tile-stage particles', loot: 'Loot bounce',
         fireflies: 'Reactive fireflies', leaves: 'Leaf wake', heat: 'Heat shimmer', ambience: 'Ambience particles'};
     const defaults = Object.fromEntries(Object.keys(names).map(name => [name, true]));
     const presets = {

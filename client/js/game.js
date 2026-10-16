@@ -7435,7 +7435,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                                     });
                                 } else {
-                                    _self.worldFx?.teleport?.(_self.player, dest.x, dest.y);
                                     _self.player.setGridPosition(dest.x, dest.y);
                                     _self.player.nextGridX = dest.x;
                                     _self.player.nextGridY = dest.y;
@@ -8507,7 +8506,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              */
             makeCharacterTeleportTo: function (character, x, y) {
                 if (!this.map.isOutOfBounds(x, y)) {
-                    this.worldFx?.teleport?.(character, x, y);
                     this.unregisterEntityPosition(character);
 
                     character.setGridPosition(x, y);
