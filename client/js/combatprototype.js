@@ -48,11 +48,12 @@ define(function () {
 
         send(action, values = {}) { this.socket?.emit('combat-preview', {action, ...values}); }
         now() { return Date.now() + (this.offset || 0); }
-        locked() { return this.enabled && this.state && this.now() < this.state.lockUntil; }
+        locked() { return this.enabled && this.state && (this.now() < this.state.lockUntil || this.now() < (this.pendingTechnique?.until || 0)); }
         owns(entity) { return this.enabled && (entity.id === this.state?.mob.id || entity === this.game.player && (this.selected || this.locked())); }
 
         select(entity) {
             if (!this.enabled) return false;
+            this.pendingTechnique = null;
             this.selected = Number(entity.id) === Number(this.state?.mob.id);
             this.send('select', {mobId:entity.id});
             if (this.selected) {
@@ -66,18 +67,67 @@ define(function () {
         }
 
         canTechnique() {
-            const {player} = this.game, state = this.state;
-            return !!(this.enabled && state?.combo && this.now() <= state.comboUntil
-                && !this.locked() && !player.isMoving()
-                && Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) === 1);
+            const {player} = this.game, state = this.state, now = this.now();
+            if (!this.enabled || !state || now < state.lockUntil) return false;
+            const opening = state.combo && now <= state.comboUntil;
+            // Buffer a press just before impact, but only after leaving the warned lane.
+            const early = !state.combo && (state.phase === 'lunge'
+                || state.phase === 'windup' && state.until-now <= 150)
+                && !state.lane.some(tile => tile.x === player.gridX && tile.y === player.gridY);
+            if (!opening && !early) return false;
+            const target = state.phase === 'windup' ? state.lane[0] : state.mob;
+            const adjacent = (x,y) => target && Math.abs(x-target.x)+Math.abs(y-target.y) === 1;
+            return player.isMoving() ? adjacent(player.nextGridX,player.nextGridY) : adjacent(player.gridX,player.gridY);
         }
 
         technique() {
             if (!this.canTechnique()) return false;
             this.selected = true;
             this.game.player.disengage();
-            this.send('technique');
+            this.pendingTechnique = {combo:this.state.combo || 'counter',until:this.now()+350};
+            if (this.game.player.isMoving()) this.game.player.stop();
+            this.flushTechnique();
             return true;
+        }
+
+        flushTechnique() {
+            const pending = this.pendingTechnique, state = this.state, player = this.game.player;
+            if (!pending) return;
+            if (this.now() > pending.until || !this.enabled || !state
+                || ['round','finisher'].includes(state.phase)
+                || state.phase === 'recovery' && !state.combo) {
+                this.pendingTechnique = null;
+                return;
+            }
+            if (state.combo !== pending.combo || this.now() > state.comboUntil || player.isMoving()
+                || Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) !== 1) return;
+            this.pendingTechnique = null;
+            this.send('technique');
+        }
+
+        playStrike(player, mob, label) {
+            this.restoreStrike?.();
+            const technique = label === 'Counter' || label === 'Finisher';
+            if (technique) {
+                // A deliberate technique interrupts the old attack, including the same atk clip.
+                player.animationLock = false;
+                player.currentAnimation = null;
+            }
+            player.setOrientation(player.getOrientationTo(mob));
+            player.hit();
+            if (technique && player.currentAnimation?.speed) {
+                const speed = player.currentAnimation.speed;
+                const total = speed.reduce((sum,ms)=>sum+ms,0);
+                const scale = Math.min(1,(label === 'Counter' ? 180 : 240)/total);
+                const animation = player.currentAnimation, onEnd = animation.endcount_callback;
+                const restore = () => {
+                    animation.setSpeed(speed);
+                    if (this.restoreStrike === restore) this.restoreStrike = null;
+                };
+                this.restoreStrike = restore;
+                animation.endcount_callback = () => { restore(); onEnd?.(); };
+                animation.setSpeed(speed.map(ms=>ms*scale));
+            }
         }
 
         reportPosition() {
@@ -95,6 +145,7 @@ define(function () {
 
         correct(position) {
             const {game} = this, player = game.player;
+            this.pendingTechnique = null;
             player.disengage();
             game.unregisterEntityPosition(player);
             player.cancelPath();
@@ -127,7 +178,7 @@ define(function () {
                 this.showCombatInfo(`Combo! +${packet.reward.xp} XP`);
             }
             if (packet.streak >= 2 && (packet.streak !== previous?.streak || packet.streakUntil !== previous?.streakUntil)) {
-                this.showCombatInfo(`${packet.streak}-kill streak +${packet.streakBonusPercent}% XP`);
+                this.showCombatInfo(`${packet.streak}X`);
             }
             this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
             this.reset.hidden = false;
@@ -137,7 +188,8 @@ define(function () {
         update() {
             if (!this.enabled || !this.state || !this.game.player) return;
             const {game, state} = this, player = game.player, now = this.now();
-            if (game.isStopped || player.isDead) return;
+            if (game.isStopped || player.isDead) { this.pendingTechnique = null; return; }
+            this.flushTechnique();
             const mob = game.getEntityById(state.mob.id);
             if (mob) {
                 mob.isAggressive = false; mob.attackingMode = false; mob.followingMode = false;
@@ -174,7 +226,7 @@ define(function () {
                     if (state.event?.kind === 'evade') this.showCombatInfo('Counter ready');
                     if (state.event?.kind === 'attack') {
                         if (state.event.label === 'Counter') this.showCombatInfo('Counter!');
-                        player.setOrientation(player.getOrientationTo(mob)); player.hit();
+                        this.playStrike(player,mob,state.event.label);
                         game.audioManager.playSound('hit1');
                     } else if (['lunge','mob-attack'].includes(state.event?.kind)) {
                         const direction = state.direction;
@@ -190,7 +242,7 @@ define(function () {
             if (this.status && this.status.textContent !== phaseLabel) this.status.textContent = phaseLabel;
             const adjacent = Math.abs(player.gridX-state.mob.x)+Math.abs(player.gridY-state.mob.y) === 1;
             this.action.hidden = !combo;
-            this.action.disabled = !adjacent || this.locked() || player.isMoving();
+            this.action.disabled = !this.canTechnique();
             const key = game.gamepadListener?.isActive() ? 'A' : game.touchListener?.hasTouchInput ? '' : 'Space';
             this.action.textContent = (combo === 'finisher'?'Finisher':'Counter') + (adjacent ? (key ? ' · ' + key : '') : ' · move closer');
             this.action.title = 'Move: WASD / arrows / drag. Evade the marked tiles; press Space twice for Counter → Finisher.';
@@ -204,7 +256,8 @@ define(function () {
         }
 
         clear() {
-            this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null;
+            this.restoreStrike?.();
+            this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null; this.pendingTechnique = null;
             if (this.toggle) { this.toggle.textContent = 'Combat off'; this.toggle.setAttribute('aria-pressed','false'); }
             if (this.reset) this.reset.hidden = true;
             if (this.action) this.action.hidden = true;

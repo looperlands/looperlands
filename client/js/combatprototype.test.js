@@ -9,7 +9,7 @@ function setup() {
         Types:{Orientations:{UP:1,DOWN:2,LEFT:3,RIGHT:4}},
     });
     const player={gridX:4,gridY:5,x:64,y:80,movement:{inProgress:false},cancelPath:jest.fn(),isMoving:()=>false,
-        disengage:jest.fn(),idle:jest.fn(),follow:jest.fn(),isAdjacentNonDiagonal:()=>true,setAttackRate:jest.fn(),setGridPosition(x,y){this.gridX=x;this.gridY=y;},
+        disengage:jest.fn(),stop:jest.fn(),idle:jest.fn(),follow:jest.fn(),isAdjacentNonDiagonal:()=>true,setAttackRate:jest.fn(),setGridPosition(x,y){this.gridX=x;this.gridY=y;},
         setOrientation:jest.fn(),getOrientationTo:()=>1,hit:jest.fn()};
     const mob={id:100,gridX:4,gridY:4,x:64,y:64,hasMoved:jest.fn(),idle:jest.fn(),walk:jest.fn(),setOrientation(o){this.orientation=o;},getOrientationTo:()=>4,hit:jest.fn()};
     const renderer={registerExtension:jest.fn(),setExtensionData:jest.fn()};
@@ -130,7 +130,7 @@ test('streak and combo XP use existing combat info once per reward, not every st
     const {prototype,packet,game}=setup();game.infoManager.addDamageInfo.mockClear();
     const earned={...packet,streak:2,streakUntil:Date.now()+2500,streakBonusPercent:25,reward:{id:1,xp:25}};
     prototype.receive(earned);prototype.receive(earned);prototype.update();
-    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['Combo! +25 XP','2-kill streak +25% XP']);
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['Combo! +25 XP','2X']);
     for (const call of game.infoManager.addDamageInfo.mock.calls) expect(call[3]).toBe('combo');
 });
 
@@ -139,4 +139,49 @@ test('a correction cancels the old path before placing the player',()=>{
     prototype.correct({x:8,y:9});
     expect(player.cancelPath).toHaveBeenCalled();
     expect(game.unregisterEntityPosition.mock.invocationCallOrder.at(-1)).toBeLessThan(player.cancelPath.mock.invocationCallOrder.at(-1));
+});
+
+
+test('counter input during the final sidestep is buffered until the tile completes',()=>{
+    const {prototype,player}=setup();prototype.socket.emit.mockClear();
+    player.gridX=5;player.gridY=5;player.nextGridX=4;player.nextGridY=5;player.isMoving=()=>true;
+    expect(prototype.technique()).toBe(true);
+    expect(player.stop).toHaveBeenCalled();
+    expect(prototype.locked()).toBe(true);
+    expect(prototype.socket.emit).not.toHaveBeenCalled();
+    player.gridX=4;player.isMoving=()=>false;prototype.update();prototype.update();
+    expect(prototype.socket.emit.mock.calls).toEqual([['combat-preview',{action:'technique'}]]);
+});
+
+test('a late evade press fires when the lunge misses, but never after a hit or buffer expiry',()=>{
+    const {prototype,player,packet}=setup();prototype.socket.emit.mockClear();
+    const lunging={...packet,phase:'lunge',combo:null,lane:[{x:5,y:5}],event:{id:2,kind:'lunge'}};
+    prototype.receive(lunging);
+    expect(prototype.technique()).toBe(true);
+    expect(prototype.socket.emit).not.toHaveBeenCalled();
+    prototype.receive({...packet,event:{id:3,kind:'evade'}});
+    expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
+    prototype.socket.emit.mockClear();prototype.receive(lunging);prototype.technique();
+    prototype.receive({...packet,combo:null,event:{id:4,kind:'hurt'}});
+    expect(prototype.pendingTechnique).toBeNull();
+    prototype.receive(lunging);prototype.technique();prototype.pendingTechnique.until=prototype.now()-1;
+    prototype.receive(packet);
+    expect(prototype.socket.emit).not.toHaveBeenCalled();
+    prototype.receive({...lunging,lane:[{x:player.gridX,y:player.gridY}]});
+    expect(prototype.technique()).toBe(false);
+});
+
+test('counter restarts a locked attack animation and uses a fast swing',()=>{
+    const {prototype,player,mob}=setup();
+    player.animationLock=true;player.currentAnimation={name:'atk_down'};
+    const animation={speed:[100,100,100,100],setSpeed:jest.fn()};
+    player.hit=jest.fn(()=>{
+        expect(player.animationLock).toBe(false);
+        expect(player.currentAnimation).toBeNull();
+        player.currentAnimation=animation;
+    });
+    prototype.playStrike(player,mob,'Counter');
+    expect(animation.setSpeed).toHaveBeenCalledWith([45,45,45,45]);
+    animation.endcount_callback();
+    expect(animation.setSpeed).toHaveBeenLastCalledWith([100,100,100,100]);
 });
