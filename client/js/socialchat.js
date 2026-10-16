@@ -239,6 +239,8 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         renderHeader() {
             const header = this.node('chat-channel-info'); header.replaceChildren();
             const player = this.target && this.people.get(this.target);
+            this.node('chat-tabs').hidden = !!player;
+            header.hidden = !player;
             if (player) {
                 const back = element('button', 'sc-back', '‹'); back.type = 'button'; back.setAttribute('aria-label', 'Back to direct messages');
                 back.onclick = () => { this.saveDraft(); this.target = ''; this.render(); };

@@ -492,12 +492,15 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     </header>
                     <div class="sc-panel-content">
                         <div class="sc-conversation">
-                            <nav class="sc-tabs" aria-label="Chat channels">
-                                <button type="button" data-chat-tab="world" class="active">World</button>
-                                <button type="button" data-chat-tab="map">My map</button>
-                                <button type="button" data-chat-tab="direct">Direct messages <span id="chat-unread" hidden></span></button>
-                            </nav>
-                            <div class="sc-channel-heading"><div id="chat-channel-info"></div><button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button></div>
+                            <div class="sc-channel-heading">
+                                <nav id="chat-tabs" class="sc-tabs" aria-label="Chat channels" aria-describedby="chat-channel-info">
+                                    <button type="button" data-chat-tab="world" class="active">World</button>
+                                    <button type="button" data-chat-tab="map">My map</button>
+                                    <button type="button" data-chat-tab="direct">Direct messages <span id="chat-unread" hidden></span></button>
+                                </nav>
+                                <div id="chat-channel-info" hidden></div>
+                                <button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button>
+                            </div>
                             <div id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0"></div>
                             <p id="chat-error" role="status" hidden></p>
                             <form id="chat-form" class="sc-composer">
