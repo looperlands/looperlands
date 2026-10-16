@@ -2,9 +2,9 @@
 
 Open the **Journal** from the existing quest-book button on the HUD. It contains **Quests** and **Field Guide** tabs. **X** opens the quest view; **J** opens Field Guide directly. The guide is not part of Settings. Quests retain the existing quest API, statuses, descriptions, and objective progress, with filters for In progress, Completed, and All quests. Their parchment rows slide in, valid medal artwork returns, and supported quest targets animate using their idle frames. Missing or unsupported medals are omitted; reduced-motion preferences disable animations.
 
-Items, Fish, and Monsters use the Inventory panel's copper raster frame, compact sprite slots, yellow headings, parchment entry details, and original red close sprite at 32px inside a 44px interaction target. Chat shares the same frame, title plaque, and smaller close control.
+Items, Fish, and Monsters use the Inventory panel's copper raster frame, compact sprite slots, yellow headings, compact floating entry details, and original red close sprite at 32px inside a 44px interaction target. Chat shares the same frame, title plaque, and smaller close control.
 
-The guide follows the player's current map. Discovered and completed totals sit beside the Journal tabs; a pinned discovery reminder keeps its map label. It has no map selector, search, or status filter. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
+The guide follows the player's current map. Discovered and completed totals sit beside the Journal tabs. Selecting a tile opens compact floating details beside it, with enlarged pixel-sharp artwork beside the name and status, followed by a short hint. Discovery pinning is not available. Details follow scrolling, stay within the viewport, and hide when their tile scrolls out of view. It has no map selector, search, or status filter. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
 
 ## Progress and visibility
 
