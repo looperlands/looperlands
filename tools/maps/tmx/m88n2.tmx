@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2065">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2071">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_m88n2.png" width="2208" height="2512"/>
   <tile id="0">
@@ -10316,6 +10316,81 @@
     <property name="length" value="5"/>
    </properties>
   </tile>
+  <tile id="4016">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4017">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4018">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4019">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4020">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4021">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4022">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4023">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4024">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4025">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4026">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4027">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4028">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4029">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4030">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
   <tile id="4031">
    <properties>
     <property name="length" value="1"/>
@@ -10445,6 +10520,81 @@
    <properties>
     <property name="delay" value="150"/>
     <property name="length" value="5"/>
+   </properties>
+  </tile>
+  <tile id="4154">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4155">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4156">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4157">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4158">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4159">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4160">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4161">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4162">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4163">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4164">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4165">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4166">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4167">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4168">
+   <properties>
+    <property name="length" value="1"/>
    </properties>
   </tile>
   <tile id="4169">
@@ -10599,6 +10749,86 @@
     <property name="v" value=""/>
    </properties>
   </tile>
+  <tile id="4292">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4293">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4294">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4295">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4296">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4297">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4298">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4299">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4300">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4301">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4302">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4303">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4304">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4305">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4306">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4307">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
   <tile id="4325">
    <properties>
     <property name="length" value="1"/>
@@ -10683,6 +10913,86 @@
    <properties>
     <property name="delay" value="150"/>
     <property name="length" value="5"/>
+   </properties>
+  </tile>
+  <tile id="4430">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4431">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4432">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4433">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4434">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4435">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4436">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4437">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4438">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4439">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4440">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4441">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4442">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4443">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4444">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4445">
+   <properties>
+    <property name="length" value="1"/>
    </properties>
   </tile>
   <tile id="4463">
@@ -10810,6 +11120,86 @@
    </properties>
   </tile>
   <tile id="4549">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4568">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4569">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4570">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4571">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4572">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4573">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4574">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4575">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4576">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4577">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4578">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4579">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4580">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4581">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4582">
+   <properties>
+    <property name="length" value="1"/>
+   </properties>
+  </tile>
+  <tile id="4583">
    <properties>
     <property name="length" value="1"/>
    </properties>
@@ -763301,7 +763691,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="4301"/>
    <tile/>
    <tile/>
    <tile/>
@@ -763473,9 +763863,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="4439"/>
+   <tile gid="4027"/>
+   <tile gid="4028"/>
    <tile/>
    <tile/>
    <tile/>
@@ -763644,10 +764034,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="4161"/>
+   <tile gid="4577"/>
+   <tile gid="4165"/>
+   <tile gid="4166"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7255446,7 +7255836,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="21834"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7256569,7 +7256959,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="21834"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7258497,7 +7258887,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="21834"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272144,9 +7272534,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="21789"/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="21798"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272315,33 +7272705,33 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272486,33 +7272876,33 @@
    <tile/>
    <tile gid="21805"/>
    <tile gid="21771"/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
    <tile gid="21771"/>
    <tile gid="21746"/>
@@ -7272659,13 +7273049,11 @@
    <tile gid="21755"/>
    <tile/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21771"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21771"/>
-   <tile/>
-   <tile/>
+   <tile gid="21770"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272677,15 +7273065,17 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21771"/>
    <tile/>
-   <tile gid="21771"/>
    <tile/>
-   <tile gid="21788"/>
    <tile/>
-   <tile gid="21788"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
+   <tile/>
+   <tile gid="21770"/>
+   <tile/>
+   <tile gid="21770"/>
+   <tile/>
+   <tile gid="21770"/>
    <tile gid="21791"/>
    <tile gid="21755"/>
    <tile/>
@@ -7272830,33 +7273220,33 @@
    <tile/>
    <tile gid="21755"/>
    <tile gid="21791"/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
    <tile/>
    <tile gid="21755"/>
@@ -7273003,33 +7273393,33 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
-   <tile gid="21788"/>
+   <tile gid="21770"/>
    <tile/>
    <tile gid="21827"/>
    <tile/>
@@ -7273182,9 +7273572,9 @@
    <tile/>
    <tile gid="21867"/>
    <tile/>
+   <tile gid="21804"/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="21783"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7340421,18 +7340811,11 @@
     <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves"/>
    </properties>
   </object>
-  <object id="1734" name="Treasure Chest" x="2384" y="4064" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves"/>
-   </properties>
-  </object>
   <object id="1735" name="Treasure Chest" x="2288" y="4064" width="16" height="16">
    <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1"/>
+    <property name="chances" value="GOLD3:50,GOLD4:10,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nbrewski:1,m88npie:1,m88nhardhat:1,m88nblueprint:1,m88nworkgloves:1"/>
     <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves"/>
+    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nbrewski,m88npie,m88nhardhat,m88nblueprint,m88nworkgloves"/>
    </properties>
   </object>
   <object id="1736" name="Treasure Chest" x="208" y="2592" width="16" height="16">
@@ -7340762,6 +7341145,20 @@
     <property name="chances" value="GOLD3:5,GOLD4:25,GOLD5:25,m88nbrassknuckles:10,m88ngrenade:10,m88nkevlararmor:10,candycorntreat:15"/>
     <property name="delay" value="8000"/>
     <property name="items" value="GOLD3,GOLD4,GOLD5,m88nbrassknuckles,m88ngrenade,m88nkevlararmor,candycorntreat"/>
+   </properties>
+  </object>
+  <object id="2069" name="Treasure Chest" x="2384" y="4064" width="16" height="16">
+   <properties>
+    <property name="chances" value="GOLD3:50,GOLD4:10,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nbrewski:1,m88npie:1,m88nhardhat:1,m88nblueprint:1,m88nworkgloves:1"/>
+    <property name="delay" value="8000"/>
+    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nbrewski,m88npie,m88nhardhat,m88nblueprint,m88nworkgloves"/>
+   </properties>
+  </object>
+  <object id="2070" name="Treasure Chest" x="352" y="1744" width="16" height="16">
+   <properties>
+    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
+    <property name="delay" value="8000"/>
+    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
    </properties>
   </object>
  </objectgroup>
@@ -7602951,6 +7603348,16 @@
    </properties>
   </object>
   <object id="2031" name="The Forbidden City" x="0" y="2880" width="2752" height="608">
+   <properties>
+    <property name="bg" value="rgb(13 12 9)"/>
+   </properties>
+  </object>
+  <object id="2065" name="Paradise Point West" x="0" y="3488" width="2752" height="1120">
+   <properties>
+    <property name="bg" value="rgb(13 12 9)"/>
+   </properties>
+  </object>
+  <object id="2066" name="Paradise Point West" x="688" y="5344" width="1744" height="880">
    <properties>
     <property name="bg" value="rgb(13 12 9)"/>
    </properties>
