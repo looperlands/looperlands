@@ -7321,9 +7321,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             self.stopFishing(false, false, false);
                         }
 
-                        if (self.player.hasNextStep()) {
-                            self.registerEntityDualPosition(self.player);
-                        }
+                        // A click reroute may still be awaiting its path after the last tile.
+                        self.registerEntityDualPosition(self.player);
 
                         if (self.isZoningTile(self.player.gridX, self.player.gridY)) {
                             self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
@@ -7721,8 +7720,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onSpawnCharacter(function (entity, x, y, orientation, targetId) {
-                        if (self.entityIdExists(entity.id) && entity instanceof Player) {
-                            existingEntity = self.entities[entity.id];
+                        // Only remote players may be replaced by visibility-based respawns.
+                        // Removing the local player also stops its movement updates.
+                        if (entity.id !== self.playerId && self.entityIdExists(entity.id) && entity instanceof Player) {
+                            var existingEntity = self.entities[entity.id];
                             if (!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
                                 console.log("Entity " + existingEntity.id + " is outside of the camera view so removing for respawn.");
                                 self.removeEntity(existingEntity);

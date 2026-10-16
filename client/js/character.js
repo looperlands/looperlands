@@ -288,12 +288,18 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                         this.requestPathfindingTo(x, y).then(function(path){
                             self.newDestination = null;
                             if(path.length < 2) {
-                                stop = true;
+                                // This response arrives after nextStep has returned.
+                                // Finish here so the character is registered again and can move.
+                                self.finishPath();
                             }
                             else {
                                 self.followPath(path);
                             }
-                        })
+                        }, function(error) {
+                            self.newDestination = null;
+                            self.finishPath();
+                            console.error(error);
+                        });
         			}
         			else if(this.hasNextStep()) {
         				this.step += 1;
@@ -305,21 +311,26 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                 }
             
     		    if(stop) { // Path is complete or has been interrupted
-    		        this.path = null;
-        			this.idle();
-                
-                    if(this.stop_pathing_callback) {
-                        this.stop_pathing_callback(this.gridX, this.gridY);
-                    }
-
-                    if(this.leave_callback && !this.leave_callback_area.contains(this)) {
-                        this.leave_callback();
-                        this.leave_callback = null;
-                        this.leave_callback_area = null;
-                    }
+                    this.finishPath();
         		}
         	}
     	},
+
+        finishPath: function() {
+            this.path = null;
+            this.interrupted = false;
+            this.idle();
+
+            if(this.stop_pathing_callback) {
+                this.stop_pathing_callback(this.gridX, this.gridY);
+            }
+
+            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
+                this.leave_callback();
+                this.leave_callback = null;
+                this.leave_callback_area = null;
+            }
+        },
     
         onBeforeStep: function(callback) {
             this.before_step_callback = callback;
