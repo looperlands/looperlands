@@ -53,7 +53,25 @@ jobs:
 
       - name: Push Docker Image to Docker Hub
         run: docker push balkshamster/looperlands:latest
+      - name: Check deployment destination
+        env:
+          DEPLOY_HOST: ${{ secrets.HOST }}
+        run: |
+          python3 - <<'PY'
+          import os, socket
 
+          host = os.environ["DEPLOY_HOST"].strip().lower().rstrip(".")
+          print("Uses expired LoopWorms domain:",
+                host == "loopworms.io" or host.endswith(".loopworms.io"))
+          try:
+              addresses = {
+                  entry[4][0] for entry in socket.getaddrinfo(host, 22)
+              }
+              print("Resolves to current game IP 62.72.0.23:",
+                    "62.72.0.23" in addresses)
+          except OSError:
+              print("Deployment hostname could not be resolved")
+          PY
       - name: Upload deployment safeguards
         uses: appleboy/scp-action@v0.1.7
         with:
