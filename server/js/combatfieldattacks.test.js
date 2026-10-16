@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm');
 function setup(){
-    const props={};for(const kind of ['rat','goblin','skeleton','skeleton2','ogre','crab','snake','boss','cobogre','wizard'])props[kind]={};
+    const props={};for(const kind of ['rat','goblin','skeleton','skeleton2','ogre','crab','snake','boss','wizard','spectre','eye','deathknight','bat','spider','minimag','sharkboss','tentacle','tentacle2','seacreature','megamag','cobslimeking','cobogre'])props[kind]={};
     const module={exports:{}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./combatfieldattacks'),'utf8'),{module,require:name=>{
         if(name.endsWith('gametypes'))return {getKindAsString:k=>k};
@@ -19,13 +19,39 @@ function setup(){
     const random=jest.fn(()=>0);const field=new module.exports(controller,random);
     return {field,props,player,mob,encounter,world,controller,random,start(){field.cooldowns.set(2,0);return field.intercept(encounter,mob,0);}};
 }
-test('only ordinary allowlisted mobs qualify; bosses, custom AI, AoE and friendly mobs retain their behavior',()=>{
+test('charges default on across regular mobs and ordinary bosses',()=>{
     const s=setup();
-    for(const kind of ['rat','goblin','skeleton','skeleton2','ogre','crab','snake'])expect(s.field.eligible({...s.mob,kind})).toBe(true);
-    for(const kind of ['boss','cobogre','wizard','sharkboss','megamag'])expect(s.field.eligible({...s.mob,kind})).toBe(false);
-    expect(s.field.eligible({...s.mob,specialInterval:1})).toBe(false);
-    s.props.goblin.aoe={onHit:true};expect(s.field.eligible(s.mob)).toBe(false);
+    for(const kind of ['rat','goblin','skeleton','skeleton2','ogre','crab','snake','spectre','eye','deathknight','bat','spider','wizard','boss','sharkboss']) {
+        expect(s.field.eligible({...s.mob,kind})).toBe(true);
+    }
+    s.props.newenemy={};expect(s.field.eligible({...s.mob,kind:'newenemy'})).toBe(true);
+    s.props.boss.redpacket=true;expect(s.field.eligible({...s.mob,kind:'boss'})).toBe(true);
+    s.props.minimag.aoe={onDeath:true};expect(s.field.eligible({...s.mob,kind:'minimag'})).toBe(true);
+});
+test('stationary and scripted encounters are excluded even before their special timer starts',()=>{
+    const s=setup();
+    for(const kind of ['tentacle','tentacle2','seacreature','megamag','cobslimeking','cobogre']) {
+        const mob={...s.mob,kind};s.world.entities[2]=mob;s.field.cooldowns.set(2,0);
+        expect(s.field.intercept(s.encounter,mob,0)).toBe(false);
+    }
+    expect(s.field.attacks.size).toBe(0);
+    expect(s.controller.send).not.toHaveBeenCalled();
+});
+test('friendly entities, trainers, timed AoE and active scripts keep their existing behavior',()=>{
+    const s=setup();
+    for(const overrides of [{specialInterval:1},{addArray:[{}]},{id:100},{type:'npc'},{kind:'unknown'}]) {
+        expect(s.field.eligible({...s.mob,...overrides})).toBe(false);
+    }
+    s.props.goblin.aoe={onTimer:4000};expect(s.field.eligible(s.mob)).toBe(false);
     delete s.props.goblin.aoe;s.props.goblin.friendly=true;expect(s.field.eligible(s.mob)).toBe(false);
+});
+test.each(['spectre','eye','deathknight','boss','spider'])('newly eligible %s completes a lunge and opens a counter after a sidestep',kind=>{
+    const s=setup();s.mob.kind=kind;
+    expect(s.start()).toBe(true);s.player.x=11;
+    s.field.tick(650);s.field.tick(830);
+    expect(s.encounter.fieldCombo).toMatchObject({kind:'counter',mob:s.mob});
+    s.field.technique(s.encounter,2,900);
+    expect(s.mob.hitPoints).toBe(85);expect(s.encounter.fieldCombo).toBeNull();
 });
 test('normal swings precede a randomized special and failed rolls keep ordinary attacks',()=>{
     const s=setup();expect(s.field.intercept(s.encounter,s.mob,0)).toBe(false);
@@ -77,4 +103,16 @@ test('an invulnerable player does not receive a charge impact signal',()=>{
     const s=setup();s.player.handleHurt.mockImplementation(()=>{});
     s.start();s.field.tick(650);s.field.tick(830);
     expect(s.encounter.chargeHit).toBeUndefined();
+});
+
+test('real mob catalog enables Lavaland enemies and mobile bosses while preserving bespoke encounters',()=>{
+    global.Types ||= {}; // Legacy gametypes initializes this global before exporting it.
+    const catalog=require('./properties');
+    const s=setup();Object.assign(s.props,catalog);
+    for(const kind of ['spectre','eye','deathknight','boss','sharkboss','spider','bat','minimag']) {
+        expect(s.field.eligible({...s.mob,kind})).toBe(true);
+    }
+    for(const kind of ['tentacle','tentacle2','seacreature','megamag','cobslimeking','cobogre','cobchicken']) {
+        expect(s.field.eligible({...s.mob,kind})).toBe(false);
+    }
 });

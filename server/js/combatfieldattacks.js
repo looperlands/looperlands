@@ -1,17 +1,19 @@
-// Local-preview ordinary-mob attacks. Explicit allowlist protects bosses and bespoke AI.
+// Local-preview charges default on for mobile enemies, with narrow mechanic exclusions.
 const Types=require('../../shared/js/gametypes');
 const Properties=require('./properties');
 const Formulas=require('./formulas');
 const Messages=require('./message');
 const adjacent=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y)===1;
 const same=(a,b)=>a.x===b.x&&a.y===b.y;
+// These encounters are stationary or own a scripted special-attack cycle.
+const SCRIPTED_KINDS=new Set(['tentacle','tentacle2','seacreature','megamag','cobslimeking','cobogre']);
 class FieldAttacks {
     constructor(controller,random=Math.random){this.controller=controller;this.world=controller.world;this.random=random;this.attacks=new Map();this.cooldowns=new Map();this.serial=0;}
     eligible(mob){
         if(!mob||mob.type!=='mob'||this.controller.mobIds.has(Number(mob.id)))return false;
         const kind=Types.getKindAsString(mob.kind),props=Properties[kind];
-        return ['rat','goblin','skeleton','skeleton2','ogre','crab','snake'].includes(kind)
-            && props && !props.friendly && !props.aoe && !props.redpacket && !mob.specialInterval && !mob.addArray?.length;
+        return !!props && !props.friendly && !SCRIPTED_KINDS.has(kind)
+            && !props.aoe?.onTimer && !mob.specialInterval && !mob.addArray?.length;
     }
     held(mob){return !!mob && this.attacks.has(Number(mob.id));}
     intercept(encounter,mob,now){

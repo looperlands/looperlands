@@ -231,9 +231,14 @@ test.each([false,true])('counter label and damage start separated and diverge wi
     const {info}=setup(reduced);
     const damage=info.addDamageInfo(22,64,49,'inflicted',100,true);
     const label=info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
-    expect(label.x-damage.x).toBe(56);expect(damage.y-label.y).toBe(42);
+    expect(label.x-damage.x).toBe(20);expect(damage.y-label.y).toBe(24);
     const gap=label.x-damage.x;
     info.update(1300);
     if(reduced)expect(label.x-damage.x).toBe(gap);
-    else expect(label.x-damage.x).toBeGreaterThan(gap);
+    else {
+        expect(label.x-damage.x).toBeGreaterThan(gap);
+        expect(label.x-damage.x).toBeLessThanOrEqual(gap+8);
+        expect(Math.abs(label.y-label.initialY)).toBeLessThan(6);
+        expect(Math.abs(damage.y-damage.initialY)).toBeLessThan(6);
+    }
 });

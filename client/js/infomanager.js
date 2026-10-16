@@ -70,11 +70,11 @@ define(function() {
                 info.reducedMotion = this.game.app.settings.getReducedMotion();
                 if (Number.isFinite(amount)) info.setAmount(amount);
                 if (type === 'inflicted' && info.critical) {
-                    info.initialX = x - 24; info.drift = -24; info.lift = 22;
+                    info.initialX = x - 10; info.drift = -4; info.lift = 12;
                 }
                 if (presentation.motion === 'counter') {
-                    info.initialX = x + 32; info.initialY = y - 42;
-                    info.drift = 24; info.lift = 34; info.tilt = 0.08;
+                    info.initialX = x + 10; info.initialY = y - 24;
+                    info.drift = 4; info.lift = 14; info.tilt = 0.04;
                 }
                 info.update(time);
             }
