@@ -27,6 +27,17 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             backgroundPosition: '0px ' + (-(definition.animations?.idle_down?.row || 0) * definition.height) + 'px',
             transform: 'scale(' + scale + ')'};
     }
+    function medalStyle(value) {
+        if (!Number.isInteger(value) || value < 1 || value > 20) return null;
+        return {backgroundPosition: -(value <= 17 ? value - 1 : value - 9) * 24 + 'px ' + (value <= 17 ? -222 : -274) + 'px'};
+    }
+    function medal(quest) {
+        const style = medalStyle(quest.medal);
+        if (!style) return null;
+        const frame = node('span', 'journal-medal' + (quest.status === 'COMPLETED' ? ' journal-medal-earned' : ''));
+        frame.setAttribute('aria-hidden', 'true');
+        const art = node('span', 'journal-medal-art'); Object.assign(art.style, style); frame.append(art); return frame;
+    }
 
     class Journal {
         constructor(app) {
@@ -126,19 +137,16 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 const tab = button(title, () => this.switchView(view), 'journal-tab');
                 tab.setAttribute('aria-pressed', String(this.view === view)); tab.dataset.fgFocus = 'tab-' + view; tabs.append(tab);
             }
+            if (this.view === 'field-guide' && this.data) {
+                const totals = this.data.totals, summary = node('div', 'fg-summary');
+                summary.append(node('span', '', totals.discovered + ' / ' + totals.total + ' discovered'), node('span', '', totals.completed + ' / ' + totals.total + ' completed'));
+                tabs.append(summary);
+            }
             panel.append(tabs);
             if (this.view === 'quests') {
                 this.renderQuests(panel, message, failure);
                 this.root.append(panel); this.restoreFocus(focus, wasInside, scroll); return;
             }
-            const tools = node('div', 'fg-tools');
-            tools.append(node('span', 'fg-map-name', mapNames[this.mapId] || this.mapId));
-            if (this.data) {
-                const totals = this.data.totals, summary = node('div', 'fg-summary');
-                summary.append(node('span', '', totals.discovered + ' / ' + totals.total + ' discovered'), node('span', '', totals.completed + ' / ' + totals.total + ' completed'));
-                tools.append(summary);
-            }
-            panel.append(tools);
             if (message) {
                 const notice = node('div', 'fg-notice', message); notice.setAttribute('role', failure ? 'alert' : 'status');
                 if (failure) notice.append(button('Retry', () => this.load()));
@@ -181,16 +189,41 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             if (!entries.length) content.append(node('p', 'fg-empty', this.quests ? this.questFilter === 'COMPLETED' ? 'No completed quests yet.' : 'No quests here yet. Talk to the people you meet.' : 'Loading quests…'));
             const list = node('div', 'journal-quest-list'); list.setAttribute('aria-label', 'Quest log');
             const selected = entries.find(quest => quest.id === this.selectedQuest) || entries[0];
+            const listKey = this.questFilter + ':' + entries.map(quest => quest.id + quest.status).join(',');
+            if (listKey !== this.questListKey) list.classList.add('journal-enter');
+            this.questListKey = listKey;
             for (const quest of entries) {
                 const row = button('', () => {this.selectedQuest = quest.id; this.render();}, 'journal-quest');
                 row.dataset.fgFocus = 'quest-' + quest.id; row.setAttribute('aria-pressed', String(quest === selected));
-                row.append(node('strong', '', quest.name), node('span', '', quest.status === 'COMPLETED' ? '✓ Completed' : 'In progress'));
-                if (Number.isFinite(quest.amount) && quest.amount > 0) row.append(node('small', '', (quest.status === 'COMPLETED' ? quest.amount : quest.progressCount || 0) + ' / ' + quest.amount));
+                row.style.setProperty('--quest-delay', Math.min(list.children.length * 40, 200) + 'ms');
+                const award = medal(quest); if (award) row.append(award);
+                const text = node('div', 'journal-quest-label');
+                text.append(node('strong', '', quest.name), node('span', '', quest.status === 'COMPLETED' ? '✓ Completed' : 'In progress'));
+                if (Number.isFinite(quest.amount) && quest.amount > 0) text.append(node('small', '', (quest.status === 'COMPLETED' ? quest.amount : quest.progressCount || 0) + ' / ' + quest.amount));
+                row.append(text);
                 list.append(row);
             }
             content.append(list);
             if (selected) {
                 const detail = node('aside', 'journal-quest-detail'); detail.setAttribute('aria-label', 'Quest details');
+                const artwork = node('div', 'journal-quest-artwork'), award = medal(selected);
+                if (award) artwork.append(award);
+                const target = typeof Types !== 'undefined' ? Types.getKindAsString(selected.target) || selected.target : selected.target;
+                const spriteName = sprites['item-' + target] ? 'item-' + target : target;
+                const style = spriteStyle(spriteName), definition = sprites[spriteName];
+                if (style) {
+                    const viewport = node('span', 'journal-target'), sprite = node('span', 'fg-sprite');
+                    Object.assign(sprite.style, style, {transform: 'scale(' + Math.min(2, 80 / Math.max(definition.width, definition.height)) + ')'});
+                    const animation = definition.animations?.idle_down;
+                    if (animation?.length > 1) {
+                        sprite.classList.add('journal-target-animated');
+                        sprite.style.setProperty('--quest-frames', animation.length);
+                        sprite.style.setProperty('--quest-duration', animation.length * 180 + 'ms');
+                        sprite.style.setProperty('--quest-frame-end', -(definition.width * animation.length) + 'px');
+                    }
+                    viewport.setAttribute('aria-hidden', 'true'); viewport.append(sprite); artwork.append(viewport);
+                }
+                if (artwork.children.length) detail.append(artwork);
                 detail.append(node('h2', '', selected.name), node('p', '', selected.status === 'COMPLETED' ? '✓ Completed' : 'In progress'));
                 const description = String(selected.longDesc || selected.desc || '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, '');
                 detail.append(node('p', 'journal-description', description));
@@ -247,6 +280,6 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             this.root.remove(); this.reminder.remove();
         }
     }
-    Journal.status = status; Journal.spriteStyle = spriteStyle;
+    Journal.status = status; Journal.spriteStyle = spriteStyle; Journal.medalStyle = medalStyle;
     return Journal;
 });

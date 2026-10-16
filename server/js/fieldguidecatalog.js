@@ -18,7 +18,7 @@ function validateCatalog(catalog, types, lakes) {
             if (!entry || !validId(entry.id) || ids.has(entry.id) || !categories.includes(entry.category) ||
                 !['listed', 'unknown', 'secret', 'excluded'].includes(entry.visibility) || !rules[entry.category].includes(entry.completion) ||
                 typeof entry.name !== 'string' || !entry.name || typeof entry.hint !== 'string' ||
-                typeof entry.target !== 'string' || typeof entry.sprite !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(entry.sprite)) throw new Error('Invalid Field Guide entry: ' + entry?.id);
+                typeof entry.target !== 'string' || entry.sprite !== null && (typeof entry.sprite !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(entry.sprite))) throw new Error('Invalid Field Guide entry: ' + entry?.id);
             ids.add(entry.id);
             const kind = types.getKindFromString(entry.target);
             if (entry.category === 'monsters' ? !types.isMob(kind) : entry.category === 'fish' ? !lakes.isFish(entry.target) : !types.isItem(kind)) throw new Error('Unknown Field Guide target: ' + entry.target);
@@ -30,7 +30,8 @@ function validateCatalog(catalog, types, lakes) {
     return catalog;
 }
 function loadCatalog(types, lakes) {
-    return validateCatalog(JSON.parse(fs.readFileSync(path.join(__dirname, '../field-guide.json'), 'utf8')), types, lakes);
+    const overrides = validateCatalog(JSON.parse(fs.readFileSync(path.join(__dirname, '../field-guide.json'), 'utf8')), types, lakes);
+    return validateCatalog(require('./fieldguidemapcatalog').buildMapCatalog(types, lakes, overrides), types, lakes);
 }
 function project(collection, facts) {
     const entries = [], required = [], bonuses = [];

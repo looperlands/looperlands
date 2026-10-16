@@ -146,6 +146,7 @@ class PlayerEventBroker {
     }
 
     async questCompleteEvent(quest, xpGained) {
+      if (quest.reward) this.player.server.server.fieldGuide?.observe(this.player, 'obtain', quest.reward.item, quest.reward.amount);
       let sessionId = this.player.sessionId;
       let playerCache = this.cache.get(sessionId);
       PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });

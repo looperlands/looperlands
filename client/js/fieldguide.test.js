@@ -22,6 +22,11 @@ test('tall sprite frames fit the slot without revealing other rows of the atlas'
     expect(Number(style.transform.slice(6, -1)) * 48).toBeLessThanOrEqual(40);
     expect(Guide.spriteStyle('missing')).toBeNull();
 });
+test('only supported quest medals reference the existing atlas', () => {
+    expect(Guide.medalStyle(3)).toEqual({backgroundPosition: '-48px -222px'});
+    expect(Guide.medalStyle(20)).toEqual({backgroundPosition: '-264px -274px'});
+    for (const invalid of [undefined, null, 0, -1, 21, '3', 1.5]) expect(Guide.medalStyle(invalid)).toBeNull();
+});
 test('a response from the previous map cannot appear after the player changes map', async () => {
     const source = fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8');
     let resolve, Loaded;

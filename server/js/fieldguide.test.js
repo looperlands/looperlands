@@ -22,15 +22,42 @@ beforeEach(() => {
     player = {id: 1, sessionId: 'session', nftId: 'avatar', walletId: 'wallet', mapId: 'main', hasEnteredGame: true, isBot: () => false, send: jest.fn()};
     session = {entityId: 1, nftId: 'avatar', walletId: 'wallet', mapId: 'main', gameData: {choices: [], fieldGuide: [], items: {}, mobKills: {}}};
     sessions = new Map([['session', session]]);
-    guide = new FieldGuide(sessions, () => ({main: {getPlayerById: id => id === 1 ? player : null}}), client, {store, catalog: {version: 1, maps: {main: collection, unvisited: collection}}});
+    guide = new FieldGuide(sessions, () => ({main: {getPlayerById: id => id === 1 ? player : null}}), client, {store, catalog: {version: 1, maps: {main: {...collection, entries: [...collection.entries]}, unvisited: collection}}});
 });
 afterEach(() => {clearInterval(store.timer); fs.rmSync(directory, {recursive: true, force: true});});
 const response = () => ({statusCode: 200, status(code) {this.statusCode = code; return this;}, json(body) {this.body = body; return this;}, set: jest.fn()});
 const request = map => ({params: {sessionId: 'session'}, query: map ? {map} : {}});
 
-test('published starter catalog validates real kinds, fish and available sprite assets', () => {
+test('map shops load once for concurrent requests and add their actual stock only to that map', async () => {
+    guide.catalog.maps.main.shops = ['local-shop'];
+    client.getShopInventory = jest.fn().mockResolvedValue([{item: 'CAKE'}, {item: 'ORE'}]);
+    try {
+        await Promise.all([guide.loadShops('main'), guide.loadShops('main')]);
+        expect(client.getShopInventory).toHaveBeenCalledTimes(1);
+        expect(guide.catalog.maps.main.entries.some(entry => entry.target === 'cake')).toBe(true);
+        expect(guide.byTarget.has(String(Types.Entities.CAKE))).toBe(true);
+    } finally {delete guide.catalog.maps.main.shops;}
+});
+test('failed shop reads never replace map content with an incomplete catalog', async () => {
+    guide.catalog.maps.main = {...collection, shops: ['unavailable']};
+    client.getShopInventory = jest.fn().mockResolvedValue(undefined);
+    const original = guide.catalog.maps.main.entries;
+    await expect(guide.loadShops('main')).rejects.toThrow('Map shop inventory unavailable');
+    expect(guide.catalog.maps.main.entries).toBe(original);
+    expect(guide.shopLoads.has('main')).toBe(false);
+});
+test('acquisitions before first opening a shop catalog survive later consumption', async () => {
+    expect(guide.byTarget.has(String(Types.Entities.CAKE))).toBe(false);
+    await guide.record(player, 'obtain', Types.Entities.CAKE);
+    expect(guide.facts(session).has(flag('cake', 'completed'))).toBe(true);
+    expect(session.gameData.items).toEqual({});
+    expect(guide.catalog.maps.main.entries.some(entry => entry.target === 'cake')).toBe(false);
+});
+
+test('generated map catalog validates real kinds and only references available sprite assets', () => {
     const catalog = loadCatalog(Types, Lakes);
     for (const map of Object.values(catalog.maps)) for (const entry of map.entries) {
+        if (entry.sprite === null) continue;
         expect(fs.existsSync(path.join(__dirname, '../../client/img/1', entry.sprite + '.png'))).toBe(true);
         expect(fs.existsSync(path.join(__dirname, '../../client/sprites', entry.sprite + '.json'))).toBe(true);
     }

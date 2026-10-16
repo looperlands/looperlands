@@ -61,6 +61,8 @@ api.get('/api/game/asset/equipped/:nft', (req, res) => res.json({weapon: 'sword1
 api.get('/api/game/asset/data/:nft', (req, res) => res.json(gameData.get(req.params.nft) || {}));
 api.get('/api/maps/:map/flow', (req, res) => res.json([]));
 api.get('/api/maps/:map/music', (req, res) => res.json([]));
+// Local shop fixtures are deliberately empty; production reads its configured stock.
+api.get('/api/game/shop/inventory/:shop', (req, res) => res.json([]));
 api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.fromEntries([
     'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
     'hate', 'attackRate', 'stealth', 'xp', 'fishing'

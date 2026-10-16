@@ -20,6 +20,11 @@ class FieldGuide {
         };
         this.jobs = new Map();
         this.known = new WeakMap();
+        this.shopLoads = new Map();
+        this.makeEntry = require('./fieldguidemapcatalog').entryFactory(Types, Lakes, require('./properties'), require('../field-guide.json'));
+        this.indexEntries();
+    }
+    indexEntries() {
         this.entries = [...new Map(Object.values(this.catalog.maps).flatMap(map => map.entries).map(entry => [entry.id, entry])).values()];
         this.byTarget = new Map();
         for (const entry of this.entries) for (const target of [entry.target, Types.getKindFromString(entry.target)]) {
@@ -27,6 +32,25 @@ class FieldGuide {
             const key = String(target), entries = this.byTarget.get(key) || new Set();
             entries.add(entry); this.byTarget.set(key, entries);
         }
+    }
+    async loadShops(map) {
+        const collection = this.catalog.maps[map];
+        if (!collection?.shops?.length) return;
+        const cached = this.shopLoads.get(map);
+        if (cached && Date.now() - cached.time < 300000) return cached.promise;
+        const load = {time: Date.now()};
+        load.promise = Promise.all(collection.shops.map(shop => this.platform.getShopInventory(shop))).then(stocks => {
+            if (stocks.some(stock => !Array.isArray(stock))) throw new Error('Map shop inventory unavailable');
+            const entries = new Map(collection.entries.filter(entry => !entry.shopOnly).map(entry => [entry.id, entry]));
+            for (const stock of stocks) for (const item of stock) {
+                const entry = this.makeEntry(item.item);
+                if (entry && !entries.has(entry.id)) entries.set(entry.id, {...entry, shopOnly: true});
+            }
+            collection.entries = [...entries.values()].sort((a, b) => a.id.localeCompare(b.id));
+            this.indexEntries();
+        }).catch(error => {this.shopLoads.delete(map); throw error;});
+        this.shopLoads.set(map, load);
+        return load.promise;
     }
     context(sessionId) {
         const session = this.sessions.get(sessionId);
@@ -64,7 +88,10 @@ class FieldGuide {
     }
     record(player, event, target, amount = 1) {
         if (this.closing || !(amount > 0) || !player || player.isBot?.()) return Promise.resolve();
-        const entries = this.byTarget.get(String(target));
+        // Preserve earned facts even before a shop's stock has been loaded, or
+        // before this registered target is added to a map's exported content.
+        const definition = this.byTarget.has(String(target)) ? null : this.makeEntry(target);
+        const entries = this.byTarget.get(String(target)) || (definition && new Set([definition]));
         if (!entries) return Promise.resolve();
         const session = this.context(player.sessionId)?.session;
         if (!session) return Promise.resolve();
@@ -127,6 +154,7 @@ class FieldGuide {
         try {
             if (this.closing) throw new Error('Field Guide is shutting down');
             if (this.store.error && !initial.session.f2p) throw this.store.error;
+            await this.loadShops(map);
             await this.reconcile(initial.player);
             const current = this.context(req.params.sessionId);
             if (!current || current.player !== initial.player || current.player.mapId !== initialMap) return res.status(409).json({error: 'Your map changed. Reopen the Field Guide.'});
