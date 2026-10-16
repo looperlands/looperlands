@@ -7319,6 +7319,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onStep(function () {
+                        self.combatPrototype?.reportPosition();
                         if (self.keyboardMovement) self.lootItemAt(self.player.gridX, self.player.gridY);
 
                         self.handleScene(self.player)
@@ -7405,6 +7406,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onStopPathing(function (x, y) {
+                        self.combatPrototype?.reportPosition();
                         if (self.player.hasTarget()) {
                             self.player.lookAtTarget();
                         }
@@ -8081,7 +8083,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         let mobName = AltNames.getName(kindString);
 
                         setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp");
+                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
                         }, 200);
 
                         self.renderStatistics();
@@ -8300,7 +8302,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
                         self.showQuestCompleteNotification(questName, endText, xpReward, medal);
                         setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp");
+                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
                         }, 200);
                     });
 

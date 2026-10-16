@@ -45,13 +45,7 @@
                 }
                 ctx.globalAlpha=1;
             }
-            if (state.streak > 0 && state.now < state.streakUntil) {
-                ctx.font='6px monospace';
-                const sx=state.playerX+8-view.cameraX, sy=state.playerY+24-view.cameraY;
-                const seconds=Math.max(0,(state.streakUntil-state.now)/1000).toFixed(1);
-                const text=`${state.streak} KILL${state.streak>1?'S':''}${state.streak>=2?' · HASTE':''}  ${seconds}s`;
-                ctx.fillStyle='#ffd183'; ctx.strokeText(text,sx,sy); ctx.fillText(text,sx,sy);
-            }
+
         }
     };
 });

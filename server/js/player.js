@@ -335,6 +335,8 @@ module.exports = Player = Character.extend({
                         //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
 
                         function handleDamage(mob, totalLevel, multiplier, critical = false) {
+                            // Local trainers use fixed encounter damage, including when caught in splash.
+                            if (self.server.combatPrototype?.mobIds.has(Number(mob.id))) return 0;
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                             dmg *= multiplier;
                             dmg = Math.round(dmg);

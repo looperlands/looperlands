@@ -35,7 +35,7 @@ define(function() {
 
             const id = ++this.nextId;
             const info = new DamageInfo(id, value, x, y, COMBAT_TEXT_DURATION, type);
-            if (combat || type === 'xp') {
+            if (combat || type === 'xp' || type === 'combo') {
                 // Animated combat and XP labels share lanes to keep bursts readable.
                 const previous = this.damageLanes[targetKey];
                 const lane = previous && time - previous.time < COMBAT_TEXT_DURATION ? previous.lane + 1 : 0;
@@ -114,6 +114,10 @@ define(function() {
         "xp": {
             fill: "rgb(0, 0, 255)",
             stroke: "white",
+        },
+        "combo": {
+            fill: "#fce045",
+            stroke: "#533642"
         },
         "fishTrait": {
             fill: "#00e4ff",

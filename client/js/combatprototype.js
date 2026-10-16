@@ -80,15 +80,32 @@ define(function () {
             return true;
         }
 
+        reportPosition() {
+            if (!this.enabled || !this.state) return;
+            const player = this.game.player;
+            const next = player.isMoving() && player.nextGridX >= 0 && player.nextGridY >= 0
+                && (player.nextGridX !== player.gridX || player.nextGridY !== player.gridY)
+                ? {x:player.nextGridX,y:player.nextGridY} : null;
+            const report = `${player.gridX},${player.gridY}>${next?.x},${next?.y}@${this.state.correction}`;
+            if (report === this.lastReport) return;
+            this.lastReport = report;
+            // Called at every tile boundary, including multiple completions in one frame.
+            this.send('move', {x:player.gridX,y:player.gridY,next,correction:this.state.correction});
+        }
+
         correct(position) {
             const {game} = this, player = game.player;
-            player.disengage(); player.path = null; player.newDestination = null;
-            player.interrupted = false; player.movement.inProgress = false;
-            player.manualMovementTime = undefined;
+            player.disengage();
             game.unregisterEntityPosition(player);
+            player.cancelPath();
             player.setGridPosition(position.x, position.y);
             game.registerEntityPosition(player); player.idle();
-            this.lastPosition = position.x + ',' + position.y;
+            this.lastReport = null;
+        }
+
+        showCombatInfo(text) {
+            const {player,infoManager} = this.game;
+            infoManager.addDamageInfo(text,player.x,player.y-15,'combo',player.id);
         }
 
         receive(packet) {
@@ -103,7 +120,15 @@ define(function () {
             if (starting || packet.event?.kind === 'reset' && this.lastEvent !== packet.event.id) this.selected = true;
             this.offset = packet.serverNow - Date.now();
             if (starting || this.state?.correction !== packet.correction) this.correct(packet.player);
+            const previous = this.state;
             this.state = packet;
+            if (packet.reward && packet.reward.id !== this.lastReward) {
+                this.lastReward = packet.reward.id;
+                this.showCombatInfo(`Combo! +${packet.reward.xp} XP`);
+            }
+            if (packet.streak >= 2 && (packet.streak !== previous?.streak || packet.streakUntil !== previous?.streakUntil)) {
+                this.showCombatInfo(`${packet.streak}-kill streak +${packet.streakBonusPercent}% XP`);
+            }
             this.toggle.textContent = 'Combat on'; this.toggle.setAttribute('aria-pressed','true');
             this.reset.hidden = false;
             this.update();
@@ -113,11 +138,6 @@ define(function () {
             if (!this.enabled || !this.state || !this.game.player) return;
             const {game, state} = this, player = game.player, now = this.now();
             if (game.isStopped || player.isDead) return;
-            const position = player.gridX + ',' + player.gridY;
-            if (position !== this.lastPosition) {
-                this.lastPosition = position;
-                this.send('move', {x:player.gridX, y:player.gridY});
-            }
             const mob = game.getEntityById(state.mob.id);
             if (mob) {
                 mob.isAggressive = false; mob.attackingMode = false; mob.followingMode = false;
@@ -151,7 +171,9 @@ define(function () {
                 }
                 if (state.event?.id !== this.lastEvent) {
                     this.lastEvent = state.event?.id;
+                    if (state.event?.kind === 'evade') this.showCombatInfo('Counter ready');
                     if (state.event?.kind === 'attack') {
+                        if (state.event.label === 'Counter') this.showCombatInfo('Counter!');
                         player.setOrientation(player.getOrientationTo(mob)); player.hit();
                         game.audioManager.playSound('hit1');
                     } else if (['lunge','mob-attack'].includes(state.event?.kind)) {
@@ -182,7 +204,7 @@ define(function () {
         }
 
         clear() {
-            this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null;
+            this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null;
             if (this.toggle) { this.toggle.textContent = 'Combat off'; this.toggle.setAttribute('aria-pressed','false'); }
             if (this.reset) this.reset.hidden = true;
             if (this.action) this.action.hidden = true;

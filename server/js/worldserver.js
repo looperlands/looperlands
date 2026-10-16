@@ -839,7 +839,7 @@ module.exports = World = cls.Class.extend({
                     this.handleItemDespawn(item);
                 }
 
-                this.distributeExp(mob);
+                this.distributeExp(mob, attacker);
                 // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
                 this.handleExpMultiplierOnDeath(mob);
                 if (attacker.type === 'player') {
@@ -1330,7 +1330,7 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    distributeExp: function (mob) {
+    distributeExp: function (mob, killer) {
         let self = this;
 
         let xp = Formulas.xp(mob);
@@ -1358,6 +1358,9 @@ module.exports = World = cls.Class.extend({
                     accompliceShare = Math.round(accompliceShare * (100 + buff.percent) / 100);
                 }
                 accompliceShare = accompliceShare * accomplice.playerClassModifiers.xp;
+                if (self.combatPrototype) {
+                    accompliceShare = self.combatPrototype.killExperience(mob, accomplice, killer, accompliceShare);
+                }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

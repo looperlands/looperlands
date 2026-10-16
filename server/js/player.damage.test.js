@@ -12,6 +12,8 @@ function setup(trait) {
         Character: {extend: value => { Object.assign(methods, value); return PlayerClass; }},
         require: name => {
             if (name === '../../shared/js/gametypes') return Types;
+            if (name === './properties') return {rat:{friendly:false}};
+            if (name === './utils') return {distanceTo:()=>1};
             if (name === './format') return {check: () => true};
             if (name === './formulas') return {dmg: () => 10, getSpeedTraitBonus: () => 100};
             if (name === './quests/playereventbroker.js') return {PlayerEventBroker: function () {}};
@@ -41,3 +43,21 @@ test.each([['crit', 60, true], ['speed', 20, false], [undefined, 20, false]])(
         expect(player.incrementNFTWeaponExperience).toHaveBeenCalledWith(amount);
     }
 );
+
+
+test('AoE damages ordinary targets but cannot farm trainer damage, weapon XP or cleave healing', async () => {
+    const {player,mob,world,receive}=setup('aoe');
+    Object.assign(mob,{type:'mob',kind:Types.Entities.RAT,x:1,y:1});
+    const trainer={...mob,id:8,receiveDamage:jest.fn()};
+    const splash={...mob,id:9,receiveDamage:jest.fn()};
+    Object.assign(world,{combatPrototype:{mobIds:new Set([8])},
+        groups:{test:{entities:{7:mob,8:trainer,9:splash}}},pushToPlayer:jest.fn()});
+    Object.assign(player,{group:'test',x:1,y:1,hitPoints:50,maxHitPoints:100,health:()=>({})});
+    await receive([Types.Messages.HIT,mob.id]);
+    expect(mob.receiveDamage).toHaveBeenCalledWith(20,1);
+    expect(splash.receiveDamage).toHaveBeenCalledWith(16,1);
+    expect(trainer.receiveDamage).not.toHaveBeenCalled();
+    expect(world.handleHurtEntity).toHaveBeenCalledTimes(2);
+    expect(player.incrementNFTWeaponExperience.mock.calls.map(([xp])=>xp)).toEqual([20,16]);
+    expect(player.hitPoints).toBe(54);
+});

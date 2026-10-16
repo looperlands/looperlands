@@ -22,12 +22,12 @@ test('foreground health and labels use display scale so they stay attached to th
 });
 
 
-test('charge pulse grows before impact and the kill-streak timer stays below the avatar',()=>{
+test('charge pulse remains, without a separate kills or haste display',()=>{
     const ctx=context();
     renderer.ground(ctx,{phase:'windup',mobX:160,mobY:320,now:1800,until:1850}, {cameraX:80,cameraY:160});
     expect(ctx.ellipse).toHaveBeenCalledWith(88,174,expect.any(Number),expect.any(Number),0,0,Math.PI*2);
     renderer.draw(ctx,{phase:'windup',mobX:160,mobY:320,mob:{hp:160,maxHp:160},now:1800,until:1850,
         playerX:176,playerY:320,streak:2,streakUntil:7800},{cameraX:80,cameraY:160,scale:1});
     expect(ctx.fillText).toHaveBeenCalledWith('CHARGING',88,133);
-    expect(ctx.fillText).toHaveBeenCalledWith('2 KILLS · HASTE  6.0s',104,184);
+    expect(ctx.fillText.mock.calls.map(call=>call[0])).toEqual(['CHARGING']);
 });
