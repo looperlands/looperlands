@@ -103,7 +103,7 @@ test('confirmed mob damage produces exactly one effect and passes the target ide
     const self = damageHandler(mob);
     self.handler(7, 5);
     expect(self.combatFeedback.addImpact).toHaveBeenCalledTimes(1);
-    expect(self.combatFeedback.addImpact).toHaveBeenCalledWith(mob, 5, 1200);
+    expect(self.combatFeedback.addImpact).toHaveBeenCalledWith(mob, 5, 1200, false);
     expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(5, 32, 33, 'inflicted', 7, false);
 });
 
@@ -142,6 +142,7 @@ test.each(['reduced', 'disabled', 'map', 'death', 'despawn', 'stop'])('recoil cl
 test('confirmed critical damage passes its status to the number without duplicating the hit effect', () => {
     const self = damageHandler({id: 7, x: 32, y: 48});
     self.handler(7, 15, true);
+    expect(self.combatFeedback.addImpact).toHaveBeenCalledWith(expect.any(Object),15,1200,true);
     expect(self.infoManager.addDamageInfo).toHaveBeenCalledWith(15, 32, 33, 'inflicted', 7, true);
     expect(self.combatFeedback.addImpact).toHaveBeenCalledTimes(1);
 });
@@ -150,4 +151,28 @@ test('confirmed critical damage passes its status to the number without duplicat
 test('authoritative remaining HP updates the mob immediately instead of estimating from damage',()=>{
     const mob={id:7,x:32,y:48,hitPoints:100,maxHitPoints:100};const self=damageHandler(mob);
     self.handler(7,15,false,{hp:70,maxHp:100});expect(mob.hitPoints).toBe(70);
+});
+
+
+test('only confirmed critical hits shake, with a bounded pulse that rapid hits cannot extend',()=>{
+    const {feedback,mob}=setup();
+    feedback.addImpact(mob,10,1000);expect(feedback.getFrame(1000).shake).toEqual({x:0,y:0});
+    feedback.addImpact(mob,0,1000,true);expect(feedback.getFrame(1000).shake).toEqual({x:0,y:0});
+    feedback.addImpact(mob,10,1000,true);expect(feedback.getFrame(1000).shake).toEqual({x:2,y:1});
+    for(let t=1010;t<1180;t+=10){
+        feedback.addImpact(mob,10,t,true);
+        const shake=feedback.getFrame(t).shake;
+        expect(Math.abs(shake.x)).toBeLessThanOrEqual(2);expect(Math.abs(shake.y)).toBeLessThanOrEqual(1);
+    }
+    expect(feedback.getFrame(1180).shake).toEqual({x:0,y:0});
+});
+
+test.each(['reduced','disabled','map','stop','death'])('critical shake clears on %s',reason=>{
+    const {feedback,mob,game,settings}=setup();feedback.addImpact(mob,10,1000,true);
+    if(reason==='reduced')settings.getReducedMotion=()=>true;
+    if(reason==='disabled')settings.getCombatEffectsEnabled=()=>false;
+    if(reason==='map')game.mapId='other';
+    if(reason==='stop')game.isStopped=true;
+    if(reason==='death')game.player.isDead=true;
+    expect(feedback.getFrame(1010).shake).toEqual({x:0,y:0});
 });

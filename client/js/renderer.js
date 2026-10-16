@@ -1129,7 +1129,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let combatInfoTextData = this.drawCombatInfo();
                 let textData = []
                 if (renderText) {
-                    textData = entityTextData.concat(combatInfoTextData);
+                    textData = entityTextData;
                 }
     
                 let textDataCmd = {
@@ -1141,6 +1141,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     "scale": this.scale
                 }
                 renderData.push(textDataCmd);
+                renderData.push({...textDataCmd, type: 'combatText', textData: renderText ? combatInfoTextData : []});
     
                 this.drawToggledLayers(this.context, true, false);
                 this.drawToggledLayers(this.context, true, true);

@@ -422,7 +422,7 @@ onmessage = (e) => {
         composingWorld = true;
         frameExtensions = e.data.extensions;
         const renderDataLength = e.data.renderData.length;
-        let cursorCommand;
+        let cursorCommand, combatTextCommand;
         for (let i = 0; i < renderDataLength; i++) {
             let renderData = e.data.renderData[i];
             if (!renderData) continue;
@@ -430,6 +430,8 @@ onmessage = (e) => {
 
             if (renderData.cursor !== undefined) {
                 cursorCommand = renderData;
+            } else if (renderData.type === 'combatText') {
+                combatTextCommand = renderData;
             } else if (renderData.type === "text") {
                 drawText(renderData);
             } else if (renderData.type === "entities") {
@@ -445,18 +447,23 @@ onmessage = (e) => {
         // World buffers are native pixel art resolution. Text keeps its display resolution.
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.save();
+        const shake = e.data.combatFeedback?.shake;
+        if (shake) combinedCtx.translate(shake.x * scale, shake.y * scale);
         combinedCtx.drawImage(canvases.entities, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.drawImage(canvases.text, 0, 0);
         combinedCtx.drawImage(canvases.highEntities, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'multiply';
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'source-over';
-        if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
-        combinedCtx.restore();
         composingWorld = false;
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
+        // Combat labels stay above scenery, overhead sprites, lighting and feature overlays.
+        if (combatTextCommand) drawText({...combatTextCommand, id: 'combined'}, false);
+        combinedCtx.restore();
+        // Cursor and DOM HUD do not participate in the camera shake.
+        if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
 
         scheduleNextFrame();
     } else if (e.data.type === "setCanvasSize") {
@@ -548,13 +555,15 @@ function cachedLabel(text, fontSize, strokeSize, color, strokeColor, fontWeight 
     return label;
 }
 
-function drawText(renderData) {
+function drawText(renderData, clear = true) {
     const ctx = contexes[renderData.id], canvas = canvases[renderData.id];
     const {cameraX, cameraY, scale, textData} = renderData;
-    const key = JSON.stringify([cameraX, cameraY, scale, textData, canvas.width, canvas.height, hasLoadedFont]);
-    if (key === textFrameKey) return;
-    textFrameKey = key;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (clear) {
+        const key = JSON.stringify([cameraX, cameraY, scale, textData, canvas.width, canvas.height, hasLoadedFont]);
+        if (key === textFrameKey) return;
+        textFrameKey = key;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     ctx.save();
     for (const entry of textData) {
         const {text, x, y} = entry;

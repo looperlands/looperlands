@@ -8077,7 +8077,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                         if (mob && points > 0) {
                             self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted", mob.id, critical);
-                            self.combatFeedback.addImpact(mob, points, self.currentTime);
+                            self.combatFeedback.addImpact(mob, points, self.currentTime, critical);
                         }
                     });
 
