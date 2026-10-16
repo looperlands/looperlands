@@ -192,6 +192,8 @@ class SocialChat {
                         gift.receipt = await this.inventoryGateway.transferItems({requestId: transferId, fromNftId: gift.fromNftId, toNftId: gift.toNftId, item, quantity});
                         this.setQuantity(gift.senderWallet, gift.fromNftId, item, gift.receipt.fromQuantity);
                         this.setQuantity(gift.recipientWallet, gift.toNftId, item, gift.receipt.toQuantity);
+                        const recipient = this.players.get(walletKey(gift.recipientWallet));
+                        if (recipient?.nftId === gift.toNftId) recipient.server?.server?.fieldGuide?.observe(recipient, 'obtain', item, quantity);
                     }
                     const message = {
                         id: transferId, channel: 'direct', sender: gift.sender, recipient: gift.recipient,

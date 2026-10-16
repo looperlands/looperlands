@@ -41,6 +41,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <link rel="stylesheet" href="css/social-chat.css" type="text/css">
         <link rel="stylesheet" href="css/event-board.css" type="text/css">
+        <link rel="stylesheet" href="css/field-guide.css" type="text/css">
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
 		<link rel="stylesheet" href="css/dialogue.css" type="text/css">
 		<link rel="stylesheet" href="css/selection-popup.css" type="text/css">
@@ -226,7 +227,8 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 							<h2>Game Functions</h2>
 							<ul>
 								<li><span>Z</span>: Toggle Inventory</li>
-								<li><span>X</span>: Toggle Achievements</li>
+								<li><span>X</span>: Journal and quest log</li>
+                                <li><span>J</span>: Journal Field Guide</li>
 								<li><span>C</span>: Toggle Settings</li>
 								<li><span>V</span>: Toggle Weapon Information</li>
 								<li><span>B</span>: Toggle Avatar Information</li>
@@ -473,7 +475,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     </div>
                     <div id="barbuttons">
                         <div id="chatbutton" class="barbutton clickable"></div>
-                        <div id="achievementsbutton" class="barbutton clickable"></div>
+                        <div id="achievementsbutton" class="barbutton clickable" role="button" tabindex="0" aria-label="Journal" title="Journal: quests and Field Guide (X / J)"></div>
                         <div id="inventorybutton" class="barbutton clickable"></div>
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
@@ -481,21 +483,24 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                 <div id="emoteMenu" class="clickable" role="group" aria-label="Choose an emote"></div>
                 <section id="chatbox" class="social-chat" aria-label="Chat">
                     <header class="sc-panel-heading">
-                        <strong>Chat</strong><span>Good company. Great adventures.</span>
-                        <div class="sc-panel-controls">
-                            <button id="chat-overlay" type="button" title="Show incoming messages over the map">Map overlay</button>
-                            <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
-                            <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat">−</button>
-                        </div>
+                        <strong>Chat</strong>
                     </header>
+                    <div class="sc-channel-heading">
+                                <nav id="chat-tabs" class="sc-tabs" aria-label="Chat channels" aria-describedby="chat-channel-info">
+                                    <button type="button" data-chat-tab="world" class="active">World</button>
+                                    <button type="button" data-chat-tab="map">My map</button>
+                                    <button type="button" data-chat-tab="direct">Direct messages <span id="chat-unread" hidden></span></button>
+                                </nav>
+                                <div id="chat-channel-info" hidden></div>
+                                <button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button>
+                                <div class="sc-panel-controls">
+                                    <button id="chat-overlay" type="button" aria-label="Map overlay" title="Show incoming messages over the map"><span class="sc-overlay-icon" aria-hidden="true"></span><span class="sc-overlay-label">Map overlay</span></button>
+                                    <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
+                                    <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat"><span class="sc-close-sprite" aria-hidden="true"></span></button>
+                                </div>
+                    </div>
                     <div class="sc-panel-content">
                         <div class="sc-conversation">
-                            <nav class="sc-tabs" aria-label="Chat channels">
-                                <button type="button" data-chat-tab="world" class="active">World</button>
-                                <button type="button" data-chat-tab="map">My map</button>
-                                <button type="button" data-chat-tab="direct">Direct messages <span id="chat-unread" hidden></span></button>
-                            </nav>
-                            <div class="sc-channel-heading"><div id="chat-channel-info"></div><button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button></div>
                             <div id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0"></div>
                             <p id="chat-error" role="status" hidden></p>
                             <form id="chat-form" class="sc-composer">

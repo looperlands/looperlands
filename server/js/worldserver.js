@@ -805,6 +805,11 @@ module.exports = World = cls.Class.extend({
     handleHurtEntity: function (entity, attacker, damage, critical = false) {
         var self = this;
 
+        if (damage > 0) {
+            if (entity.type === 'mob' && entity.hitPoints > 0 && attacker.type === 'player') this.server?.fieldGuide?.observe(attacker, 'encounter', entity.kind);
+            if (entity.type === 'player' && attacker.type === 'mob') this.server?.fieldGuide?.observe(entity, 'encounter', attacker.kind);
+        }
+
         if (entity.type === 'player') {
             // A player is only aware of his own hitpoints
             this.pushToPlayer(entity, entity.health());
@@ -823,6 +828,7 @@ module.exports = World = cls.Class.extend({
                 if (attacker.dropOverride !== undefined) {
                     item = this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y));
                 }
+                if (item) item.fieldGuideSource = 'loot';
 
                 let kind = Types.getKindAsString(mob.kind);
                 this.handleRedPacket(mob, kind);

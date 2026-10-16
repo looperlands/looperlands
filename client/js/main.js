@@ -61,6 +61,10 @@ define(['jquery', 'app'], function($, App) {
                     }
                     $(this).removeClass('blink');
                 });
+                $('#achievementsbutton').on('keydown', function(event) {
+                    if (!['Enter', ' '].includes(event.key)) return;
+                    event.preventDefault(); event.stopImmediatePropagation(); app.toggleAchievements();
+                });
 
                 $("#toggleInstructionsButton").click(function() {
                     app.hideWindows();

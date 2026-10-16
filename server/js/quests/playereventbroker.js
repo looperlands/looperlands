@@ -81,7 +81,7 @@ class PlayerEventBroker {
         }
     }
 
-    async lootEvent(item, amount) {
+    async lootEvent(item, amount, options = {}) {
         if(amount === undefined) {
             amount = 1;
         }
@@ -114,11 +114,13 @@ class PlayerEventBroker {
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
 
+        this.player.server.server.fieldGuide?.observe(this.player, options.source || item.fieldGuideSource || 'obtain', kind, amount);
         this.player.server.server.activity?.record(this.player, 'loot', {target: String(kind), quantity: amount});
         return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item, kind, amount });
     }
 
     async killMobEvent(mob) {
+        this.player.server.server.fieldGuide?.observe(this.player, 'defeat', mob.kind);
         dao.saveMobKillEvent(this.player.nftId, mob.kind);
         this.player.server.server.activity?.record(this.player, 'kill', {target: String(mob.kind), quantity: 1});
 
@@ -144,6 +146,7 @@ class PlayerEventBroker {
     }
 
     async questCompleteEvent(quest, xpGained) {
+      if (quest.reward) this.player.server.server.fieldGuide?.observe(this.player, 'obtain', quest.reward.item, quest.reward.amount);
       let sessionId = this.player.sessionId;
       let playerCache = this.cache.get(sessionId);
       PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });
