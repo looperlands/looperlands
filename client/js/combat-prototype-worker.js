@@ -33,7 +33,7 @@
             for (const attack of state.fieldAttacks || []) { ctx.save();renderer.draw(ctx,attack,view);ctx.restore(); }
             ctx.scale(view.scale || 1, view.scale || 1);
             const x=state.mobX+8-view.cameraX, y=state.mobY-25-view.cameraY;
-            const labels={chase:'',windup:'CHARGING',lunge:'LUNGE',recovery:'OPEN',finisher:'FINISHER',stagger:'STAGGER',round:state.event?.label || 'RESET'};
+            const labels={chase:'',windup:'CHARGING',lunge:'LUNGE',recovery:'OPEN',round:state.event?.label || 'RESET'};
             if (!state.ordinary) {
             healthBars.draw(ctx,state.showHealthBar ? [{id:state.mob.id||'trainer',x,y,hp:state.mob.hp,maxHp:state.mob.maxHp,width:32}] : [],
                 {cameraX:0,cameraY:0,scale:1},state.now||0,state.reducedMotion);

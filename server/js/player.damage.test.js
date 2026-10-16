@@ -12,6 +12,7 @@ function setup(trait) {
         Character: {extend: value => { Object.assign(methods, value); return PlayerClass; }},
         require: name => {
             if (name === '../../shared/js/gametypes') return Types;
+            if (name === './message') return {Teleport:function(player){this.id=player.id;}};
             if (name === './properties') return {rat:{friendly:false}};
             if (name === './utils') return {distanceTo:()=>1};
             if (name === './format') return {check: () => true};
@@ -60,4 +61,20 @@ test('AoE damages ordinary targets but cannot farm trainer damage, weapon XP or 
     expect(world.handleHurtEntity).toHaveBeenCalledTimes(2);
     expect(player.incrementNFTWeaponExperience.mock.calls.map(([xp])=>xp)).toEqual([20,16]);
     expect(player.hitPoints).toBe(54);
+});
+
+// Use the actual teleport handler, including its destination/trigger validation.
+test.each([true,false])('door travel ends practice only when the teleport is accepted: %s',allowed=>{
+    const {player,world,receive}=setup();
+    Object.assign(world,{map:{getRequiredNFT:()=>undefined,getDoorTrigger:()=>1},
+        checkTriggerActive:()=>allowed,isValidPosition:()=>true,
+        combatPrototype:{disable:jest.fn()},handlePlayerVanish:jest.fn(),pushRelevantEntityListTo:jest.fn()});
+    Object.assign(player,{x:10,y:10,hitPoints:42,setPosition(x,y){this.x=x;this.y=y;},clearTarget:jest.fn(),broadcast:jest.fn()});
+    receive([Types.Messages.TELEPORT,150,50]);
+    expect([player.x,player.y]).toEqual(allowed?[150,50]:[10,10]);
+    expect(player.hitPoints).toBe(42);
+    if(allowed){
+        expect(world.combatPrototype.disable).toHaveBeenCalledWith(player,false);
+        expect(world.pushRelevantEntityListTo).toHaveBeenCalledWith(player);
+    }else expect(world.combatPrototype.disable).not.toHaveBeenCalled();
 });

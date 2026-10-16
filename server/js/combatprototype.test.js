@@ -14,7 +14,7 @@ function setup() {
     const exported = {exports:{}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./combatprototype'), 'utf8'), {
         module: exported, require: name => name === './combatfieldattacks' ? class {constructor(){this.attacks=new Map();} tick(){} clear(){} state(){return {};} intercept(){return false;}} : name.endsWith('gametypes') ? {Messages:M,Entities:{OGRE:9}}
-            : name==='./mob' ? Mob : {Damage:packet,Move:packet,Teleport:packet},
+            : name==='./mob' ? Mob : {Damage:packet,Move:packet,Teleport:packet,Destroy:packet},
     });
     const {CombatPrototype,TIMING} = exported.exports;
     const socket = {emit:jest.fn(),on:jest.fn()};
@@ -24,7 +24,7 @@ function setup() {
     const blocked = new Set();
     const world = {players:{1:player},entities:{1:player},map:{doors:[]},
         isValidPosition:(x,y)=>x>0&&y>0&&!blocked.has(`${x},${y}`),nextMobId:()=>100,
-        handlePlayerVanish:jest.fn(),handleEntityGroupMembership:jest.fn(),pushRelevantEntityListTo:jest.fn(),
+        handlePlayerVanish:jest.fn(),handleEntityGroupMembership:jest.fn(),pushRelevantEntityListTo:jest.fn(),pushToPreviousGroups:jest.fn(),
         pushToPlayer:jest.fn(),pushBroadcast:jest.fn(),pushToAdjacentGroups:jest.fn(),
         handleHurtEntity(entity,attacker){
             if(entity.hitPoints<=0 && this.entities[entity.id]===entity) {
@@ -59,7 +59,7 @@ function setup() {
         windup(){time+=1200;controller.tick();time+=300;controller.tick();time+=800;controller.tick();time+=800;controller.tick();}};
 }
 
-test('locked lane survives a sidestep; evade, counter and committed finisher resolve on server time',()=>{
+test('locked lane survives a sidestep and permits exactly one stronger counter',()=>{
     const s=setup(); s.windup();
     expect(s.encounter.phase).toBe('windup');
     const lane=JSON.stringify(s.encounter.lane);
@@ -69,13 +69,14 @@ test('locked lane survives a sidestep; evade, counter and committed finisher res
     s.advance(180); expect(s.encounter.combo).toBe('counter');
     const hp=s.encounter.mob.hitPoints;
     s.technique(); expect(s.encounter.mob.hitPoints).toBe(hp-22);
-    expect(s.encounter.combo).toBe('finisher');
-    s.technique(); expect(s.encounter.phase).toBe('finisher');
-    const before={x:s.player.x,y:s.player.y};
-    s.move(12,11); expect({x:s.player.x,y:s.player.y}).toEqual(before);
-    s.advance(379); expect(s.encounter.mob.hitPoints).toBe(hp-22);
-    s.advance(1); expect(s.encounter.mob.hitPoints).toBe(hp-66);
-    expect(s.encounter.phase).toBe('stagger');
+    expect(s.encounter.combo).toBeNull();
+    s.technique();s.advance(400);s.technique();
+    expect(s.encounter.mob.hitPoints).toBe(hp-22);
+    expect(s.encounter.phase).toBe('recovery');
+    expect(s.encounter.lockUntil).toBe(0);
+    expect(s.encounter.chargeHit).toBe(0);
+    expect(s.player.handleExperience).not.toHaveBeenCalled();
+    s.move(12,11);expect(s.player.x).toBe(12);
 });
 
 test('remaining in the lane hurts, while backing up along it is also unsafe',()=>{
@@ -83,6 +84,7 @@ test('remaining in the lane hurts, while backing up along it is also unsafe',()=
     s.advance(300); s.move(10,12);
     s.advance(550); s.advance(180);
     expect(s.player.hitPoints).toBe(60);
+    expect(s.encounter.chargeHit).toBe(1);
     expect(s.encounter.combo).toBeNull();
 });
 
@@ -115,7 +117,7 @@ test('counter cannot fire early, out of range, or after its deadline',()=>{
     expect(s.encounter.mob.hitPoints).toBe(hp);
 });
 
-test('reset cancels a pending finisher; disable removes the trainer and restores health and position',()=>{
+test('reset cancels a counter opening; disable removes the trainer and restores health and position',()=>{
     const s=setup(); s.windup(); s.advance(300);s.move(11,11);s.advance(550);s.advance(180);
     s.technique();s.technique();
     s.controller.command(s.player,{action:'reset'});s.advance(400);
@@ -188,18 +190,32 @@ test('assists, live targets, and trainer rounds cannot award streak XP',()=>{
     expect(s.controller.killExperience(mob,s.player,s.player,100)).toBe(100);
     mob.hitPoints=0;
     expect(s.controller.killExperience(mob,s.player,{id:2},100)).toBe(100);
-    s.controller.damage(s.encounter,160,'Finisher');
+    s.controller.damage(s.encounter,160,'Counter');
     expect(s.encounter.streak).toBe(0);
 });
 
-test('landing a finisher awards combo XP once; cancelled finishers award nothing',()=>{
-    const s=setup();s.windup();s.advance(300);s.move(11,11);s.advance(550);s.advance(180);
-    s.technique();s.technique();s.advance(380);s.advance(100);
-    expect(s.player.handleExperience).toHaveBeenCalledTimes(1);
-    expect(s.player.handleExperience).toHaveBeenCalledWith(25);
-    const t=setup();t.windup();t.advance(300);t.move(11,11);t.advance(550);t.advance(180);
-    t.technique();t.technique();t.controller.command(t.player,{action:'reset'});t.advance(380);
-    expect(t.player.handleExperience).not.toHaveBeenCalled();
+test('normal attacks and charges that do not remove HP do not signal a charge impact',()=>{
+    const s=setup();s.controller.hurt(s.encounter,.08,'mob-attack','Strike');
+    expect(s.encounter.chargeHit).toBe(0);
+    s.player.hitPoints=1;s.controller.hurt(s.encounter,.24,'hurt','Charge');
+    expect(s.encounter.chargeHit).toBe(0);
+});
+
+test('combat steps publish new zone entities before a later ZONE message',()=>{
+    const s=setup();s.advance(300);
+    s.world.pushRelevantEntityListTo.mockClear();
+    s.world.handleEntityGroupMembership.mockReturnValueOnce(true).mockReturnValue(false);
+    s.move(11,11);
+    expect(s.world.pushRelevantEntityListTo).toHaveBeenCalledTimes(1);
+    expect(s.world.pushToPreviousGroups).toHaveBeenCalledWith(s.player,expect.anything());
+    s.move(12,11);
+    expect(s.world.pushRelevantEntityListTo).toHaveBeenCalledTimes(1);
+});
+
+test('door tiles accept completed steps without a correction',()=>{
+    const s=setup();s.world.map.doors=[{x:11,y:11}];s.advance(300);
+    s.move(11,11);expect([s.player.x,s.player.y]).toEqual([11,11]);
+    expect(s.encounter.stats.corrections).toBe(0);
 });
 
 test('two legitimately completed tiles arriving together after a slow frame do not snap back',()=>{

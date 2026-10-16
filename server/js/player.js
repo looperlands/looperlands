@@ -509,6 +509,9 @@ module.exports = Player = Character.extend({
                 function teleport() {
                     if (_self.server.isValidPosition(x, y)) {
                         _self.setPosition(x, y);
+                        // End local practice only after a teleport is authorized and accepted.
+                        // Keep the destination and current HP; discard old movement/combo state.
+                        _self.server.combatPrototype?.disable(_self, false);
                         _self.clearTarget();
 
                         _self.broadcast(new Messages.Teleport(_self));

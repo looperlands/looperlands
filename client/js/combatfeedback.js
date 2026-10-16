@@ -20,10 +20,7 @@ define(['mob'], function (Mob) {
         addImpact(entity, damage, time, critical = false) {
             if (!(damage > 0) || !entity || !this.effectsEnabled()) return;
             this.syncMap();
-            // One small pulse at a time: rapid/AoE crits cannot stack or prolong it.
-            if (critical && (this.shakeStartedAt === null || time - this.shakeStartedAt >= SHAKE_DURATION)) {
-                this.shakeStartedAt = time;
-            }
+            if (critical) this.addShake(time);
             const source = this.game.player;
             const dx = Number.isFinite(source?.x) ? entity.x - source.x : 0;
             const dy = Number.isFinite(source?.y) ? entity.y - source.y : 0;
@@ -31,6 +28,13 @@ define(['mob'], function (Mob) {
                 recoilX: Math.abs(dx) >= Math.abs(dy) ? Math.sign(dx) : 0,
                 recoilY: Math.abs(dy) > Math.abs(dx) ? Math.sign(dy) : 0});
             if (this.impacts.length > MAX_IMPACTS) this.impacts.shift();
+        }
+
+        addShake(time) {
+            if (!this.effectsEnabled()) return;
+            this.syncMap();
+            // Simultaneous charge hits and rapid/AoE crits share one bounded pulse.
+            if (this.shakeStartedAt === null || time - this.shakeStartedAt >= SHAKE_DURATION) this.shakeStartedAt = time;
         }
 
         effectsEnabled() {

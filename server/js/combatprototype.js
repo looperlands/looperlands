@@ -4,7 +4,7 @@ const Messages = require('./message');
 const FieldAttacks = require('./combatfieldattacks');
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const same = (a, b) => a.x === b.x && a.y === b.y;
-const TIMING = {windup: 850, lunge: 180, recovery: 1250, followup: 1100, commit: 380, stagger: 900, attack: 800, streak: 1500};
+const TIMING = {windup: 850, lunge: 180, recovery: 1250, attack: 800, streak: 1500};
 
 class CombatPrototype {
     constructor(world, now = Date.now) {
@@ -104,14 +104,9 @@ class CombatPrototype {
             || distance(player, encounter.mob) !== 1 || encounter.phase === 'round') return;
         if (encounter.combo === 'counter') {
             encounter.selected = true;
-            encounter.combo = 'finisher'; encounter.comboUntil = now + TIMING.followup;
-            encounter.phase = 'recovery'; encounter.until = encounter.comboUntil;
-            encounter.nextAttack = encounter.comboUntil;
+            encounter.combo = null;
+            encounter.nextAttack = encounter.until;
             this.damage(encounter, 22, 'Counter');
-        } else if (encounter.combo === 'finisher') {
-            encounter.combo = null; encounter.lockUntil = now + TIMING.commit;
-            encounter.phase = 'finisher'; encounter.until = encounter.lockUntil;
-            this.event(encounter, 'commit', 'Finisher');
         }
         this.send(encounter);
     }
@@ -125,7 +120,7 @@ class CombatPrototype {
         mob.maxHitPoints = mob.hitPoints = 160;
         const encounter = {player, mob, center, origin: {x: player.x, y: player.y}, originalHp: player.hitPoints,
             selected: true, eventId: 0, round: 0, lastMove: 0, correction: 0, streak: 0, streakUntil: 0,
-            stats: {evades:0,counters:0,finishers:0,hits:0,corrections:0}, rewardId:0};
+            stats: {evades:0,counters:0,hits:0,corrections:0}, chargeHit:0};
         this.world.handlePlayerVanish(player);
         this.encounters.set(player.id, encounter); this.mobIds.add(Number(mob.id));
         this.world.addMob(mob);
@@ -196,12 +191,6 @@ class CombatPrototype {
         return baseXp + Math.round(baseXp * this.streakBonus(encounter) / 100);
     }
 
-    rewardCombo(encounter) {
-        const xp = 25;
-        encounter.player.handleExperience(xp);
-        encounter.reward = {id:++encounter.rewardId,xp};
-    }
-
     recordKill(encounter) {
         const now = this.now();
         encounter.streak = now < encounter.streakUntil ? encounter.streak + 1 : 1;
@@ -211,7 +200,9 @@ class CombatPrototype {
 
     hurt(encounter, fraction, kind, label) {
         const {player} = encounter;
+        const previousHp = player.hitPoints;
         player.hitPoints = Math.max(1, player.hitPoints - Math.ceil(player.maxHitPoints * fraction));
+        if (kind === 'hurt' && player.hitPoints < previousHp) encounter.chargeHit++;
         this.world.pushToPlayer(player, player.health());
         this.event(encounter, kind, label);
         if (player.hitPoints === 1) this.endRound(encounter, 'Try again');
@@ -222,7 +213,6 @@ class CombatPrototype {
         // current tiles. Their collision is already resolved by client pathfinding.
         // Only the trainer has authoritative per-tile positions in this prototype.
         return Number.isInteger(x) && Number.isInteger(y) && this.world.isValidPosition(x,y)
-            && !this.world.map.doors?.some(door=>door.x===x && door.y===y)
             && !same(encounter.mob,{x,y});
     }
 
@@ -259,7 +249,12 @@ class CombatPrototype {
         encounter.moveBudget = budget-cost; encounter.moveBudgetAt = now;
         player.setPosition(point.x,point.y); encounter.lastMove = now;
         this.reserveNextTile(encounter,point.next);
-        this.world.handleEntityGroupMembership(player);
+        // Completed steps can change groups before the client ZONE message arrives.
+        // Publish the new visibility set here; ZONE can no longer detect that change.
+        if (this.world.handleEntityGroupMembership(player)) {
+            this.world.pushToPreviousGroups(player, new Messages.Destroy(player));
+            this.world.pushRelevantEntityListTo(player);
+        }
         this.world.pushToAdjacentGroups(player.group,new Messages.Move(player),player.id);
         player.move_callback?.(point.x,point.y);
     }
@@ -267,7 +262,7 @@ class CombatPrototype {
     event(encounter, kind, label) {
         encounter.event = {id: ++encounter.eventId, kind, label};
         const stat = kind === 'evade' ? 'evades' : ['hurt','mob-attack'].includes(kind) ? 'hits'
-            : kind === 'attack' && label === 'Counter' ? 'counters' : kind === 'attack' && label === 'Finisher' ? 'finishers' : null;
+            : kind === 'attack' && label === 'Counter' ? 'counters' : null;
         if (stat) encounter.stats[stat]++;
     }
 
@@ -342,17 +337,11 @@ class CombatPrototype {
                         this.event(encounter, 'evade', 'Counter ready');
                     }
                     encounter.lane = [];
-                } else if (encounter.phase === 'finisher') {
-                    encounter.phase = 'stagger'; encounter.until = now + TIMING.stagger;
-                    if (distance(player, mob) === 1) {
-                        this.damage(encounter,44,'Finisher');
-                        this.rewardCombo(encounter);
-                    }
                 } else {
                     encounter.phase = 'chase'; encounter.until = now + 500; encounter.combo = null;
                 }
             }
-            if (encounter.selected && !encounter.nextTile && !encounter.combo && ['chase','windup','stagger'].includes(encounter.phase)
+            if (encounter.selected && !encounter.nextTile && !encounter.combo && ['chase','windup'].includes(encounter.phase)
                 && now >= encounter.nextAttack && distance(player,mob) === 1 && now - encounter.lastMove > 150) {
                 encounter.nextAttack = now + TIMING.attack;
                 this.damage(encounter, 6, 'Attack');
@@ -367,7 +356,7 @@ class CombatPrototype {
             phase: encounter.phase, until: encounter.until, combo: encounter.combo, comboUntil: encounter.comboUntil,
             lockUntil: encounter.lockUntil, lane: encounter.lane, event: encounter.event, correction: encounter.correction,
             direction: encounter.direction, attackRate: player.getAttackRate(),
-            streak: encounter.streak, streakUntil: encounter.streakUntil, streakBonusPercent: this.streakBonus(encounter), reward:encounter.reward,
+            streak: encounter.streak, streakUntil: encounter.streakUntil, streakBonusPercent: this.streakBonus(encounter), chargeHit:encounter.chargeHit,
             player: {x:player.x, y:player.y}, mob: {id:mob.id,x:mob.x,y:mob.y,level:mob.level,hp:mob.hitPoints,maxHp:160}});
     }
 }

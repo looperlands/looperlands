@@ -18,7 +18,7 @@ class FieldAttacks {
         if(this.held(mob))return true;
         if(!this.eligible(mob)||mob.hitPoints<=0||Number(mob.target)!==Number(encounter.player.id)
             ||!adjacent(mob,encounter.player)||encounter.combo||encounter.fieldCombo
-            ||['windup','lunge','finisher','round'].includes(encounter.phase)
+            ||['windup','lunge','round'].includes(encounter.phase)
             ||[...this.attacks.values()].some(a=>a.encounter===encounter))return false;
         const ready=this.cooldowns.get(mob.id);
         if(ready===undefined){this.cooldowns.set(mob.id,now+1200+this.random()*1800);return false;}
@@ -38,13 +38,9 @@ class FieldAttacks {
         const combo=encounter.fieldCombo,player=encounter.player,mob=combo?.mob;
         if(!mob||Number(mob.id)!==Number(mobId)||this.world.entities[mob.id]!==mob||mob.hitPoints<=0
             ||now>combo.until||now<encounter.lockUntil||!adjacent(player,mob))return;
-        if(combo.kind==='counter'){
-            combo.kind='finisher';combo.until=now+1100;
-            this.strike(encounter,mob,1.5,'Counter');
-        }else if(combo.kind==='finisher'){
-            combo.kind='commit';combo.until=now+380;encounter.lockUntil=combo.until;
-        }
-        const attack=this.attacks.get(Number(mobId));if(attack)attack.until=Math.max(attack.until,combo.until+200);
+        if(combo.kind!=='counter')return;
+        encounter.fieldCombo=null;
+        this.strike(encounter,mob,1.5,'Counter');
         this.controller.send(encounter);
     }
     strike(encounter,mob,multiplier,label){
@@ -87,7 +83,9 @@ class FieldAttacks {
                 attack.phase='recovery';attack.until=now+1500;
                 if(attack.lane.some(p=>same(p,player))){
                     const damage=Math.round(Formulas.dmg(mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*2*player.playerClassModifiers.meleeDamageTaken);
+                    const previousHp=player.hitPoints;
                     player.handleHurt(mob,damage);
+                    if(player.hitPoints<previousHp)encounter.chargeHit=(encounter.chargeHit||0)+1;
                 }else{
                     encounter.fieldCombo={mob,kind:'counter',until:now+1250};
                     this.event(encounter,mob,'Counter ready');
@@ -99,10 +97,6 @@ class FieldAttacks {
             const combo=encounter.fieldCombo;if(!combo)continue;
             if(this.world.entities[combo.mob.id]!==combo.mob||combo.mob.hitPoints<=0||encounter.player.isDead){encounter.fieldCombo=null;continue;}
             if(now<combo.until)continue;
-            if(combo.kind==='commit'&&adjacent(encounter.player,combo.mob)){
-                this.strike(encounter,combo.mob,2.5,'Finisher');this.controller.rewardCombo(encounter);
-                const attack=this.attacks.get(Number(combo.mob.id));if(attack){attack.phase='stagger';attack.until=now+700;}
-            }
             encounter.fieldCombo=null;
         }
     }

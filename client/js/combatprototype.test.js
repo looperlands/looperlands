@@ -38,12 +38,12 @@ test('tile-boundary reports include each completed step and the correction gener
     ]);
 });
 
-test('technique input needs an adjacent, stationary player; an active finisher blocks movement',()=>{
+test('technique input needs an adjacent, stationary player; an active lock blocks movement',()=>{
     const {prototype,player,packet}=setup();prototype.socket.emit.mockClear();
     prototype.technique();expect(prototype.socket.emit).toHaveBeenCalledWith('combat-preview',{action:'technique'});
     prototype.socket.emit.mockClear();player.isMoving=()=>true;prototype.technique();
     expect(prototype.socket.emit).not.toHaveBeenCalled();
-    player.isMoving=()=>false;prototype.receive({...packet,phase:'finisher',combo:null,lockUntil:Date.now()+380});
+    player.isMoving=()=>false;prototype.receive({...packet,phase:'recovery',combo:null,lockUntil:Date.now()+380});
     expect(prototype.locked()).toBe(true);prototype.technique();expect(prototype.socket.emit).not.toHaveBeenCalled();
 });
 
@@ -127,11 +127,11 @@ test('normal swings animate once and the server attack interval remains unchange
 });
 
 
-test('streak and combo XP use existing combat info once per reward, not every state packet',()=>{
+test('streak uses existing combat info once without a separate counter XP reward',()=>{
     const {prototype,packet,game}=setup();game.infoManager.addDamageInfo.mockClear();
     const earned={...packet,streak:2,streakUntil:Date.now()+1500,streakBonusPercent:25,reward:{id:1,xp:25}};
     prototype.receive(earned);prototype.receive(earned);prototype.update();
-    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['Combo! +25 XP','2x combo']);
+    expect(game.infoManager.addDamageInfo.mock.calls.map(call=>call[0])).toEqual(['2x combo']);
     for (const call of game.infoManager.addDamageInfo.mock.calls) expect(call[3]).toBe('combo');
 });
 
@@ -237,7 +237,7 @@ test('health target follows normal selection and an ordinary-mob technique inste
 });
 
 
-test('sidestep opening automatically counters once, then finishes after the counter swing',()=>{
+test('sidestep opening automatically counters once without a follow-up attack',()=>{
     const {prototype,packet,player}=setup();
     let now=packet.serverNow;prototype.now=()=>now;prototype.autoTechniques=true;
     prototype.socket.emit.mockClear();player.isMoving=()=>true;
@@ -245,10 +245,10 @@ test('sidestep opening automatically counters once, then finishes after the coun
     player.isMoving=()=>false;prototype.update();prototype.update();
     expect(prototype.socket.emit.mock.calls).toEqual([['combat-preview',{action:'technique'}]]);
     expect(prototype.action.hidden).toBe(true);
-    prototype.receive({...packet,combo:'finisher',comboUntil:now+1100,event:{id:2,kind:'attack',label:'Counter'}});
+    prototype.receive({...packet,combo:null,comboUntil:0,event:{id:2,kind:'attack',label:'Counter'}});
     expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
     now+=180;prototype.update();prototype.update();
-    expect(prototype.socket.emit).toHaveBeenCalledTimes(2);
+    expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
     expect(player.stop).not.toHaveBeenCalled();
 });
 
@@ -260,6 +260,22 @@ test('automatic techniques respect distance and expiry, including ordinary-mob o
     player.gridX=8;prototype.update();expect(prototype.socket.emit).not.toHaveBeenCalled();
     player.gridX=4;prototype.update();
     expect(prototype.socket.emit.mock.calls).toEqual([['combat-preview',{action:'technique',mobId:200}]]);
-    prototype.state.fieldCombo={kind:'finisher',until:now+100,mob:{id:200,x:4,y:4}};
+    prototype.state.fieldCombo={kind:'counter',until:now+100,mob:{id:200,x:4,y:4}};
     now+=200;prototype.update();expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
+});
+
+test('successful charge signals shake once while ordinary state updates do not',()=>{
+    const {prototype,packet,game}=setup();
+    game.currentTime=1000;game.combatFeedback={addShake:jest.fn()};
+    prototype.receive({...packet,chargeHit:0});expect(game.combatFeedback.addShake).not.toHaveBeenCalled();
+    prototype.receive({...packet,chargeHit:1});prototype.receive({...packet,chargeHit:1});
+    expect(game.combatFeedback.addShake).toHaveBeenCalledTimes(1);
+    expect(game.combatFeedback.addShake).toHaveBeenCalledWith(1000);
+    prototype.receive({...packet,chargeHit:2});expect(game.combatFeedback.addShake).toHaveBeenCalledTimes(2);
+});
+
+test('counter label anchors to the struck mob with its own flight direction',()=>{
+    const {prototype,packet,mob,game}=setup();
+    prototype.receive({...packet,event:{id:2,kind:'attack',label:'Counter'}});
+    expect(game.infoManager.addDamageInfo).toHaveBeenLastCalledWith('Counter!',mob.x,mob.y-15,'combo',mob.id,false,{motion:'counter'});
 });

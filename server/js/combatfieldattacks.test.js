@@ -8,8 +8,8 @@ function setup(){
         if(name==='./formulas')return {dmg:()=>10};
         return {Move:function(mob){this.id=mob.id;}};
     }});
-    const player={id:1,x:10,y:11,isDead:false,getLevel:()=>20,getWeaponLevel:()=>20,
-        handleHurt:jest.fn(),incrementNFTWeaponExperience:jest.fn(),playerClassModifiers:{meleeDamageTaken:1,meleeDamageDealt:1,hate:1}};
+    const player={id:1,x:10,y:11,isDead:false,hitPoints:100,getLevel:()=>20,getWeaponLevel:()=>20,
+        handleHurt:jest.fn(function(mob,damage){this.hitPoints-=damage;}),incrementNFTWeaponExperience:jest.fn(),playerClassModifiers:{meleeDamageTaken:1,meleeDamageDealt:1,hate:1}};
     const mob={id:2,type:'mob',kind:'goblin',target:1,x:10,y:10,hitPoints:100,maxHitPoints:100,armorLevel:1,level:3,
         getWeaponLevel:()=>3,setPosition(x,y){this.x=x;this.y=y;},receiveDamage(n){this.hitPoints-=n;}};
     const encounter={player,mob:{id:100},phase:'chase',lockUntil:0};
@@ -36,22 +36,22 @@ test('normal swings precede a randomized special and failed rolls keep ordinary 
     expect(s.field.held(s.mob)).toBe(true);
     expect(s.field.state(s.encounter).fieldAttacks[0]).toMatchObject({windup:650,phase:'windup'});
 });
-test('locked telegraph misses a sidestep and opens counter then committed finisher on that mob',()=>{
+test('locked telegraph misses a sidestep and opens one empowered counter on that mob',()=>{
     const s=setup();expect(s.start()).toBe(true);s.player.x=11;
     s.field.tick(650);expect([s.mob.x,s.mob.y]).toEqual([10,11]);
     s.field.tick(830);expect(s.player.handleHurt).not.toHaveBeenCalled();
     expect(s.encounter.fieldCombo.kind).toBe('counter');
     s.field.technique(s.encounter,2,900);expect(s.mob.hitPoints).toBe(85);
-    expect(s.encounter.fieldCombo.kind).toBe('finisher');
-    s.field.technique(s.encounter,2,1000);expect(s.encounter.lockUntil).toBe(1380);
-    s.field.tick(1379);expect(s.mob.hitPoints).toBe(85);
-    s.field.tick(1380);expect(s.mob.hitPoints).toBe(60);expect(s.controller.rewardCombo).toHaveBeenCalledTimes(1);
-    s.field.tick(1400);expect(s.controller.rewardCombo).toHaveBeenCalledTimes(1);
+    expect(s.encounter.fieldCombo).toBeNull();
+    s.field.technique(s.encounter,2,1000);s.field.tick(1400);
+    expect(s.mob.hitPoints).toBe(85);expect(s.encounter.lockUntil).toBe(0);
+    expect(s.controller.rewardCombo).not.toHaveBeenCalled();
+    expect(s.encounter.chargeHit).toBeUndefined();
 });
 test('standing in the warned lane takes one powered hit and no counter opening',()=>{
     const s=setup();s.start();s.field.tick(650);s.field.tick(830);s.field.tick(900);
     expect(s.player.handleHurt).toHaveBeenCalledTimes(1);expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,20);
-    expect(s.encounter.fieldCombo).toBeUndefined();
+    expect(s.encounter.fieldCombo).toBeUndefined();expect(s.encounter.chargeHit).toBe(1);
 });
 test('only one mob can telegraph at a time per player, and clearing restores normal AI',()=>{
     const s=setup();s.start();const other={...s.mob,id:3};s.field.cooldowns.set(3,0);
@@ -71,4 +71,10 @@ test('killing the ordinary target clears its followup and uses the normal reward
     expect(s.world.handleHurtEntity).toHaveBeenCalledWith(s.mob,s.player,15,true);
     expect(s.player.incrementNFTWeaponExperience).toHaveBeenCalledWith(15);
     s.field.technique(s.encounter,2,1000);expect(s.world.handleHurtEntity).toHaveBeenCalledTimes(1);
+});
+
+test('an invulnerable player does not receive a charge impact signal',()=>{
+    const s=setup();s.player.handleHurt.mockImplementation(()=>{});
+    s.start();s.field.tick(650);s.field.tick(830);
+    expect(s.encounter.chargeHit).toBeUndefined();
 });

@@ -226,3 +226,14 @@ test.each([false,true])('praise is a separate delayed tilted popup beside its co
     expect(data[0]).toMatchObject({text:'4x combo',color:'#ffad49',fontSize:30});
     expect(data[1]).toMatchObject({text:'Awesome!',fontSize:21});
 });
+
+test.each([false,true])('counter label and damage start separated and diverge with reduced motion %s',reduced=>{
+    const {info}=setup(reduced);
+    const damage=info.addDamageInfo(22,64,49,'inflicted',100,true);
+    const label=info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
+    expect(label.x-damage.x).toBe(56);expect(damage.y-label.y).toBe(42);
+    const gap=label.x-damage.x;
+    info.update(1300);
+    if(reduced)expect(label.x-damage.x).toBe(gap);
+    else expect(label.x-damage.x).toBeGreaterThan(gap);
+});
