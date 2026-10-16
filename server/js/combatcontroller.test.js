@@ -110,3 +110,11 @@ test('production HIT scopes streak credit to one primary kill, excluding splash 
     e.streak=1;e.streakUntil=12000;s.one.p.connection.listen_callback([s.M.HIT,50]);
     expect(e.streak).toBe(2);expect(s.combat.activeAttack).toBeUndefined();
 });
+
+
+test('ready records supported patterns without letting repeated ready reset an encounter',()=>{
+    const s=setup();s.one.handlers.combat({action:'ready',patterns:['lunge','slam']});
+    const encounter=s.combat.encounters.get(1);expect(encounter.patterns.has('slam')).toBe(true);
+    s.one.handlers.combat({action:'ready',patterns:['lunge']});expect(encounter.patterns.has('slam')).toBe(true);
+    expect(s.combat.fieldAttacks.slamEnabled).toBe(false);
+});

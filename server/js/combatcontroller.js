@@ -6,12 +6,12 @@ const same = (a, b) => a.x === b.x && a.y === b.y;
 const STREAK_WINDOW = 1500;
 
 class CombatController {
-    constructor(world, now = Date.now) {
+    constructor(world, now = Date.now, options = {}) {
         this.world = world;
         this.now = now;
         this.encounters = new Map();
         this.mobIds = new Set();
-        this.fieldAttacks = new FieldAttacks(this);
+        this.fieldAttacks = new FieldAttacks(this, Math.random, options);
         world.combat = this;
     }
 
@@ -21,7 +21,7 @@ class CombatController {
             if (!player.hasEnteredGame || player.isDead || this.world.players[player.id] !== player) return;
             if (!command || typeof command !== 'object') return;
             if (command.action === 'ready') {
-                if (!this.encounters.has(player.id)) this.enable(player);
+                if (!this.encounters.has(player.id)) this.enable(player, command);
                 return;
             }
             const encounter = this.encounters.get(player.id);
@@ -52,9 +52,11 @@ class CombatController {
         };
     }
 
-    enable(player) {
+    enable(player, capabilities = {}) {
         const now = this.now();
-        const encounter = {player,phase:'field',lockUntil:0,combo:null,fieldCombo:null,chargeHit:0,
+        const patterns=new Set(['lunge']);
+        if(Array.isArray(capabilities.patterns)&&capabilities.patterns.includes('slam'))patterns.add('slam');
+        const encounter = {player,patterns,phase:'field',lockUntil:0,combo:null,fieldCombo:null,chargeHit:0,
             correction:1,nextTile:null,lastMove:now,moveBudget:0,moveBudgetAt:now,
             streak:0,streakUntil:0,stats:{corrections:0}};
         this.encounters.set(player.id,encounter);

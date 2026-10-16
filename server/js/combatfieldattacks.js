@@ -8,7 +8,68 @@ const same=(a,b)=>a.x===b.x&&a.y===b.y;
 // These encounters are stationary or own a scripted special-attack cycle.
 const SCRIPTED_KINDS=new Set(['tentacle','tentacle2','seacreature','megamag','cobslimeking','cobogre']);
 class FieldAttacks {
-    constructor(controller,random=Math.random){this.controller=controller;this.world=controller.world;this.random=random;this.attacks=new Map();this.cooldowns=new Map();this.serial=0;}
+    constructor(controller,random=Math.random,options={}){
+        this.controller=controller;this.world=controller.world;this.random=random;
+        this.attacks=new Map();this.cooldowns=new Map();this.history=new Map();this.serial=0;
+        // Only the isolated local runner opts into Slam while it is being playtested.
+        this.slamEnabled=options.slam===true;
+        this.attackMode=this.slamEnabled?'mixed':'lunge';
+    }
+    setMode(mode){
+        if(!this.slamEnabled||!['mixed','lunge','slam'].includes(mode))return false;
+        this.attackMode=mode;return true;
+    }
+    supportsSlam(player){return this.controller.encounters.get(player.id)?.patterns?.has('slam')===true;}
+    patternFor(encounter,mob){
+        if(!this.slamEnabled||!this.supportsSlam(encounter.player)||this.attackMode==='lunge')return 'lunge';
+        // Do not expose nearby older clients to an attack they cannot display.
+        if(Object.values(this.world.players).some(p=>!p.isDead&&Math.max(Math.abs(p.x-mob.x),Math.abs(p.y-mob.y))<=4&&!this.supportsSlam(p)))return 'lunge';
+        if(this.attackMode==='slam')return 'slam';
+        const previous=this.history.get(mob.id);
+        if(previous?.count>=2)return previous.pattern==='slam'?'lunge':'slam';
+        return this.random()<.5?'slam':'lunge';
+    }
+    slamTiles(mob){
+        const tiles=[];
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+            const x=mob.x+dx,y=mob.y+dy;
+            if(this.world.isValidPosition(x,y)&&!this.world.map?.doors?.some(d=>d.x===x&&d.y===y))tiles.push({x,y});
+        }
+        return tiles;
+    }
+    canEscape(player,tiles,windup){
+        const budget=Math.min(4,Math.floor((windup-100)/(player.getMoveSpeed?.()||120)));
+        const queue=[{x:player.x,y:player.y,steps:0}],visited=new Set([player.x+','+player.y]);
+        const unsafe=p=>tiles.some(t=>same(t,p))||[...this.attacks.values()].some(a=>a.phase!=='recovery'&&a.lane.some(t=>same(t,p)));
+        for(let i=0;i<queue.length;i++){
+            const p=queue[i];
+            if(!unsafe(p))return true;
+            if(p.steps>=budget)continue;
+            for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
+                const next={x:p.x+dx,y:p.y+dy,steps:p.steps+1},key=next.x+','+next.y;
+                if(visited.has(key)||!this.controller.free(next.x,next.y,[player]))continue;
+                visited.add(key);queue.push(next);
+            }
+        }
+        return false;
+    }
+    hurt(attack,player,multiplier){
+        const damage=Math.round(Formulas.dmg(attack.mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*multiplier*player.playerClassModifiers.meleeDamageTaken);
+        const previousHp=player.hitPoints;
+        player.handleHurt(attack.mob,damage);
+        const encounter=this.controller.encounters.get(player.id);
+        if(encounter&&player.hitPoints<previousHp)encounter.chargeHit=(encounter.chargeHit||0)+1;
+    }
+    opening(attack,now){
+        attack.encounter.fieldCombo={mob:attack.mob,kind:'counter',until:now+1250};
+        this.event(attack.encounter,attack.mob,'Counter ready');
+    }
+    slam(attack,now){
+        for(const player of Object.values(this.world.players)){
+            if(!player.isDead&&player.hasEnteredGame!==false&&this.supportsSlam(player)&&attack.lane.some(p=>same(p,player)))this.hurt(attack,player,1.5);
+        }
+        if(!attack.encounter.player.isDead&&!attack.lane.some(p=>same(p,attack.encounter.player)))this.opening(attack,now);
+    }
     eligible(mob){
         if(!mob||mob.type!=='mob'||this.controller.mobIds.has(Number(mob.id)))return false;
         const kind=Types.getKindAsString(mob.kind),props=Properties[kind];
@@ -28,9 +89,13 @@ class FieldAttacks {
         this.cooldowns.set(mob.id,now+3000+this.random()*4000);
         if(this.random()>=.4)return false;
         const direction={x:Math.sign(encounter.player.x-mob.x),y:Math.sign(encounter.player.y-mob.y)};
-        const windup=650+Math.round(this.random()*300);
-        const attack={id:++this.serial,mob,encounter,phase:'windup',direction,windup,until:now+windup,
-            lane:[1,2].map(n=>({x:mob.x+direction.x*n,y:mob.y+direction.y*n})).filter(p=>this.world.isValidPosition(p.x,p.y))};
+        const pattern=this.patternFor(encounter,mob);
+        const windup=pattern==='slam'?950+Math.round(this.random()*200):650+Math.round(this.random()*300);
+        const lane=pattern==='slam'?this.slamTiles(mob):[1,2].map(n=>({x:mob.x+direction.x*n,y:mob.y+direction.y*n})).filter(p=>this.world.isValidPosition(p.x,p.y));
+        if(pattern==='slam'&&(!lane.some(t=>same(t,encounter.player))||Object.values(this.world.players).some(p=>!p.isDead&&lane.some(t=>same(t,p))&&!this.canEscape(p,lane,windup))))return false;
+        const previous=this.history.get(mob.id);
+        this.history.set(mob.id,{pattern,count:previous?.pattern===pattern?previous.count+1:1});
+        const attack={id:++this.serial,mob,encounter,pattern,phase:'windup',direction,windup,until:now+windup,lane};
         this.attacks.set(Number(mob.id),attack);
         this.controller.send(encounter);
         return true;
@@ -68,14 +133,19 @@ class FieldAttacks {
         encounter.fieldCombo=null;
     }
     tick(now){
-        for(const [id] of this.cooldowns)if(!this.world.entities[id])this.cooldowns.delete(id);
+        for(const [id] of this.cooldowns)if(!this.world.entities[id]){this.cooldowns.delete(id);this.history.delete(id);}
         for(const attack of this.attacks.values()){
             const {mob,encounter}=attack,player=encounter.player;
             if(this.world.entities[mob.id]!==mob||mob.hitPoints<=0||player.isDead||this.world.players[player.id]!==player
                 ||this.controller.encounters.get(player.id)!==encounter||Number(mob.target)!==Number(player.id)
                 ||Math.abs(player.x-mob.x)+Math.abs(player.y-mob.y)>8){this.release(attack);encounter.fieldCombo=null;continue;}
             if(now<attack.until)continue;
-            if(attack.phase==='windup'){
+            if(attack.phase==='windup'&&attack.pattern==='slam'){
+                attack.phase='impact';attack.impactAt=now;attack.until=now+180;
+                this.slam(attack,now);
+            }else if(attack.phase==='impact'){
+                attack.phase='recovery';attack.until=now+1500;attack.lane=[];
+            }else if(attack.phase==='windup'){
                 const destination=attack.lane[0];
                 attack.phase='lunge';attack.until=now+180;
                 if(destination&&this.controller.free(destination.x,destination.y,[mob])
@@ -86,14 +156,8 @@ class FieldAttacks {
             }else if(attack.phase==='lunge'){
                 attack.phase='recovery';attack.until=now+1500;
                 if(attack.lane.some(p=>same(p,player))){
-                    const damage=Math.round(Formulas.dmg(mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*2*player.playerClassModifiers.meleeDamageTaken);
-                    const previousHp=player.hitPoints;
-                    player.handleHurt(mob,damage);
-                    if(player.hitPoints<previousHp)encounter.chargeHit=(encounter.chargeHit||0)+1;
-                }else{
-                    encounter.fieldCombo={mob,kind:'counter',until:now+1250};
-                    this.event(encounter,mob,'Counter ready');
-                }
+                    this.hurt(attack,player,2);
+                }else this.opening(attack,now);
                 attack.lane=[];
             }else this.release(attack);
         }
@@ -105,7 +169,7 @@ class FieldAttacks {
         }
     }
     mobState(mob){return {id:mob.id,x:mob.x,y:mob.y,hp:mob.hitPoints,maxHp:mob.maxHitPoints,level:mob.level};}
-    attackState(a){return {id:a.id,phase:a.phase,until:a.until,windup:a.windup,direction:a.direction,lane:a.lane,
+    attackState(a){return {id:a.id,pattern:a.pattern,phase:a.phase,until:a.until,impactAt:a.impactAt,windup:a.windup,direction:a.direction,lane:a.lane,
         targetId:a.encounter.player.id,mob:this.mobState(a.mob)};}
     visibleState(player){
         const entities=this.world.groups?.[player.group]?.entities || {};
