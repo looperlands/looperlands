@@ -8,6 +8,16 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8'
 const unknown = {id: 'hidden', category: 'monsters', state: 'unknown', name: null, completion: 'defeat'};
 const encountered = {...unknown, id: 'known', name: 'Bat', state: 'discovered'};
 const completed = {...encountered, id: 'done', state: 'completed'};
+test('Current map shows active and completed local quests without changing the other views', () => {
+    const records = [{id: 'local', status: 'IN_PROGRESS', mapIds: ['main']},
+        {id: 'shared', status: 'COMPLETED', mapIds: ['main', 'cave']},
+        {id: 'other', status: 'IN_PROGRESS', mapIds: ['farm']}, {id: 'unscoped', status: 'IN_PROGRESS'}];
+    expect(Guide.filterQuests(records, 'current-map', 'main').map(q => q.id)).toEqual(['local', 'shared']);
+    expect(Guide.filterQuests(records, 'current-map', 'cave').map(q => q.id)).toEqual(['shared']);
+    expect(Guide.filterQuests(records, 'current-map', 'unknown')).toEqual([]);
+    expect(Guide.filterQuests(records, 'IN_PROGRESS', 'main').map(q => q.id)).toEqual(['local', 'other', 'unscoped']);
+    expect(Guide.filterQuests(records, 'all', 'main')).toHaveLength(4);
+});
 test('entry status distinguishes encountering a monster from beating it', () => {
     expect(Guide.status(encountered)).toBe('Encountered');
     expect(Guide.status(completed)).toBe('Defeated');

@@ -18,6 +18,9 @@ define(['jquery', 'sprites'], function ($, sprites) {
     function remaining(entry) {
         return entry.state === 'unknown' ? entry.hint : {obtain: 'Collect this item', loot: 'Loot from a defeated monster', catch: 'Catch one yourself', defeat: 'Defeat this monster'}[entry.completion];
     }
+    function filterQuests(quests, filter, map) {
+        return quests.filter(quest => filter === 'current-map' ? quest.mapIds?.includes(map) : filter === 'all' || quest.status === filter);
+    }
     function spriteStyle(name, maxSize = 40, maxScale = 2) {
         const definition = sprites[name];
         if (!definition) return null;
@@ -186,7 +189,7 @@ define(['jquery', 'sprites'], function ($, sprites) {
         }
         renderQuests(panel, message, failure) {
             const tools = node('div', 'journal-quest-tools');
-            for (const [value, title] of [['IN_PROGRESS', 'In progress'], ['COMPLETED', 'Completed'], ['all', 'All quests']]) {
+            for (const [value, title] of [['IN_PROGRESS', 'In progress'], ['COMPLETED', 'Completed'], ['current-map', 'Current map'], ['all', 'All quests']]) {
                 const filter = button(title, () => {this.questFilter = value; this.render();});
                 filter.dataset.fgFocus = 'quest-filter-' + value;
                 filter.setAttribute('aria-pressed', String(value === this.questFilter)); tools.append(filter);
@@ -197,9 +200,9 @@ define(['jquery', 'sprites'], function ($, sprites) {
                 if (failure) notice.append(button('Retry', () => this.load()));
                 panel.append(notice);
             }
-            const entries = (this.quests || []).filter(quest => this.questFilter === 'all' || quest.status === this.questFilter);
+            const entries = filterQuests(this.quests || [], this.questFilter, this.app.game.mapId);
             const content = node('div', 'journal-quests');
-            if (!entries.length) content.append(node('p', 'fg-empty', this.quests ? this.questFilter === 'COMPLETED' ? 'No completed quests yet.' : 'No quests here yet. Talk to the people you meet.' : 'Loading quests…'));
+            if (!entries.length) content.append(node('p', 'fg-empty', this.quests ? this.questFilter === 'current-map' ? 'No quests for this map yet. Talk to the people you meet.' : this.questFilter === 'COMPLETED' ? 'No completed quests yet.' : 'No quests here yet. Talk to the people you meet.' : 'Loading quests…'));
             const list = node('div', 'journal-quest-list'); list.setAttribute('aria-label', 'Quest log');
             const selected = entries.find(quest => quest.id === this.selectedQuest) || entries[0];
             const listKey = this.questFilter + ':' + entries.map(quest => quest.id + quest.status).join(',');
@@ -313,6 +316,6 @@ define(['jquery', 'sprites'], function ($, sprites) {
             this.root.remove();
         }
     }
-    Journal.status = status; Journal.spriteStyle = spriteStyle; Journal.medalStyle = medalStyle; Journal.popoverPosition = popoverPosition;
+    Journal.status = status; Journal.spriteStyle = spriteStyle; Journal.medalStyle = medalStyle; Journal.popoverPosition = popoverPosition; Journal.filterQuests = filterQuests;
     return Journal;
 });
