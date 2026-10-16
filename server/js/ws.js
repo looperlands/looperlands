@@ -659,8 +659,10 @@ WS.socketIOServer = Server.extend({
                 });
             }
 
+            const mapsForQuest = require('./quests/questmaps').mapResolver(self.worldsMap, require('./worlddefinitions').definitions);
             for (const entry of availableQuests) {
                 const definition = quests.questsByID[entry.id];
+                entry.mapIds = mapsForQuest(definition);
                 if (!definition.objectives) continue;
                 const progress = require('./quests/objectives').progress(sessionData.gameData, definition);
                 entry.objectives = progress.map(o => ({id: o.id, label: o.label || o.id, count: o.count, amount: o.amount || 1, done: o.done}));
