@@ -140,6 +140,7 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title, performance.now()]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
+                self.server.server.fieldGuide?.reconcile(self).catch(error => console.error('[field-guide]', error.message));
                 if (!self.isBot()) {
                     discord.sendMessage(`👋 **${self.name}** joined the game.`);
                 }
@@ -976,6 +977,7 @@ module.exports = Player = Character.extend({
 
         cache.gameData = gameData;
         this.server.server.cache.set(this.sessionId, cache);
+        this.server.server.fieldGuide?.observe(this, 'obtain', kind, amount);
     },
 
     onRequestPosition: function (callback) {

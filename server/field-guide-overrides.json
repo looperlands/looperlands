@@ -1,0 +1,49 @@
+{
+  "wood": {
+    "hint": "Gather materials from the trees."
+  },
+  "ore": {
+    "hint": "Look for mining spots near the miner."
+  },
+  "flask": {
+    "completion": "loot",
+    "hint": "Collect supplies dropped by defeated monsters."
+  },
+  "rat": {
+    "hint": "Look near the town walls."
+  },
+  "skeleton": {
+    "hint": "Explore beyond the town."
+  },
+  "goblin": {
+    "hint": "Follow the paths into the woods."
+  },
+  "crab": {
+    "hint": "Explore the shoreline."
+  },
+  "bat": {
+    "hint": "Listen where daylight ends."
+  },
+  "boss": {
+    "visibility": "secret",
+    "hint": "You have found a hidden opponent."
+  },
+  "cobtrashbag": {
+    "hint": "Try fishing in the bathtub."
+  },
+  "cobcan": {
+    "name": "Can",
+    "hint": "A surprising fishing spot near the farm."
+  },
+  "cobbluegill": {
+    "hint": "Keep fishing at the farm pond."
+  },
+  "cobcruciancarp": {
+    "hint": "Visit the farm pond."
+  },
+  "cobkoi": {
+    "name": "Koi",
+    "visibility": "secret",
+    "hint": "A surprising catch from the bathtub."
+  }
+}

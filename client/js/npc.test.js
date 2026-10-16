@@ -7,7 +7,7 @@ const Types = require('../../shared/js/gametypes');
 function createNpc(animations = ['idle_down']) {
     let methods;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'npc.js'), 'utf8'), {
-        Types, define: (dependencies, factory) => { methods = factory({extend: value => value}); }, setTimeout
+        Types, define: (dependencies, factory) => { methods = factory({extend: value => value}, require('../../shared/js/npctalk')); }, setTimeout
     });
     return {...methods, orientation: Types.Orientations.DOWN, idleSpeed: 450, isLoaded: true,
         _super: jest.fn(), hasAnimation: name => animations.includes(name), setAnimation: jest.fn(),

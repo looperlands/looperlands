@@ -7,6 +7,7 @@ services:
       - /home/looperlands/.env
     environment:
       ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
+      FIELD_GUIDE_SPOOL_PATH: /var/lib/looperlands/activity/field-guide.json
     volumes:
       - activity_spool_1:/var/lib/looperlands/activity
       - chat-history:/opt/app/data/chat
@@ -18,6 +19,7 @@ services:
       - /home/looperlands/.env2
     environment:
       ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
+      FIELD_GUIDE_SPOOL_PATH: /var/lib/looperlands/activity/field-guide.json
     volumes:
       - activity_spool_2:/var/lib/looperlands/activity
       - chat-history-2:/opt/app/data/chat

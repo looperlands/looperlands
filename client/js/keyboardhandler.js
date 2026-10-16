@@ -62,13 +62,16 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'ezxcvbtm1234';
+        const shortCuts = 'ezxcvbtmj1234';
 
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
             }
             switch (key) {
+                case 'j':
+                    if (!event.repeat) this.app.fieldGuide?.open();
+                    break;
                 case 'e':
                     this.game.interact();
                     break;
@@ -241,7 +244,7 @@ class KeyBoardHandler {
     }
 
     hasOpenPanel() {
-        return $('body').hasClass('settings') ||
+        return !!this.app.fieldGuide?.opened || $('body').hasClass('settings') ||
             $('body').hasClass('inventory') ||
             $('body').hasClass('credits') ||
             $('#chatbox').hasClass("active") ||

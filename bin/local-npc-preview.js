@@ -19,7 +19,8 @@ Object.assign(process.env, {
     LOOPERLANDS_BACKEND_API_KEY: 'local-only',
     LOOPERLANDS_PLATFORM_BASE_URL: 'http://127.0.0.1:' + fixturePort,
     LOOPERLANDS_PLATFORM_API_KEY: 'local-only',
-    CHAT_HISTORY_FILE: path.join(data, 'chat.json'), NPC_MEMORY_FILE: path.join(data, 'npc-memory.json')
+    CHAT_HISTORY_FILE: path.join(data, 'chat.json'), NPC_MEMORY_FILE: path.join(data, 'npc-memory.json'),
+    FIELD_GUIDE_SPOOL_PATH: path.join(data, 'field-guide-pending.json')
 });
 delete process.env.DISCORD_TOKEN;
 const express = require('express');
@@ -80,6 +81,8 @@ api.post('/api/game/asset/xp', (req, res) => {
 api.get('/api/game/asset/data/:nft', (req, res) => res.json(gameData.get(req.params.nft) || {}));
 api.get('/api/maps/:map/flow', (req, res) => res.json([]));
 api.get('/api/maps/:map/music', (req, res) => res.json([]));
+// Local shop fixtures are deliberately empty; production reads its configured stock.
+api.get('/api/game/shop/inventory/:shop', (req, res) => res.json([]));
 api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.fromEntries([
     'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
     'hate', 'attackRate', 'stealth', 'xp', 'fishing'
@@ -99,6 +102,18 @@ api.post('/api/game/asset/choice', (req, res) => {
     if (!data.choices.includes(req.body.choice)) data.choices.push(req.body.choice);
     saveGameData();
     res.json({success: true});
+});
+api.get('/api/game/asset/:nft/field-guide', (req, res) => {
+    const saved = gameData.get(req.params.nft);
+    if (!saved) return res.sendStatus(404);
+    res.json({facts: saved.fieldGuide || []});
+});
+api.post('/api/game/asset/field-guide', (req, res) => {
+    const saved = gameData.get(req.body.nftId);
+    if (!saved || !Array.isArray(req.body.facts)) return res.sendStatus(400);
+    saved.fieldGuide = [...new Set([...(saved.fieldGuide || []), ...req.body.facts])];
+    saveGameData();
+    res.json({accepted: req.body.facts});
 });
 api.post('/api/game/asset/kill', (req, res) => {
     for (const kill of req.body) {
