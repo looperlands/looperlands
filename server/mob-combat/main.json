@@ -1,0 +1,10 @@
+{
+    "mobs": {
+        "rat": {"enabled": false},
+        "skeleton": {"chance": 0.35, "minCooldownMs": 5000, "maxCooldownMs": 8000, "damageMultiplier": 3},
+        "skeleton2": {"chance": 0.75, "minCooldownMs": 2500, "maxCooldownMs": 4500, "damageMultiplier": 4}
+    },
+    "spawns": [
+        {"kind": "skeleton2", "x": 102, "y": 343, "chance": 1, "minCooldownMs": 3000, "maxCooldownMs": 3000}
+    ]
+}

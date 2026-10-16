@@ -30,6 +30,10 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
     host.game.combatPrototype={state:{live:true,mob:null},getHealthTargetId:()=>host.game.player?.target?.id};
     host.game.player={target:actor};
     expect(renderer.drawEntity.call(host,actor)[1].healthBar).toMatchObject({id:7,hp:60,maxHp:100});
+    host.game.app={settings:{getMobHealthBarsEnabled:()=>false}};
+    expect(renderer.drawEntity.call(host,actor)[1].healthBar).toBeUndefined();
+    expect(host.game.player.target).toBe(actor);expect(actor.hitPoints).toBe(60);
+    host.game.app.settings.getMobHealthBarsEnabled=()=>true;
     host.game.player.target={id:8};
     expect(renderer.drawEntity.call(host,actor)[1].healthBar).toBeUndefined();
 });

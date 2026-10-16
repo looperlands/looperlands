@@ -16,6 +16,7 @@ define(function() {
         },
     
         addDamageInfo: function(value, x, y, type, entityId, critical = false, presentation = {}) {
+            if (this.game.app?.settings?.isCombatInfoVisible?.(type) === false) return;
             const time = this.game.currentTime;
             const combat = ['inflicted', 'received', 'healed'].includes(type);
             const amount = combat ? Number(value) : NaN;
@@ -40,7 +41,7 @@ define(function() {
                 const previous = this.damageLanes[targetKey];
                 const lane = previous && time - previous.time < COMBAT_TEXT_DURATION ? previous.lane + 1 : 0;
                 if (type === 'combo' && presentation.praise) {
-                    info.praise = presentation.praise;
+                    if (this.game.app?.settings?.isCombatInfoVisible?.('comboPraise') !== false) info.praise = presentation.praise;
                     info.fillColor = presentation.color || info.fillColor;
                     info.strokeColor = '#352137';
                 }

@@ -176,3 +176,30 @@ test.each(['reduced','disabled','map','stop','death'])('critical shake clears on
     if(reason==='death')game.player.isDead=true;
     expect(feedback.getFrame(1010).shake).toEqual({x:0,y:0});
 });
+
+test('hiding the hit-target marker leaves targeting and impact feedback intact',()=>{
+    const {feedback,mob,game,settings}=setup();settings.getHitTargetIndicatorEnabled=()=>false;
+    feedback.addImpact(mob,10,1000);
+    expect(feedback.getFrame(1000)).toMatchObject({target:null,impacts:[expect.any(Object)]});
+    expect(game.player.target).toBe(mob);
+    settings.getHitTargetIndicatorEnabled=()=>true;
+    expect(feedback.getFrame(1010).target).not.toBeNull();
+});
+test('camera shake can be disabled during a pulse while hit bursts and recoil remain',()=>{
+    const {feedback,mob,settings,game}=setup();game.player.x=24;game.player.y=64;
+    settings.getCameraShakeEnabled=()=>true;
+    feedback.addImpact(mob,10,1000,true);
+    expect(feedback.getFrame(1000).shake).toEqual({x:2,y:1});
+    settings.getCameraShakeEnabled=()=>false;
+    expect(feedback.getFrame(1010)).toMatchObject({shake:{x:0,y:0},impacts:[expect.any(Object)]});
+    expect(feedback.getOffset(mob,1010)).toEqual({x:2,y:0});
+    feedback.addShake(1020);expect(feedback.getFrame(1020).shake).toEqual({x:0,y:0});
+});
+test('camera shake is independent of optional impact bursts and still respects reduced motion',()=>{
+    const {feedback,mob,settings}=setup();
+    settings.getCombatEffectsEnabled=()=>false;settings.getCameraShakeEnabled=()=>true;
+    feedback.addImpact(mob,10,1000,true);
+    expect(feedback.getFrame(1000)).toMatchObject({impacts:[],shake:{x:2,y:1}});
+    settings.getReducedMotion=()=>true;
+    expect(feedback.getFrame(1010).shake).toEqual({x:0,y:0});
+});

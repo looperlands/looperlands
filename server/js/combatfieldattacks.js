@@ -3,6 +3,7 @@ const Types=require('../../shared/js/gametypes');
 const Properties=require('./properties');
 const Formulas=require('./formulas');
 const Messages=require('./message');
+const {loadConfig}=require('./combatconfig');
 const adjacent=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y)===1;
 const same=(a,b)=>a.x===b.x&&a.y===b.y;
 // These encounters are stationary or own a scripted special-attack cycle.
@@ -10,6 +11,7 @@ const SCRIPTED_KINDS=new Set(['tentacle','tentacle2','seacreature','megamag','co
 class FieldAttacks {
     constructor(controller,random=Math.random,options={}){
         this.controller=controller;this.world=controller.world;this.random=random;
+        this.config=loadConfig(this.world.id?.replace(/^world_/,''));
         this.attacks=new Map();this.cooldowns=new Map();this.history=new Map();this.serial=0;
         // Only the isolated local runner opts into Slam while it is being playtested.
         this.slamEnabled=options.slam===true;
@@ -47,14 +49,17 @@ class FieldAttacks {
             if(p.steps>=budget)continue;
             for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
                 const next={x:p.x+dx,y:p.y+dy,steps:p.steps+1},key=next.x+','+next.y;
-                if(visited.has(key)||!this.controller.free(next.x,next.y,[player]))continue;
+                // Other mobs can surround the player; that pressure must not cancel a special.
+                // Only terrain and doors determine whether this is a fair attack location.
+                if(visited.has(key)||!this.world.isValidPosition(next.x,next.y)
+                    ||this.world.map?.doors?.some(d=>same(d,next)))continue;
                 visited.add(key);queue.push(next);
             }
         }
         return false;
     }
-    hurt(attack,player,multiplier){
-        const damage=Math.round(Formulas.dmg(attack.mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*multiplier*player.playerClassModifiers.meleeDamageTaken);
+    hurt(attack,player){
+        const damage=Math.round(Formulas.dmg(attack.mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*attack.damageMultiplier*player.playerClassModifiers.meleeDamageTaken);
         const previousHp=player.hitPoints;
         player.handleHurt(attack.mob,damage);
         const encounter=this.controller.encounters.get(player.id);
@@ -66,14 +71,14 @@ class FieldAttacks {
     }
     slam(attack,now){
         for(const player of Object.values(this.world.players)){
-            if(!player.isDead&&player.hasEnteredGame!==false&&this.supportsSlam(player)&&attack.lane.some(p=>same(p,player)))this.hurt(attack,player,1.5);
+            if(!player.isDead&&player.hasEnteredGame!==false&&this.supportsSlam(player)&&attack.lane.some(p=>same(p,player)))this.hurt(attack,player);
         }
         if(!attack.encounter.player.isDead&&!attack.lane.some(p=>same(p,attack.encounter.player)))this.opening(attack,now);
     }
     eligible(mob){
         if(!mob||mob.type!=='mob'||this.controller.mobIds.has(Number(mob.id)))return false;
         const kind=Types.getKindAsString(mob.kind),props=Properties[kind];
-        return !!props && !props.friendly && !SCRIPTED_KINDS.has(kind)
+        return !!props && this.config.forMob(mob).enabled && !props.friendly && !SCRIPTED_KINDS.has(kind)
             && !props.aoe?.onTimer && !mob.specialInterval && !mob.addArray?.length;
     }
     held(mob){return !!mob && this.attacks.has(Number(mob.id));}
@@ -83,11 +88,12 @@ class FieldAttacks {
             ||!adjacent(mob,encounter.player)||encounter.combo||encounter.fieldCombo
             ||['windup','lunge','round'].includes(encounter.phase)
             ||[...this.attacks.values()].some(a=>a.encounter===encounter))return false;
+        const config=this.config.forMob(mob);
         const ready=this.cooldowns.get(mob.id);
         if(ready===undefined){this.cooldowns.set(mob.id,now+1200+this.random()*1800);return false;}
         if(now<ready)return false;
-        this.cooldowns.set(mob.id,now+3000+this.random()*4000);
-        if(this.random()>=.4)return false;
+        this.cooldowns.set(mob.id,now+config.minCooldownMs+this.random()*(config.maxCooldownMs-config.minCooldownMs));
+        if(this.random()>=config.chance)return false;
         const direction={x:Math.sign(encounter.player.x-mob.x),y:Math.sign(encounter.player.y-mob.y)};
         const pattern=this.patternFor(encounter,mob);
         const windup=pattern==='slam'?950+Math.round(this.random()*200):650+Math.round(this.random()*300);
@@ -95,7 +101,7 @@ class FieldAttacks {
         if(pattern==='slam'&&(!lane.some(t=>same(t,encounter.player))||Object.values(this.world.players).some(p=>!p.isDead&&lane.some(t=>same(t,p))&&!this.canEscape(p,lane,windup))))return false;
         const previous=this.history.get(mob.id);
         this.history.set(mob.id,{pattern,count:previous?.pattern===pattern?previous.count+1:1});
-        const attack={id:++this.serial,mob,encounter,pattern,phase:'windup',direction,windup,until:now+windup,lane};
+        const attack={id:++this.serial,mob,encounter,pattern,phase:'windup',direction,windup,until:now+windup,lane,damageMultiplier:config.damageMultiplier};
         this.attacks.set(Number(mob.id),attack);
         this.controller.send(encounter);
         return true;
@@ -156,7 +162,7 @@ class FieldAttacks {
             }else if(attack.phase==='lunge'){
                 attack.phase='recovery';attack.until=now+1500;
                 if(attack.lane.some(p=>same(p,player))){
-                    this.hurt(attack,player,2);
+                    this.hurt(attack,player);
                 }else this.opening(attack,now);
                 attack.lane=[];
             }else this.release(attack);

@@ -2,9 +2,13 @@
 
 Normal gameplay enables the new combat automatically. Almost all mobile hostile mobs mix their ordinary attacks with a direction-locked charged lunge. This includes Lavaland spectres, eyes, death knights, and ordinary bosses. Friendly entities, both tentacles, the stationary sea creature, Megamag, Slime King, Cobogre, timed AoE, and active scripted/add encounters retain their existing mechanics. Boss rewards and on-death AoE alone do not exclude a mob. New ordinary mob types qualify by default.
 
-After an initial 1.2–3 seconds, an eligible normal attack has a 40% chance to charge, with a 3–7-second cooldown before another roll. A 650–950 ms warning marks two tiles, with a charge bar, pulse and sparks. The mob then lunges for 180 ms and recovers for 1.5 seconds. Standing in the marked lane takes twice its calculated normal melee damage. Only one mob charges a given player at a time. Nearby players also see the telegraph.
+After an initial 1.2–3 seconds, an eligible normal attack has a 50% chance to charge, with a 3–6-second cooldown before another roll. A 650–950 ms warning marks two tiles, with a charge bar, pulse and sparks. The mob then lunges for 180 ms and recovers for 1.5 seconds. Standing in the marked lane takes four times its calculated normal melee damage. Only one mob charges a given player at a time. Nearby players also see the telegraph.
 
 A successful sidestep opens a 1.25-second counter window. Once adjacent and finished moving, the player automatically strikes the evaded mob for 1.5× base melee damage, including the normal attack buff and class modifier. The swing lasts at most 180 ms and preserves the current normal target/attack loop. A counter adds damage only: it does not grant separate XP, stun the mob, lock movement, or trigger a finisher. Normal death, loot and weapon XP handling applies. Server-side range, expiry, target identity and one-use checks validate counters; the client cannot send arbitrary damage or reward amounts.
+
+## Map overrides
+
+The values above are global defaults. [Map-maker settings](mob-charged-attacks.md) override frequency, damage or opt out per mob kind and original spawn. The main map includes slower/weaker skeletons, more frequent Greater Skeletons and ordinary-only rats. Scripted encounter exclusions still apply.
 
 ## Kill streaks
 
@@ -16,7 +20,15 @@ Milestones use `2x combo`, `3x combo`, etc.; the number counts kills, not an XP 
 
 Only the currently targeted mob shows a compact health bar, including bosses. Optional, backward-compatible damage metadata updates HP immediately. The bar follows player-health feedback: an immediate HP change, white lost-health trail held for 180 ms and settling over 280 ms, immediate healing/max-HP changes, reduced-motion support, and cleanup on despawn or target change. Unknown HP is not guessed.
 
-Confirmed weapon crits, counters, and mob charges that actually remove player HP trigger a 180 ms camera kick, capped at two world pixels. Rapid or simultaneous impacts share a pulse. HUD, cursor, pathfinding and gameplay coordinates do not move. Reduced motion or disabled combat effects suppresses shake. Combat info renders above scenery, overhead sprites, lighting, health bars and charge overlays.
+Confirmed weapon crits, counters, and mob charges that actually remove player HP trigger a 180 ms camera kick, capped at two world pixels. Rapid or simultaneous impacts share a pulse. HUD, cursor, pathfinding and gameplay coordinates do not move. Reduced motion or disabling Camera Shake suppresses shake. Combat info renders above scenery, overhead sprites, lighting, health bars and charge overlays.
+
+## Player display settings
+
+Open **Game Settings (C)** and choose **Combat**, **Display**, **Interface**, or **Audio**. Combat opens first and groups the combat feedback controls; Effect Timers lives under Interface alongside name labels, Instructions and Map. Switching sections retains pending choices, and Save Settings saves all sections together. Preferences are stored per browser. **Mob Health Bars**, **Hit Target Indicator**, **Damage & Healing Numbers**, **XP Popups**, **Combo & Counter Messages**, **Combo Praise (Awesome, etc.)**, **Camera Shake**, and **Effect Timers** each have their own saved checkbox. Save Settings applies the changes immediately; disabling a display does not change targeting, HP, XP rewards, automatic counters or the fixed 1.5-second kill window. Effect Timers hides the active-effect countdowns while retaining effect labels and consumable cooldowns; effects still expire normally. Praise only appears when combo messages are enabled. Emotes and fishing messages retain their existing controls.
+
+The existing **Combat & Tool Impact Effects** checkbox controls hit bursts and recoil. Every new option defaults to On, including Camera Shake, while explicitly saved preferences are preserved. OS reduced motion continues to suppress motion.
+
+Charged-attack ground warnings and the charge cue remain visible. Lunge and Slam mark their tiles with a faint gold fill and short corner marks, leaving the center clear instead of drawing a boxed X. They strengthen toward impact while retaining the same tile coverage and timing.
 
 ## Runtime and compatibility
 

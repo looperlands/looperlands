@@ -384,3 +384,14 @@ test('a cancelled walk cannot leave the planted Slam sprite offset from its warn
     expect([mob.x,mob.y]).toEqual([64,64]);
     expect(prototype.fieldMotions.get(100).from).toBeNull();
 });
+
+test('trainer health bars honor the preference while warnings and automatic counters remain available',()=>{
+    const {prototype,packet,game,renderer}=setup();
+    game.app={settings:{getMobHealthBarsEnabled:()=>false,getReducedMotion:()=>false}};
+    prototype.getHealthTargetId=()=>packet.mob.id;
+    const lane=[{x:4,y:5},{x:4,y:6}];
+    prototype.receive({...packet,phase:'windup',lane});
+    expect(renderer.setExtensionData).toHaveBeenLastCalledWith('combat-prototype',expect.objectContaining({showHealthBar:false,lane}));
+    game.app.settings.getMobHealthBarsEnabled=()=>true;prototype.update();
+    expect(renderer.setExtensionData).toHaveBeenLastCalledWith('combat-prototype',expect.objectContaining({showHealthBar:true,lane}));
+});
