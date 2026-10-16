@@ -21,7 +21,7 @@ class FieldGuide {
         this.jobs = new Map();
         this.known = new WeakMap();
         this.shopLoads = new Map();
-        this.makeEntry = require('./fieldguidemapcatalog').entryFactory(Types, Lakes, require('./properties'), require('../field-guide.json'));
+        this.makeEntry = require('./fieldguidemapcatalog').entryFactory(Types, Lakes, require('./properties'));
         this.indexEntries();
     }
     indexEntries() {

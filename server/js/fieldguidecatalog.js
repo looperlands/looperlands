@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
 const categories = ['items', 'fish', 'monsters'];
 const rules = {items: ['obtain', 'loot'], fish: ['catch'], monsters: ['defeat']};
@@ -30,8 +28,7 @@ function validateCatalog(catalog, types, lakes) {
     return catalog;
 }
 function loadCatalog(types, lakes) {
-    const overrides = validateCatalog(JSON.parse(fs.readFileSync(path.join(__dirname, '../field-guide.json'), 'utf8')), types, lakes);
-    return validateCatalog(require('./fieldguidemapcatalog').buildMapCatalog(types, lakes, overrides), types, lakes);
+    return validateCatalog(require('./fieldguidemapcatalog').buildMapCatalog(types, lakes), types, lakes);
 }
 function project(collection, facts) {
     const entries = [], required = [], bonuses = [];

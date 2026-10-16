@@ -4,7 +4,7 @@ const Lakes = require('./lakes');
 const Properties = require('./properties');
 const {entryFactory, mapCollection} = require('./fieldguidemapcatalog');
 const {loadCatalog} = require('./fieldguidecatalog');
-const makeEntry = entryFactory(Types, Lakes, Properties, require('../field-guide.json'));
+const makeEntry = entryFactory(Types, Lakes, Properties);
 
 test('actual map membership covers main spawns, drops, chests and boss adds without importing another map', () => {
     const catalog = loadCatalog(Types, Lakes), entries = catalog.maps.main.entries;
@@ -30,7 +30,19 @@ test('new map content, fishing, harvests and quest rewards appear without author
     expect(new Set(targets).size).toBe(targets.length);
 });
 test('an excluded override stays excluded everywhere it is spawned', () => {
-    const entry = {...makeEntry('rat'), visibility: 'excluded'};
-    const factory = entryFactory(Types, Lakes, Properties, {maps: {main: {entries: [entry]}}});
+    const factory = entryFactory(Types, Lakes, Properties, {rat: {visibility: 'excluded'}});
     expect(factory('rat').visibility).toBe('excluded');
+});
+test('partial overrides retain generated identity, category, artwork and completion defaults', () => {
+    const factory = entryFactory(Types, Lakes, Properties, {rat: {hint: 'Explore the walls.'}});
+    expect(factory(Types.Entities.RAT)).toMatchObject({id: 'rat', target: 'rat', category: 'monsters',
+        sprite: 'rat', completion: 'defeat', visibility: 'unknown', hint: 'Explore the walls.'});
+    expect(factory('wood').completion).toBe('obtain');
+});
+test.each([
+    {missing: {visibility: 'secret'}}, {rat: {category: 'items'}}, {rat: {target: 'boss'}},
+    {rat: {completion: 'catch'}}, {rat: {visibility: 'maybe'}}, {rat: {sprite: '../private'}},
+    {rat: {id: 13}}, {rat: {name: ''}}, {rat: {hint: null}}, {rat: null}, {rat: []}
+])('malformed overrides are rejected even if their target is not on the current map', overrides => {
+    expect(() => entryFactory(Types, Lakes, Properties, overrides)).toThrow('Invalid Field Guide override');
 });

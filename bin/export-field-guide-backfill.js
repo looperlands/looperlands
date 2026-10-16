@@ -5,7 +5,7 @@ const Types = require('../shared/js/gametypes');
 const Lakes = require('../server/js/lakes');
 const Properties = require('../server/js/properties');
 const {entryFactory} = require('../server/js/fieldguidemapcatalog');
-const makeEntry = entryFactory(Types, Lakes, Properties, require('../server/field-guide.json'));
+const makeEntry = entryFactory(Types, Lakes, Properties);
 const rows = new Map();
 function add(raw) {
     const entry = makeEntry(raw);

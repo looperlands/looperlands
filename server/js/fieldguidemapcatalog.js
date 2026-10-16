@@ -5,9 +5,8 @@ const AltNames = require('../../shared/js/altnames');
 const NpcTalk = require('../../shared/js/npctalk');
 const root = path.resolve(__dirname, '../..');
 
-function entryFactory(types, lakes, properties, overrides) {
-    const authored = new Map(Object.values(overrides.maps).flatMap(map => map.entries).map(entry => [entry.target, entry]));
-    return raw => {
+function entryFactory(types, lakes, properties, overrides = require('../field-guide-overrides.json')) {
+    function baseEntry(raw) {
         if (typeof raw !== 'string' && typeof raw !== 'number') return null;
         let kind = typeof raw === 'number' || /^\d+$/.test(raw) ? Number(raw) : types.getKindFromString(raw) ?? types.Entities[raw];
         // Pickup variants (e.g. gold piles) award one inventory item and share its entry.
@@ -16,7 +15,6 @@ function entryFactory(types, lakes, properties, overrides) {
         if (!target) return null;
         const category = lakes.isFish(target) ? 'fish' : types.isMob(kind) ? 'monsters' : types.isItem(kind) ? 'items' : null;
         if (!category) return null;
-        if (authored.has(target)) return {...authored.get(target)};
         const sprite = (category === 'items' ? ['item-' + target, target] : [target]).find(name =>
             fs.existsSync(path.join(root, 'client/sprites', name + '.json')) && fs.existsSync(path.join(root, 'client/img/1', name + '.png')));
         const label = AltNames.getName(target).replace(/_/g, ' ');
@@ -24,7 +22,30 @@ function entryFactory(types, lakes, properties, overrides) {
             target, category, name: label.charAt(0).toUpperCase() + label.slice(1), sprite: sprite || null,
             visibility: 'unknown', completion: {items: 'obtain', fish: 'catch', monsters: 'defeat'}[category],
             hint: {items: 'Explore this map to find this item.', fish: 'Fish in this map’s waters.', monsters: 'Explore this map to face this opponent.'}[category]};
+    }
+    validateOverrides(overrides, baseEntry);
+    return raw => {
+        const entry = baseEntry(raw);
+        return entry ? {...entry, ...overrides[entry.target]} : null;
     };
+}
+
+function validateOverrides(overrides, baseEntry) {
+    if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) throw new Error('Invalid Field Guide overrides');
+    const allowed = new Set(['id', 'name', 'sprite', 'visibility', 'completion', 'hint']);
+    for (const [target, values] of Object.entries(overrides)) {
+        const entry = baseEntry(target);
+        if (!entry || entry.target !== target || !values || typeof values !== 'object' || Array.isArray(values) ||
+            Object.keys(values).some(key => !allowed.has(key)) ||
+            values.id !== undefined && (typeof values.id !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(values.id)) ||
+            values.name !== undefined && (typeof values.name !== 'string' || !values.name) ||
+            values.hint !== undefined && typeof values.hint !== 'string' ||
+            values.sprite !== undefined && values.sprite !== null && (typeof values.sprite !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(values.sprite)) ||
+            values.visibility !== undefined && !['listed', 'unknown', 'secret', 'excluded'].includes(values.visibility) ||
+            values.completion !== undefined && !(entry.category === 'items' ? ['obtain', 'loot'] : [entry.completion]).includes(values.completion)) {
+            throw new Error('Invalid Field Guide override: ' + target);
+        }
+    }
 }
 
 function mapCollection(server, client, actions, quests, makeEntry, properties, types, lakes) {
