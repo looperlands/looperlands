@@ -16,6 +16,7 @@ function setup() {
     const game={player,renderer,getEntityById:()=>mob,unregisterEntityPosition:jest.fn(),registerEntityPosition:jest.fn(),
         audioManager:{playSound:jest.fn()},infoManager:{addDamageInfo:jest.fn()},showNotification:jest.fn()};
     const prototype=new Prototype(game);
+    prototype.autoTechniques=false; // Existing cases exercise the optional manual/buffer path.
     prototype.toggle=button();prototype.reset=button();prototype.action=button();
     prototype.socket={emit:jest.fn()};
     const packet={enabled:true,serverNow:Date.now(),phase:'recovery',until:Date.now()+1250,
@@ -233,4 +234,32 @@ test('health target follows normal selection and an ordinary-mob technique inste
     prototype.state={...packet,fieldCombo:{kind:'counter',until:Date.now()+1000,mob:{id:200,x:4,y:4}},fieldAttacks:[]};
     prototype.technique();expect(prototype.getHealthTargetId()).toBe(200);
     prototype.select({id:100});expect(prototype.getHealthTargetId()).toBe(100);
+});
+
+
+test('sidestep opening automatically counters once, then finishes after the counter swing',()=>{
+    const {prototype,packet,player}=setup();
+    let now=packet.serverNow;prototype.now=()=>now;prototype.autoTechniques=true;
+    prototype.socket.emit.mockClear();player.isMoving=()=>true;
+    prototype.update();expect(prototype.socket.emit).not.toHaveBeenCalled();
+    player.isMoving=()=>false;prototype.update();prototype.update();
+    expect(prototype.socket.emit.mock.calls).toEqual([['combat-preview',{action:'technique'}]]);
+    expect(prototype.action.hidden).toBe(true);
+    prototype.receive({...packet,combo:'finisher',comboUntil:now+1100,event:{id:2,kind:'attack',label:'Counter'}});
+    expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
+    now+=180;prototype.update();prototype.update();
+    expect(prototype.socket.emit).toHaveBeenCalledTimes(2);
+    expect(player.stop).not.toHaveBeenCalled();
+});
+
+test('automatic techniques respect distance and expiry, including ordinary-mob openings',()=>{
+    const {prototype,packet,player}=setup();
+    let now=packet.serverNow;prototype.now=()=>now;prototype.autoTechniques=true;
+    prototype.socket.emit.mockClear();
+    prototype.state={...packet,fieldCombo:{kind:'counter',until:now+1000,mob:{id:200,x:4,y:4}},fieldAttacks:[]};
+    player.gridX=8;prototype.update();expect(prototype.socket.emit).not.toHaveBeenCalled();
+    player.gridX=4;prototype.update();
+    expect(prototype.socket.emit.mock.calls).toEqual([['combat-preview',{action:'technique',mobId:200}]]);
+    prototype.state.fieldCombo={kind:'finisher',until:now+100,mob:{id:200,x:4,y:4}};
+    now+=200;prototype.update();expect(prototype.socket.emit).toHaveBeenCalledTimes(1);
 });
