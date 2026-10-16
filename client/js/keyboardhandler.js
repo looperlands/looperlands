@@ -156,6 +156,7 @@ class KeyBoardHandler {
 
     movementIsBlocked() {
         return !this.game.started || this.game.player.isDead || this.game.player.isRooted
+            || this.game.combatPrototype?.locked()
             || this.inputHasFocus() || this.hasOpenPanel()
             || $('#dialogue-popup').hasClass('active')
             || this.game.minigameLoaded || this.game.hoveringMinigamePrompt || this.game.doorCheck
@@ -322,6 +323,12 @@ class KeyBoardHandler {
         if (event !== undefined) {
             event.preventDefault();
             event.stopImmediatePropagation();
+        }
+
+        const combat = this.game.combatPrototype;
+        if (combat?.canTechnique()) {
+            if (!event?.repeat) combat.technique();
+            return;
         }
 
         if(this.game.highlightedTarget) {

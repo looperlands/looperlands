@@ -52,7 +52,8 @@ define(function () {
                 button.setAttribute('aria-pressed', String(button.dataset.mode === (config.mode || 'cycle')));
                 button.style.background = button.dataset.mode === (config.mode || 'cycle') ? '#6b4953' : '#382632';
             }
-            const story = config.story || config.previewStory;
+            const story = config.previewCombat ? null : config.story || config.previewStory;
+            if (!story && this.story) this.story.style.display = 'none';
             if (story) {
                 if (!this.story) {
                     this.controls.style.flexWrap = 'wrap';
@@ -86,6 +87,7 @@ define(function () {
                     this.story.appendChild(this.replay);
                     this.controls.appendChild(this.story);
                 }
+                this.story.style.display = '';
                 this.story.firstChild.textContent = (story.title || 'The Lantern Picnic') + ' — your next step';
                 this.storyGoal.textContent = story.goal;
                 this.storyEvent.textContent = story.event || '';
