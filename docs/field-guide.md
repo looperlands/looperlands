@@ -4,7 +4,7 @@ Open the **Journal** from the existing quest-book button on the HUD. It contains
 
 Items, Fish, and Monsters use the Inventory panel's copper raster frame, compact sprite slots, yellow headings, parchment entry details, and original red close sprite at 32px inside a 44px interaction target. Chat shares the same frame, title plaque, and smaller close control.
 
-Select one visited map at a time. The guide shows all published entries for that map, discovered and completed totals, and a pinned discovery reminder. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
+The guide follows the player's current map and shows its name, all published entries, discovered and completed totals, and a pinned discovery reminder. It has no map selector, search, or status filter. Keyboard focus stays inside the guide; Escape closes it. Narrow screens stack the three categories.
 
 ## Progress and visibility
 
@@ -22,7 +22,7 @@ Deploy the companion platform migration and API first, then add `game_data_write
 
 - `GET /api/game/asset/{nftId}/field-guide` → `{facts: string[]}`.
 - `POST /api/game/asset/field-guide` with `{nftId, facts: string[]}` → `{accepted: string[]}`. Only explicitly acknowledged facts leave the outbox.
-- The browser calls only `GET /session/{sessionId}/field-guide?map=...`; the live actor is validated before and after asynchronous reads. Unvisited maps are denied, and the response omits secret metadata and runtime IDs for unknown entries.
+- The browser calls only `GET /session/{sessionId}/field-guide` for the current map; the live actor is validated before and after asynchronous reads. The response omits secret metadata and runtime IDs for unknown entries. Older clients can still request a previously visited map through the optional API map parameter.
 
 Set `FIELD_GUIDE_SPOOL_PATH` to a durable, process-specific file. Its default is `data/field-guide/pending.json`. Docker Compose keeps it in each server's existing activity volume. Local writes use atomic replacement and file sync; failed or uncertain platform writes stay queued and retry. Preserve a corrupt outbox for repair; the guide reports unavailable rather than empty progress. Stop the process before repairing its outbox. Do not share one file between processes.
 

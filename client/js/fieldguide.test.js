@@ -22,14 +22,14 @@ test('tall sprite frames fit the slot without revealing other rows of the atlas'
     expect(Number(style.transform.slice(6, -1)) * 48).toBeLessThanOrEqual(40);
     expect(Guide.spriteStyle('missing')).toBeNull();
 });
-test('quiet refreshes cannot overwrite a map selected after an earlier request began', async () => {
+test('a response from the previous map cannot appear after the player changes map', async () => {
     const source = fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8');
     let resolve, Loaded;
     vm.runInNewContext(source, {define: (dependencies, factory) => {Loaded = factory({}, {}, {});}, axios: {get: () => new Promise(done => {resolve = done;})}});
     const instance = Object.create(Loaded.prototype);
-    Object.assign(instance, {opened: true, request: 0, mapId: 'first', app: {sessionId: 'session'}, render: jest.fn()});
+    Object.assign(instance, {opened: true, request: 0, mapId: 'first', app: {sessionId: 'session', game: {mapId: 'first'}}, render: jest.fn()});
     const request = instance.load();
-    instance.mapId = 'second';
+    instance.app.game.mapId = 'second';
     resolve({data: {map: 'first', entries: []}});
     await request;
     expect(instance.data).toBeUndefined();
@@ -62,7 +62,7 @@ test('the quest tab loads existing quest records rather than inventing new progr
     const get = jest.fn().mockResolvedValue({data: records});
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8'), {define: (dependencies, factory) => {Loaded = factory({}, {}, {});}, axios: {get}});
     const guide = Object.create(Loaded.prototype);
-    Object.assign(guide, {opened: true, request: 0, mapId: 'main', view: 'quests', app: {sessionId: 'session'}, render: jest.fn()});
+    Object.assign(guide, {opened: true, request: 0, mapId: 'main', view: 'quests', app: {sessionId: 'session', game: {mapId: 'main'}}, render: jest.fn()});
     await guide.load();
     expect(get.mock.calls[0][0]).toBe('/session/session/quests');
     expect(guide.quests).toBe(records);

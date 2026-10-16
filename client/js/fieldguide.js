@@ -44,7 +44,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             document.addEventListener('keydown', this.onKeyboard, true);
             this.timer = setInterval(() => {
                 if (this.opened && (!app.game.started || app.game.player?.isDead)) this.close();
-                else if (this.opened && this.worldMap !== app.game.mapId) {this.worldMap = app.game.mapId; this.mapId = app.game.mapId; this.selected = null; this.load();}
+                else if (this.opened && this.mapId !== app.game.mapId) {this.mapId = app.game.mapId; this.data = null; this.selected = null; this.render('Opening this map…'); this.load();}
                 else if (this.opened) this.load(true);
             }, 5000);
         }
@@ -56,7 +56,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
             this.opened = true; this.root.hidden = false; document.body.classList.add('field-guide-open');
             this.view = view;
             $('#achievementsbutton').addClass('active');
-            this.worldMap = this.app.game.mapId; this.mapId = this.worldMap; this.data = null; this.selected = null;
+            this.mapId = this.app.game.mapId; this.data = null; this.selected = null;
             this.render('Opening your Journal…'); this.root.querySelector('button')?.focus();
             await this.load();
         }
@@ -68,11 +68,13 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
         }
         async load(quiet = false) {
             if (!this.opened || quiet && this.loadingRequest) return;
-            const request = ++this.request, map = this.mapId, view = this.view;
+            const map = this.app.game.mapId, view = this.view;
+            if (this.mapId !== map) {this.mapId = map; this.data = null; this.selected = null;}
+            const request = ++this.request;
             this.loadingRequest = request;
             try {
-                const response = await axios.get('/session/' + encodeURIComponent(this.app.sessionId) + (view === 'quests' ? '/quests' : '/field-guide'), {params: view === 'quests' ? {} : {map}});
-                if (!this.opened || request !== this.request || map !== this.mapId || view !== this.view) return;
+                const response = await axios.get('/session/' + encodeURIComponent(this.app.sessionId) + (view === 'quests' ? '/quests' : '/field-guide'));
+                if (!this.opened || request !== this.request || map !== this.mapId || map !== this.app.game.mapId || view !== this.view) return;
                 if (view === 'quests') {
                     if (!Array.isArray(response.data)) throw new Error('Invalid quest log response');
                     const unchanged = JSON.stringify(this.quests) === JSON.stringify(response.data);
@@ -87,7 +89,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 if (!quiet || !unchanged || this.error) this.render();
                 this.error = false;
             } catch (error) {
-                if (!this.opened || request !== this.request) return;
+                if (!this.opened || request !== this.request || map !== this.app.game.mapId) return;
                 this.error = true;
                 this.render(error.response?.data?.error || 'Your Journal could not refresh. Please retry.', true);
             } finally {if (this.loadingRequest === request) this.loadingRequest = null;}
@@ -130,11 +132,7 @@ define(['jquery', 'mapnames', 'sprites'], function ($, mapNames, sprites) {
                 this.root.append(panel); this.restoreFocus(focus, wasInside, scroll); return;
             }
             const tools = node('div', 'fg-tools');
-            const maps = node('select', 'fg-map'); maps.setAttribute('aria-label', 'Map'); maps.dataset.fgFocus = 'map';
-            for (const map of this.data?.maps || [this.mapId]) {const option = node('option', '', mapNames[map] || map); option.value = map; maps.append(option);}
-            maps.value = this.mapId;
-            maps.addEventListener('change', () => {this.mapId = maps.value; this.selected = null; this.data = null; this.render('Opening this map…'); this.load();});
-            tools.append(maps);
+            tools.append(node('span', 'fg-map-name', mapNames[this.mapId] || this.mapId));
             if (this.data) {
                 const totals = this.data.totals, summary = node('div', 'fg-summary');
                 summary.append(node('span', '', totals.discovered + ' / ' + totals.total + ' discovered'), node('span', '', totals.completed + ' / ' + totals.total + ' completed'));
