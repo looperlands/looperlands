@@ -597,7 +597,8 @@ function drawEntities(drawEntitiesData) {
     if (composingWorld) {
         ctx.drawImage(canvases.background, 0, 0);
         rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1,
-            cameraX: -Math.round(-cameraX), cameraY: -Math.round(-cameraY)});
+            cameraX: -Math.round(-cameraX), cameraY: -Math.round(-cameraY),
+            sources: {background: canvases.background}, fireLights: lights.concat(tileLights)});
         ctx.scale(1 / scale, 1 / scale);
     }
     highCtx.clearRect(0, 0, highCanvas.width, highCanvas.height);
@@ -1092,7 +1093,8 @@ function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
     }
     for (const effect of ambience.effects || [{type: ambience.particles, count: ambience.particleCount}]) {
         for (const point of ambienceParticlePositions({particles: effect.type, particleCount: effect.count}, view, elapsed, width, height)) {
-            self.WorldParticles.draw(context, point, effect.type, elapsed, daylight);
+            const reacted = self.WorldParticles.react(point, effect.type, elapsed, view, ambience.fx);
+            self.WorldParticles.draw(context, reacted, effect.type, elapsed, daylight);
         }
     }
     context.restore();

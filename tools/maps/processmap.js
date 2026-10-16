@@ -1,5 +1,6 @@
 var _ = require('underscore'),
     Types = require("../../shared/js/gametypes");
+const WorldFxConfig = require('../../client/js/worldfxconfig');
 
 var map,
     mode,
@@ -343,6 +344,11 @@ module.exports = function processMap(json, options) {
             }
         }
 
+        if (newScene.ambience !== undefined) newScene.ambience = WorldFxConfig.ambient(newScene.ambience);
+        if (newScene.fx !== undefined) {
+            newScene.fx = WorldFxConfig.parse(newScene.fx);
+            WorldFxConfig.scenery(newScene.fx);
+        }
         map.scenes.push(newScene);
     }
 

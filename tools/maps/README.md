@@ -42,6 +42,13 @@ You must run both commands in order to export the client and server map files. T
 Things to know
 --------------
 
+### Ambience particles and world FX
+
+Scene rectangles support an `ambience` String property such as `forest`, `beach`,
+or `fireflies`, without an NPC schedule. An `fx` JSON String property configures
+effect opt-outs and heat-shimmer regions. See [the world FX guide](../../docs/world-fx.md)
+for presets, particle limits, tile-stage effects, and configuration examples.
+
 ### Door and portal opening hours
 
 Add a string custom property `time_range` to an object in Tiled's `doors` layer

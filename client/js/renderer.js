@@ -579,6 +579,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         }
                     }
                 }
+                this.game.worldFx?.decorate?.(entity, entityData, this.scale);
                 return [textData, entityData];
             },
     
@@ -1173,7 +1174,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         player: {x: this.game.player.x, y: this.game.player.y},
                         serverTime: this.game.serverTime,
                         worldTime: this.game.getWorldTime(),
-                        ambience: this.game.worldAmbience.getRenderState(),
+                        ambience: this.game.worldFx?.ambience?.(this.game.worldAmbience.getRenderState()) ?? this.game.worldAmbience.getRenderState(),
                         mapId: this.game.map.mapId,
                         scene: scene,
                         extensions: this.extensionData
@@ -1186,7 +1187,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         player: {x: 0, y: 0},
                         serverTime: this.game.serverTime,
                         worldTime: this.game.getWorldTime(),
-                        ambience: this.game.worldAmbience.getRenderState(),
+                        ambience: this.game.worldFx?.ambience?.(this.game.worldAmbience.getRenderState()) ?? this.game.worldAmbience.getRenderState(),
                         mapId: this.game.map.mapId,
                         scene: scene,
                         extensions: this.extensionData

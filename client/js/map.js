@@ -220,6 +220,8 @@ define(['jquery', 'area'], function ($, Area) {
                 area.message = scene.message;
                 area.dn_cycle = scene.dn_cycle;
                 area.darkness = scene.darkness;
+                area.ambience = scene.ambience;
+                area.fx = scene.fx;
                 scenes[scene.id] = area;
             });
             return scenes;

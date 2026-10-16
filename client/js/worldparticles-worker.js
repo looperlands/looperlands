@@ -124,5 +124,17 @@
             }
         }
     }
-    return {positions, draw};
+    function react(point, type, elapsed, view, fx) {
+        if (!fx?.actor || !fx.flags?.[type] || !['fireflies', 'leaves'].includes(type)) return point;
+        const scale = point.scale, x = point.x / scale + view.cameraX, y = point.y / scale + view.cameraY;
+        const dx = x - fx.actor.x, dy = y - fx.actor.y, distance = Math.hypot(dx, dy);
+        if (distance < 0.1 || distance > 50) return point;
+        const strength = fx.strength || 1, falloff = Math.pow(1 - distance / 50, 2);
+        const speed = Math.min(1, Math.hypot(fx.actor.vx || 0, fx.actor.vy || 0) / 80);
+        const force = falloff * strength * (type === 'fireflies' ? 24 : 15 * speed);
+        const swirl = type === 'leaves' ? Math.sin(elapsed * 4 + point.seed) * force : 0;
+        return {...point, x: point.x + (dx / distance * force - dy / distance * swirl) * scale,
+            y: point.y + (dy / distance * force + dx / distance * swirl) * scale};
+    }
+    return {positions, draw, react};
 }));

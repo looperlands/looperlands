@@ -1,4 +1,5 @@
 const Types = require("../../shared/js/gametypes");
+const WorldFxConfig = require('../../client/js/worldfxconfig');
 
 const DuckvilleTileActionsController = require("./tileactions/duckvillecontroller");
 
@@ -89,7 +90,23 @@ class TileActionsController {
             return { success: false };
         }
 
-        return await controller.executeStage(nftId, map, tileAction, item, world, expectedStage, expectedRevision);
+        const key = tileAction.gridX + '.' + tileAction.gridY;
+        const before = JSON.stringify(world?.map?.tileStages?.[key]);
+        const result = await controller.executeStage(nftId, map, tileAction, item, world, expectedStage, expectedRevision);
+        const after = JSON.stringify(world?.map?.tileStages?.[key]);
+        // Effects are transient confirmed-action events, never persisted in tile snapshots.
+        if (result?.success && result.activity && before !== after) {
+            try {
+                const definition = controller.stageDefinitions?.[map]?.[result.activity.action];
+                const particles = WorldFxConfig.stageBurst(definition?.stageParticles, result.activity.stage);
+                if (particles) {
+                    const Messages = require('./message');
+                    world.pushBroadcast(new Messages.TileStage({x: tileAction.gridX, y: tileAction.gridY,
+                        particlesOnly: true, particles, action: result.activity.stage}));
+                }
+            } catch (error) { console.warn('Tile-stage particles skipped:', error.message); }
+        }
+        return result;
     }
 
     async loadPersistedPlots(map, world) {
