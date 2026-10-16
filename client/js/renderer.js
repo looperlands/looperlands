@@ -392,7 +392,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     ds = this.upscaledRendering ? this.scale : 1;
     
                 if(anim && sprite) {
-                    if (entity instanceof Mob && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob.id) {
+                    const healthTargetId = this.game.combatPrototype?.getHealthTargetId() ?? this.game.player?.target?.id;
+                    if (entity instanceof Mob && entity.id === healthTargetId && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob.id) {
                         entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+3,
                             hp:entity.hitPoints,maxHp:entity.maxHitPoints};
                     }

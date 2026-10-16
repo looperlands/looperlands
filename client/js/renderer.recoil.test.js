@@ -10,7 +10,7 @@ vm.runInNewContext(fs.readFileSync(require.resolve('./renderer'), 'utf8'), {
     define: (_, factory) => { renderer = factory(null, Item, Character, Character, null, Mob, Npc); },
 });
 test.each([false, true])('body and equipment recoil together with flipped=%s; shadow stays planted', flip => {
-    const actor = Object.assign(new Mob(), {x: 32, y: 48, flipSpriteX: flip, orientation: 2,
+    const actor = Object.assign(new Mob(), {id:7,hitPoints:60,maxHitPoints:100,x: 32, y: 48, flipSpriteX: flip, orientation: 2,
         sprite: {id: 1, name: 'body', width: 32, height: 32, offsetX: -8, offsetY: -12},
         currentAnimation: {name: 'atk_down', currentFrame: {x: 0, y: 0, index: 0}},
         hasShadow: () => true, hasWeapon: () => true, getWeaponName: () => 'sword', isVisible: () => true});
@@ -26,6 +26,11 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
     expect(data.drawData.find(draw => draw.spriteName === 'sword').dx).toBe(-8 + amount);
     expect(data.drawData.find(draw => draw.spriteName === 'shadow16').dx).toBe(0);
     expect(actor.x).toBe(32);
+    expect(data.healthBar).toBeUndefined();
+    host.game.player={target:actor};
+    expect(renderer.drawEntity.call(host,actor)[1].healthBar).toMatchObject({id:7,hp:60,maxHp:100});
+    host.game.player.target={id:8};
+    expect(renderer.drawEntity.call(host,actor)[1].healthBar).toBeUndefined();
 });
 
 

@@ -14,7 +14,7 @@ test('ground warnings use native world pixels and the current camera position',(
 });
 
 test('foreground health and labels use display scale so they stay attached to the mob',()=>{
-    const ctx=context();renderer.draw(ctx,{mobX:160,mobY:320,mob:{hp:80,maxHp:160},phase:'recovery'},
+    const ctx=context();renderer.draw(ctx,{mobX:160,mobY:320,mob:{hp:80,maxHp:160},showHealthBar:true,phase:'recovery'},
         {cameraX:80,cameraY:160,scale:3});
     expect(ctx.rects[0]).toEqual([213,402,102,15]);
     expect(ctx.rects[2]).toEqual([216,405,48,9]);
@@ -40,4 +40,10 @@ test('trainer name and actual level stay visible while its attack status changes
             {cameraX:80,cameraY:160,scale:3});
         expect(ctx.fillText).toHaveBeenCalledWith('Lv. 12 LUNGER',88,125);
     }
+});
+
+test('unselected trainer keeps its name and attack warning but hides its health bar',()=>{
+    const ctx=context();renderer.draw(ctx,{mobX:160,mobY:320,mob:{hp:80,maxHp:160},showHealthBar:false,phase:'recovery'},{cameraX:80,cameraY:160,scale:3});
+    expect(ctx.rects).toEqual([]);
+    expect(ctx.fillText).toHaveBeenCalledWith('OPEN',88,133);
 });

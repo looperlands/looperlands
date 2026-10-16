@@ -51,9 +51,14 @@ define(function () {
         locked() { return this.enabled && this.state && (this.now() < this.state.lockUntil || this.now() < (this.pendingTechnique?.until || 0)); }
         owns(entity) { return this.enabled && (this.state?.fieldAttacks?.some(a=>Number(a.mob.id)===Number(entity.id)) || entity.id === this.state?.mob.id || entity === this.game.player && (this.selected || this.locked())); }
 
+        getHealthTargetId() {
+            return this.game.player?.target?.id ?? (this.enabled && this.selected ? this.selectedMobId : null);
+        }
+
         select(entity) {
             if (!this.enabled) return false;
             this.pendingTechnique = null;
+            this.selectedMobId = entity.id;
             this.selected = Number(entity.id) === Number(this.state?.mob.id);
             this.send('select', {mobId:entity.id});
             if (this.selected) {
@@ -96,6 +101,7 @@ define(function () {
             this.selected = true;
             this.game.player.disengage();
             const state=this.techniqueState();
+            this.selectedMobId = state.mob.id;
             this.pendingTechnique = {mobId:state.mob.id,combo:state.combo || 'counter',until:this.now()+350};
             if (this.game.player.isMoving()) this.game.player.stop();
             this.flushTechnique();
@@ -180,6 +186,7 @@ define(function () {
             }
             const starting = !this.enabled;
             this.enabled = true;
+            if (starting) this.selectedMobId = packet.mob.id;
             if (starting || packet.event?.kind === 'reset' && this.lastEvent !== packet.event.id) this.selected = true;
             this.offset = packet.serverNow - Date.now();
             if (starting || this.state?.correction !== packet.correction) this.correct(packet.player);
@@ -323,7 +330,7 @@ define(function () {
                 this.renderer = game.renderer;
                 this.renderer.registerExtension('combat-prototype-worker.js');
             }
-            const frame = {...state, now, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? state.mob.x*16, mobY:mob?.y ?? state.mob.y*16, playerX:player.x, playerY:player.y};
+            const frame = {...state, now, showHealthBar:this.getHealthTargetId() === state.mob.id, fieldAttacks:fieldFrames,reducedMotion:game.app?.settings.getReducedMotion() || false, mobX:mob?.x ?? state.mob.x*16, mobY:mob?.y ?? state.mob.y*16, playerX:player.x, playerY:player.y};
             this.renderer?.setExtensionData('combat-prototype-ground', frame);
             this.renderer?.setExtensionData('combat-prototype', frame);
         }
@@ -334,7 +341,7 @@ define(function () {
             }
             this.fieldMotions?.clear();this.lastFieldEvent=null;
             this.restoreStrike?.();
-            this.enabled = false; this.selected = false; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null; this.pendingTechnique = null;
+            this.enabled = false; this.selected = false; this.selectedMobId = null; this.state = null; this.motion = null; this.lastEvent = null; this.lastReward = null; this.lastReport = null; this.pendingTechnique = null;
             if (this.toggle) { this.toggle.textContent = 'Combat off'; this.toggle.setAttribute('aria-pressed','false'); }
             if (this.reset) this.reset.hidden = true;
             if (this.action) this.action.hidden = true;

@@ -222,3 +222,15 @@ test('ordinary-mob openings target that mob and return it to normal AI afterward
     prototype.receive({...packet,combo:null,fieldAttacks:[],fieldCombo:null});
     expect(prototype.owns(ordinary)).toBe(false);expect(ordinary.attackingMode).toBe(true);expect(ordinary.target).toBe(newTarget);
 });
+
+
+test('health target follows normal selection and an ordinary-mob technique instead of the trainer',()=>{
+    const {prototype,player,packet}=setup();
+    expect(prototype.getHealthTargetId()).toBe(100);
+    prototype.select({id:200});player.target={id:200};
+    expect(prototype.getHealthTargetId()).toBe(200);
+    player.target=null;expect(prototype.getHealthTargetId()).toBeNull();
+    prototype.state={...packet,fieldCombo:{kind:'counter',until:Date.now()+1000,mob:{id:200,x:4,y:4}},fieldAttacks:[]};
+    prototype.technique();expect(prototype.getHealthTargetId()).toBe(200);
+    prototype.select({id:100});expect(prototype.getHealthTargetId()).toBe(100);
+});

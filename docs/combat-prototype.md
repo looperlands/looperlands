@@ -22,7 +22,7 @@ Training uses fixed damage for the feel test: basic player hit 6, counter 22, fi
 
 ## Mob health bars
 
-All visible mobs, including bosses, get a compact health bar independent of the training toggle. Existing name/level labels remain. Unknown health is not guessed. Authoritative damage metadata updates HP immediately; polling continues to supply other health changes. The bar matches player-health feedback: immediate actual HP, a white lost-health trail held for 180 ms then settling over 280 ms, cancellation on healing/max-HP changes, no trail in reduced motion, and cleanup when a mob leaves view or despawns. Bars share the actor camera transform and use the sprite's name offset.
+Only the currently targeted mob shows its compact health bar, including when the target is a boss. Switching targets moves the bar to the new target; clearing the target hides it. This also applies to the trainer, while its charge warning and name remain visible. Ordinary target bars work independently of the training toggle. Existing name/level labels remain. Unknown health is not guessed. Authoritative damage metadata updates HP immediately; polling continues to supply other health changes. The bar matches player-health feedback: immediate actual HP, a white lost-health trail held for 180 ms then settling over 280 ms, cancellation on healing/max-HP changes, no trail in reduced motion, and cleanup when a mob leaves view or despawns. Bars share the actor camera transform and use the sprite's name offset.
 
 ## Multi-kill combo
 
