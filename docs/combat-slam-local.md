@@ -18,16 +18,22 @@ Changing modes cancels pending warnings and restarts their cooldowns. It does no
 
 ## Feel
 
-A Slam plants the mob, holds its first attack pose and warns its surrounding **3 × 3 tiles**, including diagonals, for **950–1,150 ms**. The shape and direction stay fixed. The hit resolves at the warning deadline, using **1.5× calculated normal melee damage**. A short ground impact replaces Lunge's forward travel, then the mob recovers for 1.5 seconds.
+Lunge and Slam both deal **4× normal melee damage**. An eligible normal swing has a **50%** chance to begin a special, with a **3–6 second** cooldown before another roll. Warning durations and the initial 1.2–3 second delay stay the same. Ordinary attacks and the player’s 1.5× counter damage remain unchanged.
 
-Standing inside the square takes one hit. Moving sideways can leave you inside it. Back out one tile, wait for impact, then step in: the existing automatic counter becomes available to the evading target for 1.25 seconds and deals its existing single-target damage. You can keep attacking or select another mob throughout. The counter and streak XP rules are unchanged.
+A Slam plants the mob, holds its first attack pose and warns its surrounding **3 × 3 tiles**, including diagonals, for **950–1,150 ms**. The shape and direction stay fixed. The hit resolves at the warning deadline, using **4× calculated normal melee damage**. A short ground impact replaces Lunge's forward travel, then the mob recovers for 1.5 seconds.
+
+Standing inside the square takes one hit. Moving sideways can leave you inside it. Back out one tile, wait for impact, then step in: the existing automatic counter becomes available to the evading target for 1.25 seconds and deals its existing single-target damage. You can keep attacking or select another mob throughout. Counter damage and streak XP rules are unchanged. The kill window remains fixed at 1.5 seconds, even in a crowd; AoE splash cannot build or refresh the combo.
 
 The impact can hit multiple nearby players, each at most once. Observers see the warning but cannot claim the targeted player's counter. A successful damaging impact uses the existing bounded camera shake. Reduced motion keeps the warning and impact readable while suppressing dust movement and camera shake.
 
-Before starting, Slam checks for a walkable escape within the warning time, accounting for actor occupancy, doors and other warned tiles. A trapped encounter keeps an ordinary attack instead. Legacy clients nearby cause a fallback to Lunge. Death, despawn, retargeting, teleport and disconnect cancel pending attacks; repeated packets cannot replay damage or counters.
+Before starting, Slam checks for a walkable escape within the warning time, accounting for terrain, doors and other warned tiles. Other actors do not cancel a charge: engaging a crowd can block the player’s escape and make the fight harder. An encounter with no terrain escape keeps an ordinary attack instead. Legacy clients nearby cause a fallback to Lunge. Death, despawn, retargeting, teleport and disconnect cancel pending attacks; repeated packets cannot replay damage or counters.
 
 ## Validation
 
 Focused tests cover every eligible mob category, exclusions, exact square coverage, sideways versus outward evasion, returning counters, multiplayer hits, capability fallback, escape routes, cancellation, repeat limits, compact preview controls and animation timing cleanup. Existing combat and movement suites remain part of the regression run. `/preview/state` on the fixture port reports attack mode, phase, pattern, warning tiles, player HP/position, counter events and corrections.
 
-The local browser playtest verified an ordinary Lavaland death knight's Slam, backing out and returning for a 143-damage automatic counter, unchanged XP, and zero movement corrections. A first-packet sprite/tile alignment issue found in the playtest has a dedicated regression. The full regression run passed 127 suites / 1,650 tests; the final combat and movement checks passed 122 tests after the alignment fix. Build, worker asset validation and lint also pass.
+The local browser playtest verified an ordinary Lavaland death knight's Slam, backing out and returning for a 143-damage automatic counter, unchanged XP, and zero movement corrections. A first-packet sprite/tile alignment issue found in the playtest has a dedicated regression. The map-configuration and combat-balance follow-up is covered by the full regression suite and coverage thresholds, plus repository lint and client asset validation. A fresh local playtest verified a Greater Skeleton charging with its main-map override, successful damage signals, no movement corrections and no browser errors. The fixed 1.5-second kill window in crowds, AoE exclusions and terrain-versus-actor escape behavior have focused regression coverage.
+
+## Map overrides
+
+[Map-maker settings](mob-charged-attacks.md) apply to both Lunge and Slam. The main-map examples include more frequent Greater Skeleton charges and disabled rat charges; other eligible mobs keep the default tuning.

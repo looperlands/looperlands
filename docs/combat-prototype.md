@@ -2,9 +2,13 @@
 
 Normal gameplay enables the new combat automatically. Almost all mobile hostile mobs mix their ordinary attacks with a direction-locked charged lunge. This includes Lavaland spectres, eyes, death knights, and ordinary bosses. Friendly entities, both tentacles, the stationary sea creature, Megamag, Slime King, Cobogre, timed AoE, and active scripted/add encounters retain their existing mechanics. Boss rewards and on-death AoE alone do not exclude a mob. New ordinary mob types qualify by default.
 
-After an initial 1.2–3 seconds, an eligible normal attack has a 40% chance to charge, with a 3–7-second cooldown before another roll. A 650–950 ms warning marks two tiles, with a charge bar, pulse and sparks. The mob then lunges for 180 ms and recovers for 1.5 seconds. Standing in the marked lane takes twice its calculated normal melee damage. Only one mob charges a given player at a time. Nearby players also see the telegraph.
+After an initial 1.2–3 seconds, an eligible normal attack has a 50% chance to charge, with a 3–6-second cooldown before another roll. A 650–950 ms warning marks two tiles, with a charge bar, pulse and sparks. The mob then lunges for 180 ms and recovers for 1.5 seconds. Standing in the marked lane takes four times its calculated normal melee damage. Only one mob charges a given player at a time. Nearby players also see the telegraph.
 
 A successful sidestep opens a 1.25-second counter window. Once adjacent and finished moving, the player automatically strikes the evaded mob for 1.5× base melee damage, including the normal attack buff and class modifier. The swing lasts at most 180 ms and preserves the current normal target/attack loop. A counter adds damage only: it does not grant separate XP, stun the mob, lock movement, or trigger a finisher. Normal death, loot and weapon XP handling applies. Server-side range, expiry, target identity and one-use checks validate counters; the client cannot send arbitrary damage or reward amounts.
+
+## Map overrides
+
+The values above are global defaults. [Map-maker settings](mob-charged-attacks.md) override frequency, damage or opt out per mob kind and original spawn. The main map includes slower/weaker skeletons, more frequent Greater Skeletons and ordinary-only rats. Scripted encounter exclusions still apply.
 
 ## Kill streaks
 

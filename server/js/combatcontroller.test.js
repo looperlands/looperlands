@@ -1,4 +1,5 @@
 const fs=require('fs'),vm=require('vm');
+global.Types ||= {};
 function setup(){
     let now=10000;
     const M={MOVE:1,LOOTMOVE:2,HIT:3,HURT:4,ATTACK:5};
@@ -8,6 +9,7 @@ function setup(){
         if(name.endsWith('gametypes'))return {getKindAsString:k=>k};
         if(name==='./properties')return {spectre:{}};
         if(name==='./formulas')return {dmg:()=>10};
+        if(name==='./combatconfig')return require('./combatconfig');
         return Messages;
     }});
     const exported={exports:{}};
@@ -117,4 +119,27 @@ test('ready records supported patterns without letting repeated ready reset an e
     const encounter=s.combat.encounters.get(1);expect(encounter.patterns.has('slam')).toBe(true);
     s.one.handlers.combat({action:'ready',patterns:['lunge']});expect(encounter.patterns.has('slam')).toBe(true);
     expect(s.combat.fieldAttacks.slamEnabled).toBe(false);
+});
+
+
+test.each([0,1,2,5])('the kill window stays fixed at 1.5 seconds with %s other nearby attackers', others=>{
+    const s=setup(),e=s.one.ready();s.mob.hitPoints=0;
+    for(let i=0;i<others;i++)s.world.entities[100+i]={...s.mob,id:100+i,hitPoints:100};
+    function primaryKill(){
+        s.combat.activeAttack={player:s.one.p,targetId:50,credited:false};
+        return s.combat.killExperience(s.mob,s.one.p,s.one.p,100);
+    }
+    expect(primaryKill()).toBe(100);expect(e.streakUntil).toBe(11500);
+    s.advance(1499);expect(primaryKill()).toBe(125);expect(e.streakUntil).toBe(12999);
+    s.advance(1500);expect(primaryKill()).toBe(100);expect(e.streak).toBe(1);
+});
+test('AoE splash cannot refresh a streak in a crowd, and primary kills keep the existing XP cap',()=>{
+    const s=setup(),e=s.one.ready();s.mob.hitPoints=0;e.streak=5;e.streakUntil=11500;
+    for(let i=0;i<5;i++)s.world.entities[100+i]={...s.mob,id:100+i,hitPoints:100};
+    s.combat.activeAttack={player:s.one.p,targetId:999,credited:false};
+    expect(s.combat.killExperience(s.mob,s.one.p,s.one.p,100)).toBe(100);
+    expect(e.streak).toBe(5);expect(e.streakUntil).toBe(11500);
+    s.combat.activeAttack={player:s.one.p,targetId:50,credited:false};
+    expect(s.combat.killExperience(s.mob,s.one.p,s.one.p,100)).toBe(175);
+    expect(e.streakUntil).toBe(11500);
 });

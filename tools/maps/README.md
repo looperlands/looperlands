@@ -49,6 +49,15 @@ or `fireflies`, without an NPC schedule. An `fx` JSON String property configures
 effect opt-outs and heat-shimmer regions. See [the world FX guide](../../docs/world-fx.md)
 for presets, particle limits, tile-stage effects, and configuration examples.
 
+### Charged mob attacks
+
+Configure charged-attack frequency, damage and opt-outs per mob kind or individual
+spawn in `server/mob-combat/<mapId>.json`. Settings override the global defaults;
+`main.json` includes rats with charges disabled, slower/weaker skeleton charges,
+and more frequent Greater Skeleton charges. See [the charged attacks guide](../../docs/mob-charged-attacks.md)
+for fields, inheritance and spawn coordinates. Restart the server after editing;
+no map re-export is needed.
+
 ### Door and portal opening hours
 
 Add a string custom property `time_range` to an object in Tiled's `doors` layer
