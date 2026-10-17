@@ -10485,6 +10485,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                     axios.get(url).then(function (response) {
                         if (!response.data.allowed) {
+                            self.player.isFishing = false;
                             self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
                             return;
                         }
@@ -10505,6 +10506,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     }).catch(function (error) {
                         console.error("Error while requesting a fish.");
                         self.player.isFishing = false;
+                        self.showNotification("Could not cast. Please try again.");
                     });
                 }
             },
