@@ -7220,6 +7220,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 });
 
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset) {
+                    const reviving = self.reviving === true;
+                    if (reviving) self.prepareRevivedPlayer();
                     console.log("Received player ID from server : " + id);
                     self.player.id = id;
                     self.playerId = id;
@@ -7246,6 +7248,18 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.startScenePolling();
                     setTimeout(() => self.handleScene(self.player), 50);
                     setTimeout(() => self.handleScene(self.player), 500);
+
+                    if (reviving) {
+                        self.reviving = false;
+                        self.storage.incrementRevives();
+                        self.player.isFading = false;
+                        self.player.pixelDissolve = {startedAt: self.currentTime, duration: 420, incoming: true};
+                        self.app.hideDeath();
+                        self.audioManager.playSound("revive");
+                        self.app.initEquipmentIcons();
+                        self.renderStatistics();
+                        return;
+                    }
 
                     if (!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -7637,30 +7651,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onDeath(function () {
-                        console.log(self.playerId + " is dead");
-
-                        self.player.stopBlinking();
-                        self.player.setSprite(self.sprites["death"]);
-                        self.player.animate("death", 120, 1, function () {
-                            console.log(self.playerId + " was removed");
-
-                            self.removeEntity(self.player);
-                            self.removeFromRenderingGrid(self.player, self.player.gridX, self.player.gridY);
-
-                            self.player = null;
-                            self.client.disable();
-                            setTimeout(function () {
-                                self.playerdeath_callback();
-                            }, 1000);
-                        });
-
-                        self.player.forEachAttacker(function (attacker) {
-                            attacker.disengage();
-                            attacker.idle();
-                        });
-
-                        self.audioManager.fadeOutCurrentMusic();
-                        self.audioManager.playSound("death");
+                        self.beginPlayerDeath();
                     });
 
                     self.player.onHasMoved(function (player) {
@@ -8266,6 +8257,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onDisconnected(function (message) {
+                        self.disconnected = true;
+                        self.reviving = false;
+                        clearTimeout(self.playerDeathTimer);
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
                         self.worldFx?.clear?.();
@@ -9989,33 +9983,83 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
-            restart: function () {
-                console.debug("Beginning restart");
+            beginPlayerDeath: function () {
+                const player = this.player;
+                const duration = this.app.settings.getReducedMotion() ? 120 : 420;
+                clearTimeout(this.playerDeathTimer);
+                this.deathReady = false;
+                this.reviving = false;
+                this.keyboardHandler?.handleBlur();
+                this.touchListener?.reset();
+                this.conversationHold.stop();
+                this.app.closeChoicesPopup();
+                this.combatPrototype?.clear();
+                this.combatFeedback.clear();
+                this.toolImpactFeedback.clear();
+                this.updateBuffInfo(0, 0, 0);
+                this.selectedCellVisible = this.targetCellVisible = false;
+                this.currentZoning = null;
+                this.zoningQueue = [];
+                player.stopBlinking();
+                player.disengage();
+                player.movement.stop();
+                player.pathRequestId = (player.pathRequestId || 0) + 1;
+                player.destination = null;
+                player.manualMovementTime = undefined;
+                player.path = player.newDestination = null;
+                player.animationLock = false;
+                player.idle();
+                player.isFading = false;
+                player.pixelDissolve = {startedAt: this.currentTime, duration, incoming: false};
+                player.forEachAttacker(function (attacker) {
+                    attacker.disengage();
+                    attacker.idle();
+                });
+                player.attackers = {};
+                this.audioManager.fadeOutCurrentMusic();
+                this.audioManager.playSound("death");
+                this.playerDeathTimer = setTimeout(() => {
+                    this.removeEntity(player);
+                    this.deathReady = true;
+                    if (!this.disconnected) this.playerdeath_callback();
+                }, duration);
+            },
 
+            restart: function () {
+                if (!this.deathReady || this.reviving || !this.player?.isDead ||
+                    !this.client.connection?.connected || this.disconnected) return false;
+                this.reviving = true;
+                this.app.setReviving();
+                this.sendHello();
+                return true;
+            },
+
+            prepareRevivedPlayer: function () {
+                // Refresh entity membership after time spent dead, preserving loaded
+                // assets, the renderer, world clock, ambience, and input listeners.
                 this.entities = {};
                 this.initEntityGrid();
+                this.initItemGrid();
                 this.initPathingGrid();
                 this.applyToggledLayers();
                 this.initRenderingGrid();
-
-                this.player = new Warrior("player", this.username);
-                this.initPlayer();
-
-                this.started = true;
-                this.client.enable();
-                this.sendHello(this.player);
-
-                this.storage.incrementRevives();
-
-                if (this.renderer.mobile || this.renderer.tablet) {
-                    this.renderer.clearScreen(this.renderer.context);
-                }
-
-                let self = this;
-                setTimeout(() => {
-                    self.handleScene(self.player)
-                }, 100);
-                console.debug("Finished restart");
+                Object.keys(this.floats).forEach(id => this.removeFloat(id));
+                this.worldFx?.clear();
+                this.deathReady = false;
+                this.previousClickPosition = {};
+                this.doorCheck = false;
+                this.hoveringMob = this.hoveringItem = this.hoveringNpc = false;
+                this.highlightedTarget = null;
+                this.player.isDead = false;
+                this.player.isRooted = false;
+                this.player.isLootMoving = this.player.isFishing = false;
+                this.player.interrupted = false;
+                this.player.triggerArea = null;
+                this.player.nextGridX = this.player.nextGridY = -1;
+                this.player.leave_callback = this.player.leave_callback_area = null;
+                this.player.pixelDissolve = null;
+                this.player.setVisible(true);
+                this.player.idle();
             },
 
             onGameStart: function (callback) {
@@ -10184,33 +10228,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         this.lastCheckpoint = checkpoint;
                     }
                 }
-            },
-
-            newSession: function () {
-                const url = '/session/' + this.sessionId + '/teleport';
-                let dest = null;
-                if (this.lastCheckpoint) {
-                    dest = this.lastCheckpoint;
-                } else if (this.player) {
-                    dest = this.map.getCurrentCheckpoint(this.player);
-                } else {
-                    let cp = this.map.checkpoints[0];
-                    let startPos = cp.getRandomPosition();
-                    dest = {x: startPos.x, y: startPos.y, map: this.mapId};
-                }
-                dest.map = this.mapId;
-                axios.post(url, dest).then(function (response) {
-                    if (response.status === 200) {
-                        let newSessionID = response.data.sessionId;
-                        window.location.href = '/?sessionId=' + newSessionID;
-                    } else {
-                        console.error(response);
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                }).finally(function (e) {
-
-                });
             },
 
             forEachEntityAround: function (x, y, r, callback) {

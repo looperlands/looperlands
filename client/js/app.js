@@ -972,6 +972,34 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             $el.find('.achievement-description').attr('title', desc);
         },
 
+        showDeath: function (message) {
+            this.hideWindows();
+            this.hideChat();
+            this.closeChoicesPopup();
+            $('#container, #intro').prop('inert', true);
+            $('#death-title').text(message ? 'Connection lost' : 'You fell');
+            $('#death-description').text(message || 'Take a breath. Your adventure continues.');
+            $('#death-status').text(message ? 'Choose your character to reconnect.' : 'Return to your last checkpoint.');
+            $('#respawn').prop('hidden', !!message).prop('disabled', false).text('Revive');
+            $('#death').attr('aria-hidden', 'false').prop('inert', false).attr('aria-busy', 'false');
+            $('body').removeClass('credits').addClass('death');
+            if (message) document.querySelector('#death a').focus({preventScroll: true});
+            else document.getElementById('respawn').focus({preventScroll: true});
+        },
+
+        setReviving: function () {
+            $('#respawn').prop('disabled', true).text('Reviving…');
+            $('#death').attr('aria-busy', 'true');
+            $('#death-status').text('Returning to your checkpoint…');
+        },
+
+        hideDeath: function () {
+            $('#container, #intro').prop('inert', false);
+            $('#death').attr('aria-hidden', 'true').prop('inert', true).attr('aria-busy', 'false');
+            document.getElementById('respawn').blur();
+            $('body').removeClass('death');
+        },
+
         toggleCredits: function () {
             $('body').removeClass('death');
             var currentState = $('#parchment').attr('class');

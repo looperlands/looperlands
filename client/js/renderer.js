@@ -411,11 +411,20 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         dh = h * ds,
                         a = entity.angle;
     
-                    if(entity.isFading) {
+                    const dissolve = entity.pixelDissolve;
+                    if (dissolve) {
+                        const progress = Math.max(0, Math.min(1, (this.game.currentTime - dissolve.startedAt) / dissolve.duration));
+                        const visible = dissolve.incoming ? progress : 1 - progress;
+                        if (this.game.app.settings.getReducedMotion()) entityData.globalAlpha = visible;
+                        else entityData.dissolve = {visible, pixelSize: 2 * s, scatter: !dissolve.incoming};
+                        if (dissolve.incoming && progress === 1) entity.pixelDissolve = null;
+                    }
+
+                    if(entity.isFading && !dissolve) {
                         entityData.globalAlpha = entity.fadingAlpha;
                     }
     
-                    if(!(entity instanceof Mob && (entity.nameless || (entity.isFriendly && !entity.exitingCombat)))) { // friendly mobs render nameless by default, make sure mob is actually friendly and not just exiting combat
+                    if(!dissolve && !(entity instanceof Mob && (entity.nameless || (entity.isFriendly && !entity.exitingCombat)))) { // friendly mobs render nameless by default, make sure mob is actually friendly and not just exiting combat
                         textData = this.drawEntityName(entity, sprite.offsetY);
                     }
     
@@ -453,7 +462,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         }
     
     
-                        if(entity instanceof Character && !entity.isDead && (entity.actionToolName || entity.hasWeapon())) {
+                        if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && (entity.actionToolName || entity.hasWeapon())) {
                             const weaponName = entity.actionToolName || entity.getWeaponName();
                             let weapon = this.game.sprites[weaponName];
     
@@ -520,7 +529,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         }
                     }
     
-                    if(entity instanceof Character && !entity.isDead && (entity.actionToolName || entity.hasWeapon())) {
+                    if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && (entity.actionToolName || entity.hasWeapon())) {
                         const weaponName = entity.actionToolName || entity.getWeaponName();
                         let weapon = this.game.sprites[weaponName];
                         if(Types.alwaysOnTop(weaponName) || entity.orientation !== Types.Orientations.UP) {

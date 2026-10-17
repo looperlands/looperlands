@@ -591,6 +591,31 @@ function drawText(renderData, clear = true) {
 }
 
 let mobHealthBars;
+// Draw sprite-colored pixel fragments without reading back a canvas or adding a
+// full-screen effect. Stable cell ranks make repeated frames dissolve coherently.
+function drawDissolvingSprite(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh, dissolve) {
+    const visible = Math.max(0, Math.min(1, dissolve.visible));
+    if (visible === 0) return;
+    if (visible === 1) {
+        ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        return;
+    }
+    const pixel = Math.max(1, dissolve.pixelSize);
+    for (let y = 0; y < dh; y += pixel) {
+        for (let x = 0; x < dw; x += pixel) {
+            const cx = Math.floor((dx + x) / pixel), cy = Math.floor((dy + y) / pixel);
+            const rank = (((cx * 374761393) ^ (cy * 668265263)) >>> 0) % 997 / 997;
+            if (rank >= visible) continue;
+            const edge = dissolve.scatter ? Math.max(0, 1 - (visible - rank) / 0.22) : 0;
+            const driftX = Math.round((rank - 0.5) * edge * pixel * 4);
+            const driftY = -Math.round(edge * pixel * 3);
+            const w = Math.min(pixel, dw - x), h = Math.min(pixel, dh - y);
+            ctx.drawImage(image, sx + x * sw / dw, sy + y * sh / dh, w * sw / dw, h * sh / dh,
+                dx + x + driftX, dy + y + driftY, w, h);
+        }
+    }
+}
+
 function drawEntities(drawEntitiesData) {
     let id = drawEntitiesData.id;
     let ctx = contexes[id];
@@ -658,7 +683,9 @@ function drawEntities(drawEntitiesData) {
                     continue;
                 }
                 try {
-                    if (a) {
+                    if (entityData.dissolve) {
+                        drawDissolvingSprite(ctx, sprite.image, sx, sy, sW, sH, dx, dy, dW, dH, entityData.dissolve);
+                    } else if (a) {
                         let centerX = dW / 2;
                         let centerY = dH / 2;
 
