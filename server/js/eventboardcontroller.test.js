@@ -42,6 +42,18 @@ test('unavailable and rejected registrations give actionable failures', async ()
     f.platform.getEventBoard.mockRejectedValue(new Error('timeout')); await f.controller.list(f.req, f.res);
     expect(f.res.status).toHaveBeenLastCalledWith(503);
 });
+test('live results include selected-map and explicit all-map rounds without widening legacy empty lists', async () => {
+    const f = fixture();
+    const valid = {status: 'live', maps: ['main', 'forest'], allMaps: false, startsAt: new Date(Date.now()-1000).toISOString(), endsAt: new Date(Date.now()+10000).toISOString()};
+    const global = {...valid, maps: [], allMaps: true};
+    f.platform.getEventBoard.mockResolvedValue({events: [valid, global,
+        {...valid, maps: []}, {...valid, maps: null}, {...valid, maps: ['forest']},
+        {...global, isCompetition: false}, {...global, status: 'upcoming'},
+        {...global, startsAt: new Date(Date.now()+10000).toISOString()},
+        {...global, endsAt: new Date(Date.now()-1).toISOString()}]});
+    await f.controller.list(f.req, f.res, true);
+    expect(f.res.json).toHaveBeenCalledWith({events: [valid, global]});
+});
 test('leaving the board while the request is pending discards its result', async () => {
     const f = fixture(); f.platform.getEventBoard.mockImplementation(async () => {f.player.x = 200; return {events: []};});
     await f.controller.list(f.req, f.res); expect(f.res.status).toHaveBeenCalledWith(409);

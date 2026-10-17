@@ -20,6 +20,19 @@ test('event panel appears only during the round on an explicitly linked map', ()
 test('multiple simultaneous events stay independently visible', () => {
     expect(Board.visibleEvents([event, {...event, runId: 'other'}], 'duckville', start).map(row => row.runId)).toEqual(['round', 'other']);
 });
+test('multi-map rounds follow players between selected maps', () => {
+    const round = {...event, maps: ['duckville', 'forest'], allMaps: false};
+    for (const map of ['duckville', 'forest']) expect(Board.visibleEvents([round], map, start)).toEqual([round]);
+    expect(Board.visibleEvents([round], 'main', start)).toEqual([]);
+});
+test('explicit all-map rounds appear everywhere while respecting timing and competition status', () => {
+    const round = {...event, maps: [], allMaps: true};
+    for (const map of ['duckville', 'main', 'new-map']) expect(Board.visibleEvents([round], map, start)).toEqual([round]);
+    for (const now of [start - 1, start + 3600000]) expect(Board.visibleEvents([round], 'main', now)).toEqual([]);
+    expect(Board.visibleEvents([{...round, isCompetition: false}, {...round, status: 'ended'}], 'main', start)).toEqual([]);
+    expect(Board.prototype.maps.call({}, round)).toBe('All maps');
+    expect(Board.prototype.maps.call({}, {...event, maps: ['duckville', 'forest']})).toBe('The Nexus, forest');
+});
 test('event links are HTTP(S) links to validated event paths', () => {
     const path = '/events/00000000-0000-4000-8000-000000000001';
     expect(Board.safeDetailsUrl('https://looperlands.io/?token=unused#old', path)).toBe('https://looperlands.io'+path);

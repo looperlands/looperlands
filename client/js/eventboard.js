@@ -11,7 +11,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         return element;
     }
     function visibleEvents(events, map, now) {
-        return events.filter(event => event.isCompetition !== false && event.status === 'live' && Array.isArray(event.maps) && event.maps.includes(map) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
+        return events.filter(event => event.isCompetition !== false && event.status === 'live' && (event.allMaps === true || (Array.isArray(event.maps) && event.maps.includes(map))) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
     }
     function safeDetailsUrl(base, path) {
         try {
@@ -173,7 +173,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         }
 
         date(value) {return new Date(value).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});}
-        maps(event) {return event.maps.map(map => mapNames[map] || map).join(', ') || (event.isCompetition === false ? 'Location to be announced' : 'All maps');}
+        maps(event) {return event.allMaps === true ? 'All maps' : event.maps.map(map => mapNames[map] || map).join(', ') || (event.isCompetition === false ? 'Location to be announced' : 'All maps');}
 
         renderDetails(event) {
             const detail = node('section', 'ev-detail'); const content = node('div', 'ev-content');
