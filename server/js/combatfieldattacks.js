@@ -13,8 +13,8 @@ class FieldAttacks {
         this.controller=controller;this.world=controller.world;this.random=random;
         this.config=loadConfig(this.world.id?.replace(/^world_/,''));
         this.attacks=new Map();this.cooldowns=new Map();this.history=new Map();this.serial=0;
-        // Only the isolated local runner opts into Slam while it is being playtested.
-        this.slamEnabled=options.slam===true;
+        // Older clients receive Lunge; capable clients mix both specials by default.
+        this.slamEnabled=options.slam!==false;
         this.attackMode=this.slamEnabled?'mixed':'lunge';
     }
     setMode(mode){
@@ -59,7 +59,10 @@ class FieldAttacks {
         return false;
     }
     hurt(attack,player){
-        const damage=Math.round(Formulas.dmg(attack.mob.getWeaponLevel(),Math.round(player.getLevel()*.5))*attack.damageMultiplier*player.playerClassModifiers.meleeDamageTaken);
+        const modifier=attack.damageMultiplier*player.playerClassModifiers.meleeDamageTaken;
+        const rolled=Formulas.dmg(attack.mob.getWeaponLevel(),Math.round(player.getLevel()*.5));
+        // A connected special must read as a hit, even when armor absorbs the random base roll.
+        const damage=modifier>0?Math.max(1,Math.round(rolled*modifier)):0;
         const previousHp=player.hitPoints;
         player.handleHurt(attack.mob,damage);
         const encounter=this.controller.encounters.get(player.id);
@@ -82,10 +85,25 @@ class FieldAttacks {
             && !props.aoe?.onTimer && !mob.specialInterval && !mob.addArray?.length;
     }
     held(mob){return !!mob && this.attacks.has(Number(mob.id));}
+    reportSwing(encounter,point,now){
+        const mob=this.world.entities[point.mobId],origin={x:point.x,y:point.y};
+        // Normal AI stores an approach destination, which may be on the opposite side.
+        // Accept only a nearby, walkable melee tile from this mob's current target.
+        const valid=point.correction===encounter.correction && this.eligible(mob)
+            && Number(mob.target)===Number(encounter.player.id)
+            && Number.isInteger(origin.x)&&Number.isInteger(origin.y)
+            && adjacent(origin,encounter.player)&&Math.abs(origin.x-mob.x)+Math.abs(origin.y-mob.y)<=2
+            && this.controller.free(origin.x,origin.y,[mob]);
+        encounter.mobSwing={mobId:Number(point.mobId),origin:valid?origin:null,at:now};
+    }
     intercept(encounter,mob,now){
+        const report=encounter.mobSwing;encounter.mobSwing=null;
         if(this.held(mob))return true;
+        const reported=report?.mobId===Number(mob.id);
+        if(reported&&(!report.origin||now-report.at>250))return false;
+        const origin=reported?report.origin:mob;
         if(!this.eligible(mob)||mob.hitPoints<=0||Number(mob.target)!==Number(encounter.player.id)
-            ||!adjacent(mob,encounter.player)||encounter.combo||encounter.fieldCombo
+            ||!adjacent(origin,encounter.player)||encounter.combo||encounter.fieldCombo
             ||['windup','lunge','round'].includes(encounter.phase)
             ||[...this.attacks.values()].some(a=>a.encounter===encounter))return false;
         const config=this.config.forMob(mob);
@@ -94,11 +112,14 @@ class FieldAttacks {
         if(now<ready)return false;
         this.cooldowns.set(mob.id,now+config.minCooldownMs+this.random()*(config.maxCooldownMs-config.minCooldownMs));
         if(this.random()>=config.chance)return false;
-        const direction={x:Math.sign(encounter.player.x-mob.x),y:Math.sign(encounter.player.y-mob.y)};
+        const direction={x:Math.sign(encounter.player.x-origin.x),y:Math.sign(encounter.player.y-origin.y)};
         const pattern=this.patternFor(encounter,mob);
         const windup=pattern==='slam'?950+Math.round(this.random()*200):650+Math.round(this.random()*300);
-        const lane=pattern==='slam'?this.slamTiles(mob):[1,2].map(n=>({x:mob.x+direction.x*n,y:mob.y+direction.y*n})).filter(p=>this.world.isValidPosition(p.x,p.y));
+        const lane=pattern==='slam'?this.slamTiles(origin):[1,2].map(n=>({x:origin.x+direction.x*n,y:origin.y+direction.y*n})).filter(p=>this.world.isValidPosition(p.x,p.y));
         if(pattern==='slam'&&(!lane.some(t=>same(t,encounter.player))||Object.values(this.world.players).some(p=>!p.isDead&&lane.some(t=>same(t,p))&&!this.canEscape(p,lane,windup))))return false;
+        if(!same(mob,origin)){
+            mob.setPosition(origin.x,origin.y);this.world.handleEntityGroupMembership(mob);
+        }
         const previous=this.history.get(mob.id);
         this.history.set(mob.id,{pattern,count:previous?.pattern===pattern?previous.count+1:1});
         const attack={id:++this.serial,mob,encounter,pattern,phase:'windup',direction,windup,until:now+windup,lane,damageMultiplier:config.damageMultiplier};
@@ -136,7 +157,7 @@ class FieldAttacks {
     }
     clear(encounter){
         for(const attack of this.attacks.values())if(attack.encounter===encounter)this.release(attack);
-        encounter.fieldCombo=null;
+        encounter.fieldCombo=null;encounter.mobSwing=null;
     }
     tick(now){
         for(const [id] of this.cooldowns)if(!this.world.entities[id]){this.cooldowns.delete(id);this.history.delete(id);}

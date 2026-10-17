@@ -216,12 +216,12 @@ test('ordinary-mob openings target that mob and return it to normal AI afterward
     const state={...packet,combo:null,fieldAttacks:[{id:1,phase:'recovery',until:Date.now()+1000,direction:{x:0,y:1},lane:[],mob:{id:200,x:4,y:4,hp:80,maxHp:100}}],
         fieldCombo:{kind:'counter',until:Date.now()+1000,mob:{id:200,x:4,y:4}}};
     prototype.receive(state);expect(prototype.owns(ordinary)).toBe(true);
-    expect(ordinary.attackingMode).toBe(false);expect(ordinary.cancelPath).toHaveBeenCalledTimes(1);
+    expect(ordinary.attackingMode).toBe(false);expect(ordinary.cancelPath).toHaveBeenCalledTimes(1);expect(ordinary.combatMovementHeld).toBe(true);
     prototype.socket.emit.mockClear();expect(prototype.technique()).toBe(true);
     expect(prototype.socket.emit).toHaveBeenCalledWith('combat-preview',{action:'technique',mobId:200});
     const newTarget={id:999};ordinary.target=newTarget;
     prototype.receive({...packet,combo:null,fieldAttacks:[],fieldCombo:null});
-    expect(prototype.owns(ordinary)).toBe(false);expect(ordinary.attackingMode).toBe(true);expect(ordinary.target).toBe(newTarget);
+    expect(prototype.owns(ordinary)).toBe(false);expect(ordinary.attackingMode).toBe(true);expect(ordinary.target).toBe(newTarget);expect(ordinary.combatMovementHeld).toBeUndefined();
 });
 
 
@@ -394,4 +394,16 @@ test('trainer health bars honor the preference while warnings and automatic coun
     expect(renderer.setExtensionData).toHaveBeenLastCalledWith('combat-prototype',expect.objectContaining({showHealthBar:false,lane}));
     game.app.settings.getMobHealthBarsEnabled=()=>true;prototype.update();
     expect(renderer.setExtensionData).toHaveBeenLastCalledWith('combat-prototype',expect.objectContaining({showHealthBar:true,lane}));
+});
+
+
+test('live mob swings report the visible tile without changing normal HURT or preview protocols',()=>{
+    const {prototype,packet,mob,game}=setup();prototype.liveSocket={emit:jest.fn()};
+    game.getEntityById=id=>id===100?mob:undefined;
+    prototype.reportMobAttack(mob);expect(prototype.liveSocket.emit).not.toHaveBeenCalled();
+    prototype.receive({...packet,live:true,mob:null,phase:'field',combo:null,event:null,fieldAttacks:[]});
+    prototype.reportMobAttack(mob);
+    expect(prototype.liveSocket.emit).toHaveBeenLastCalledWith('combat',{action:'mob-swing',mobId:100,x:4,y:4,correction:1});
+    prototype.clear();prototype.liveSocket.emit.mockClear();prototype.reportMobAttack(mob);
+    expect(prototype.liveSocket.emit).not.toHaveBeenCalled();
 });

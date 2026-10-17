@@ -280,3 +280,11 @@ test('movement callbacks report both tiles completed in a single slow frame',()=
     frame(0);frame(250);
     expect(steps).toEqual([[1,0],[2,0]]);
 });
+
+
+test('a held mob cannot start or advance an ordinary movement tween',()=>{
+    const {character,frame}=walking([[0,0],[1,0],[2,0]]);
+    frame(0);character.combatMovementHeld=true;frame(60);frame(180);
+    expect(character.x).toBe(0);expect(character.gridX).toBe(0);
+    delete character.combatMovementHeld;frame(240);expect(character.x).toBeGreaterThan(0);
+});

@@ -8,7 +8,7 @@ afterEach(() => jest.restoreAllMocks());
 
 test('unconfigured maps and mobs inherit the global combat defaults', () => {
     expect(loadConfig('map-without-combat-config').forMob(mob('skeleton2'))).toEqual(DEFAULTS);
-    expect(DEFAULTS).toEqual({enabled: true, chance: 0.5, minCooldownMs: 3000, maxCooldownMs: 6000, damageMultiplier: 4});
+    expect(DEFAULTS).toEqual({enabled: true, chance: 0.5, minCooldownMs: 2000, maxCooldownMs: 4000, damageMultiplier: 5});
 });
 test('spawn settings override mob settings, map defaults and global defaults field by field', () => {
     const config = new CombatConfig({defaults: {damageMultiplier: 2}, mobs: {skeleton2: {chance: 0.8, enabled: false}},
@@ -39,7 +39,7 @@ test.each([
     {defaults: {chance: NaN}}, {defaults: {damageMultiplier: Infinity}}, {defaults: {damageMultiplier: 0}},
     {defaults: {enabled: 'false'}}, {defaults: {minCooldownMs: 999}}, {defaults: {maxCooldownMs: 1000.5}},
     {defaults: {minCooldownMs: 7000}}, {defaults: {damage: 40}},
-    {mobs: []}, {mobs: {skeleton2: {chance: false}}}, {mobs: {skeleton2: null}}, {mobs: {skeleton2: {maxCooldownMs: 2000}}},
+    {mobs: []}, {mobs: {skeleton2: {chance: false}}}, {mobs: {skeleton2: null}}, {mobs: {skeleton2: {maxCooldownMs: 1000}}},
     {mobs: {sword1: {enabled: false}}}, {mobs: {greater_skeleton: {enabled: false}}},
     {spawns: {}}, {spawns: [null]}, {spawns: [{kind: 'skeleton2', x: 0, y: 20}]},
     {spawns: [{kind: 'skeleton2', x: 10, y: 20, damageMultiplier: -2}]},

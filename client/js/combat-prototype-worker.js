@@ -65,7 +65,6 @@
             if (!state.mob) return;
             ctx.scale(view.scale || 1, view.scale || 1);
             const x=state.mobX+8-view.cameraX, y=state.mobY-25-view.cameraY;
-            const labels={chase:'',windup:state.pattern==='slam'?'SLAM':'CHARGING',lunge:'LUNGE',impact:'SLAM',recovery:'OPEN',round:state.event?.label || 'RESET'};
             if (!state.ordinary) {
             healthBars.draw(ctx,state.showHealthBar ? [{id:state.mob.id||'trainer',x,y,hp:state.mob.hp,maxHp:state.mob.maxHp,width:32}] : [],
                 {cameraX:0,cameraY:0,scale:1},state.now||0,state.reducedMotion);
@@ -74,8 +73,6 @@
             ctx.lineWidth=2; ctx.strokeStyle='#241d25'; ctx.fillStyle='#fff0ce';
             const name = Number.isFinite(state.mob.level) ? `Lv. ${state.mob.level} LUNGER` : 'LUNGER';
             if (!state.ordinary) { ctx.strokeText(name,x,y-10); ctx.fillText(name,x,y-10); }
-            const phase = labels[state.phase];
-            if (phase) { ctx.strokeText(phase,x,y-2); ctx.fillText(phase,x,y-2); }
             if (state.phase==='windup') {
                 const progress=Math.max(0,Math.min(1,1-(state.until-state.now)/(state.windup||850)));
                 ctx.fillStyle='#ffd183'; ctx.fillRect(x-17,y+5,34*progress,2);

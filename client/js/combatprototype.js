@@ -217,6 +217,11 @@ define(function () {
             }
         }
 
+        reportMobAttack(mob) {
+            if (!this.enabled || !this.state?.live) return;
+            this.send('mob-swing',{mobId:mob.id,x:mob.gridX,y:mob.gridY,correction:this.state.correction});
+        }
+
         reportPosition() {
             if (!this.enabled || !this.state) return;
             const player = this.game.player;
@@ -295,6 +300,7 @@ define(function () {
                 if(!motion){
                     motion={mob,attacking:mob.attackingMode,following:mob.followingMode};
                     this.fieldMotions.set(mob.id,motion);
+                    mob.combatMovementHeld=true;
                     game.unregisterEntityPosition(mob);mob.cancelPath();game.registerEntityPosition(mob);
                 }
                 mob.attackingMode=false;mob.followingMode=false;
@@ -336,7 +342,7 @@ define(function () {
                 if(live.has(id))continue;
                 motion.restorePose?.();
                 const mob=game.getEntityById(id);
-                if(mob){mob.animationLock=false;mob.attackingMode=motion.attacking;mob.followingMode=motion.following;}
+                if(mob){delete mob.combatMovementHeld;mob.animationLock=false;mob.attackingMode=motion.attacking;mob.followingMode=motion.following;}
                 this.fieldMotions.delete(id);
             }
             const event=this.state.fieldEvent;
@@ -436,7 +442,7 @@ define(function () {
 
         clear() {
             for(const motion of this.fieldMotions?.values() || []){
-                motion.restorePose?.();motion.mob.animationLock=false;
+                motion.restorePose?.();delete motion.mob.combatMovementHeld;motion.mob.animationLock=false;
                 motion.mob.attackingMode=motion.attacking;motion.mob.followingMode=motion.following;
             }
             this.fieldMotions?.clear();this.lastFieldEvent=null;
