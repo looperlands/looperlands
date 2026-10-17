@@ -6309,6 +6309,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             loadMap: function (mapId) {
                 var self = this;
+                this.arcadeSession?.close({resumeMusic: false, rearm: false});
                 this.mapId = mapId;
                 this.tileStageRevisions = {};
                 this.combatFeedback.clear();
@@ -7651,6 +7652,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onDeath(function () {
+                        self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.beginPlayerDeath();
                     });
 
@@ -8257,6 +8259,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onDisconnected(function (message) {
+                        self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.disconnected = true;
                         self.reviving = false;
                         clearTimeout(self.playerDeathTimer);
@@ -9556,27 +9559,34 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
                         };
 
-                        lastMinigameTrigger = trigger.id;
+                        self.lastMinigameTrigger = trigger.id;
+                        const rearm = () => {
+                            if (entity.triggerArea?.id === trigger.id && !entity.isDead && !self.disconnected) {
+                                $("#minigameprompt").addClass('active').off('click').one('click', launch);
+                            }
+                        };
+                        const launch = () => loadMinigame(trigger.minigame, self, {onClose: rearm}).then(() => {
+                            const startup = window[`startUp${trigger.minigame}`];
+                            if (typeof startup === 'function') startup();
+                        }).catch(error => {
+                            self.showNotification(error.message || 'The arcade could not load. Please try again.');
+                            rearm();
+                        });
                         $("#minigameprompt").css({
                             'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
                             'top': toPercent($("#minigameprompt").css('top'), offsetY, $("#container").height())
-                        }).addClass('active').one("click", () => loadMinigame(trigger.minigame, self).then(() => {
-                            const startUpFunctionName = `startUp${trigger.minigame}`;
-                            if (typeof window[startUpFunctionName] === 'function') {
-                                console.log('[handleTrigger] launching minigame startup function');
-                                window[startUpFunctionName]();
-                            }
-                        })); // Limit the use of this to a single fire
+                        }).attr('title', trigger.minigame === 'spaceowls' ? 'Play Space Owls' : 'Play minigame')
+                            .addClass('active').off('click').one('click', launch);
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
-                        if (!self.client && lastMinigameTrigger === trigger.id) {
+                        if (!self.client && self.lastMinigameTrigger === trigger.id) {
                             $("#minigameprompt").removeClass('active').removeAttr('style').off();
                             return;
                         }
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id && trigger.minigame && lastMinigameTrigger === trigger.id) {
+                        if (entity.id === self.player.id && trigger.minigame && self.lastMinigameTrigger === trigger.id) {
                             $("#minigameprompt").removeClass('active').removeAttr('style').off();
                         }
                     })

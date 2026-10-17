@@ -58,7 +58,14 @@ const MINIGAME_MENU =
 /****************
  MINIGAME LOADER
 ****************/
-async function loadMinigame(minigame, app) {
+async function loadMinigame(minigame, app, options = {}) {
+    // Space Owls owns an iframe lifecycle, so its input/audio never leak into LL.
+    // Tiled trigger property: minigame = spaceowls (free play).
+    if (minigame === 'spaceowls') {
+        await import('./arcade.js');
+        $("#minigameprompt").removeClass("active").off();
+        return window.LooperArcade.open(app, options);
+    }
     if (app.audioManager) { app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP); }
     $("#minigameprompt").removeClass("active").css('transform', 'none').off();
     await setupMinigamePlatform();

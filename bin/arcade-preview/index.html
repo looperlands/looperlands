@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="/"><title>Space Owls · LooperLands arcade preview</title>
+<link rel="stylesheet" href="arcade-preview/preview.css">
+<link rel="stylesheet" href="css/arcade.css">
+<script defer src="js/arcade.js"></script><script defer src="arcade-preview/preview.js"></script>
+</head>
+<body>
+<header class="topbar"><a href="arcade-preview/" aria-label="Arcade preview home">LOOPERLANDS <span>× M88N LABS</span></a><span>Playable proof of concept</span></header>
+<main>
+  <div class="intro"><h1>Your Looper.<br><span>Inside the arcade.</span></h1><p>One cabinet. A whole other world.<br>Step into Space Owls and bring your avatar with you.</p></div>
+  <div class="experience">
+    <section class="scene" aria-label="Arcade cabinet location">
+      <img src="arcade-preview/cabinet-location.jpg" alt="The arcade cabinet beside the satellite dish and turquoise building on the moon." width="875" height="532">
+      <canvas id="world-avatar" width="96" height="96" aria-label="Your selected Looper at the cabinet"></canvas>
+      <button id="cabinet" aria-label="Play Space Owls at this cabinet"><span>Play Space Owls</span><kbd>Enter</kbd></button>
+      <div class="scene-caption">Your cabinet location <span>Interactive screenshot preview</span></div>
+    </section>
+    <aside>
+      <h2>Who's playing?</h2>
+      <p class="muted">Choose a preview Looper. In LL, your current avatar comes with you automatically.</p>
+      <div class="avatars" role="group" aria-label="Preview avatars">
+        <button data-avatar="clotharmor" aria-pressed="true"><canvas width="64" height="64"></canvas><span>Explorer</span></button>
+        <button data-avatar="leatherarmor" aria-pressed="false"><canvas width="64" height="64"></canvas><span>Ranger</span></button>
+        <button data-avatar="goldenarmor" aria-pressed="false"><canvas width="64" height="64"></canvas><span>Knight</span></button>
+      </div>
+      <button id="play" class="primary" disabled>Loading your Looper…</button>
+      <p class="free-play">Free play · No gems or items spent</p>
+      <div class="controls"><p><kbd>←</kbd> <kbd>→</kbd> Move</p><p><kbd>Space</kbd> Fire <span>·</span> <kbd>Esc</kbd> Return</p></div>
+      <p id="return-status" role="status">Ready for a trip through the screen.</p>
+    </aside>
+  </div>
+  <footer><span>Space Owls by M88N Labs · Avatar integration for LooperLands</span><span>Local scores only</span></footer>
+</main>
+</body>
+</html>

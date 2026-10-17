@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Space Owls | M88N Labs Arcade</title>
+  <link rel="stylesheet" href="integration.css">
+</head>
+<body>
+  <main class="arcade-page">
+    <section class="arcade-square" aria-label="Space Owls arcade cabinet">
+      <header class="cabinet-header">
+        <a class="back-link" href="../arcade-lobby.html">← RETURN TO WORLD</a>
+        <div class="cabinet-brand">M88N LABS <span>ARCADE</span></div>
+        <div class="cabinet-status"><i></i> FREE PLAY</div>
+      </header>
+
+      <div id="cabinetScreen" class="cabinet-screen">
+        <div id="gameSubheader" class="game-subheader" hidden>
+          <button id="gameHomeBtn" class="game-home-btn" type="button">← HOME</button>
+          <div class="game-name">SPACE OWLS <span>// ARCADE SHOOTER</span></div>
+        </div>
+
+        <div class="game-container arcade-playfield-glow">
+          <canvas id="game" width="960" height="600"></canvas>
+
+          <div id="ui">
+            <div id="score">SCORE: 0</div>
+            <div id="level">LEVEL: 1</div>
+            <div id="lives">LIVES: —</div>
+            <div id="coins">COINS: 0</div>
+            <div id="powerup">POWER: —</div>
+          </div>
+
+          <div id="overlay">
+            <div id="mainMenuPanel" class="panel">
+              <!-- <p class="eyebrow">EXPERIMENT_02 // SHOOTER</p>  -->
+              <h1 class="arcade-title">SPACE<br><span>OWLS</span></h1>
+
+              <div class="menu-field owl-picker-field">
+                <label>YOUR LOOPER</label>
+                <div class="owl-slider-row">
+                  <button id="owlPrevBtn" class="btn owl-nav-btn" type="button" aria-label="Previous owl">◀</button>
+                  <canvas id="owlPreview" width="160" height="160"></canvas>
+                  <button id="owlNextBtn" class="btn owl-nav-btn" type="button" aria-label="Next owl">▶</button>
+                </div>
+                <div id="owlName" class="owl-name">OWL 0</div>
+              </div>
+
+              <div id="homeMission" class="mission-card" aria-live="polite">
+                <div class="mission-heading"><span>MISSION BRIEFING</span><i></i></div>
+                <p data-rule="← → Move your Looper"></p>
+                <p data-rule="SPACE / FIRE to shoot"></p>
+                <p data-rule="Destroy the invading formations"></p>
+                <p data-rule="Collect crypto powerups"></p>
+                <p data-rule="Survive as long as you can"></p>
+              </div>
+
+              <div class="sub flicker">PRESS ENTER OR START</div>
+
+              <div class="button-row">
+                <button disabled id="startBtn" class="btn primary-btn">START RUN</button>
+                <button id="leaderboardBtn" class="btn secondary-btn">LEADERBOARD</button>
+              </div>
+            </div>
+
+            <div id="preRunPanel" class="panel pre-run-panel hidden">
+
+              <h2 class="arcade-title pre-run-title">READY?</h2>
+              <p class="pre-run-copy">Collect crypto powerups and shoot anything that moves.</p>
+
+              <div class="pre-run-controls">
+                <span><strong>MOVE</strong> ← →</span>
+                <span><strong>SHOOT</strong> SPACE / FIRE</span>
+              </div>
+
+              <div class="powerup-guide" aria-label="Space Owls powerups">
+                <div class="powerup-guide-item">
+                  <b class="crypto-icon btc-icon">₿</b>
+                  <span><strong>BTC</strong><small>Triple-shot spread</small></span>
+                </div>
+                <div class="powerup-guide-item">
+                  <b class="crypto-icon eth-icon">Ξ</b>
+                  <span><strong>ETH</strong><small>Twin Owl + piercing fire</small></span>
+                </div>
+                <div class="powerup-guide-item">
+                  <b class="crypto-icon doge-icon">Ð</b>
+                  <span><strong>DOGE</strong><small>Bouncing projectile</small></span>
+                </div>
+                <div class="powerup-guide-item">
+                  <b class="crypto-icon xrp-icon">✕</b>
+                  <span><strong>XRP</strong><small>Deep piercing shot</small></span>
+                </div>
+                <div class="powerup-guide-item">
+                  <b class="crypto-icon sol-icon">◎</b>
+                  <span><strong>SOL</strong><small>Split angled shots</small></span>
+                </div>
+              </div>
+
+              <div class="menu-field pre-run-name-field">
+                <label for="playerName">LEADERBOARD NAME</label>
+                <input id="playerName" type="text" maxlength="16" value="PLAYER 1" autocomplete="off" />
+              </div>
+
+              <div class="button-row pre-run-actions">
+                <button id="preRunStartBtn" class="btn primary-btn" type="button">PLAY</button>
+              </div>
+            </div>
+
+            <div id="leaderboardPanel" class="panel leaderboard-panel hidden">
+              <p>Local free-play scores · no rewards</p>
+              <h2 class="arcade-title">YOUR HIGH SCORES</h2>
+              <div id="leaderboardList" class="leaderboard-list"></div>
+              <div class="button-row leaderboard-actions">
+                <button id="leaderboardHomeBtn" class="btn secondary-btn" type="button">HOME</button>
+                <button id="leaderboardPlayBtn" class="btn primary-btn" type="button">PLAY</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-controls" aria-label="Mobile game controls">
+          <button id="mobileLeftBtn" class="mobile-control mobile-move" type="button" aria-label="Move left">◀</button>
+          <button id="mobileFireBtn" class="mobile-control mobile-fire" type="button">FIRE</button>
+          <button id="mobileRightBtn" class="mobile-control mobile-move" type="button" aria-label="Move right">▶</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <data id="owl-json" value="../../sprites/clotharmor.json"></data>
+  <data id="owl-img" value="../../img/1/clotharmor.png"></data>
+
+  <script src="bridge.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
