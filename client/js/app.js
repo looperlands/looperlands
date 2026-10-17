@@ -981,14 +981,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             $('#death-description').text(message || 'Take a breath. Your adventure continues.');
             $('#death-status').text(message ? 'Choose your character to reconnect.' : 'Return to your last checkpoint.');
             $('#respawn').prop('hidden', !!message).prop('disabled', false).text('Revive');
-            const renderer = this.game.renderer;
-            const bounds = renderer.canvas.getBoundingClientRect();
-            const player = this.game.player;
-            const screenX = bounds.left + (player.x + 8 - renderer.camera.x) * renderer.scale * bounds.width / renderer.canvas.width;
-            const screenY = bounds.top + (player.y - renderer.camera.y) * renderer.scale * bounds.height / renderer.canvas.height;
             $('#death').removeClass('reviving')
-                .toggleClass('death-prompt-left', screenX > window.innerWidth / 2)
-                .toggleClass('death-prompt-top', screenY > window.innerHeight / 2)
                 .attr('aria-hidden', 'false').prop('inert', false).attr('aria-busy', 'false');
             $('body').removeClass('credits').addClass('death');
             if (message) document.querySelector('#death a').focus({preventScroll: true});
