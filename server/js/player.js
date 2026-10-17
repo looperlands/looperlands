@@ -83,6 +83,13 @@ module.exports = Player = Character.extend({
 
             self.resetTimeout();
 
+            // A dead player keeps its authenticated socket and equipment. Revive does
+            // not repeat async login work or register chat/activity a second time.
+            if (self.hasEnteredGame && self.isDead) {
+                if (action === Types.Messages.HELLO && message[4] === self.sessionId) self.revive();
+                return;
+            }
+
             if (action === Types.Messages.HELLO) {
                 self.sessionId = message[4];
                 let playerCache = self.server.server.cache.get(self.sessionId);
@@ -150,20 +157,7 @@ module.exports = Player = Character.extend({
                 self.server.server.socialChat?.register(self);
                 self.playerEventBroker.setPlayer(self);
 
-                try {
-                    await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-
-                    if (self.flowInterval) {
-                        clearInterval(self.flowInterval);
-                    }
-                    self.flowInterval = setInterval(async function () {
-                        try {
-                            await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-                        } catch (e) { console.error(e); }
-                    }, 60 * 1000);
-                } catch (e) {
-                    console.error(e);
-                }
+                await self.startFlowPolling();
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
@@ -690,6 +684,30 @@ module.exports = Player = Character.extend({
         }
     },
 
+    revive: function () {
+        if (!this.hasEnteredGame || !this.isDead) return false;
+        this.clearTarget();
+        this.updatePosition(); // The server chooses the last checkpoint or map start.
+        this.isDead = false;
+        this.updateHitPoints();
+        this.server.addEntity(this);
+        this.send([Types.Messages.WELCOME, this.id, this.name, this.x, this.y, this.hitPoints, this.title, performance.now()]);
+        this.server.pushRelevantEntityListTo(this);
+        this.server.pushToggledLayersTo(this);
+        this.server.pushTileStagesTo(this);
+        this.startFlowPolling().then(() => {
+            if (!this.isDead) this.playerEventBroker.spawnEvent(this, this.lastCheckpoint?.id);
+        });
+        return true;
+    },
+
+    startFlowPolling: async function () {
+        if (this.flowInterval) clearInterval(this.flowInterval);
+        const load = () => mapflows.loadFlow(this.mapId, this.playerEventBroker, this.server).catch(console.error);
+        await load();
+        if (!this.isDead) this.flowInterval = setInterval(load, 60 * 1000);
+    },
+
     handleExperience: async function (experience) {
 
         let session = this.server.server.cache.get(this.sessionId);
@@ -765,6 +783,7 @@ module.exports = Player = Character.extend({
         if (self.consumableBuff.buffTimeout) {
             clearTimeout(self.consumableBuff.buffTimeout);
         }
+        self.consumableBuff = {};
 
         if (self.flowInterval) {
             clearInterval(self.flowInterval);

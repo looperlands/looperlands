@@ -300,27 +300,14 @@ define(['jquery', 'app'], function($, App) {
                 }
     		});
     		
-    		game.onDisconnect(function(message) {
-    		    if($('body').hasClass('credits')) {
-    		        $('body').removeClass('credits');
-    		    }
+            game.onDisconnect(function(message) {
+                app.showDeath(message);
+            });
 
-                if($('body').hasClass('inventory')) {
-                    $('body').removeClass('inventory');
-                }
+            game.onPlayerDeath(function() {
+                app.showDeath();
+            });
 
-                $('body').addClass('death');
-    		    $('#death').find('p').html(message+"<em>Press Browser Back Button.</em>");
-    		    $('#respawn').hide();
-    		});
-	
-    		game.onPlayerDeath(function() {
-    		    if($('body').hasClass('credits')) {
-    		        $('body').removeClass('credits');
-    		    }
-                $('body').addClass('death');
-    		});
-	
     		game.onPlayerEquipmentChange(function() {
     		    app.initEquipmentIcons();
                 setTimeout(() => game.renderStatistics(), 1000);
@@ -424,9 +411,20 @@ define(['jquery', 'app'], function($, App) {
             });
             
             $('#respawn').click(function(event) {
-                game.audioManager.playSound("revive");
-                game.newSession();
-                $('body').removeClass('death');
+                event.preventDefault();
+                event.stopPropagation();
+                game.restart();
+            });
+            $('#death').on('keydown', function(event) {
+                event.stopPropagation(); // Keep native button keys out of chat/game shortcuts.
+                if (event.key !== 'Tab') return;
+                const controls = Array.from(this.querySelectorAll('button:not([hidden]):not(:disabled), a[href]'));
+                const first = controls[0], last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault(); last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault(); first.focus();
+                }
             });
             
             $(document).mousemove(function(event) {

@@ -1,0 +1,97 @@
+/* Death belongs to the game world, outside the legacy parchment transition. */
+body.game.death #parchment { opacity: 0; pointer-events: none; z-index: 0; }
+body #death,
+body.game #death {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    background: transparent;
+    color: #f5e5c9;
+    font-family: 'GraphicPixel', sans-serif;
+    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease-out, visibility 140ms;
+}
+body.game.death #death,
+body.death #death {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 180ms ease-out;
+}
+/* Remove the prompt before the server reply can start the reform animation. */
+body #death.reviving,
+body.game.death #death.reviving,
+body.death #death.reviving {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
+#death .death-card {
+    width: min(300px, 100%);
+    padding: 0 26px 24px;
+    box-sizing: border-box;
+    border-width: 0;
+    border-radius: 0;
+    transition: none;
+}
+#death #death-title {
+    width: min(250px, 100%);
+    box-sizing: border-box;
+    margin: 0 auto 8px;
+    padding: 12px 8px !important;
+    top: -12px !important;
+    color: #fce045;
+    font: 24px/1.25 'GraphicPixel', sans-serif;
+}
+body #death p,
+body.game.death #death p {
+    width: auto;
+    padding: 0;
+    margin: 0;
+    color: #e6c1a5;
+    font: 16px/1.5 'GraphicPixel', sans-serif;
+}
+body #death #respawn {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    margin: 26px 0 12px;
+    padding: 10px 20px;
+    border-width: 0;
+    border-radius: 0;
+    background: #533642 !important;
+    color: #fce045;
+    font: 20px/1.2 'GraphicPixel', sans-serif;
+    cursor: pointer;
+    transition: background-color 100ms ease-out;
+}
+body #death #respawn:hover:enabled { background: #624a4d !important; color: #fff0cd; }
+body #death #respawn:active:enabled { background: #382936 !important; }
+body #death #respawn:disabled { background: #382936 !important; color: #c6a78e; cursor: wait; }
+body #death #respawn[hidden] { display: none; }
+#death #death-status { min-height: 24px; font-size: 14px; }
+#death a { display: inline-block; margin-top: 20px; padding: 8px; color: #e6c1a5; font-size: 14px; text-underline-offset: 4px; }
+#death a:hover { color: #ffe8b5; }
+#death :focus-visible { outline: 2px solid #ffe8b5; outline-offset: 5px; }
+#death ::selection { background: #f5d58d; color: #382936; }
+@media (max-height: 430px) {
+    #death .death-card { padding: 0 24px 14px; }
+    body #death #respawn { margin-top: 16px; }
+    #death a { margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body #death, body.game #death, body.death #death { transition: opacity 100ms linear; }
+}
