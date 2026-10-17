@@ -73,6 +73,10 @@ class GamePadListener {
     }
 
     handleButtonPress(buttonIndex) {
+        if (this.game.player?.isDead) {
+            if (buttonIndex === 0) document.getElementById('respawn')?.click();
+            return;
+        }
         switch (buttonIndex) {
             case 0:
                 this.simulateKeyPress(' ', 'Space'); // Weapon Info

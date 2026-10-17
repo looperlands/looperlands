@@ -48,6 +48,7 @@ class KeyBoardHandler {
     }
 
     handleKeyDown(event) {
+        if (this.game.player?.isDead) return;
         const key = event.key.toLowerCase();
         if (!this.inputHasFocus() && this.keys.hasOwnProperty(key)) {
             this.keys[key] = 1;
