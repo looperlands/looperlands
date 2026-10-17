@@ -507,3 +507,34 @@
     
     #achievements li.unlocked .achievement-sharing {display:block;}
 }
+
+/* Borderless pixel lettering keeps the celebration in the game world. */
+#levelup-notification {
+    position: absolute;
+    z-index: 8;
+    left: 50%;
+    bottom: 76px;
+    transform: translateX(-50%);
+    max-width: calc(100% - 32px);
+    color: #fff2bd;
+    font: 14px/1.4 'GraphicPixel', sans-serif;
+    text-align: center;
+    text-shadow: -1px -1px #21150e, 1px -1px #21150e, -1px 1px #21150e, 1px 1px #21150e, 0 2px 2px #21150e;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 180ms ease-out;
+}
+#levelup-notification .levelup-title {
+    color: #ffe078;
+    font-size: 20px;
+    line-height: 1.25;
+    margin-bottom: 2px;
+}
+#levelup-notification.active { opacity: 1; }
+@media (max-width: 800px), (max-height: 600px) {
+    #levelup-notification { bottom: 48px; font-size: 12px; }
+    #levelup-notification .levelup-title { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #levelup-notification { transition: none; }
+}

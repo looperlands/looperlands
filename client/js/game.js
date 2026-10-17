@@ -10288,32 +10288,62 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
+            notifyAssetLevelUps: function (statistics) {
+                if (this.assetLevelSession !== this.sessionId) {
+                    this.assetLevelSession = this.sessionId;
+                    this.assetLevels = new Map();
+                }
+                const weapon = statistics.weaponInfo;
+                const bot = statistics.botInfo;
+                const assets = [
+                    {id: this.sessionId, label: 'Avatar', info: statistics.avatarLevelInfo, entity: this.player},
+                    {id: weapon?.assetId ?? this.player.weaponName,
+                        label: weapon?.constructor === 'NFTSpecialItem' ? 'Tool' : 'Weapon',
+                        info: weapon?.weaponLevelInfo, entity: this.player},
+                    {id: bot?.assetId, label: 'Companion', info: bot,
+                        entity: bot?.entityId !== undefined ? this.getEntityById(bot.entityId) : null}
+                ];
+                const upgrades = [];
+                for (const asset of assets) {
+                    const level = Number(asset.info?.currentLevel);
+                    if (asset.id == null || !Number.isInteger(level) || level < 1) continue;
+                    const key = asset.label + ':' + asset.id;
+                    const previous = this.assetLevels.get(key);
+                    this.assetLevels.set(key, level);
+                    if (previous !== undefined && level > previous) {
+                        upgrades.push({label: asset.label, level});
+                        this.worldFx?.levelUp?.(asset.entity, asset.label);
+                    }
+                }
+                if (upgrades.length) this.app.showLevelUpNotification(upgrades);
+            },
+
             renderStatistics: function () {
-                self = this;
-
-                function validLevelInfo(levelInfo) {
-                    let level = levelInfo.currentLevel;
-                    let percentage = levelInfo.percentage;
-                    let invalid = !level || Number.isNaN(level) || !percentage || Number.isNaN(percentage);
-
-                    return !invalid;
+                const self = this, player = this.player, sessionId = this.sessionId;
+                const weaponName = player?.weaponName;
+                const request = this.statisticsRequest = (this.statisticsRequest || 0) + 1;
+                function validLevelInfo(info) {
+                    return info != null && Number.isFinite(Number(info.currentLevel)) && Number(info.currentLevel) > 0 &&
+                        info.percentage != null && Number.isFinite(Number(info.percentage));
                 }
 
-                axios.get("/session/" + this.sessionId + "/statistics").then(function (response) {
+                return axios.get("/session/" + sessionId + "/statistics").then(function (response) {
+                    if (!player || self.player !== player || self.sessionId !== sessionId || player.weaponName !== weaponName ||
+                        request < (self.appliedStatisticsRequest || 0)) return;
+                    self.appliedStatisticsRequest = request;
 
                     if (response.data !== null && response.data !== undefined) {
 
-                        level = response.data.avatarLevelInfo.currentLevel;
-                        percentage = response.data.avatarLevelInfo.percentage;
+                        let level = response.data.avatarLevelInfo?.currentLevel;
+                        let percentage = response.data.avatarLevelInfo?.percentage;
 
                         if (!validLevelInfo(response.data.avatarLevelInfo)) {
                             console.error("Invalid level or percentage");
                             return;
                         }
 
-                        if (self.player.level == null) {
-                            self.player.level = level;
-                        }
+                        self.notifyAssetLevelUps(response.data);
+                        self.player.level = Number(level);
 
                         if (self.player.level === 100) {
                             percentage = "0.0";
@@ -10329,8 +10359,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
 
                         if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined && response.data.weaponInfo.weaponLevelInfo !== undefined) {
-                            weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
-                            weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
+                            const weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
+                            const weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
                             $('#weaponLevel').text(weaponLevel);
                             if (response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
@@ -10351,7 +10381,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             $('#projectileContainer').html('');
 
                             let spriteInfo = self.sprites[self.player.weaponName];
-                            if (spriteInfo.projectiles !== undefined) {
+                            if (spriteInfo?.projectiles !== undefined) {
                                 for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
                                     const projectileType = Object.keys(spriteInfo.projectiles)[i];
                                     let projectile = spriteInfo.projectiles[projectileType];
@@ -10378,10 +10408,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                         }
 
-                        if (self.player.level !== level) {
-                            self.player.level = level;
-                            self.app.showAchievementNotification("Leveled up to level " + level, "", undefined, Types.Medals.HEARTH);
-                        }
                     }
                 }).catch(function (error) {
                     console.error("Error while getting updated level", error);

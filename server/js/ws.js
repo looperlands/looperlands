@@ -815,11 +815,14 @@ WS.socketIOServer = Server.extend({
                     weaponInfo.weaponLevelInfo = effectiveLevelInfo(player || {}, 'weaponLevel', weaponInfo.weaponLevelInfo);
                 }
 
+                weaponInfo.assetId = player?.weapon;
+
                 let botInfo = {};
                 if (sessionData.botSessionId !== undefined) {
                     let botSessionData = cache.get(sessionData.botSessionId);
                     if (botSessionData !== undefined) {
-                        botInfo = Formulas.calculatePercentageToNextLevel(botSessionData.xp);
+                        botInfo = {...Formulas.calculatePercentageToNextLevel(botSessionData.xp),
+                            assetId: botSessionData.nftId, entityId: botSessionData.entityId};
                     }
                 }
 

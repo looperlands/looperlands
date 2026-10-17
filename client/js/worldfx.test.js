@@ -92,3 +92,18 @@ test('scene flags revert on exit and map changes clear previous configuration', 
     expect(fx.packet).toBeNull(); expect(fx.drops.size).toBe(0); expect(fx.scenery.fires).toBeUndefined();
     expect(fx.enabled('loot')).toBe(true);
 });
+
+test('level-up feedback is enabled without scenery flags and expires', () => {
+    const {fx, game, renderer} = setup(); fx.flags = {};
+    fx.levelUp(game.player, 'Avatar');
+    expect(fx.particles).toHaveLength(44); expect(fx.rings).toHaveLength(1);
+    expect(fx.particles[0]).toMatchObject({x: 168, y: 322, owner: 'levelup'});
+    fx.render(renderer, 2700); expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
+});
+test.each([2, 3])('level-up bursts respect reduced motion and originate at the held item (direction %s)', direction => {
+    const {fx, game, settings, renderer} = setup(); game.player.orientation = direction;
+    fx.levelUp(game.player, 'Tool'); expect(fx.particles[0]).toMatchObject({x: 160, y: 325});
+    settings.getReducedMotion = () => true; fx.render(renderer, 1050);
+    fx.levelUp(game.player, 'Avatar'); fx.levelUp(null, 'Companion');
+    expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
+});
