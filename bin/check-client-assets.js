@@ -18,11 +18,11 @@ function checkAsset(asset, baseDir = buildDir) {
     }
 }
 
-function checkWorkerDependencies(directory) {
+function checkRuntimeDependencies(directory) {
     for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
         const file = path.join(directory, entry.name);
         if (entry.isDirectory()) {
-            checkWorkerDependencies(file);
+            checkRuntimeDependencies(file);
         } else if (entry.name.endsWith('.js')) {
             const source = fs.readFileSync(file, 'utf8');
             // Worker URLs resolve from the document; importScripts resolves from the worker.
@@ -30,6 +30,11 @@ function checkWorkerDependencies(directory) {
                 checkAsset(worker[2]);
             }
             for (const dependency of source.matchAll(/\bimportScripts\s*\(\s*(["'])([^"']+)\1\s*\)/g)) {
+                checkAsset(dependency[2], path.dirname(file));
+            }
+            // Literal import() URLs resolve from their script, not the document.
+            // Computed imports (for example map/game names) remain runtime checks.
+            for (const dependency of source.matchAll(/\bimport\s*\(\s*(["'])([^"']+)\1\s*\)/g)) {
                 checkAsset(dependency[2], path.dirname(file));
             }
         }
@@ -50,9 +55,9 @@ for (const script of html.matchAll(/<script\b[^>]*>/gi)) {
     }
 }
 
-checkWorkerDependencies(path.join(buildDir, 'js'));
+checkRuntimeDependencies(path.join(buildDir, 'js'));
 
 if (missing.size) {
     throw new Error('Client build is missing runtime scripts: ' + [...missing].join(', '));
 }
-console.log('All local entry and worker scripts are present in the client build.');
+console.log('All local entry, worker and literal dynamic-import scripts are present in the client build.');

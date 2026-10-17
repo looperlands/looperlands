@@ -51,3 +51,25 @@ test('checks static worker imports relative to the worker and leaves dynamic map
     write('js/lib/underscore.min.js');
     expect(check().status).toBe(0);
 });
+
+test('checks literal dynamic imports relative to the importing script', () => {
+    write('js/minigame.js', `import('./arcade.js?v=1'); import('https://cdn.example/game.js'); import('../apps/' + game + '/index.js');`);
+    const result = check();
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('js/arcade.js');
+    write('js/arcade.js');
+    expect(check().status).toBe(0);
+});
+
+test('production pruning retains the on-demand arcade module', () => {
+    write('js/minigame.js', "import('./arcade.js');");
+    write('js/arcade.js');
+    write('js/unused-module.js');
+    const build = fs.readFileSync(path.join(__dirname, 'build.sh'), 'utf8');
+    const pruning = build.match(/^find \$BUILDDIR\/js[\s\S]+?-delete$/m)[0];
+    const result = spawnSync('sh', ['-c', pruning], {env: {...process.env, BUILDDIR: fixture}, encoding: 'utf8'});
+    expect(result.status).toBe(0);
+    expect(fs.existsSync(path.join(fixture, 'js/unused-module.js'))).toBe(false);
+    expect(fs.existsSync(path.join(fixture, 'js/arcade.js'))).toBe(true);
+    expect(check().status).toBe(0);
+});

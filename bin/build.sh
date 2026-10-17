@@ -16,7 +16,7 @@ node ../../bin/build-client.js || exit 1
 cd $CURDIR
 
 echo "Removing unnecessary js files from the build directory"
-# Keep bundles, worker scripts, and globals loaded directly by index.html.
+# Keep bundles, worker scripts, on-demand modules, and globals loaded by index.html.
 find $BUILDDIR/js -type f ! \( \
     -iname "game.js" -or -iname "home.js" -or -iname "log.js" -or \
     -iname "require-jquery.js" -or -iname "modernizr.js" -or \
@@ -24,7 +24,7 @@ find $BUILDDIR/js -type f ! \( \
     -iname "detect.js" -or -iname "underscore.min.js" -or -iname "text.js" -or \
     -iname "axios.min.js" -or -iname "keyboardhandler.js" -or \
     -iname "settings.js" -or -iname "gamepad.js" -or \
-    -iname "touchListener.js" -or -iname "minigame.js" -or \
+    -iname "touchListener.js" -or -iname "minigame.js" -or -iname "arcade.js" -or \
     -iname "dynamicnft.js" -or -iname "pathfinder.js" -or \
     -iname "playermodifierstable.js" \) -delete
 
