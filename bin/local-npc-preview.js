@@ -198,6 +198,14 @@ api.listen(fixturePort, '127.0.0.1', () => {
         configureAmbience(req.body.mode);
         res.json({mode: req.body.mode});
     });
+    // Local-only lifecycle probe; uses the same damage/death path as combat.
+    server.app.post('/__npc_preview/defeat', (req, res) => {
+        const session = server.cache.get(req.body.sessionId);
+        const player = session && world.getPlayerById(session.entityId);
+        if (!player || !avatars.includes(player.nftId) || player.isDead) return res.sendStatus(400);
+        player.handleHurt({kind: require('../shared/js/gametypes').Entities.RAT, type: 'mob'}, player.hitPoints);
+        res.json({dead: player.isDead, id: player.id, checkpoint: player.lastCheckpoint?.id});
+    });
     server.app.post('/__npc_preview/picnic', (req, res) => {
         const session = server.cache.get(req.body.sessionId);
         const player = session && world.getPlayerById(session.entityId);

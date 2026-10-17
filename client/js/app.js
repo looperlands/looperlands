@@ -791,6 +791,24 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             $("#miniMap").hide();
         },
 
+        showLevelUpNotification: function (upgrades) {
+            const notification = $('#levelup-notification');
+            clearTimeout(this.levelUpNotificationTimeout);
+            // Keep simultaneous upgrades readable in a single compact notification.
+            this.levelUpNotices = this.levelUpNotices || new Map();
+            for (const upgrade of upgrades) this.levelUpNotices.set(upgrade.label, upgrade);
+            notification.empty();
+            $('<div class="levelup-title">').text('LEVEL UP').appendTo(notification);
+            for (const upgrade of this.levelUpNotices.values()) {
+                $('<div class="levelup-asset">').text(upgrade.label + ' · ' + upgrade.level).appendTo(notification);
+            }
+            notification.addClass('active');
+            this.levelUpNotificationTimeout = setTimeout(() => {
+                notification.removeClass('active');
+                this.levelUpNotices.clear();
+            }, 3200);
+        },
+
         showAchievementNotification: function (questName, endText, xpReward, medal) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
@@ -970,6 +988,35 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             }
             $el.find('.achievement-description').html(desc);
             $el.find('.achievement-description').attr('title', desc);
+        },
+
+        showDeath: function (message) {
+            this.hideWindows();
+            this.hideChat();
+            this.closeChoicesPopup();
+            $('#container, #intro').prop('inert', true);
+            $('#death-title').text(message ? 'Connection lost' : 'You fell');
+            $('#death-description').text(message || 'Take a breath. Your adventure continues.');
+            $('#death-status').text(message ? 'Choose your character to reconnect.' : 'Return to your last checkpoint.');
+            $('#respawn').prop('hidden', !!message).prop('disabled', false).text('Revive');
+            $('#death').removeClass('reviving')
+                .attr('aria-hidden', 'false').prop('inert', false).attr('aria-busy', 'false');
+            $('body').removeClass('credits').addClass('death');
+            if (message) document.querySelector('#death a').focus({preventScroll: true});
+            else document.getElementById('respawn').focus({preventScroll: true});
+        },
+
+        setReviving: function () {
+            $('#respawn').prop('disabled', true).text('Reviving…');
+            $('#death').addClass('reviving').attr('aria-busy', 'true').prop('inert', true);
+            $('#death-status').text('Returning to your checkpoint…');
+        },
+
+        hideDeath: function () {
+            $('#container, #intro').prop('inert', false);
+            $('#death').attr('aria-hidden', 'true').prop('inert', true).attr('aria-busy', 'false');
+            document.getElementById('respawn').blur();
+            $('body').removeClass('death');
         },
 
         toggleCredits: function () {

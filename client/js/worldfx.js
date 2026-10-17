@@ -7,12 +7,14 @@ define(['worldfxconfig'], function (Config) {
             this.flags = {...Config.defaults};
             this.sceneFlags = {};
             this.particles = [];
+            this.rings = [];
             this.drops = new Map();
             this.mapId = game.mapId;
             this.sessionId = game.sessionId;
         }
 
         enabled(id) {
+            if (id === 'levelup') return !this.game.app?.settings?.getReducedMotion?.();
             return (this.sceneFlags[id] ?? this.flags[id]) === true && !this.game.app?.settings?.getReducedMotion?.();
         }
 
@@ -24,6 +26,7 @@ define(['worldfxconfig'], function (Config) {
                 this.sceneryKey = undefined;
             }
             this.particles = [];
+            this.rings = [];
             this.drops.clear();
             this.lastActor = null;
             this.actor = null;
@@ -68,6 +71,35 @@ define(['worldfxconfig'], function (Config) {
                     color: spec.colors[Math.floor(this.random() * spec.colors.length)]});
             }
             if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
+        }
+
+        levelUp(entity, asset) {
+            this.sync();
+            if (!entity || entity.isDead || !this.enabled('levelup') ||
+                !Number.isFinite(entity.x) || !Number.isFinite(entity.y)) return;
+            // Equipped items share their owner's map entity; originate at the held item.
+            const held = asset === 'Weapon' || asset === 'Tool';
+            // Down-facing equipment is drawn on the left side of the avatar.
+            const left = entity.orientation === 2 || entity.orientation === 3;
+            const x = entity.x + (held ? (left ? 0 : 16) : 8);
+            const y = entity.y + (held ? 5 : 2);
+            const startedAt = this.game.currentTime || Date.now();
+            const colors = ['#fff9d6', '#ffe078', '#f5af45', '#9cefe6'];
+            for (let i = 0; i < 44; i++) {
+                const radial = i < 28;
+                const angle = i / 28 * Math.PI * 2;
+                const speed = 24 + this.random() * 32;
+                this.particles.push({x: x + (this.random() - 0.5) * 6, y,
+                    vx: radial ? Math.cos(angle) * speed : (this.random() - 0.5) * 22,
+                    vy: radial ? Math.sin(angle) * speed * 0.65 - 18 : -28 - this.random() * 30,
+                    gravity: radial ? 24 : -4, startedAt, lifetimeMs: 1000 + this.random() * 550,
+                    size: i % 4 === 0 ? 2 : 1, shape: i % 4 === 0 ? 'star' : 'spark',
+                    color: colors[i % colors.length], owner: 'levelup'});
+            }
+            if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
+            this.rings.push({x: entity.x + 8, y: entity.y + 12, coreX: x, coreY: y,
+                startedAt, owner: 'levelup', radius: 38, lifetimeMs: 1600});
+            if (this.rings.length > 64) this.rings.shift();
         }
 
         tileChanged(stage) {
@@ -127,7 +159,8 @@ define(['worldfxconfig'], function (Config) {
                 vx: this.lastActor ? Math.max(-200, Math.min(200, (player.x - this.lastActor.x) / elapsed)) : 0,
                 vy: this.lastActor ? Math.max(-200, Math.min(200, (player.y - this.lastActor.y) / elapsed)) : 0};
             this.lastActor = {x: player.x, y: player.y, time};
-            this.particles = this.particles.filter(p => time - p.startedAt < p.lifetimeMs && this.enabled('stage'));
+            this.particles = this.particles.filter(p => time - p.startedAt < p.lifetimeMs && this.enabled(p.owner || 'stage'));
+            this.rings = this.rings.filter(r => time - r.startedAt < r.lifetimeMs);
             for (const [id, drop] of this.drops) if (!this.enabled('loot') || time - drop.startedAt > 800 || this.game.getEntityById(id) !== drop.entity) this.drops.delete(id);
             if (this.registeredRenderer !== renderer) {
                 renderer.registerExtension('world-fx-renderer-worker.js');
@@ -136,10 +169,11 @@ define(['worldfxconfig'], function (Config) {
             const particles = this.particles.map(p => {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
                 return {x: p.x + p.vx * seconds, y: p.y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
-                    color: p.color, size: p.size, alpha: 1 - age / p.lifetimeMs};
+                    color: p.color, size: p.size, shape: p.shape, trailX: p.vx * 0.055,
+                    trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs};
             });
             const data = {time, actor: this.actor, flags: Object.fromEntries(Object.keys(this.flags).map(id => [id, this.enabled(id)])),
-                scenery: this.scenery, particles};
+                scenery: this.scenery, particles, rings: this.rings};
             renderer.setExtensionData('world-fx', data);
             renderer.setExtensionData('world-fx-ground', data);
         }

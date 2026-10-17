@@ -7221,6 +7221,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 });
 
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset) {
+                    const reviving = self.reviving === true;
+                    if (reviving) self.prepareRevivedPlayer();
                     console.log("Received player ID from server : " + id);
                     self.player.id = id;
                     self.playerId = id;
@@ -7247,6 +7249,18 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.startScenePolling();
                     setTimeout(() => self.handleScene(self.player), 50);
                     setTimeout(() => self.handleScene(self.player), 500);
+
+                    if (reviving) {
+                        self.reviving = false;
+                        self.storage.incrementRevives();
+                        self.player.isFading = false;
+                        self.player.pixelDissolve = {startedAt: self.currentTime, duration: self.app.settings.getReducedMotion() ? 120 : 1000, incoming: true};
+                        self.app.hideDeath();
+                        self.audioManager.playSound("revive");
+                        self.app.initEquipmentIcons();
+                        self.renderStatistics();
+                        return;
+                    }
 
                     if (!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -7639,30 +7653,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     self.player.onDeath(function () {
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
-                        console.log(self.playerId + " is dead");
-
-                        self.player.stopBlinking();
-                        self.player.setSprite(self.sprites["death"]);
-                        self.player.animate("death", 120, 1, function () {
-                            console.log(self.playerId + " was removed");
-
-                            self.removeEntity(self.player);
-                            self.removeFromRenderingGrid(self.player, self.player.gridX, self.player.gridY);
-
-                            self.player = null;
-                            self.client.disable();
-                            setTimeout(function () {
-                                self.playerdeath_callback();
-                            }, 1000);
-                        });
-
-                        self.player.forEachAttacker(function (attacker) {
-                            attacker.disengage();
-                            attacker.idle();
-                        });
-
-                        self.audioManager.fadeOutCurrentMusic();
-                        self.audioManager.playSound("death");
+                        self.beginPlayerDeath();
                     });
 
                     self.player.onHasMoved(function (player) {
@@ -8270,6 +8261,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onDisconnected(function (message) {
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.disconnected = true;
+                        self.reviving = false;
+                        clearTimeout(self.playerDeathTimer);
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
                         self.worldFx?.clear?.();
@@ -10000,33 +9993,83 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
-            restart: function () {
-                console.debug("Beginning restart");
+            beginPlayerDeath: function () {
+                const player = this.player;
+                const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
+                clearTimeout(this.playerDeathTimer);
+                this.deathReady = false;
+                this.reviving = false;
+                this.keyboardHandler?.handleBlur();
+                this.touchListener?.reset();
+                this.conversationHold.stop();
+                this.app.closeChoicesPopup();
+                this.combatPrototype?.clear();
+                this.combatFeedback.clear();
+                this.toolImpactFeedback.clear();
+                this.updateBuffInfo(0, 0, 0);
+                this.selectedCellVisible = this.targetCellVisible = false;
+                this.currentZoning = null;
+                this.zoningQueue = [];
+                player.stopBlinking();
+                player.disengage();
+                player.movement.stop();
+                player.pathRequestId = (player.pathRequestId || 0) + 1;
+                player.destination = null;
+                player.manualMovementTime = undefined;
+                player.path = player.newDestination = null;
+                player.animationLock = false;
+                player.idle();
+                player.isFading = false;
+                player.pixelDissolve = {startedAt: this.currentTime, duration, incoming: false};
+                player.forEachAttacker(function (attacker) {
+                    attacker.disengage();
+                    attacker.idle();
+                });
+                player.attackers = {};
+                this.audioManager.fadeOutCurrentMusic();
+                this.audioManager.playSound("death");
+                this.playerDeathTimer = setTimeout(() => {
+                    this.removeEntity(player);
+                    this.deathReady = true;
+                    if (!this.disconnected) this.playerdeath_callback();
+                }, duration);
+            },
 
+            restart: function () {
+                if (!this.deathReady || this.reviving || !this.player?.isDead ||
+                    !this.client.connection?.connected || this.disconnected) return false;
+                this.reviving = true;
+                this.app.setReviving();
+                this.sendHello();
+                return true;
+            },
+
+            prepareRevivedPlayer: function () {
+                // Refresh entity membership after time spent dead, preserving loaded
+                // assets, the renderer, world clock, ambience, and input listeners.
                 this.entities = {};
                 this.initEntityGrid();
+                this.initItemGrid();
                 this.initPathingGrid();
                 this.applyToggledLayers();
                 this.initRenderingGrid();
-
-                this.player = new Warrior("player", this.username);
-                this.initPlayer();
-
-                this.started = true;
-                this.client.enable();
-                this.sendHello(this.player);
-
-                this.storage.incrementRevives();
-
-                if (this.renderer.mobile || this.renderer.tablet) {
-                    this.renderer.clearScreen(this.renderer.context);
-                }
-
-                let self = this;
-                setTimeout(() => {
-                    self.handleScene(self.player)
-                }, 100);
-                console.debug("Finished restart");
+                Object.keys(this.floats).forEach(id => this.removeFloat(id));
+                this.worldFx?.clear();
+                this.deathReady = false;
+                this.previousClickPosition = {};
+                this.doorCheck = false;
+                this.hoveringMob = this.hoveringItem = this.hoveringNpc = false;
+                this.highlightedTarget = null;
+                this.player.isDead = false;
+                this.player.isRooted = false;
+                this.player.isLootMoving = this.player.isFishing = false;
+                this.player.interrupted = false;
+                this.player.triggerArea = null;
+                this.player.nextGridX = this.player.nextGridY = -1;
+                this.player.leave_callback = this.player.leave_callback_area = null;
+                this.player.pixelDissolve = null;
+                this.player.setVisible(true);
+                this.player.idle();
             },
 
             onGameStart: function (callback) {
@@ -10197,33 +10240,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
-            newSession: function () {
-                const url = '/session/' + this.sessionId + '/teleport';
-                let dest = null;
-                if (this.lastCheckpoint) {
-                    dest = this.lastCheckpoint;
-                } else if (this.player) {
-                    dest = this.map.getCurrentCheckpoint(this.player);
-                } else {
-                    let cp = this.map.checkpoints[0];
-                    let startPos = cp.getRandomPosition();
-                    dest = {x: startPos.x, y: startPos.y, map: this.mapId};
-                }
-                dest.map = this.mapId;
-                axios.post(url, dest).then(function (response) {
-                    if (response.status === 200) {
-                        let newSessionID = response.data.sessionId;
-                        window.location.href = '/?sessionId=' + newSessionID;
-                    } else {
-                        console.error(response);
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                }).finally(function (e) {
-
-                });
-            },
-
             forEachEntityAround: function (x, y, r, callback) {
                 for (var i = x - r, max_i = x + r; i <= max_i; i += 1) {
                     for (var j = y - r, max_j = y + r; j <= max_j; j += 1) {
@@ -10299,32 +10315,62 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
+            notifyAssetLevelUps: function (statistics) {
+                if (this.assetLevelSession !== this.sessionId) {
+                    this.assetLevelSession = this.sessionId;
+                    this.assetLevels = new Map();
+                }
+                const weapon = statistics.weaponInfo;
+                const bot = statistics.botInfo;
+                const assets = [
+                    {id: this.sessionId, label: 'Avatar', info: statistics.avatarLevelInfo, entity: this.player},
+                    {id: weapon?.assetId ?? this.player.weaponName,
+                        label: weapon?.constructor === 'NFTSpecialItem' ? 'Tool' : 'Weapon',
+                        info: weapon?.weaponLevelInfo, entity: this.player},
+                    {id: bot?.assetId, label: 'Companion', info: bot,
+                        entity: bot?.entityId !== undefined ? this.getEntityById(bot.entityId) : null}
+                ];
+                const upgrades = [];
+                for (const asset of assets) {
+                    const level = Number(asset.info?.currentLevel);
+                    if (asset.id == null || !Number.isInteger(level) || level < 1) continue;
+                    const key = asset.label + ':' + asset.id;
+                    const previous = this.assetLevels.get(key);
+                    this.assetLevels.set(key, level);
+                    if (previous !== undefined && level > previous) {
+                        upgrades.push({label: asset.label, level});
+                        this.worldFx?.levelUp?.(asset.entity, asset.label);
+                    }
+                }
+                if (upgrades.length) this.app.showLevelUpNotification(upgrades);
+            },
+
             renderStatistics: function () {
-                self = this;
-
-                function validLevelInfo(levelInfo) {
-                    let level = levelInfo.currentLevel;
-                    let percentage = levelInfo.percentage;
-                    let invalid = !level || Number.isNaN(level) || !percentage || Number.isNaN(percentage);
-
-                    return !invalid;
+                const self = this, player = this.player, sessionId = this.sessionId;
+                const weaponName = player?.weaponName;
+                const request = this.statisticsRequest = (this.statisticsRequest || 0) + 1;
+                function validLevelInfo(info) {
+                    return info != null && Number.isFinite(Number(info.currentLevel)) && Number(info.currentLevel) > 0 &&
+                        info.percentage != null && Number.isFinite(Number(info.percentage));
                 }
 
-                axios.get("/session/" + this.sessionId + "/statistics").then(function (response) {
+                return axios.get("/session/" + sessionId + "/statistics").then(function (response) {
+                    if (!player || self.player !== player || self.sessionId !== sessionId || player.weaponName !== weaponName ||
+                        request < (self.appliedStatisticsRequest || 0)) return;
+                    self.appliedStatisticsRequest = request;
 
                     if (response.data !== null && response.data !== undefined) {
 
-                        level = response.data.avatarLevelInfo.currentLevel;
-                        percentage = response.data.avatarLevelInfo.percentage;
+                        let level = response.data.avatarLevelInfo?.currentLevel;
+                        let percentage = response.data.avatarLevelInfo?.percentage;
 
                         if (!validLevelInfo(response.data.avatarLevelInfo)) {
                             console.error("Invalid level or percentage");
                             return;
                         }
 
-                        if (self.player.level == null) {
-                            self.player.level = level;
-                        }
+                        self.notifyAssetLevelUps(response.data);
+                        self.player.level = Number(level);
 
                         if (self.player.level === 100) {
                             percentage = "0.0";
@@ -10340,8 +10386,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
 
                         if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined && response.data.weaponInfo.weaponLevelInfo !== undefined) {
-                            weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
-                            weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
+                            const weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
+                            const weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
                             $('#weaponLevel').text(weaponLevel);
                             if (response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
@@ -10362,7 +10408,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             $('#projectileContainer').html('');
 
                             let spriteInfo = self.sprites[self.player.weaponName];
-                            if (spriteInfo.projectiles !== undefined) {
+                            if (spriteInfo?.projectiles !== undefined) {
                                 for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
                                     const projectileType = Object.keys(spriteInfo.projectiles)[i];
                                     let projectile = spriteInfo.projectiles[projectileType];
@@ -10389,10 +10435,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                         }
 
-                        if (self.player.level !== level) {
-                            self.player.level = level;
-                            self.app.showAchievementNotification("Leveled up to level " + level, "", undefined, Types.Medals.HEARTH);
-                        }
                     }
                 }).catch(function (error) {
                     console.error("Error while getting updated level", error);
@@ -10496,6 +10538,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                     axios.get(url).then(function (response) {
                         if (!response.data.allowed) {
+                            self.player.isFishing = false;
                             self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
                             return;
                         }
@@ -10516,6 +10559,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     }).catch(function (error) {
                         console.error("Error while requesting a fish.");
                         self.player.isFishing = false;
+                        self.showNotification("Could not cast. Please try again.");
                     });
                 }
             },

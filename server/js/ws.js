@@ -213,6 +213,11 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
         app.get('/session/:sessionId/field-guide', (req, res) => self.fieldGuide.list(req, res));
+        const fishingCatalog = require('./fishingcatalog').buildFishingCatalog(self.fieldGuide.catalog, Lakes, map => {
+            const file = require('path').join(__dirname, '../../client/maps/world_client_' + map + '.json');
+            return require('fs').existsSync(file) ? JSON.parse(require('fs').readFileSync(file, 'utf8')) : {};
+        });
+        app.get('/fishing-catalog', (req, res) => res.json(fishingCatalog));
         app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName, Collectables.isTransferable)));
 
         const eventBoard = new EventBoardController(cache, () => self.worldsMap, platformClient, data => {
@@ -815,11 +820,14 @@ WS.socketIOServer = Server.extend({
                     weaponInfo.weaponLevelInfo = effectiveLevelInfo(player || {}, 'weaponLevel', weaponInfo.weaponLevelInfo);
                 }
 
+                weaponInfo.assetId = player?.weapon;
+
                 let botInfo = {};
                 if (sessionData.botSessionId !== undefined) {
                     let botSessionData = cache.get(sessionData.botSessionId);
                     if (botSessionData !== undefined) {
-                        botInfo = Formulas.calculatePercentageToNextLevel(botSessionData.xp);
+                        botInfo = {...Formulas.calculatePercentageToNextLevel(botSessionData.xp),
+                            assetId: botSessionData.nftId, entityId: botSessionData.entityId};
                     }
                 }
 
