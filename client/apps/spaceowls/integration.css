@@ -1,0 +1,82 @@
+@font-face { font-family: 'ArcadePixel'; src: url('../../fonts/graphicpixel-webfont.woff') format('woff'); font-display: swap; }
+:root { color-scheme: dark; --ink: #f1eedc; --cyan: #80d9cf; --gold: #f5c875; }
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #080d16; color: var(--ink); font: 17px 'ArcadePixel', monospace; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+::selection { background: var(--cyan); color: #080d16; }
+* { scrollbar-color: #537376 #101c25; scrollbar-width: thin; }
+.arcade-page, .arcade-square { height: 100%; width: 100%; }
+.arcade-square { display: flex; flex-direction: column; }
+.cabinet-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #34494c; font-size: 14px; }
+.back-link { color: var(--ink); text-decoration: none; }
+.cabinet-brand span, .cabinet-status { color: var(--cyan); }
+.cabinet-screen { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+.game-subheader { display: flex; justify-content: space-between; align-items: center; padding: 6px 16px; background: #101c25; }
+.game-subheader[hidden] { display: none; }
+.game-home-btn { padding: 7px 14px; background: #22363c; color: var(--ink); border: 1px solid #537376; }
+.game-name { font-size: 14px; }
+.game-name span { color: #b7ccca; }
+.game-container { min-height: 0; flex: 1; position: relative; display: grid; place-items: center; overflow: hidden; background: #03070b; }
+#game { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; aspect-ratio: 8/5; image-rendering: pixelated; touch-action: none; }
+#ui { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; padding: 8px; background: #080d16dc; font-size: 15px; font-variant-numeric: tabular-nums; pointer-events: none; }
+#overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; background: #080d16ed; z-index: 2; }
+.panel { width: min(720px, 100%); max-height: 100%; overflow: auto; text-align: center; padding: 16px; }
+.arcade-title { font-size: clamp(32px, 5vw, 54px); line-height: .95; margin: 0 0 12px; color: var(--ink); }
+.arcade-title span { color: var(--cyan); }
+.menu-field { margin: 10px 0; }
+.menu-field label { font-size: 14px; color: #b7ccca; display: block; margin-bottom: 6px; }
+.owl-slider-row { display: flex; justify-content: center; }
+#owlPrevBtn, #owlNextBtn { display: none; }
+#owlPreview { width: 96px; height: 96px; image-rendering: pixelated; }
+.owl-name { font-size: 20px; color: var(--gold); }
+.mission-card { margin: 18px auto; max-width: 420px; text-align: left; padding: 14px 18px; background: #14232b; }
+.mission-heading { color: var(--cyan); margin-bottom: 8px; }
+.mission-card p { margin: 5px 0; font-size: 16px; }
+.sub { color: #b7ccca; font-size: 14px; }
+.button-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.btn { border: 1px solid #537376; padding: 12px 24px; min-height: 44px; color: var(--ink); background: #22363c; }
+.btn:hover, .game-home-btn:hover { background: #344e51; }
+.primary-btn { background: var(--gold); color: #111d23; border-color: var(--gold); }
+.primary-btn:hover { background: #ffe0a2; }
+.btn:disabled { opacity: .5; cursor: wait; }
+.hidden { display: none !important; }
+.pre-run-copy { color: #b7ccca; margin: 12px 0 20px; }
+.pre-run-controls { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+.pre-run-controls strong { color: var(--cyan); }
+.powerup-guide { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 20px auto; }
+.powerup-guide-item { display: flex; align-items: center; gap: 8px; width: 180px; text-align: left; }
+.powerup-guide-item span { display: flex; flex-direction: column; gap: 3px; }
+.powerup-guide-item small { font-size: 14px; color: #b7ccca; }
+.crypto-icon { font: bold 26px system-ui, sans-serif; width: 30px; color: var(--gold); }
+.menu-field input { width: min(300px, 100%); border: 1px solid #537376; padding: 10px; background: #101c25; color: var(--gold); text-align: center; caret-color: var(--gold); }
+.leaderboard-list { text-align: left; }
+.leaderboard-row { display: grid; grid-template-columns: 35px 1fr 70px 60px 48px; align-items: center; gap: 8px; border-bottom: 1px solid #34494c; min-height: 54px; }
+.leaderboard-row div { overflow-wrap: anywhere; }
+.leaderboard-owl-canvas { width: 48px; height: 48px; image-rendering: pixelated; }
+.leaderboard-empty { padding: 40px 0; text-align: center; color: #b7ccca; }
+.mobile-controls { display: none; }
+@media (max-width: 700px), (pointer: coarse) {
+  .mobile-controls { display: flex; gap: 12px; padding: 12px; flex-shrink: 0; background: #101c25; }
+  .mobile-control { flex: 1; min-height: 52px; border: 1px solid #537376; background: #22363c; color: var(--ink); touch-action: none; user-select: none; }
+  .mobile-fire { color: var(--gold); }
+  .cabinet-header { padding: 10px; font-size: 12px; }
+  .cabinet-brand { display: none; }
+  .game-name span { display: none; }
+  #overlay { padding: 8px; }
+  .panel { padding: 12px 4px; }
+  #ui { font-size: 12px; gap: 4px 12px; }
+  .powerup-guide { gap: 12px; }
+  .powerup-guide-item { width: 135px; }
+}
+@media (max-height: 550px) { .arcade-title { font-size: 30px; } #owlPreview { width: 64px; height: 64px; } .mission-card { margin: 8px auto; padding: 8px 14px; } .panel { padding: 4px; } }
+
+.embedded .cabinet-header { display: none; }
+#mainMenuPanel .arcade-title { font-size: 42px; }
+#mainMenuPanel .mission-card { margin: 10px auto; }
+#mainMenuPanel .mission-card p { font-size: 15px; margin: 3px 0; }
+#mainMenuPanel .menu-field { margin: 6px 0; }
+#mainMenuPanel #owlPreview { width: 84px; height: 84px; }
+#mainMenuPanel .button-row { margin-top: 10px; }

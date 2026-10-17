@@ -1,0 +1,17 @@
+#minigame.ll-arcade-open { position: fixed; inset: 0; width: 100%; height: 100%; display: grid; place-items: center; padding: 16px; background: #060d18ed; z-index: 10000; pointer-events: auto; opacity: 1; box-sizing: border-box; }
+.ll-arcade-panel { width: min(1120px, 100%); height: min(850px, 100%); display: flex; flex-direction: column; color: #f1eedc; background: #080d16; border: 2px solid #537376; box-shadow: 0 18px 50px #0008; position: relative; font: 16px system-ui, sans-serif; animation: ll-arcade-arrive 350ms ease-out; }
+.ll-arcade-bar { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; border-bottom: 1px solid #3c5459; }
+.ll-arcade-bar strong { font-size: 14px; }
+.ll-arcade-bar span { color: #80d9cf; margin-left: 10px; }
+.ll-arcade-bar button { color: #f1eedc; border: 1px solid #6a8283; background: #17252c; padding: 9px 12px; cursor: pointer; font: inherit; }
+.ll-arcade-bar button:hover { background: #294046; }
+.ll-arcade-bar button:focus-visible { outline: 3px solid #f5c875; outline-offset: 3px; }
+.ll-arcade-bar kbd { margin-left: 8px; font-size: 12px; color: #bcd2cf; }
+.ll-arcade-panel iframe { width: 100%; flex: 1; min-height: 0; border: 0; background: #080d16; }
+.ll-arcade-loading { position: absolute; top: 64px; left: 16px; right: 16px; padding: 16px; background: #17252c; color: #f1eedc; z-index: 2; }
+.ll-arcade-loading[hidden] { display: none; }
+@keyframes ll-arcade-arrive { from { opacity: .4; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 650px) { #minigame.ll-arcade-open { padding: 0; } .ll-arcade-panel { height: 100%; border: 0; } .ll-arcade-bar { padding: 8px; } .ll-arcade-bar span, .ll-arcade-bar kbd { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ll-arcade-panel { animation: none; } }
+
+#minigame.ll-arcade-entering .ll-arcade-panel { animation: none; }
