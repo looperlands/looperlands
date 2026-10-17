@@ -535,7 +535,12 @@ Lakes.getRandomFish = function(lake, lucky) {
                 }
             }
     
-        let retFish = Object.keys(allFish).filter(key => allFish[key] === retRarity) || Object.keys(allFish).filter(key => allFish[key] === "common");
+        let retFish = Object.keys(allFish).filter(key => allFish[key] === retRarity);
+        // Some lakes omit rarities. An empty array is truthy, so check its length
+        // before falling back to the common fish every lake is required to have.
+        if (retFish.length === 0) {
+            retFish = Object.keys(allFish).filter(key => allFish[key] === "common");
+        }
         retFish = Utils.shuffleAndGetRandom(retFish);
     
             if(luckyFish && rarities[allFish[luckyFish]].chance < rarities[allFish[retFish]].chance) {
