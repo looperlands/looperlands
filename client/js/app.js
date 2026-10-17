@@ -791,6 +791,24 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             $("#miniMap").hide();
         },
 
+        showLevelUpNotification: function (upgrades) {
+            const notification = $('#levelup-notification');
+            clearTimeout(this.levelUpNotificationTimeout);
+            // Keep simultaneous upgrades readable in a single compact notification.
+            this.levelUpNotices = this.levelUpNotices || new Map();
+            for (const upgrade of upgrades) this.levelUpNotices.set(upgrade.label, upgrade);
+            notification.empty();
+            $('<div class="levelup-title">').text('LEVEL UP').appendTo(notification);
+            for (const upgrade of this.levelUpNotices.values()) {
+                $('<div class="levelup-asset">').text(upgrade.label + ' · ' + upgrade.level).appendTo(notification);
+            }
+            notification.addClass('active');
+            this.levelUpNotificationTimeout = setTimeout(() => {
+                notification.removeClass('active');
+                this.levelUpNotices.clear();
+            }, 3200);
+        },
+
         showAchievementNotification: function (questName, endText, xpReward, medal) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
