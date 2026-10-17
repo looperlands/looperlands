@@ -400,27 +400,42 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         giftPicker() {
             if (this.tab !== 'direct' || !this.target || !this.canSend() || this.giftRetries.has(this.channelKey())) return;
             this.profileReturnFocus = document.activeElement;
-            this.pickerState = {channel: this.channelKey(), selected: this.attachments.get(this.channelKey())?.item};
+            this.pickerState = {channel: this.channelKey(), selected: this.attachments.get(this.channelKey())?.item, query: ''};
             this.inventoryLoading = true; this.renderGiftPicker();
             this.app.game.client.requestChatInventory();
         }
 
         renderGiftPicker() {
             const state = this.pickerState;
+            const searchFocused = document.activeElement?.classList.contains('sc-gift-search');
             const shade = this.node('chat-profile'); shade.replaceChildren(); shade.hidden = false;
             const card = element('section', 'sc-profile-card sc-gift-card'); card.tabIndex = -1; card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Attach a gift');
             const close = element('button', 'sc-profile-close', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close gift picker'); close.onclick = () => this.closeProfile();
             const recipient = this.people.get(this.target);
             card.append(close, element('h3', '', 'Share a little adventure'), element('p', 'sc-gift-help', 'Choose an item to give to ' + recipient.label + ' (' + recipient.walletShort + ').'));
+            const search = element('input', 'sc-gift-search'); search.type = 'search'; search.placeholder = 'Search items…'; search.setAttribute('aria-label', 'Search gift items'); search.autocomplete = 'off'; search.value = state.query || '';
+            card.append(search);
             const list = element('div', 'sc-gift-list');
-            if (this.inventoryLoading) list.append(element('p', 'sc-empty', 'Loading your inventory…'));
-            else if (!this.transferableItems.length) list.append(element('p', 'sc-empty', 'No transferable items in your inventory yet.'));
-            else this.transferableItems.forEach(item => {
-                const choice = element('button', 'sc-gift-choice'); choice.type = 'button'; choice.setAttribute('aria-pressed', state.selected === item.item);
-                const copy = element('span'); copy.append(element('strong', '', item.name), element('small', '', item.quantity + ' available'));
-                choice.append(this.itemImage(item), copy); choice.onclick = () => { state.selected = item.item; this.renderGiftPicker(); }; list.append(choice);
+            const status = element('p', 'sc-gift-help'); status.setAttribute('role', 'status');
+            const renderList = () => {
+                list.replaceChildren();
+                const query = (state.query || '').trim().toLowerCase();
+                const items = this.transferableItems.filter(item => item.name.toLowerCase().includes(query));
+                status.textContent = !this.inventoryLoading && this.transferableItems.length && query ? items.length + (items.length === 1 ? ' item found' : ' items found') : '';
+                status.hidden = !status.textContent;
+                if (this.inventoryLoading) list.append(element('p', 'sc-empty', 'Loading your inventory…'));
+                else if (!this.transferableItems.length) list.append(element('p', 'sc-empty', 'No transferable items in your inventory yet.'));
+                else if (!items.length) list.append(element('p', 'sc-empty', 'No items match your search.'));
+                else items.forEach(item => {
+                    const choice = element('button', 'sc-gift-choice'); choice.type = 'button'; choice.setAttribute('aria-pressed', state.selected === item.item);
+                    const copy = element('span'); copy.append(element('strong', '', item.name), element('small', '', item.quantity + ' available'));
+                    choice.append(this.itemImage(item), copy); choice.onclick = () => { state.selected = item.item; this.renderGiftPicker(); }; list.append(choice);
+                });
+            };
+            search.addEventListener('input', () => {
+                state.query = search.value; renderList(); list.scrollTop = 0;
             });
-            card.append(list);
+            renderList(); card.append(status, list);
             const selected = this.transferableItems.find(item => item.item === state.selected);
             if (selected && !this.inventoryLoading) {
                 const label = element('label', 'sc-gift-quantity', 'Quantity');
@@ -432,7 +447,8 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 card.append(element('p', 'sc-gift-help', 'The goods transfer when you send the message.'), attach);
             }
             shade.append(card); shade.onclick = event => { if (event.target === shade) this.closeProfile(); };
-            card.addEventListener('keydown', event => this.dialogKeydown(event, card)); card.focus();
+            card.addEventListener('keydown', event => this.dialogKeydown(event, card));
+            if (searchFocused) search.focus(); else card.focus();
         }
 
         dialogKeydown(event, card) {

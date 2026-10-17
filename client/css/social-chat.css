@@ -85,6 +85,8 @@
 #chatbox.social-chat .sc-gift-card {width:370px;}
 #chatbox.social-chat .sc-gift-card h3 {font:23px AdvoCut,GraphicPixel,sans-serif;margin:0 24px 10px 0;color:#efcf98;}
 #chatbox.social-chat .sc-gift-help {font:13px/1.5 GraphicPixel,sans-serif;color:#d4bcc5;margin:8px 0 12px;}
+#chatbox.social-chat .sc-gift-search {display:block;width:100%;min-height:44px;margin:0 0 10px;padding:7px 10px;background:#211923;border:1px solid #725361;border-radius:3px;font-size:14px;}
+#chatbox.social-chat .sc-gift-search::placeholder {color:#c0a8b5;}
 #chatbox.social-chat .sc-gift-list {max-height:170px;overflow:auto;}
 #chatbox.social-chat .sc-gift-choice {display:flex;align-items:center;gap:10px;width:100%;text-align:left;min-height:48px;padding:6px 8px;border:1px solid transparent;}
 #chatbox.social-chat .sc-gift-choice[aria-pressed="true"] {background:#503944;border-color:#d6b079;}
