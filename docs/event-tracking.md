@@ -40,6 +40,12 @@ The town event board also lists approved community events without a competition 
 
 Scoring rule `target`, `action` and `stage` filters accept an existing string or a list of up to 100 distinct strings. A matching value within each list qualifies (OR); target, action and stage filters must all match (AND). A rule awards its points once for each qualifying activity. Use `*` alone for an unrestricted filter. Ordinary activity records still contain one string value per field. Deploy the updated game renderer and platform validator/calculator before the organizer multi-select UI.
 
+## Event maps and live tracker coverage
+
+The organizer's **Event maps · scoring and live tracker** selector accepts multiple maps. Clear the selection for all maps, including maps added later. The meeting map only identifies where players gather; it does not restrict scoring or tracker coverage. Started rounds keep their original configuration.
+
+The platform projection uses the round's `maps` for both `maps` and `scoringMaps`, with `allMaps: true` for unrestricted competitions. The game server and client accept that explicit flag while retaining support for existing map lists. Deploy the game client and server before the companion platform and organizer UI updates. Community events still appear only on the town board. No database migration is needed.
+
 ## Leaderboard names
 
 The game event board and live event panel display the stored ENS name first, with the title as a smaller subtitle. Your own entry keeps its “You” marker. The platform projection supplies nullable `ens` and `title` fields alongside the existing `label`; older responses still render using `label`. Wallet scoring uses the wallet profile. Looper scoring uses the wallet from that Looper’s latest activity within the round, with the asset name as its subtitle. This requires the companion platform update in `EventBoardService` and `EventBoardView`.
