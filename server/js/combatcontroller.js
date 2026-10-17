@@ -26,6 +26,7 @@ class CombatController {
             }
             const encounter = this.encounters.get(player.id);
             if (!encounter) return;
+            if (command.action === 'mob-swing') this.fieldAttacks.reportSwing(encounter,command,this.now());
             if (command.action === 'move') this.move(encounter, command, this.now());
             if (command.action === 'technique') this.fieldAttacks.technique(encounter, command.mobId, this.now());
         });

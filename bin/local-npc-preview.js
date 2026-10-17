@@ -165,7 +165,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
         });
     }
     if (!combatPreview || process.env.COMBAT_LIVE_PREVIEW === '1') {
-        previewCombat = new (require('../server/js/combatcontroller'))(world, Date.now, {slam:slamPreview});
+        previewCombat = new (require('../server/js/combatcontroller'))(world);
     }
     const Messages = require('../server/js/message');
     const packetFor = player => ({...world.npcBehavior.ambienceFor(player), ...world.scenes.packet(player),

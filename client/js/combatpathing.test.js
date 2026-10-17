@@ -154,3 +154,38 @@ test.each([true, false])('mob follows when a moving target becomes diagonally ad
     game.onCharacterUpdate(attacker);
     expect(game.client.sendHurt).toHaveBeenCalledWith(attacker);
 });
+
+
+test.each([true,false])('a held charge cannot follow a sidestepping player until recovery ends (local: %s)',async localPlayer=>{
+    const s=setup('mob','player',[3,2]);await s.engage();s.finishMovement();
+    s.attacker.combatMovementHeld=true;s.attacker.cancelPath();s.target.setGridPosition(3,3);
+    updateAttackersDuringStep(s.game,s.target,localPlayer,s.Player);await s.settlePath();
+    expect(s.attacker.isMoving()).toBe(false);expect([s.attacker.x,s.attacker.y]).toEqual([32,32]);
+    delete s.attacker.combatMovementHeld;
+    updateAttackersDuringStep(s.game,s.target,localPlayer,s.Player);await s.settlePath();s.finishMovement();
+    expect(s.attacker.isAdjacentNonDiagonal(s.target)).toBe(true);
+});
+
+
+test('ordinary melee reports its visible mob tile before requesting HURT',async()=>{
+    const s=setup('mob','player',[3,2]);await s.engage();s.finishMovement();
+    const calls=[];
+    s.game.combatPrototype={owns:()=>false,reportMobAttack:mob=>calls.push(['origin',mob.gridX,mob.gridY])};
+    s.game.client.sendHurt=mob=>calls.push(['hurt',mob.id]);
+    s.game.onCharacterUpdate(s.attacker);
+    expect(calls).toEqual([['origin',2,2],['hurt',s.attacker.id]]);
+});
+
+test('late ordinary MOVE packets cannot clear a charged mob target or start another path',()=>{
+    const source=fs.readFileSync(path.join(__dirname,'game.js'),'utf8');
+    const start=source.indexOf('self.client.onEntityMove(function (id, x, y) {');
+    const end=source.indexOf('self.client.onEntityDestroy',start);
+    let receive;
+    const mob={disengage:jest.fn(),idle:jest.fn()};
+    const game={client:{onEntityMove:callback=>{receive=callback;}},getEntityById:()=>mob,
+        combatPrototype:{owns:()=>true},makeCharacterGoTo:jest.fn()};
+    vm.runInNewContext(source.slice(start,end),{self:game});
+    receive(7,5,5);expect(mob.disengage).not.toHaveBeenCalled();expect(game.makeCharacterGoTo).not.toHaveBeenCalled();
+    game.combatPrototype.owns=()=>false;receive(7,5,5);
+    expect(mob.disengage).toHaveBeenCalledTimes(1);expect(game.makeCharacterGoTo).toHaveBeenCalledWith(mob,5,5);
+});

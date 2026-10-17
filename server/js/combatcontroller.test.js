@@ -118,7 +118,7 @@ test('ready records supported patterns without letting repeated ready reset an e
     const s=setup();s.one.handlers.combat({action:'ready',patterns:['lunge','slam']});
     const encounter=s.combat.encounters.get(1);expect(encounter.patterns.has('slam')).toBe(true);
     s.one.handlers.combat({action:'ready',patterns:['lunge']});expect(encounter.patterns.has('slam')).toBe(true);
-    expect(s.combat.fieldAttacks.slamEnabled).toBe(false);
+    expect(s.combat.fieldAttacks.slamEnabled).toBe(true);
 });
 
 
@@ -142,4 +142,36 @@ test('AoE splash cannot refresh a streak in a crowd, and primary kills keep the 
     s.combat.activeAttack={player:s.one.p,targetId:50,credited:false};
     expect(s.combat.killExperience(s.mob,s.one.p,s.one.p,100)).toBe(175);
     expect(e.streakUntil).toBe(11500);
+});
+
+
+test('a visible swing origin is consumed by its HURT and cannot be replayed after a correction',()=>{
+    const s=setup(),e=s.one.ready();s.combat.fieldAttacks.cooldowns.set(50,0);
+    s.one.handlers.combat({action:'mob-swing',mobId:50,x:9,y:11,correction:e.correction});
+    s.one.p.connection.listen_callback([s.M.HURT,50,0]);
+    expect([s.mob.x,s.mob.y]).toEqual([9,11]);expect(e.mobSwing).toBeNull();
+    expect(s.combat.fieldAttacks.attacks.get(50)).toMatchObject({pattern:'lunge',direction:{x:1,y:0}});
+    s.advance(650);s.advance(180);expect(s.one.p.hitPoints).toBe(30);
+    s.combat.teleport(s.one.p);expect(e.mobSwing).toBeNull();
+});
+test('normal combat chooses Slam when supported, with Lunge retained for an older nearby observer',()=>{
+    const s=setup();s.one.handlers.combat({action:'ready',patterns:['lunge','slam']});
+    s.combat.fieldAttacks.cooldowns.set(50,0);s.one.p.connection.listen_callback([s.M.HURT,50,0]);
+    expect(s.combat.fieldAttacks.attacks.get(50).pattern).toBe('slam');
+    s.combat.fieldAttacks.clear(s.combat.encounters.get(1));
+    s.player(2);s.combat.fieldAttacks.cooldowns.set(50,0);s.one.p.connection.listen_callback([s.M.HURT,50,0]);
+    expect(s.combat.fieldAttacks.attacks.get(50).pattern).toBe('lunge');
+});
+
+
+test.each(['wall','door','occupied','wrong target'])('a visible swing cannot place a charge on an invalid tile: %s',reason=>{
+    const s=setup(),e=s.one.ready();s.combat.fieldAttacks.cooldowns.set(50,0);
+    if(reason==='wall')s.world.isValidPosition=(x,y)=>x!==9||y!==11;
+    if(reason==='door')s.world.map.doors=[{x:9,y:11}];
+    if(reason==='occupied')s.world.entities[9]={id:9,type:'npc',x:9,y:11};
+    if(reason==='wrong target')s.mob.target=2;
+    s.one.handlers.combat({action:'mob-swing',mobId:50,x:9,y:11,correction:e.correction});
+    s.one.p.connection.listen_callback([s.M.HURT,50,0]);
+    expect(s.combat.fieldAttacks.attacks.size).toBe(0);expect([s.mob.x,s.mob.y]).toEqual([10,10]);
+    expect(s.one.original).toHaveBeenCalledWith([s.M.HURT,50,0]);
 });

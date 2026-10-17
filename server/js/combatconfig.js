@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Types = require('../../shared/js/gametypes');
 
-const DEFAULTS = Object.freeze({enabled: true, chance: 0.5, minCooldownMs: 3000, maxCooldownMs: 6000, damageMultiplier: 4});
+const DEFAULTS = Object.freeze({enabled: true, chance: 0.5, minCooldownMs: 2000, maxCooldownMs: 4000, damageMultiplier: 5});
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const mobKind = kind => typeof kind === 'string' && Types.isMob(Types.getKindFromString(kind));
 

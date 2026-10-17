@@ -8022,7 +8022,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         var entity = null;
                         entity = self.getEntityById(id);
 
-                        if (entity) {
+                        if (entity && !self.combatPrototype?.owns(entity)) {
                             entity.disengage();
                             entity.idle();
                             self.makeCharacterGoTo(entity, x, y);
@@ -9782,6 +9782,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 }
 
                                 if (character.hasTarget() && (character.target.id === this.playerId) && this.player && !(character instanceof Player)) {
+                                    this.combatPrototype?.reportMobAttack(character);
                                     this.client.sendHurt(character);
                                 }
 

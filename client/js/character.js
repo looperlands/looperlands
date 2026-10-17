@@ -148,6 +148,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
     	},
     
         moveTo_: function(x, y, callback) {
+            if (this.combatMovementHeld) return;
             this.destination = { gridX: x, gridY: y };
             this.adjacentTiles = {};
             
@@ -442,6 +443,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
          * Makes the character follow another one.
          */
         follow: function(entity) {
+            if (this.combatMovementHeld) return;
             if(entity) {
                 this.followingMode = true;
                 if (Types.isMob(entity.kind) && this.weaponName && Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) && this.canReachTarget(entity)) {

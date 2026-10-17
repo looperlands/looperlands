@@ -9,7 +9,7 @@ function setup(options={}){
         if(name.endsWith('gametypes'))return {getKindAsString:k=>typeof k==='string'?k:GameTypes.getKindAsString(k)};
         if(name==='./properties')return props;
         if(name==='./combatconfig')return require('./combatconfig');
-        if(name==='./formulas')return {dmg:()=>10};
+        if(name==='./formulas')return {dmg:()=>options.damage ?? 10};
         return {Move:function(mob){this.id=mob.id;}};
     }});
     const player={id:1,x:10,y:11,isDead:false,hitPoints:100,getLevel:()=>20,getWeaponLevel:()=>20,
@@ -20,7 +20,7 @@ function setup(options={}){
     const world={id:options.mapId,players:{1:player},entities:{1:player,2:mob},isValidPosition:()=>true,
         broadcastAttacker:jest.fn(),handleMobHate:jest.fn(),handleHurtEntity:jest.fn(),handleEntityGroupMembership:jest.fn(),pushToAdjacentGroups:jest.fn()};
     const controller={world,mobIds:new Set([100]),encounters:new Map([[1,encounter]]),free:()=>true,send:jest.fn(),rewardCombo:jest.fn()};
-    const random=jest.fn(()=>0);const field=new module.exports(controller,random,options);
+    const random=jest.fn(()=>0);const field=new module.exports(controller,random,{slam:false,...options});
     return {field,props,player,mob,encounter,world,controller,random,start(){field.cooldowns.set(2,0);return field.intercept(encounter,mob,0);}};
 }
 test('charges default on across regular mobs and ordinary bosses',()=>{
@@ -80,7 +80,7 @@ test('locked telegraph misses a sidestep and opens one empowered counter on that
 });
 test('standing in the warned lane takes one powered hit and no counter opening',()=>{
     const s=setup();s.start();s.field.tick(650);s.field.tick(830);s.field.tick(900);
-    expect(s.player.handleHurt).toHaveBeenCalledTimes(1);expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,40);
+    expect(s.player.handleHurt).toHaveBeenCalledTimes(1);expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,50);
     expect(s.encounter.fieldCombo).toBeUndefined();expect(s.encounter.chargeHit).toBe(1);
 });
 test('only one mob can telegraph at a time per player, and clearing restores normal AI',()=>{
@@ -123,11 +123,11 @@ test('real mob catalog enables Lavaland enemies and mobile bosses while preservi
 
 
 function slamSetup(){const s=setup({slam:true});s.field.setMode('slam');return s;}
-test.each(['skeleton2','rat','spectre','eye','deathknight','spider','wizard','boss','sharkboss'])('local Slam is available to every Lunge-eligible %s',kind=>{
+test.each(['skeleton2','rat','spectre','eye','deathknight','spider','wizard','boss','sharkboss'])('Slam is available to every Lunge-eligible %s',kind=>{
     const s=slamSetup();s.mob.kind=kind;expect(s.start()).toBe(true);
     expect(s.field.state(s.encounter).fieldAttacks[0]).toMatchObject({pattern:'slam',windup:950});
 });
-test('production defaults cannot opt into Slam through mode selection or client capability',()=>{
+test('an explicit Lunge-only server retains its configured mode despite client capability',()=>{
     const s=setup();expect(s.field.setMode('slam')).toBe(false);
     s.start();expect(s.field.state(s.encounter).fieldAttacks[0].pattern).toBe('lunge');
 });
@@ -136,7 +136,7 @@ test('Slam fixes its nine warned tiles, stays planted and resolves damage once a
     expect(before.lane).toHaveLength(9);expect(before.lane).toContainEqual({x:9,y:9});
     s.field.tick(949);expect(s.player.handleHurt).not.toHaveBeenCalled();
     s.field.tick(950);s.field.tick(951);s.field.tick(1000);
-    expect(s.player.handleHurt).toHaveBeenCalledTimes(1);expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,40);
+    expect(s.player.handleHurt).toHaveBeenCalledTimes(1);expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,50);
     expect([s.mob.x,s.mob.y]).toEqual([10,10]);expect(s.world.pushToAdjacentGroups).not.toHaveBeenCalled();
     expect(s.encounter.chargeHit).toBe(1);expect(s.encounter.fieldCombo).toBeUndefined();
     s.field.tick(1130);expect(s.field.state(s.encounter).fieldAttacks[0]).toMatchObject({phase:'recovery',lane:[]});
@@ -207,19 +207,19 @@ test('Mixed keeps ordinary swings and limits repeated special patterns',()=>{
 });
 
 
-test.each(['lunge','slam'])('%s deals four normal hits of damage once, with the normal defensive modifier',pattern=>{
+test.each(['lunge','slam'])('%s deals five normal hits of damage once, with the normal defensive modifier',pattern=>{
     const s=pattern==='slam'?slamSetup():setup();s.player.playerClassModifiers.meleeDamageTaken=.5;
     s.start();
     if(pattern==='slam')s.field.tick(950);else{s.field.tick(650);s.field.tick(830);}
     s.field.tick(1000);
-    expect(s.player.handleHurt.mock.calls).toEqual([[s.mob,20]]);
-    expect(s.player.hitPoints).toBe(80);expect(s.encounter.chargeHit).toBe(1);
+    expect(s.player.handleHurt.mock.calls).toEqual([[s.mob,25]]);
+    expect(s.player.hitPoints).toBe(75);expect(s.encounter.chargeHit).toBe(1);
 });
 test.each([[.49,true],[.5,false]])('a cooled-down ordinary swing charges on roll %s: %s',(roll,charges)=>{
     const s=setup();s.random.mockReturnValue(roll);
     expect(s.start()).toBe(charges);expect(s.field.held(s.mob)).toBe(charges);
 });
-test.each([[0,3000],[1,6000]])('charge retry cooldown spans three to six seconds: random %s', (roll,ready)=>{
+test.each([[0,2000],[1,4000]])('charge retry cooldown spans two to four seconds: random %s', (roll,ready)=>{
     const s=setup();s.random.mockReturnValueOnce(roll).mockReturnValueOnce(.99);
     expect(s.start()).toBe(false);
     s.random.mockReturnValue(0);
@@ -266,4 +266,44 @@ test('main-map rat opt-out returns control to ordinary combat, while another map
     expect(main.start()).toBe(false);expect(main.field.attacks.size).toBe(0);
     const other=setup({mapId:'world_oa'});other.mob.kind=GameTypes.Entities.RAT;
     expect(other.start()).toBe(true);
+});
+
+
+test('a reported adjacent swing anchors the charge to the visible side and hits a stationary player',()=>{
+    const s=setup();s.field.cooldowns.set(2,0);
+    s.encounter.correction=1;
+    s.field.reportSwing(s.encounter,{mobId:2,x:9,y:11,correction:1},0);
+    expect(s.field.intercept(s.encounter,s.mob,0)).toBe(true);
+    expect([s.mob.x,s.mob.y]).toEqual([9,11]);
+    expect(s.field.state(s.encounter).fieldAttacks[0]).toMatchObject({direction:{x:1,y:0},lane:[{x:10,y:11},{x:11,y:11}]});
+    s.controller.free=()=>false;s.field.tick(650);s.field.tick(830);
+    expect([s.mob.x,s.mob.y]).toEqual([9,11]);
+    expect(s.player.handleHurt).toHaveBeenCalledTimes(1);
+});
+test.each([
+    {x:10,y:11}, {x:9.5,y:11}, {x:100,y:11}, {x:9,y:11,correction:0}
+])('invalid swing origin cannot relocate a mob or begin a charge: %j', point=>{
+    const s=setup();s.encounter.correction=1;s.field.cooldowns.set(2,0);
+    s.field.reportSwing(s.encounter,{mobId:2,correction:1,...point},0);
+    expect(s.field.intercept(s.encounter,s.mob,0)).toBe(false);
+    expect([s.mob.x,s.mob.y]).toEqual([10,10]);expect(s.field.attacks.size).toBe(0);
+});
+test('stale swing reports cannot move a charge to an old position',()=>{
+    const s=setup();s.encounter.correction=1;s.field.cooldowns.set(2,0);
+    s.field.reportSwing(s.encounter,{mobId:2,x:9,y:11,correction:1},0);
+    expect(s.field.intercept(s.encounter,s.mob,251)).toBe(false);
+    expect([s.mob.x,s.mob.y]).toEqual([10,10]);
+});
+test.each(['lunge','slam'])('a connected %s cannot roll zero damage, while zero damage-taken remains respected',pattern=>{
+    const s=setup({damage:0,slam:pattern==='slam'});s.field.setMode(pattern);s.start();
+    s.field.tick(pattern==='slam'?950:650);s.field.tick(1130);
+    expect(s.player.handleHurt).toHaveBeenCalledWith(s.mob,1);expect(s.encounter.chargeHit).toBe(1);
+    const immune=setup({damage:0,slam:pattern==='slam'});immune.field.setMode(pattern);
+    immune.player.playerClassModifiers.meleeDamageTaken=0;immune.start();immune.field.tick(950);immune.field.tick(1130);
+    expect(immune.player.handleHurt).toHaveBeenCalledWith(immune.mob,0);expect(immune.encounter.chargeHit).toBeUndefined();
+});
+test('normal combat enables mixed Slam and Lunge while retaining capability and script exclusions',()=>{
+    const s=setup({slam:undefined});
+    expect(s.field.slamEnabled).toBe(true);expect(s.start()).toBe(true);
+    expect(s.field.state(s.encounter).fieldAttacks[0].pattern).toBe('slam');
 });

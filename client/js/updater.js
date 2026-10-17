@@ -80,7 +80,7 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
                     return;
                 }
                 m = entity.movement;
-                if (m) {
+                if (m && !entity.combatMovementHeld) {
                     if (m.inProgress) {
                         m.step(self.game.currentTime);
                         if (entity instanceof Character && !m.inProgress && entity.isMoving()) {
@@ -161,6 +161,7 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
         },
 
         updateCharacter: function (c, startTime) {
+            if (c.combatMovementHeld) return;
             if (c.isMoving() && c.movement.inProgress === false) {
                 var startX = c.x, startY = c.y,
                     endX = c.path[c.step][0] * 16,
