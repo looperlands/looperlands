@@ -416,7 +416,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         const progress = Math.max(0, Math.min(1, (this.game.currentTime - dissolve.startedAt) / dissolve.duration));
                         const visible = dissolve.incoming ? progress : 1 - progress;
                         if (this.game.app.settings.getReducedMotion()) entityData.globalAlpha = visible;
-                        else entityData.dissolve = {visible, pixelSize: 2 * s, scatter: !dissolve.incoming};
+                        else entityData.dissolve = {visible, pixelSize: s, scatter: !dissolve.incoming};
                         if (dissolve.incoming && progress === 1) entity.pixelDissolve = null;
                     }
 

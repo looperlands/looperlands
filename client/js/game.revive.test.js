@@ -21,7 +21,7 @@ function setup(reduced = false) {
 
 afterEach(() => jest.useRealTimers());
 
-test.each([[false, 420], [true, 120]])('death dissolves promptly and retains the avatar and socket (reduced motion=%s)', (reduced, duration) => {
+test.each([[false, 1000], [true, 120]])('death dissolves promptly and retains the avatar and socket (reduced motion=%s)', (reduced, duration) => {
     jest.useFakeTimers();
     // The production methods use the same host timers as the browser.
     sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
@@ -46,7 +46,7 @@ test('disconnect during dissolution cannot replace the reconnect prompt', () => 
     jest.useFakeTimers(); sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
     const {game} = setup();
     game.beginPlayerDeath(); game.disconnected = true;
-    jest.advanceTimersByTime(500);
+    jest.advanceTimersByTime(1100);
     expect(game.playerdeath_callback).not.toHaveBeenCalled();
     expect(game.restart()).toBe(false);
 });
@@ -82,7 +82,7 @@ test('revive WELCOME restores health and position once without recreating game i
     welcome(42, 'Looper', 12, 20, 200, 'Explorer', 1234);
     expect(player.setGridPosition).toHaveBeenCalledWith(12, 20);
     expect(player.setMaxHitPoints).toHaveBeenCalledWith(200);
-    expect(player.pixelDissolve).toMatchObject({incoming: true});
+    expect(player.pixelDissolve).toMatchObject({incoming: true, duration: 1000});
     expect(game.reviving).toBe(false);
     expect(game.storage.incrementRevives).toHaveBeenCalledTimes(1);
     expect(game.app.hideDeath).toHaveBeenCalledTimes(1);

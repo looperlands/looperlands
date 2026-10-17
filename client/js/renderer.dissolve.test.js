@@ -3,7 +3,7 @@ const source = fs.readFileSync(require.resolve('./renderer-webworker'), 'utf8');
 const draw = vm.runInNewContext(source + '\ndrawDissolvingSprite;', {self: {}, console});
 function frame(visible, scatter = false) {
     const ctx = {drawImage: jest.fn()};
-    draw(ctx, 'sprite', 32, 64, 16, 32, -8, -16, 48, 96, {visible, pixelSize: 6, scatter});
+    draw(ctx, 'sprite', 32, 64, 16, 32, -8, -16, 48, 96, {visible, pixelSize: 3, scatter});
     return ctx.drawImage.mock.calls;
 }
 
@@ -16,7 +16,8 @@ test('pixel masks are stable, monotonic, bounded and use original sprite colors'
     const half = frame(0.5), quarter = frame(0.25);
     expect(frame(0.5)).toEqual(half);
     expect(quarter.length).toBeGreaterThan(0);
-    expect(half.length).toBeLessThanOrEqual(128);
+    expect(half.length).toBeGreaterThan(128);
+    expect(half.length).toBeLessThanOrEqual(512);
     expect(half.length).toBeGreaterThan(quarter.length);
     quarter.forEach(cell => expect(half).toContainEqual(cell));
     half.forEach(([image, x, y, w, h, dx, dy, dw, dh]) => {

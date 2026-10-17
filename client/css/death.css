@@ -6,13 +6,14 @@ body.game #death {
     inset: 0;
     z-index: 1100;
     display: grid;
-    place-items: center;
+    align-items: center;
+    justify-items: end;
     width: auto;
     height: auto;
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
-    background: rgba(26, 16, 30, .42);
+    background: transparent;
     color: #f5e5c9;
     font-family: 'GraphicPixel', sans-serif;
     text-align: center;
@@ -28,8 +29,18 @@ body.death #death {
     pointer-events: auto;
     transition: opacity 180ms ease-out;
 }
+body #death.death-prompt-left { justify-items: start; }
+/* Remove the prompt before the server reply can start the reform animation. */
+body #death.reviving,
+body.game.death #death.reviving,
+body.death #death.reviving {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
 #death .death-card {
-    width: min(380px, 100%);
+    width: min(300px, calc(50vw - 48px));
     padding: 0 26px 24px;
     box-sizing: border-box;
     border-width: 0;
@@ -81,6 +92,11 @@ body #death #respawn[hidden] { display: none; }
     #death .death-card { padding: 0 24px 14px; }
     body #death #respawn { margin-top: 16px; }
     #death a { margin-top: 8px; }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+    body #death, body #death.death-prompt-left { align-items: end; justify-items: center; }
+    body #death.death-prompt-top { align-items: start; padding-top: 32px; }
+    #death .death-card { width: min(340px, 100%); }
 }
 @media (prefers-reduced-motion: reduce) {
     body #death, body.game #death, body.death #death { transition: opacity 100ms linear; }

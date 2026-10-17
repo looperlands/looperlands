@@ -7253,7 +7253,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.reviving = false;
                         self.storage.incrementRevives();
                         self.player.isFading = false;
-                        self.player.pixelDissolve = {startedAt: self.currentTime, duration: 420, incoming: true};
+                        self.player.pixelDissolve = {startedAt: self.currentTime, duration: self.app.settings.getReducedMotion() ? 120 : 1000, incoming: true};
                         self.app.hideDeath();
                         self.audioManager.playSound("revive");
                         self.app.initEquipmentIcons();
@@ -9985,7 +9985,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             beginPlayerDeath: function () {
                 const player = this.player;
-                const duration = this.app.settings.getReducedMotion() ? 120 : 420;
+                const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
                 clearTimeout(this.playerDeathTimer);
                 this.deathReady = false;
                 this.reviving = false;

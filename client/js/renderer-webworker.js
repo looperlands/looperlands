@@ -607,8 +607,8 @@ function drawDissolvingSprite(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh, dissol
             const rank = (((cx * 374761393) ^ (cy * 668265263)) >>> 0) % 997 / 997;
             if (rank >= visible) continue;
             const edge = dissolve.scatter ? Math.max(0, 1 - (visible - rank) / 0.22) : 0;
-            const driftX = Math.round((rank - 0.5) * edge * pixel * 4);
-            const driftY = -Math.round(edge * pixel * 3);
+            const driftX = Math.round((rank - 0.5) * edge * pixel * 18);
+            const driftY = -Math.round(edge * pixel * 14);
             const w = Math.min(pixel, dw - x), h = Math.min(pixel, dh - y);
             ctx.drawImage(image, sx + x * sw / dw, sy + y * sh / dh, w * sw / dw, h * sh / dh,
                 dx + x + driftX, dy + y + driftY, w, h);
