@@ -4,7 +4,8 @@ function buildActivityCatalog(types, stageDefinitions, maps = [], lakeDefinition
     types.forEachKind((kind, name) => {
         if (kind === undefined || typeof kind === 'function') return;
         const value = String(kind);
-        const label = name.startsWith('NFT_') ? name : name.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+        const displayName = types.isMob(kind) ? itemName(name) : name;
+        const label = name.startsWith('NFT_') ? name : displayName.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
         const entry = {value, label, kind: name};
         if (types.isMob(kind)) mobs.set(value, entry);
         if (types.isItem(kind)) items.set(value, entry);

@@ -16,6 +16,14 @@ test('new registry content appears without changing a separate list',()=>{
  const after=buildActivityCatalog(types,{});expect(before.items).toEqual([]);expect(after.items[0]).toMatchObject({value:'43',kind:'new_item'});
 });
 
+test('mob labels use game display names while preserving registry IDs and kinds',()=>{
+ const names=require('../../shared/js/altnames');
+ const catalog=buildActivityCatalog(GameTypes,{},[],{},names.getName);
+ expect(catalog.mobs.find(entry=>entry.kind==='m88nparrot')).toEqual({value:String(GameTypes.getKindFromString('m88nparrot')),kind:'m88nparrot',label:'Parrot'});
+ expect(catalog.mobs.find(entry=>entry.kind==='skeleton2').label).toBe('Greater skeleton');
+ expect(catalog.mobs.every(entry=>typeof entry.label==='string'&&entry.label.length>0)).toBe(true);
+});
+
 test('fish and lake options derive from the real lake definitions and display names',()=>{
  global.generateFishDataMap=undefined;
  const lakes=require('./lakes');const names=require('../../shared/js/altnames');
