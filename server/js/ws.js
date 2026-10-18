@@ -23,6 +23,7 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
+const PlayerTitleController = require('./playertitlecontroller');
 const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
 const {FieldGuide} = require('./fieldguide');
@@ -212,6 +213,9 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        const playerTitles = new PlayerTitleController(cache, () => self.worldsMap, platformClient, self.socialChat);
+        app.put('/session/:sessionId/title', (req, res) => playerTitles.save(req, res));
+        app.post('/session/:sessionId/title/prompt', (req, res) => playerTitles.prompt(req, res));
         app.get('/session/:sessionId/field-guide', (req, res) => self.fieldGuide.list(req, res));
         const fishingCatalog = require('./fishingcatalog').buildFishingCatalog(self.fieldGuide.catalog, Lakes, map => {
             const file = require('path').join(__dirname, '../../client/maps/world_client_' + map + '.json');

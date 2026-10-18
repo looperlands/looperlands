@@ -22,6 +22,14 @@ function setup() {
     return {client, receive, errors, messages: sandbox.Types.Messages};
 }
 
+test('title updates reach existing players without spawning them again', () => {
+    const {client, receive, messages: M} = setup();
+    const renamed = jest.fn();
+    client.onPlayerTitle(renamed);
+    receive([[M.PLAYER_TITLE, 42, 'New Looper', 'New Looper']]);
+    expect(renamed).toHaveBeenCalledWith(42, 'New Looper', 'New Looper');
+});
+
 test('a failed damage callback does not discard mob/chest despawns and the following drop', () => {
     const {client, receive, errors, messages: M} = setup();
     const failure = new Error('Damage feedback failed');

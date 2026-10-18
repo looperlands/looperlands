@@ -40,6 +40,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <meta property="og:description" content="Play LooperLands, an HTML5 massively multiplayer game demo powered by Loopring!">
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <link rel="stylesheet" href="css/social-chat.css" type="text/css">
+        <link rel="stylesheet" href="css/player-name.css" type="text/css">
         <link rel="stylesheet" href="css/event-board.css" type="text/css">
         <link rel="stylesheet" href="css/field-guide.css" type="text/css">
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
@@ -402,6 +403,14 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 							</section>
 							<section class="settings-panel" role="tabpanel" id="settings-panel-interface" data-settings-panel="interface" aria-labelledby="settings-tab-interface" tabindex="0" hidden>
 								<h2>Interface</h2>
+                                <div id="player-name-editor" role="group" aria-label="Display name">
+                                    <label for="player-display-name">Display name</label>
+                                    <div class="player-name-controls">
+                                        <input id="player-display-name" type="text" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="player-name-status">
+                                        <button id="player-name-save" type="button" class="panelBorder">Save name</button>
+                                    </div>
+                                    <p id="player-name-status" role="status" aria-live="polite"></p>
+                                </div>
 								<ul class="settings-list">
 									<li>
 										<input type="checkbox" id="renderMyText" name="renderMyText" value="true">
@@ -600,6 +609,11 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     </div>
                 </div>
 
+                <aside id="player-name-hint" aria-label="Choose a display name" hidden>
+                    <p>What should we call you?</p>
+                    <button id="player-name-choose" type="button">Choose name</button>
+                    <button id="player-name-dismiss" type="button">Not now</button>
+                </aside>
 				<article id="avatarStats" class="panel">
 					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Looper Info</div>
 					<div class="panelContent">

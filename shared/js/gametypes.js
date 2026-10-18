@@ -65,7 +65,8 @@ Types = {
         CHAT_INVENTORY_REQUEST: 62,
         NPC_STATE: 63,
         WORLD_AMBIENCE: 64,
-        TILE_ACTION: 65
+        TILE_ACTION: 65,
+        PLAYER_TITLE: 66
     },
 
     Entities: {

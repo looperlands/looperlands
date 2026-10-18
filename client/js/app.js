@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName) {
 
     var App = Class.extend({
         init: function () {
@@ -58,6 +58,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
+            if (!this.playerName && typeof PlayerName === 'function') this.playerName = new PlayerName(this);
             this.fieldGuide?.destroy();
             if (typeof FieldGuide === 'function') this.fieldGuide = new FieldGuide(this);
             this.consumableHud?.destroy();

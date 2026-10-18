@@ -7153,6 +7153,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
                 this.bindTileActionCallbacks();
                 this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
+                this.client.onPlayerTitle((id, name, title) => {
+                    const player = id === self.playerId ? self.player : self.entities[id];
+                    if (player) {player.name = name; player.title = title;}
+                    if (id === self.playerId) self.app.playerName?.update(title);
+                });
                 this.renderStatistics();
 
                 //>>includeStart("prodHost", pragmas.prodHost);
@@ -7235,6 +7240,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.playerPositionReady = true;
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;
+                    self.app.playerName?.onWelcome(title);
                     self.updateBars();
                     self.resetCamera();
                     self.updatePlateauMode();
