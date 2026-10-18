@@ -1,0 +1,15 @@
+#settings #player-name-editor {margin:0 0 20px; color:#fff2cf; font:16px/1.5 GraphicPixel, sans-serif;}
+#settings #player-name-editor label {display:block; margin-bottom:6px; cursor:text;}
+#player-name-editor .player-name-controls {display:flex; align-items:center; gap:8px; max-width:430px;}
+#settings #player-name-editor input {min-width:0; width:auto; flex:1; box-sizing:border-box; border:1px solid #b99761; border-radius:0; background:#271f25; color:#fff2cf; margin:0; padding:8px; font:inherit; line-height:1.5; user-select:text; caret-color:#f1ce92;}
+#settings #player-name-save {flex-shrink:0; color:#fff2cf; background:#533642 !important; font:inherit; padding:8px 12px;}
+#settings #player-name-save:hover {background:#6b4353 !important;}
+#settings #player-name-save:disabled {opacity:.6; cursor:wait;}
+#settings #player-name-save:focus-visible, #player-name-hint button:focus-visible {outline:2px solid #f1ce92; outline-offset:3px;}
+#settings #player-name-status {min-height:1.5em; margin:6px 0 0; font-size:14px; line-height:1.5;}
+#player-name-hint {position:absolute; right:16px; bottom:86px; z-index:1001; box-sizing:border-box; width:230px; max-width:calc(100% - 32px); padding:10px 12px; background:#3f2a35; border:1px solid #b99761; color:#fff2cf; font:14px/1.5 GraphicPixel, sans-serif; text-align:left;}
+#player-name-hint[hidden] {display:none;}
+#player-name-hint p {margin:0 0 6px;}
+#player-name-hint button {font:inherit; min-height:32px; padding:4px 8px; cursor:pointer; color:#fff2cf; background:#533642; border:1px solid #b99761;}
+#player-name-hint button:hover {background:#6b4353;}
+#player-name-hint #player-name-dismiss {border-color:transparent; background:transparent;}

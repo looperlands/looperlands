@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, '..');
 process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
+const playerNamePreview = process.env.PLAYER_NAME_PREVIEW === '1';
 const combatPreview = process.env.COMBAT_PREVIEW === '1';
 const slamPreview = combatPreview && process.env.COMBAT_SLAM_PREVIEW === '1';
 // Set a separate directory for a fresh test session without resetting other previews.
@@ -37,7 +38,7 @@ const previewExperience = new Map([
     [combatWeapon, experienceAtLevel(24)]
 ]);
 const gameDataFile = path.join(data, 'lantern-game-data.json');
-if (combatPreview) process.env.ACTIVITY_SPOOL_PATH = path.join(data, 'activity.jsonl');
+if (combatPreview || playerNamePreview) process.env.ACTIVITY_SPOOL_PATH = path.join(data, 'activity.jsonl');
 const savedGameData = fs.existsSync(gameDataFile) ? JSON.parse(fs.readFileSync(gameDataFile, 'utf8')) : {};
 const gameData = new Map(avatars.map(nft => [nft, savedGameData[nft] || {kills: {}, items: [], quests: [], choices: []}]));
 function saveGameData() {
@@ -126,10 +127,27 @@ api.post('/api/game/asset/kill', (req, res) => {
     res.json({success: true});
 });
 api.post('/api/game/activity', (req, res) => res.json({accepted: req.body.map(row => row.id)}));
+const playerTitlesFile = path.join(data, 'player-titles.json');
+const playerTitles = fs.existsSync(playerTitlesFile) ? JSON.parse(fs.readFileSync(playerTitlesFile, 'utf8')) : {};
+const playerPromptsFile = path.join(data, 'player-name-prompts.json');
+const playerPrompts = fs.existsSync(playerPromptsFile) ? JSON.parse(fs.readFileSync(playerPromptsFile, 'utf8')) : {};
+api.put('/api/game/wallet/:wallet/title', (req, res) => {
+    playerTitles[req.params.wallet.toLowerCase()] = req.body.title;
+    fs.writeFileSync(playerTitlesFile, JSON.stringify(playerTitles));
+    res.json({title: req.body.title, displayName: req.body.title});
+});
+api.post('/api/game/wallet/:wallet/title/prompt', (req, res) => {
+    const wallet = req.params.wallet.toLowerCase();
+    const showPrompt = !playerPrompts[wallet] && !playerTitles[wallet];
+    playerPrompts[wallet] = true;
+    fs.writeFileSync(playerPromptsFile, JSON.stringify(playerPrompts));
+    res.json({showPrompt});
+});
 api.get(/.*/, (req, res) => res.json([]));
 api.post(/.*/, (req, res) => res.json({success: true, xp: 0}));
 api.put(/.*/, (req, res) => res.json({success: true}));
 require('../server/js/ens').getEns = async wallet => 'Local Looper ' + (wallets.indexOf(wallet) + 1);
+if (playerNamePreview) require('../server/js/ens').getEnsName = async () => null;
 const discord = require('../server/js/discord');
 discord.sendMessage = async () => {};
 discord.sendToDevChannel = async () => {};
@@ -137,7 +155,7 @@ discord.sendToDevChannel = async () => {};
 async function createSession(index) {
     const response = await fetch(process.env.APP_URL + '/session', {
         method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': process.env.LOOPWORMS_API_KEY},
-        body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: 'Local Looper ' + (index + 1),
+        body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: playerTitles[wallets[index]] || (playerNamePreview ? 'Player' : 'Local Looper ' + (index + 1)),
             xp: previewExperience.get(avatars[index]), mapId: 'main', ...(slamPreview ? {x:59,y:11} : combatPreview ? {x:20,y:150} : {checkpointId:'2'}), f2p: false, trait: 'rogue'})
     });
     const session = await response.json();

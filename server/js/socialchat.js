@@ -23,10 +23,11 @@ function identityFromSession(session) {
     // Sessions created before the full ENS field may still have a resolved name.
     const legacyName = resolved && ![fallback, wallet, shortWallet(wallet)].includes(resolved) ? resolved : '';
     const ensName = session.ensName === undefined ? legacyName : session.ensName;
+    const customTitle = title && !/^player[^\p{L}\p{N}]*$/iu.test(title) ? title : '';
     return {
         title: title.replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
         walletShort: shortWallet(wallet),
-        label: String(ensName || title || shortWallet(wallet)).replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
+        label: String(customTitle || ensName || title || shortWallet(wallet)).replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
         avatar: String(session.nftId || '').replace(/^0x/, 'NFT_'),
         mapId: session.mapId
     };
@@ -280,4 +281,10 @@ class SocialChat {
     }
 }
 
-module.exports = { SocialChat, identityFromSession, shortWallet };
+function gameplayNameFromSession(session) {
+    const identity = identityFromSession(session);
+    const name = Utils.sanitize(identity.label);
+    return identity.label === identity.title ? name : name.substr(0, 15);
+}
+
+module.exports = { SocialChat, identityFromSession, shortWallet, gameplayNameFromSession };

@@ -13,7 +13,7 @@ var cls = require("./lib/class"),
 
 const discord = require('./discord.js');
 const chat = require("./chat.js");
-const { identityFromSession } = require('./socialchat');
+const { gameplayNameFromSession } = require('./socialchat');
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
@@ -106,7 +106,7 @@ module.exports = Player = Character.extend({
                     connection.close('Session map does not match this world');
                     return;
                 }
-                self.name = Utils.sanitize(identityFromSession(playerCache).label).substr(0, 15);
+                self.name = gameplayNameFromSession(playerCache);
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);

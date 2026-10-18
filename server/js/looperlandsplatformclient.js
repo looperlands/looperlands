@@ -64,6 +64,16 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async setPlayerTitle(walletId, title) {
+        const response = await this.client.put(`/api/game/wallet/${encodeURIComponent(walletId)}/title`, {title}, {timeout: 10000});
+        return response.data;
+    }
+
+    async claimPlayerTitlePrompt(walletId) {
+        const response = await this.client.post(`/api/game/wallet/${encodeURIComponent(walletId)}/title/prompt`, {}, {timeout: 10000});
+        return response.data;
+    }
+
     async getSpinIndex() {
         try {
             const url = "/api/maps/cornsino/spin";

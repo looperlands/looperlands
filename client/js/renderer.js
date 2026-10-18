@@ -771,7 +771,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         "globalAlpha": opacity
                     });
     
-                    if (entity.title !== undefined) {
+                    if (entity.title !== undefined && (!(entity instanceof Player) || entity.title !== entity.name)) {
                         if (entity instanceof Player){
                             textData.push({
                                 "id": "text",

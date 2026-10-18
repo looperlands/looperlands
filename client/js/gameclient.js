@@ -27,6 +27,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWN_BATCH] = this.receiveSpawnBatch;
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
+            this.handlers[Types.Messages.PLAYER_TITLE] = data => this.playerTitle_callback?.(data[1], data[2], data[3]);
             [Types.Messages.CHAT_STATE, Types.Messages.CHAT_MESSAGE, Types.Messages.CHAT_PLAYERS, Types.Messages.CHAT_ERROR, Types.Messages.CHAT_INVENTORY].forEach(type => {
                 this.handlers[type] = this.receiveSocialChat;
             });
@@ -709,6 +710,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.teleport_callback = callback;
         },
     
+        onPlayerTitle: function(callback) {
+            this.playerTitle_callback = callback;
+        },
+
         onChatMessage: function(callback) {
             this.chat_callback = callback;
         },

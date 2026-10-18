@@ -2,7 +2,7 @@ jest.mock('./discord', () => ({ sendMessage: jest.fn() }));
 const NodeCache = require('node-cache');
 global.Types = {};
 const Types = require('../../shared/js/gametypes');
-const { SocialChat, identityFromSession } = require('./socialchat');
+const { SocialChat, identityFromSession, gameplayNameFromSession } = require('./socialchat');
 const publicChat = require('./chat');
 const discord = require('./discord');
 const Collectables = require('./collectables');
@@ -26,18 +26,24 @@ afterEach(() => { cache.close(); service.history.close(); service.gifts.close();
 
 test('labels and avatar use session identity, never a forged client name', () => {
     const person = player(1);
-    expect(service.identity(person)).toMatchObject({ label:'verified-1', title:'Same title', walletShort:'0x0000…0001', avatar:'NFT_abc1' });
+    expect(service.identity(person)).toMatchObject({ label:'Same title', title:'Same title', walletShort:'0x0000…0001', avatar:'NFT_abc1' });
     const session = cache.get(person.sessionId); session.title = ' '; cache.set(person.sessionId, session);
     expect(service.identity(person).label).toBe('verified-1');
     expect(identityFromSession({walletId:person.walletId}).label).toBe('0x0000…0001');
 });
 
-test('ENS takes precedence while a missing ENS keeps the title and shortened wallet fallback', () => {
+test('chosen display names take precedence while default titles retain the existing fallback', () => {
     const walletId = '0x' + 'a'.repeat(40);
-    expect(identityFromSession({walletId, ensName: 'andre.eth', resolvedName: 'andre', title: 'Knight'})).toMatchObject({label: 'andre.eth', title: 'Knight'});
+    expect(identityFromSession({walletId, ensName: 'andre.eth', resolvedName: 'andre', title: 'Knight'})).toMatchObject({label: 'Knight', title: 'Knight'});
+    expect(identityFromSession({walletId, ensName: 'andre.eth', title: 'Player'}).label).toBe('andre.eth');
     expect(identityFromSession({walletId, ensName: null, resolvedName: 'aaaaaa', title: 'Knight'}).label).toBe('Knight');
     expect(identityFromSession({walletId, resolvedName: 'aaaaaa'}).label).toBe('0xaaaa…aaaa');
     expect(identityFromSession({walletId, ensName: null, title: ' '}).label).toBe('0xaaaa…aaaa');
+});
+
+test('gameplay retains the whole chosen name without changing the existing default-name truncation', () => {
+    expect(gameplayNameFromSession({title: 'a'.repeat(24), ensName: 'andre.eth'})).toBe('a'.repeat(24));
+    expect(gameplayNameFromSession({title: 'Player', ensName: 'degroot.loopring.eth'})).toBe('degroot.looprin');
 });
 
 test('same-title DMs target distinct wallets and reach only the two participants', () => {
