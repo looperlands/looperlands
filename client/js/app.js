@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards) {
 
     var App = Class.extend({
         init: function () {
@@ -55,6 +55,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.isDesktop = !(this.isMobile || this.isTablet);
             this.supportsWorkers = !!window.Worker;
             this.ready = true;
+            this.progressionCards?.destroy();
+            this.progressionCards = new ProgressionCards(this, game);
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
@@ -793,6 +795,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         showLevelUpNotification: function (upgrades) {
+            if (this.progressionCards) upgrades = upgrades.filter(upgrade => !['Avatar', 'Weapon', 'Tool'].includes(upgrade.label));
+            if (!upgrades.length) return;
             const notification = $('#levelup-notification');
             clearTimeout(this.levelUpNotificationTimeout);
             // Keep simultaneous upgrades readable in a single compact notification.
@@ -1673,35 +1677,11 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         toggleAvatarInfo: function (event) {
-
-            if($("#avatarStats").is(":visible")) {
-                $("#avatarStats").hide();
-            } else {
-                const url = `/session/${this.sessionId}/playerclassmodifiers`;
-                axios.get(url).then((res) => {
-                    const value = res.data;
-                    $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
-                    $("#avatarStats").show();
-                }).catch(error => {
-                    console.error("Error while getting avatar stats", error);
-                })
-            }
-
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            return false
+            return this.progressionCards.toggle('avatar', event);
         },
 
         toggleWeaponInfo: function (event) {
-            $('#weaponStats').toggleClass('visible');
-            if ($('#weaponStats').hasClass('visible')) {
-                $('#population').removeClass('visible');
-                $('#avatarStats').removeClass('visible');
-            }
-
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            return false
+            return this.progressionCards.toggle('weapon', event);
         },
 
         openPopup: function (type, url) {

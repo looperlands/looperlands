@@ -8089,10 +8089,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         let kindString = Types.getKindAsString(kind);
                         let mobName = AltNames.getName(kindString);
 
-                        setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
-                        }, 200);
-
                         self.renderStatistics();
 
                         if (mobName === 'boss') {
@@ -8314,9 +8310,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onQuestComplete(function (questName, endText, xpReward, medal) {
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
                         self.showQuestCompleteNotification(questName, endText, xpReward, medal);
-                        setTimeout(function () {
-                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp", self.player.id);
-                        }, 200);
+                        self.renderStatistics();
                     });
 
                     self.client.onFollow(function (entityId) {
@@ -10378,7 +10372,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             renderStatistics: function () {
-                const self = this, player = this.player, sessionId = this.sessionId;
+                const self = this, player = this.player, sessionId = this.sessionId, mapId = this.mapId;
                 const weaponName = player?.weaponName;
                 const request = this.statisticsRequest = (this.statisticsRequest || 0) + 1;
                 function validLevelInfo(info) {
@@ -10386,8 +10380,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         info.percentage != null && Number.isFinite(Number(info.percentage));
                 }
 
-                return axios.get("/session/" + sessionId + "/statistics").then(function (response) {
-                    if (!player || self.player !== player || self.sessionId !== sessionId || player.weaponName !== weaponName ||
+                return axios.get("/session/" + sessionId + "/statistics", {timeout: 10000}).then(function (response) {
+                    if (!player || self.player !== player || self.sessionId !== sessionId || self.mapId !== mapId || player.weaponName !== weaponName ||
                         request < (self.appliedStatisticsRequest || 0)) return;
                     self.appliedStatisticsRequest = request;
 
@@ -10402,6 +10396,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
 
                         self.notifyAssetLevelUps(response.data);
+                        self.app.progressionCards?.update(response.data);
                         self.player.level = Number(level);
 
                         if (self.player.level === 100) {
@@ -10436,32 +10431,36 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 $('#weaponTraitContainer').show();
                             }
 
-                            // render projectile tiles
-                            $('#projectileContainer').html('');
+                            const spriteInfo = self.sprites[self.player.weaponName];
+                            const projectileKey = JSON.stringify([weaponName, response.data.weaponInfo.selectedProjectile, spriteInfo?.projectiles]);
+                            if (self.projectileKey !== projectileKey) {
+                                self.projectileKey = projectileKey;
+                                // render projectile tiles
+                                $('#projectileContainer').html('');
 
-                            let spriteInfo = self.sprites[self.player.weaponName];
-                            if (spriteInfo?.projectiles !== undefined) {
-                                for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
-                                    const projectileType = Object.keys(spriteInfo.projectiles)[i];
-                                    let projectile = spriteInfo.projectiles[projectileType];
-                                    let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
-                                    let dynamic = Types.spriteIsDynamicRangedWeapon(self.player.weaponName);
-                                    let url;
-                                    if (dynamic) {
-                                        const {tokenHash} = self.player.dynamicWeaponNFTData;
-                                        url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_${projectileType}.png`;
-                                    } else {
-                                        url = `img/1/${projectile}.png`;
+                                if (spriteInfo?.projectiles !== undefined) {
+                                    for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
+                                        const projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                        let projectile = spriteInfo.projectiles[projectileType];
+                                        let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
+                                        let dynamic = Types.spriteIsDynamicRangedWeapon(self.player.weaponName);
+                                        let url;
+                                        if (dynamic) {
+                                            const {tokenHash} = self.player.dynamicWeaponNFTData;
+                                            url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_${projectileType}.png`;
+                                        } else {
+                                            url = `img/1/${projectile}.png`;
+                                        }
+                                        let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='" + url + "' /></div>";
+                                        let projectileElement = $(projectileHtml);
+                                        projectileElement.click(function (event) {
+                                            self.player.currentProjectileType = projectileType;
+                                            self.client.sendSelectProjectile(projectileType);
+                                            self.app.toggleWeaponInfo(event)
+                                            self.renderStatistics();
+                                        });
+                                        $('#projectileContainer').append(projectileElement);
                                     }
-                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='" + url + "' /></div>";
-                                    let projectileElement = $(projectileHtml);
-                                    projectileElement.click(function (event) {
-                                        self.player.currentProjectileType = projectileType;
-                                        self.client.sendSelectProjectile(projectileType);
-                                        self.app.toggleWeaponInfo(event)
-                                        self.renderStatistics();
-                                    });
-                                    $('#projectileContainer').append(projectileElement);
                                 }
                             }
 

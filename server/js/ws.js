@@ -824,7 +824,7 @@ WS.socketIOServer = Server.extend({
                     weaponInfo.weaponLevelInfo = effectiveLevelInfo(player || {}, 'weaponLevel', weaponInfo.weaponLevelInfo);
                 }
 
-                weaponInfo.assetId = player?.weapon;
+                weaponInfo.assetId = player?.getNFTWeapon()?.nftId ?? player?.weapon;
 
                 let botInfo = {};
                 if (sessionData.botSessionId !== undefined) {
@@ -835,7 +835,16 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
+                // These cached totals include unsynced combat XP and persisted farming
+                // receipts. The client observes gains without inventing an award amount.
+                const experience = [{id: sessionData.nftId, type: 'avatar', xp: Number(sessionData.xp)}];
+                if (weaponInfo.assetId != null && weaponInfo.experience != null) experience.push({
+                    id: weaponInfo.assetId, type: weaponInfo.constructor === 'NFTSpecialItem' ? 'tool' : 'weapon', xp: Number(weaponInfo.experience)
+                });
+                const botSession = sessionData.botSessionId && cache.get(sessionData.botSessionId);
+                if (botSession) experience.push({id: botSession.nftId, type: 'companion', xp: Number(botSession.xp)});
                 let ret = {
+                    experience: experience.filter(asset => asset.id != null && Number.isFinite(asset.xp)),
                     avatarLevelInfo: avatarLevelInfo,
                     maxHp: maxHp,
                     weaponInfo: weaponInfo,
