@@ -12584,13 +12584,9 @@ Types.hasShadow = function(spriteName) {
 }
 
 Types.alwaysOnTop = function(spriteName) {
-    let kind = kinds[spriteName];
-    return false;
-    if (kind && kind[3] && kind[3].renderAlwaysOnTop === false) {
-        return false;
-    }
-
-    return true;
+    const option = kinds[spriteName]?.[3]?.alwaysOnTopOfPlayer;
+    // Asset options can contain the string value submitted by the platform form.
+    return option === true || option === 'true';
 }
 
 if(!(typeof exports === 'undefined')) {
