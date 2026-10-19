@@ -445,6 +445,15 @@ body.upscaled.game {background:#000;}
     cursor: pointer;
 }
 
+#weapon {
+    box-sizing: border-box;
+    padding: 2px;
+    background-origin: content-box;
+    background-clip: content-box;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+}
+
 #weaponStats {
     position: absolute;
     left: 70px;
