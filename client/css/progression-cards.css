@@ -1,0 +1,61 @@
+/* In-game player and equipped-item cards. */
+#avatarStats, #weaponStats { display: none !important; }
+.progression-cards { --lc-time: 1; position: fixed; inset: 0; z-index: 1200; pointer-events: none; font: 14px/1.4 GraphicPixel, sans-serif; color: #e4d0b6; text-align: left; }
+.progression-cards[hidden], .progression-cards [hidden] { display: none !important; }
+.progression-cards *, .progression-cards *::before, .progression-cards *::after { box-sizing: border-box; }
+.progression-cards button, .progression-cards input { font: inherit; color: inherit; }
+.progression-cards button { border: 0; border-radius: 2px; cursor: pointer; background: transparent; }
+.progression-cards button:disabled { opacity: .4; cursor: default; }
+.progression-cards button:focus-visible { outline: 2px solid #fce045; outline-offset: 3px; }
+.progression-cards ::selection { color: #342433; background: #fce045; }
+.lc-deck { position: absolute; display: flex; align-items: flex-end; gap: 16px; pointer-events: none; padding: 18px 10px 8px; max-width: calc(100vw - 24px); }
+.lc-card { --lc-accent: #f1cd85; position: relative; width: 246px; min-height: 388px; padding: 2px 9px 0; flex-shrink: 0; color: #e4d0b6; background: transparent; border: 7px solid transparent; border-image: url("../img/common/panel.png") 12 fill / 7px / 0 stretch; box-shadow: 0 12px 26px #100c1477; pointer-events: auto; transform-origin: right bottom; image-rendering: pixelated; }
+.lc-card.lc-weapon { --lc-accent: #a8d9ec; }
+.lc-card.lc-charged .lc-art { background-color: #584035; transition: background-color calc(600ms * var(--lc-time)) ease-out; }
+.lc-card.lc-charged.lc-weapon .lc-art { background-color: #364c54; }
+.lc-card-top { display: flex; align-items: center; justify-content: space-between; height: 29px; padding-bottom: 5px; border-bottom: 1px solid #9a6c545c; color: var(--lc-accent); font-size: 11px; }
+.progression-cards .lc-close { width: 30px; height: 30px; padding: 0; font: 22px/1 GraphicPixel, sans-serif; color: #d7ab97; }
+.progression-cards .lc-close:hover { background: #634353; color: #fff2d4; }
+.lc-card .lc-name { margin: 8px 0 4px; font: 25px/1.05 AdvoCut, GraphicPixel, sans-serif; color: #f4dfbc; white-space: normal; max-width: 210px; overflow-wrap: anywhere; }
+.lc-subtitle { font-size: 11px; margin: 0 0 12px; color: var(--lc-accent); }
+.lc-art { position: relative; height: 122px; margin: 0 -2px 10px; display: grid; place-items: center; overflow: hidden; background: #34242f; border-bottom: 1px solid #a5785655; transition: background-color calc(240ms * var(--lc-time)) ease-out; }
+.lc-weapon .lc-art { background-color: #26313b; }
+.lc-sprite { position: relative; display: inline-block; background-repeat: no-repeat; background-position: 0 0; image-rendering: pixelated; transform-origin: center; z-index: 1; }
+.lc-pedestal { position: absolute; left: calc(50% - 35px); bottom: 18px; width: 70px; height: 8px; border-radius: 50%; background: #17121c7a; }
+.lc-level-line { display: flex; align-items: baseline; gap: 8px; color: #d7ab97; font-size: 12px; padding: 0 1px; }
+.lc-level { font: 39px/1 AdvoCut, GraphicPixel, sans-serif; font-variant-numeric: tabular-nums; color: var(--lc-accent); }
+.lc-delta { margin-left: auto; font-size: 12px; color: #f4e0b1; }
+.lc-progress-text { display: flex; justify-content: space-between; margin: 11px 0 6px; color: #dec1ad; font-size: 10px; }
+.lc-track { height: 10px; padding: 2px; background: #17131c; border-block: 1px solid #b282614d; }
+.lc-fill { display: block; height: 100%; width: 100%; transform-origin: left; background: var(--lc-accent); transition: transform calc(350ms * var(--lc-time)) cubic-bezier(.22,.7,.2,1); }
+.lc-facts { margin-top: 13px; display: flex; gap: 18px; border-top: 1px solid #72525e80; padding-top: 9px; }
+.lc-facts > div { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.lc-facts span { font-size: 10px; color: #d7ab97; }
+.lc-facts strong { font-size: 12px; font-weight: normal; color: #ebd8bf; }
+.lc-note { height: 28px; margin: 6px 0 0; color: var(--lc-accent); font-size: 10px; }
+.progression-cards .lc-flip { position: relative; display: block; width: calc(100% + 14px); min-height: 36px; margin: 0 -7px; padding: 9px 10px; border-top: 1px solid #a5785666; background: #291d29; color: var(--lc-accent); font-size: 11px; text-align: left; }
+.progression-cards .lc-flip:hover { background: #533642; }
+.lc-back { height: 292px; overflow-y: auto; scrollbar-color: #a57856 #291d29; scrollbar-width: thin; }
+.lc-back h3 { font: 22px AdvoCut, GraphicPixel, sans-serif; margin: 18px 0 12px; color: var(--lc-accent); }
+.lc-details { margin: 0; }
+.lc-details > div { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #72525e80; gap: 8px; font-size: 11px; }
+.lc-details dt { color: #d7ab97; }
+.lc-details dd { margin: 0; color: #f1d6ae; }
+.lc-banner { position: absolute; left: -10px; right: -10px; top: 157px; padding: 5px 0; border: 3px solid transparent; border-image: url("../img/common/small-border.png") 3 / 3px / 0 stretch; text-align: center; color: #ffe2a0; background: #624235; font: 24px/1 AdvoCut, GraphicPixel, sans-serif; z-index: 5; box-shadow: 0 4px 10px #1a101e70; }
+.lc-effects { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
+.lc-mote, .lc-spark { position: fixed; width: 5px; height: 5px; background: #fce084; opacity: 0; }
+.lc-mote.lc-blue { background: #a8d9ec; }
+.lc-return-icon { pointer-events: none; }
+.lc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+body.inventory .lc-deck, body.settings .lc-deck { visibility: hidden; }
+@media (max-width: 900px) { .lc-card { width: 226px; } .lc-deck { gap: 12px; } }
+@media (max-width: 760px) {
+    .lc-deck { left: 10px; right: 10px !important; overflow-x: auto; scroll-snap-type: x mandatory; }
+    .lc-card { width: 258px; scroll-snap-align: center; }
+    .progression-cards .lc-close, .progression-cards .lc-flip { min-height: 44px; }
+}
+@media (max-height: 670px) and (min-width: 761px) { .lc-deck { zoom: .84; } }
+@media (prefers-reduced-motion: reduce) { .progression-cards * { transition: none !important; } }
+
+.lc-facts { flex-wrap: wrap; }
+.lc-back #buffInfo { display: block; font-size: 11px; margin: 12px 0; }

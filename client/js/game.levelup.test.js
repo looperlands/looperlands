@@ -12,7 +12,7 @@ function setup() {
     });
     const companion = {id: 2, x: 40, y: 80};
     const game = Object.assign({}, methods, {sessionId: 'one', player: {id: 1, weaponName: 'sword1'},
-        sprites: {}, app: {showLevelUpNotification: jest.fn()}, worldFx: {levelUp: jest.fn()},
+        sprites: {}, app: {showLevelUpNotification: jest.fn(), progressionCards: {update: jest.fn()}}, worldFx: {levelUp: jest.fn()},
         getEntityById: id => id === 2 ? companion : undefined});
     const stats = (avatar = 4, weapon = 3, bot = 2, assetId = 10) => ({
         avatarLevelInfo: {currentLevel: avatar, percentage: 0},
@@ -58,4 +58,22 @@ test('late responses cannot roll levels back or create a duplicate upgrade', asy
     axios.get.mockResolvedValue({data: stats(5)}); await game.renderStatistics();
     first({data: stats()}); await pending;
     expect(game.player.level).toBe(5); expect(game.app.showLevelUpNotification).toHaveBeenCalledTimes(1);
+});
+
+test('statistics feed cards after validation and discard responses from a departed map', async () => {
+    const {game, stats, axios} = setup(); game.mapId = 'one';
+    let resolve; axios.get.mockImplementationOnce(() => new Promise(done => {resolve = done;}));
+    const pending = game.renderStatistics(); game.mapId = 'two';
+    resolve({data: stats(80)}); await pending;
+    expect(game.app.progressionCards.update).not.toHaveBeenCalled();
+    axios.get.mockResolvedValue({data: stats()}); await game.renderStatistics();
+    expect(game.app.progressionCards.update).toHaveBeenCalledWith(stats());
+});
+
+test('unchanged statistics preserve the projectile controls instead of rebuilding their focused tiles', async () => {
+    const {game, stats, axios, elements} = setup();
+    axios.get.mockResolvedValue({data: stats()}); await game.renderStatistics(); await game.renderStatistics();
+    expect(elements.get('#projectileContainer').html).toHaveBeenCalledTimes(1);
+    game.player.weaponName = 'sword2'; await game.renderStatistics();
+    expect(elements.get('#projectileContainer').html).toHaveBeenCalledTimes(2);
 });
