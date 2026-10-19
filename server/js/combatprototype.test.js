@@ -256,11 +256,14 @@ test('trainer respects the tile a player is already walking into',()=>{
     s.move(11,11);expect(s.encounter.nextTile).toBeNull();
 });
 
-test('two diagonal completions can arrive together, but unlimited idle speed credit is not allowed',()=>{
+test('delayed diagonal completions share bounded idle speed credit',()=>{
     const s=setup();s.advance(10000);
-    s.move(11,12);s.move(12,13);
-    expect([s.player.x,s.player.y]).toEqual([12,13]);
-    s.move(13,14);expect([s.player.x,s.player.y]).toEqual([12,13]);
+    const correction=s.encounter.correction;
+    for(let i=1;i<=6;i++)s.move(10+i,11+i);
+    expect([s.player.x,s.player.y]).toEqual([16,17]);
+    expect(s.encounter.correction).toBe(correction);
+    s.move(17,18);expect([s.player.x,s.player.y]).toEqual([16,17]);
+    expect(s.encounter.correction).toBe(correction+1);
 });
 
 
