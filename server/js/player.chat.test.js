@@ -20,6 +20,8 @@ function createPlayer() {
                 case './message': return { Chat: function (player, message) { this.message = message; } };
                 case './format': return { check: () => true };
                 case './chat.js': return chat;
+                case './socialchat': return {gameplayNameFromSession: () => 'Companion'};
+                case './playerclassmodifiers.js': return {PlayerClassModifiers: function () {}};
                 case './looperlandsplatformclient.js': return { LooperLandsPlatformClient: function () {} };
                 case './quests/playereventbroker.js': return { PlayerEventBroker: function () {} };
                 default: return {};
@@ -92,4 +94,19 @@ test('a session cannot authenticate in a different map', async () => {
     } };
     await receive([Types.Messages.HELLO, 'Forged title', 1, 1, 'session-on-another-map']);
     expect(connection.close).toHaveBeenCalledWith('Session map does not match this world');
+});
+
+test('a rejected companion join cannot complete HELLO or restore its deleted session', async () => {
+    const {player, receive} = createPlayer();
+    player.hasEnteredGame = false;
+    const cache = {get: () => ({mapId: 'main', walletId: 'wallet', nftId: 'dog'}), set: jest.fn()};
+    player.server = {id: 'world_main', server: {cache, worldsMap: {}},
+        addPlayer: jest.fn().mockReturnValue(false), enter_callback: jest.fn()};
+    Object.assign(player, {equipArmor: jest.fn(), equipWeapon: jest.fn(), updatePosition: jest.fn(), send: jest.fn()});
+    await receive([Types.Messages.HELLO, 'Dog', 1, 1, 'companion-session']);
+    expect(player.server.addPlayer).toHaveBeenCalledWith(player);
+    expect(player.hasEnteredGame).toBe(false);
+    expect(player.server.enter_callback).not.toHaveBeenCalled();
+    expect(cache.set).not.toHaveBeenCalled();
+    expect(player.send).not.toHaveBeenCalled();
 });

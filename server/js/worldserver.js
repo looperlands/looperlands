@@ -503,6 +503,14 @@ module.exports = World = cls.Class.extend({
     },
 
     removeEntity: function (entity) {
+        if (entity.type === "player" && !entity.isBot()) {
+            // Companion sockets can miss the owner's proximity-based despawn.
+            this.forEachPlayer(function (companion) {
+                if (companion.isBot() && companion.companionOwnerId === entity.id) {
+                    companion.connection.close('Companion owner left the world');
+                }
+            });
+        }
         if (entity.id in this.entities) {
             delete this.entities[entity.id];
         }
@@ -528,6 +536,18 @@ module.exports = World = cls.Class.extend({
     },
 
     addPlayer: function (player) {
+        if (player.isBot()) {
+            const session = this.server.cache.get(player.sessionId);
+            const owner = this.getPlayerById(session?.owner);
+            // Session creation is asynchronous: the owner may have left already.
+            if (!owner || owner.isBot() || !owner.hasEnteredGame || owner.isDead ||
+                !owner.walletId || owner.walletId.toLowerCase() !== player.walletId?.toLowerCase()) {
+                this.server.cache.del(player.sessionId);
+                player.connection.close('Companion owner is no longer in this world');
+                return false;
+            }
+            player.companionOwnerId = owner.id;
+        }
         // A map switch opens a new connection before the old socket necessarily closes.
         // Retire the previous player before registering the destination-map player.
         if (!player.isBot() && player.walletId) {
