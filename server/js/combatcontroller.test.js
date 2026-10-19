@@ -69,6 +69,41 @@ test('completed tiles update visibility and activity; stale reports cannot telep
     s.one.handlers.combat({action:'move',x:12,y:11,correction:old});expect([s.one.p.x,s.one.p.y]).toEqual([70,3]);
     expect(e.correction).toBe(old+1);expect(s.one.p.hitPoints).toBe(80);
 });
+
+test.each([24,87,120].flatMap(speed=>[600,1000].flatMap(delay=>[[speed,delay,0],[speed,delay,1]])))(
+    'walking at %i ms per tile tolerates %i ms batches with diagonal=%i',(speed,delay,dy)=>{
+    const s=setup();s.one.p.getMoveSpeed=()=>speed;
+    const e=s.one.ready();
+    const duration=speed*Math.hypot(1,dy);
+    const move=i=>s.one.handlers.combat({action:'move',x:10+i,y:11+i*dy,correction:1});
+    // Begin walking normally, then hold completed-tile reports in the network.
+    s.advance(duration);move(1);
+    const steps=Math.floor(delay/duration);
+    s.advance(steps*duration);
+    for(let i=1;i<=steps;i++)move(1+i);
+    // Reports continue at normal speed after the batch drains.
+    for(let i=1;i<=5;i++){s.advance(duration);move(1+steps+i);}
+    expect(e.stats.corrections).toBe(0);
+    expect([s.one.p.x,s.one.p.y]).toEqual([16+steps,11+(6+steps)*dy]);
+});
+
+test('network batching allowance cannot sustain walking faster than the avatar speed',()=>{
+    const s=setup(),e=s.one.ready();s.advance(10000);
+    for(let i=1;i<=25;i++){
+        s.advance(60);
+        s.one.handlers.combat({action:'move',x:10+i,y:11,correction:1});
+    }
+    expect(e.stats.corrections).toBe(1);
+    expect(s.one.p.x).toBeLessThan(35);
+});
+
+test.each(['warp','wall','corner'])('network batching allowance still rejects a %s',reason=>{
+    const s=setup(),e=s.one.ready();s.advance(10000);
+    if(reason!=='warp')s.world.isValidPosition=(x,y)=>x!==11||y!==11;
+    s.one.handlers.combat({action:'move',x:reason==='warp'?20:11,y:reason==='corner'?12:11,correction:1});
+    expect(e.stats.corrections).toBe(1);
+    expect([s.one.p.x,s.one.p.y]).toEqual([10,11]);
+});
 test('new mob charge opens exactly one validated counter and cannot award free XP',()=>{
     const s=setup(),e=s.start();
     s.one.handlers.combat({action:'technique',mobId:50});expect(s.mob.hitPoints).toBe(100);

@@ -4,6 +4,7 @@ const Messages = require('./message');
 const FieldAttacks = require('./combatfieldattacks');
 const same = (a, b) => a.x === b.x && a.y === b.y;
 const STREAK_WINDOW = 1500;
+const MOVEMENT_BATCH_WINDOW = 1000;
 
 class CombatController {
     constructor(world, now = Date.now, options = {}) {
@@ -165,9 +166,11 @@ class CombatController {
         if (same(player, point)) { this.reserveNextTile(encounter,point.next); return; }
         const dx = point.x - player.x, dy = point.y - player.y;
         const speed = player.getMoveSpeed(), cost = Math.hypot(dx,dy)*speed;
-        // Keep elapsed-time credit for two diagonal tiles, matching the client's bounded
-        // frame catch-up. Packet batching must not turn valid movement into a speed violation.
-        const budget = Math.min(2*Math.SQRT2*speed, encounter.moveBudget + now-encounter.moveBudgetAt);
+        // Network stalls can batch many normally completed tiles, independently of
+        // the client's two-tile frame catch-up. Keep up to one second of elapsed
+        // credit, while still charging every tile and bounding idle speed credit.
+        const maxBudget = Math.max(MOVEMENT_BATCH_WINDOW, 2*Math.SQRT2*speed);
+        const budget = Math.min(maxBudget, encounter.moveBudget + now-encounter.moveBudgetAt);
         const valid = now >= encounter.lockUntil && Math.abs(dx)<=1 && Math.abs(dy)<=1
             && budget+35 >= cost && this.playerCanMove(encounter,point.x,point.y)
             && (!dx || !dy || this.playerCanMove(encounter,player.x+dx,player.y) && this.playerCanMove(encounter,player.x,player.y+dy));
