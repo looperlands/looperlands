@@ -12,14 +12,14 @@ function setup(reduced = false) {
     const game = Object.assign(Object.create(methods), {player, currentTime: 100,
         client: {connection: {connected: true}}, entities: {42: player}, floats: {},
         conversationHold: {stop: jest.fn()}, app: {settings: {getReducedMotion: () => reduced},
-            closeChoicesPopup: jest.fn(), setReviving: jest.fn(), hideDeath: jest.fn()},
+            closeChoicesPopup: jest.fn(), setReviving: jest.fn(), hideDeath: jest.fn(), showReviveFailure: jest.fn()},
         combatFeedback: {clear: jest.fn()}, toolImpactFeedback: {clear: jest.fn()},
         audioManager: {fadeOutCurrentMusic: jest.fn(), playSound: jest.fn()},
         removeEntity: jest.fn(), updateBuffInfo: jest.fn(), playerdeath_callback: jest.fn(), sendHello: jest.fn()});
     return {game, player};
 }
 
-afterEach(() => jest.useRealTimers());
+afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); });
 
 test.each([[false, 1000], [true, 120]])('death dissolves promptly and retains the avatar and socket (reduced motion=%s)', (reduced, duration) => {
     jest.useFakeTimers();
@@ -66,11 +66,13 @@ test('revive refreshes stale entity grids but keeps equipment, level, avatar and
     expect(game.initRenderingGrid).toHaveBeenCalledTimes(1);
 });
 
-test('revive WELCOME restores health and position once without recreating game inputs', () => {
+test.each([0, 11000])('WELCOME after %i ms restores health and position without recreating game inputs', delay => {
+    jest.useFakeTimers(); sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     const {game, player} = setup();
     let welcome;
     game.client.onWelcome = callback => { welcome = callback; };
-    Object.assign(game, {reviving: true, storage: {incrementRevives: jest.fn()},
+    Object.assign(game, {deathReady: true, storage: {incrementRevives: jest.fn()},
         renderer: {getEntityBoundingRect: () => ({})},
         app: {...game.app, initEquipmentIcons: jest.fn()}});
     for (const name of ['prepareRevivedPlayer', 'updateBars', 'resetCamera', 'updatePlateauMode', 'syncWorldTime', 'addEntity', 'startScenePolling', 'handleScene', 'renderStatistics', 'gamestart_callback']) game[name] = jest.fn();
@@ -78,7 +80,9 @@ test('revive WELCOME restores health and position once without recreating game i
     game.audioManager.updateMusic = jest.fn();
     const start = source.indexOf('this.client.onWelcome(');
     const end = source.indexOf('                    if (!self.storage.hasAlreadyPlayed()) {', start);
-    vm.runInNewContext(source.slice(start, end).replace('this.client.onWelcome', 'self.client.onWelcome') + '});', {self: game, setTimeout: jest.fn(), console});
+    vm.runInNewContext(source.slice(start, end).replace('this.client.onWelcome', 'self.client.onWelcome') + '});', {self: game, setTimeout: jest.fn(), clearTimeout, console});
+    game.restart();
+    jest.advanceTimersByTime(delay);
     welcome(42, 'Looper', 12, 20, 200, 'Explorer', 1234);
     expect(player.setGridPosition).toHaveBeenCalledWith(12, 20);
     expect(player.setMaxHitPoints).toHaveBeenCalledWith(200);
@@ -87,6 +91,50 @@ test('revive WELCOME restores health and position once without recreating game i
     expect(game.storage.incrementRevives).toHaveBeenCalledTimes(1);
     expect(game.app.hideDeath).toHaveBeenCalledTimes(1);
     expect(game.gamestart_callback).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(10000);
+    expect(game.app.showReviveFailure).toHaveBeenCalledTimes(delay > 10000 ? 1 : 0);
+});
+
+test('a missing WELCOME offers recovery once and a late reply remains a revive', () => {
+    jest.useFakeTimers(); sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
+    const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const {game} = setup();
+    game.deathReady = true;
+    expect(game.restart()).toBe(true);
+    jest.advanceTimersByTime(9999);
+    expect(game.app.showReviveFailure).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(1);
+    expect(game.app.showReviveFailure).toHaveBeenCalledTimes(1);
+    expect(warning).toHaveBeenCalledWith(expect.stringContaining('[revive]'), {connected: true, responseReceived: false});
+    expect(game.reviving).toBe(true);
+    expect(game.restart()).toBe(false);
+    expect(game.sendHello).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(10000);
+    expect(game.app.showReviveFailure).toHaveBeenCalledTimes(1);
+});
+
+test('a failed request immediately offers recovery instead of leaving a pending prompt', () => {
+    jest.useFakeTimers(); sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
+    const error = new Error('Cannot serialize equipment');
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    const {game} = setup();
+    game.deathReady = true;
+    game.sendHello.mockImplementation(() => {throw error;});
+    expect(game.restart()).toBe(false);
+    expect(game.app.showReviveFailure).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('[revive]'), error);
+    jest.advanceTimersByTime(10000);
+    expect(game.app.showReviveFailure).toHaveBeenCalledTimes(1);
+});
+
+test('a disconnect while awaiting WELCOME cannot be replaced by the revive timeout', () => {
+    jest.useFakeTimers(); sandbox.setTimeout = setTimeout; sandbox.clearTimeout = clearTimeout;
+    const {game} = setup();
+    game.deathReady = true;
+    game.restart();
+    game.disconnected = true;
+    jest.advanceTimersByTime(10000);
+    expect(game.app.showReviveFailure).not.toHaveBeenCalled();
 });
 
 test('death invalidates an outstanding movement worker reply before retaining the avatar for revive', async () => {

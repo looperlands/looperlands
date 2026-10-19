@@ -1009,8 +1009,13 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
 
         setReviving: function () {
             $('#respawn').prop('disabled', true).text('Reviving…');
-            $('#death').addClass('reviving').attr('aria-busy', 'true').prop('inert', true);
+            $('#death').addClass('reviving').attr('aria-busy', 'true');
             $('#death-status').text('Returning to your checkpoint…');
+        },
+
+        showReviveFailure: function () {
+            this.showDeath('Revive did not finish. Choose your character to reconnect.');
+            $('#death-title').text('Revive interrupted');
         },
 
         hideDeath: function () {

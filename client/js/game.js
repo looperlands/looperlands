@@ -7227,6 +7227,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset) {
                     const reviving = self.reviving === true;
+                    if (reviving) self.reviveResponseReceived = true;
                     if (reviving) self.prepareRevivedPlayer();
                     console.log("Received player ID from server : " + id);
                     self.player.id = id;
@@ -7257,6 +7258,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     setTimeout(() => self.handleScene(self.player), 500);
 
                     if (reviving) {
+                        clearTimeout(self.reviveTimer);
                         self.reviving = false;
                         self.storage.incrementRevives();
                         self.player.isFading = false;
@@ -8268,6 +8270,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.disconnected = true;
                         self.reviving = false;
+                        clearTimeout(self.reviveTimer);
                         clearTimeout(self.playerDeathTimer);
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
@@ -10003,6 +10006,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const player = this.player;
                 const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
                 clearTimeout(this.playerDeathTimer);
+                clearTimeout(this.reviveTimer);
                 this.deathReady = false;
                 this.reviving = false;
                 this.keyboardHandler?.handleBlur();
@@ -10045,8 +10049,26 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 if (!this.deathReady || this.reviving || !this.player?.isDead ||
                     !this.client.connection?.connected || this.disconnected) return false;
                 this.reviving = true;
+                this.reviveResponseReceived = false;
                 this.app.setReviving();
-                this.sendHello();
+                this.reviveTimer = setTimeout(() => {
+                    if (!this.reviving || this.disconnected) return;
+                    console.warn('[revive] Revive did not complete within 10 seconds', {
+                        connected: !!this.client.connection?.connected,
+                        responseReceived: this.reviveResponseReceived
+                    });
+                    // Keep reviving set so a late WELCOME still uses the existing
+                    // avatar and listeners, rather than repeating game startup.
+                    this.app.showReviveFailure();
+                }, 10000);
+                try {
+                    this.sendHello();
+                } catch (error) {
+                    clearTimeout(this.reviveTimer);
+                    console.error('[revive] Could not send revive request', error);
+                    this.app.showReviveFailure();
+                    return false;
+                }
                 return true;
             },
 

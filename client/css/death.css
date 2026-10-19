@@ -29,15 +29,6 @@ body.death #death {
     pointer-events: auto;
     transition: opacity 180ms ease-out;
 }
-/* Remove the prompt before the server reply can start the reform animation. */
-body #death.reviving,
-body.game.death #death.reviving,
-body.death #death.reviving {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: none;
-}
 #death .death-card {
     width: min(300px, 100%);
     padding: 0 26px 24px;
