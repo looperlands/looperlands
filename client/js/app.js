@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon) {
 
     var App = Class.extend({
         init: function () {
@@ -720,6 +720,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 armorPath = 'img/3/' + armor + '.png';
             }
 
+            const completeIcon = EquipmentIcon.get(weapon, scale);
             const imageUrl = weaponPath;
             let preloaderImg = document.createElement("img");
 
@@ -745,7 +746,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 });
             }
             preloaderImg.addEventListener('load', (event) => {
-                $('#weapon').css({
+                $('#weapon').css(completeIcon?.style || {
                     'background-image': 'url("' + weaponPath + '")',
                     'background-size': 'cover',
                     'background-position': '0 0'

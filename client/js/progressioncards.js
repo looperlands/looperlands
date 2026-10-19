@@ -1,5 +1,5 @@
 /* Player and equipped-item cards. Authoritative state never waits for animation. */
-define(function () {
+define(['equipmenticon'], function (EquipmentIcon) {
     const node = (tag, cls, text) => {
         const el = document.createElement(tag); if (cls) el.className = cls;
         if (text != null) el.textContent = text; return el;
@@ -183,7 +183,14 @@ define(function () {
             const facts = player ? [['Class', titleCase(this.modifiers?.playerClass || this.app.storage.trait || 'Looper')], ['Max HP', this.stats.maxHp]] : [['Trait', titleCase(this.stats.weaponInfo?.trait)], ['Next level', level + 1]];
             if (player && Number.isFinite(Number(this.stats.botInfo?.currentLevel))) facts.push(['Companion', 'Lv ' + this.stats.botInfo.currentLevel + ' · ' + Number(this.stats.botInfo.percentage || 0).toFixed(1) + '%']);
             for (const [label, value] of facts) {const fact = node('div'); fact.append(node('span', '', label), node('strong', '', value ?? '—')); card.facts.append(fact);}
-            if (sprite) {
+            const completeIcon = !player && EquipmentIcon.get(weaponName);
+            if (completeIcon) {
+                Object.assign(card.sprite.style, completeIcon.style, {
+                    width: completeIcon.width + 'px', height: completeIcon.height + 'px',
+                    transform: 'scale(' + Math.min(6, 114 / Math.max(completeIcon.width, completeIcon.height)) + ')'
+                });
+            } else if (sprite) {
+                card.sprite.style.backgroundSize = '';
                 const width = sprite.width, height = sprite.height;
                 card.sprite.style.width = width + 'px'; card.sprite.style.height = height + 'px';
                 const url = sprite.getUrlByScale(1); card.sprite.style.backgroundImage = 'url("' + new URL(url, document.baseURI).href + '")';
@@ -191,7 +198,7 @@ define(function () {
                 card.sprite.style.transform = 'scale(' + Math.min(player ? 3.5 : 6, 114 / Math.max(width, height)) + ')';
             } else if (!player) {
                 const icon = this.app.dynamicNFTIconURL[weaponName]?.replace('/3/', '/1/') || new URL('img/1/item-' + weaponName + '.png', document.baseURI).href;
-                Object.assign(card.sprite.style, {width: '16px', height: '16px',
+                Object.assign(card.sprite.style, {width: '16px', height: '16px', backgroundSize: '',
                     backgroundImage: 'url("' + icon + '")', backgroundPosition: '0 0', transform: 'scale(6)'});
             }
             card.details.replaceChildren();

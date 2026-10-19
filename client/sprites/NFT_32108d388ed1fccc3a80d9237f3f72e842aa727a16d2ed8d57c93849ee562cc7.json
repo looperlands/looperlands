@@ -2,6 +2,12 @@
   "id": "NFT_32108d388ed1fccc3a80d9237f3f72e842aa727a16d2ed8d57c93849ee562cc7",
   "width": 48,
   "height": 48,
+  "icon": {
+    "x": 51,
+    "y": 396,
+    "width": 19,
+    "height": 19
+  },
   "animations": {
     "atk_right": {
       "length": 5,
