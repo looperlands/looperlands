@@ -459,6 +459,10 @@ onmessage = (e) => {
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
+        if (e.data.combatFeedback?.hitFeel?.length) {
+            if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');
+            self.HitFeelRenderer.drawImpacts(combinedCtx, e.data.combatFeedback);
+        }
         // Combat labels stay above scenery, overhead sprites, lighting and feature overlays.
         if (combatTextCommand) drawText({...combatTextCommand, id: 'combined'}, false);
         combinedCtx.restore();
@@ -683,7 +687,10 @@ function drawEntities(drawEntitiesData) {
                     continue;
                 }
                 try {
-                    if (entityData.dissolve) {
+                    if (entityData.hitFeel && spriteName !== 'shadow16' && !renderAbove && !a) {
+                        if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');
+                        self.HitFeelRenderer.drawSprite(ctx, sprite.image, drawData, entityData.hitFeel, scale);
+                    } else if (entityData.dissolve) {
                         drawDissolvingSprite(ctx, sprite.image, sx, sy, sW, sH, dx, dy, dW, dH, entityData.dissolve);
                     } else if (a) {
                         let centerX = dW / 2;

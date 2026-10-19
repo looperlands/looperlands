@@ -92,6 +92,27 @@ test('server sound indices select the same effects on the Safari path', () => {
     expect(manager.soundEffects.kill2.play).toHaveBeenCalledTimes(1);
 });
 
+test('confirmed combo audio caps pitch and respects the existing audio switch', () => {
+    const {manager} = setup();
+    manager.playConfirmedImpact(5, false);
+    expect(manager.soundEffects.hit1.rate).toHaveBeenCalledWith(1.24, undefined);
+    manager.playConfirmedImpact(50, true);
+    expect(manager.soundEffects.hit2.rate).toHaveBeenCalledWith(1.24 * .88, undefined);
+    manager.disable();
+    manager.playConfirmedImpact(3, true);
+    expect(manager.soundEffects.hit1.play).toHaveBeenCalledTimes(1);
+});
+
+test('preview bass context is unlocked by a gesture, reused, suspended and closed with game audio', () => {
+    const {manager,sandbox} = setup();
+    const context={state:'suspended',resume:jest.fn(()=>Promise.resolve()),suspend:jest.fn(()=>Promise.resolve()),close:jest.fn(()=>Promise.resolve())};
+    sandbox.window.AudioContext=jest.fn(()=>context);
+    manager.prepareImpactAudio();manager.prepareImpactAudio();
+    expect(sandbox.window.AudioContext).toHaveBeenCalledTimes(1);expect(context.resume).toHaveBeenCalledTimes(2);
+    manager.disable();manager.prepareImpactAudio();expect(context.resume).toHaveBeenCalledTimes(2);
+    expect(context.suspend).toHaveBeenCalledTimes(1);manager.destroy();expect(context.close).toHaveBeenCalledTimes(1);
+});
+
 test.each([true, false])('repeating sounds vary subtly on each play (Web Audio: %s)', safari => {
     const {manager, sandbox} = setup({safari});
     sandbox.Math = Object.create(Math);

@@ -59,6 +59,7 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
         disable: function () {
             this.enabled = false;
+            this.impactContext?.suspend()?.catch?.(() => {});
 
             _.each(this.soundEffects, function (sound) {
                 sound.stop();
@@ -70,6 +71,8 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
         destroy: function () {
             this.disable();
+            this.impactContext?.close()?.catch?.(() => {});
+            this.impactContext = null;
             this.musicPlayer.destroy();
             this.streamMusic.destroy();
             _.each(this.soundEffects, function (sound) {
@@ -187,7 +190,36 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             return sound;
         },
 
-        playSound: function (name, lowerMusicVolume) {
+        prepareImpactAudio: function () {
+            if (!this.enabled) return;
+            try {
+                const shared = window.Howler?.ctx;
+                const Context = window.AudioContext || window.webkitAudioContext;
+                if (!shared && !this.impactContext && Context) this.impactContext = new Context();
+                const context = shared || this.impactContext;
+                if (context?.state === 'suspended') context.resume().catch(() => {});
+            } catch (_) { /* Hit samples remain available when Web Audio is unsupported. */ }
+        },
+
+        playConfirmedImpact: function (combo, critical) {
+            if (!this.enabled) return;
+            this.playSound(combo % 2 ? 'hit1' : 'hit2', false, {
+                rate: (1 + Math.min(4, Math.max(0, combo - 1)) * .06) * (critical ? .88 : 1)
+            });
+            const context = window.Howler?.ctx || this.impactContext;
+            if (!context || context.state !== 'running') return;
+            const bass = context.createOscillator(), gain = context.createGain(), now = context.currentTime;
+            bass.frequency.setValueAtTime(critical ? 110 : 90, now);
+            bass.frequency.exponentialRampToValueAtTime(38, now + .1);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(.18, now + .004);
+            gain.gain.exponentialRampToValueAtTime(.001, now + .12);
+            bass.connect(gain); gain.connect(context.destination);
+            bass.onended = () => { bass.disconnect(); gain.disconnect(); };
+            bass.start(now); bass.stop(now + .13);
+        },
+
+        playSound: function (name, lowerMusicVolume, presentation = {}) {
             if (lowerMusicVolume === undefined) {
                 lowerMusicVolume = false;
             }
@@ -218,7 +250,8 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
                 // Keep repeated combat/collection sounds lively without changing music or UI cues.
                 const varied = ['hit1', 'hit2', 'hurt', 'kill1', 'kill2', 'loot', 'watersplash'].includes(name);
-                const rate = varied ? 0.92 + Math.random() * 0.16 : 1;
+                const rate = varied && Number.isFinite(presentation.rate)
+                    ? Math.max(.5, Math.min(1.5, presentation.rate)) : varied ? 0.92 + Math.random() * 0.16 : 1;
                 if (effect) {
                     const id = effect.play();
                     if (varied) effect.rate?.(rate, id);

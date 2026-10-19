@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LooperLands · Hit feel workshop</title>
+  <link rel="stylesheet" href="/opendesign/design-systems/looperlands/tokens/colors_and_type.css">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<main>
+  <header><a class="wordmark" href="/">LooperLands</a><span>Local combat workshop</span><nav aria-label="Inspiration"><a href="https://www.instagram.com/p/DemDNnfj1TW/" target="_blank" rel="noreferrer">Reference 1 ↗</a><a href="https://www.instagram.com/p/DejijtPzhYJ/" target="_blank" rel="noreferrer">Reference 2 ↗</a></nav></header>
+  <div class="intro"><div><h1>Make every hit land.</h1><p>The same sword swing. Two levels of impact. Try a hit, then tune the feeling.</p></div><span class="local">Offline sandbox · real game art</span></div>
+  <section class="comparison" aria-label="Combat feedback comparison">
+    <article><div class="scene-heading"><h2>Existing feel <small>recreated</small></h2><span>Short flash · light recoil</span></div><canvas id="baseline" width="384" height="232" aria-label="Recreation of existing LooperLands combat feedback"></canvas></article>
+    <article class="proposal"><div class="scene-heading"><h2>Punchier feel</h2><span id="preset-label">Balanced</span></div><canvas id="enhanced" width="384" height="232" aria-label="Proposed combat feedback; click to attack" tabindex="0"></canvas></article>
+  </section>
+  <section class="playbar" aria-label="Playback controls">
+    <div class="attacks"><button id="attack" class="primary" disabled>Loading game art…</button><button id="critical" disabled>Critical hit <kbd>C</kbd></button><button id="finisher" disabled>Finisher <kbd>F</kbd></button></div>
+    <div class="playback"><label><input type="checkbox" id="loop"> Repeat</label><label><input type="checkbox" id="slow"> Slow motion</label><label><input type="checkbox" id="sound"> Sound</label></div>
+  </section>
+  <p id="status" role="status">Loading local sprites and map tiles…</p>
+  <section class="tuning" aria-label="Effect tuning">
+    <div class="tuning-intro"><h2>Build the impact</h2><p>Toggle each layer to hear and see what it adds.</p><label class="preset-label" for="preset">Intensity</label><select id="preset"><option value="subtle">Subtle</option><option value="balanced" selected>Balanced</option><option value="arcade">Arcade</option></select><label class="reduced"><input type="checkbox" id="reduced"> Reduce motion</label></div>
+    <div class="effects">
+      <label class="effect"><input type="checkbox" id="flash" checked><span><strong>Hit flash</strong><small>A brief, bright silhouette at contact.</small></span><output id="flash-value">65 ms</output></label>
+      <label class="effect"><input type="checkbox" id="particles" checked><span><strong>Impact burst</strong><small>Pixel sparks travel away from the blade.</small></span><output id="particles-value">12 sparks</output></label>
+      <label class="effect"><input type="checkbox" id="recoil" checked><span><strong>Knockback feel</strong><small>The sprite recoils; its world position stays put.</small></span><output id="recoil-value">5 px</output></label>
+      <label class="effect"><input type="checkbox" id="shake" checked><span><strong>Camera shake</strong><small>Only kills, critical hits and counters.</small></span><output id="shake-value">1 px</output></label>
+      <label class="effect"><input type="checkbox" id="freeze" checked><span><strong>Hit-stop</strong><small>Hold the contact pose, then finish the swing.</small></span><output id="freeze-value">45 ms</output></label>
+      <label class="effect"><input type="checkbox" id="squash" checked><span><strong>Squash on contact</strong><small>Compress the silhouette, then settle.</small></span><output>Sprite only</output></label>
+      <label class="effect"><input type="checkbox" id="slash" checked><span><strong>Slash arc</strong><small>A short crescent follows the sword direction.</small></span><output>110 ms</output></label>
+      <label class="effect"><input type="checkbox" id="trail" checked><span><strong>Health bar trail</strong><small>Damage lands immediately; white catches up.</small></span><output>160 ms hold</output></label>
+      <label class="effect"><input type="checkbox" id="layered" checked><span><strong>Layered combo audio</strong><small>A bass transient and rising pitch. Enable Sound.</small></span><output>6% steps</output></label>
+      <label class="effect"><input type="checkbox" id="shatter" checked><span><strong>Pixel shatter</strong><small>Sprite fragments burst out on a finisher.</small></span><output>Finisher only</output></label>
+    </div>
+  </section>
+  <footer><p>Presentation study with simulated hits. Existing feel recreates the checked-out flash, recoil, burst and critical shake; it is not a live game capture. Sound uses LooperLands’ hit samples.</p><p>For integration: trigger on confirmed damage, keep networking and combat timers running, and respect the player’s effects settings.</p></footer>
+</main>
+<script src="impact.js"></script><script src="preview.js"></script>
+</body></html>

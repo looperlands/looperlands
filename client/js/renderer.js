@@ -397,7 +397,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+3,
                             hp:entity.hitPoints,maxHp:entity.maxHitPoints};
                     }
-                    let	frame = anim.currentFrame,
+                    let	frame = this.game.combatFeedback?.hitFeel?.pose(entity, anim, this.game.currentTime) || anim.currentFrame,
                         s = this.scale,
                         x = frame.x * os,
                         y = frame.y * os,
@@ -594,6 +594,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     }
                 }
                 this.game.worldFx?.decorate?.(entity, entityData, this.scale);
+                this.game.combatFeedback?.hitFeel?.decorate(entity, entityData, this.scale, this.game.currentTime);
                 return [textData, entityData];
             },
     

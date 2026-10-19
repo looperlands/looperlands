@@ -37,6 +37,35 @@ test('combat effects default on and retain a saved disabled preference', () => {
     expect(disabled.elements.get('combatEffectsEnabled').checked).toBe(false);
 });
 
+const subtleHitFeelOptions = [
+    ['hitFlashEnabled','flash'],['hitSquashEnabled','squash'],['slashArcsEnabled','slash'],['hitRecoilEnabled','recoil'],
+    ['hitStopEnabled','freeze'],['hitSparksEnabled','particles'],['layeredHitAudioEnabled','audio']
+];
+test('balanced hit effects default on while Arcade intensity defaults off',()=>{
+    const {settings,elements}=setup();
+    for(const [key,option] of subtleHitFeelOptions){expect(settings.getHitFeelOptions()[option]).toBe(true);expect(elements.has(key)).toBe(false);}
+    expect(settings.getHitFeelOptions().shatter).toBe(true);expect(elements.get('finisherShatterEnabled').checked).toBe(true);
+    expect(settings.getIntenseCombatEffectsEnabled()).toBe(false);expect(elements.get('intenseCombatEffectsEnabled').checked).toBe(false);
+    expect(settings.getHitFeelOptions().intense).toBe(false);
+});
+test('subtle effects have no controls and obsolete per-effect preferences cannot silently disable them',()=>{
+    const obsolete=Object.fromEntries(subtleHitFeelOptions.map(([key])=>[key,'false']));
+    const {settings,elements}=setup(obsolete);settings.setSettings();
+    for(const [key,option] of subtleHitFeelOptions){expect(settings.getHitFeelOptions()[option]).toBe(true);expect(elements.has(key)).toBe(false);}
+});
+test('finisher shatter remains optional and preserves its saved preference',()=>{
+    const {settings,elements,values}=setup();elements.get('finisherShatterEnabled').checked=false;settings.setSettings();
+    const reopened=setup(Object.fromEntries(values));expect(reopened.settings.getHitFeelOptions().shatter).toBe(false);
+    expect(reopened.elements.get('finisherShatterEnabled').checked).toBe(false);
+});
+test('Arcade intensity is an explicit persisted opt-in and never overrides effect opt-outs',()=>{
+    const {settings,elements,values}=setup({finisherShatterEnabled:'false'});
+    elements.get('intenseCombatEffectsEnabled').checked=true;settings.setSettings();
+    expect(settings.getHitFeelOptions()).toMatchObject({intense:true,shatter:false});
+    const reopened=setup(Object.fromEntries(values));expect(reopened.settings.getIntenseCombatEffectsEnabled()).toBe(true);
+    expect(reopened.settings.getHitFeelOptions()).toMatchObject({intense:true,shatter:false});
+});
+
 test('saving settings persists the checkbox and removes active bursts', () => {
     const {settings, values, elements, app} = setup();
     elements.get('combatEffectsEnabled').checked = false;

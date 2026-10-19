@@ -3009,6 +3009,8 @@ footer div  {display:inline-block;}
 #settings .settings-list input { flex-shrink: 0; margin: 5px 0; }
 #settings .settings-list label { padding: 3px 0; }
 #settings .settings-actions { flex-shrink: 0; padding-top: 8px; }
+#settings .hit-feel-settings h2 { line-height: 1.4; }
+#settings .hit-feel-settings .settings-hint, #settings .hit-feel-settings label { font-size: 14px; line-height: 1.5; }
 #settingsForm label { cursor: pointer; }
 #settingsForm input:focus-visible { outline: 2px solid #f1ce92; outline-offset: 2px; }
 #settingsForm input:disabled + label { opacity: .55; cursor: default; }
