@@ -8,13 +8,20 @@ function setup() {
         isVisible() { return true; }
     }
     let CombatFeedback;
+    let HitFeel;
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'hitfeel.js'), 'utf8'), {
+        define: factory => { HitFeel = factory(); },
+    });
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'combatfeedback.js'), 'utf8'), {
-        define: (deps, factory) => { CombatFeedback = factory(Mob); },
+        define: (deps, factory) => { CombatFeedback = factory(Mob, HitFeel); },
     });
     const settings = {getCombatEffectsEnabled: () => true, getReducedMotion: () => false};
     const mob = new Mob(7);
     const game = {started: true, mapId: 'main', app: {settings}, player: {target: mob}, entities: {7: mob}};
-    return {feedback: new CombatFeedback(game), game, mob, settings, Mob};
+    const feedback = new CombatFeedback(game);
+    // Keep coverage of the retained fallback separate from production hit-feel defaults.
+    feedback.hitFeel.enabled = false;
+    return {feedback, game, mob, settings, Mob};
 }
 
 test('positive confirmed hits animate independently and expire by elapsed time', () => {
@@ -29,6 +36,21 @@ test('positive confirmed hits animate independently and expire by elapsed time',
     expect(frame.impacts[1].progress).toBeCloseTo(50 / 220);
     expect(feedback.getFrame(1220).impacts).toHaveLength(1);
     expect(feedback.getFrame(5000).impacts).toHaveLength(0);
+});
+
+test('counter shake is routed to the enabled in-game presentation layer',()=>{
+    const {feedback}=setup();feedback.hitFeel.enabled=true;
+    feedback.addCounterShake(1000);
+    expect(feedback.getFrame(1000).shake.x).toBeGreaterThan(0);
+    expect(feedback.getFrame(1150).shake).toEqual({x:0,y:0});
+});
+
+test('normal sessions use balanced presentation without any world-preview flags',()=>{
+    const {feedback,game,mob}=setup();feedback.hitFeel.enabled=true;
+    game.player.x=24;game.player.y=64;
+    feedback.addImpact(mob,10,1000,false);
+    expect(feedback.getFrame(1000)).toMatchObject({impacts:[],shake:{x:0,y:0},hitFeel:[{sparks:12,slash:true}]});
+    expect(feedback.getOffset(mob,1000)).toEqual({x:5,y:0});
 });
 
 test('rapid hits are bounded and retain the most recent impacts', () => {

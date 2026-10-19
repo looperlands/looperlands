@@ -1,4 +1,4 @@
-define(['mob'], function (Mob) {
+define(['mob', 'hitfeel'], function (Mob, HitFeel) {
     const IMPACT_DURATION = 220;
     const MAX_IMPACTS = 24;
     const SHAKE_DURATION = 180;
@@ -9,9 +9,11 @@ define(['mob'], function (Mob) {
             this.mapId = game.mapId;
             this.impacts = [];
             this.shakeStartedAt = null;
+            this.hitFeel = new HitFeel(game);
         }
 
         clear() {
+            this.hitFeel.clear();
             this.impacts = [];
             this.shakeStartedAt = null;
             this.mapId = this.game.mapId;
@@ -20,6 +22,7 @@ define(['mob'], function (Mob) {
         addImpact(entity, damage, time, critical = false) {
             if (!(damage > 0) || !entity) return;
             this.syncMap();
+            this.hitFeel.addImpact(entity, damage, time, critical);
             if (critical) this.addShake(time);
             if (!this.effectsEnabled()) return;
             const source = this.game.player;
@@ -38,6 +41,11 @@ define(['mob'], function (Mob) {
             if (this.shakeStartedAt === null || time - this.shakeStartedAt >= SHAKE_DURATION) this.shakeStartedAt = time;
         }
 
+        addCounterShake(time) {
+            if (this.hitFeel.enabled) this.hitFeel.addShake(time, true);
+            else this.addShake(time);
+        }
+
         effectsEnabled() {
             const settings = this.game.app.settings;
             return settings.getCombatEffectsEnabled() && !settings.getReducedMotion();
@@ -54,6 +62,7 @@ define(['mob'], function (Mob) {
 
         getOffset(entity, time) {
             this.syncMap();
+            if (this.hitFeel.enabled) return this.hitFeel.getOffset(entity, time);
             if (!this.effectsEnabled() || !this.game.started || this.game.isStopped ||
                 !this.game.player || this.game.player.isDead || entity.isDead ||
                 this.game.entities[entity.id] !== entity) return {x: 0, y: 0};
@@ -103,6 +112,7 @@ define(['mob'], function (Mob) {
                     x: impact.x, y: impact.y,
                     progress: Math.max(0, (time - impact.startedAt) / IMPACT_DURATION),
                 })),
+                ...(this.hitFeel.enabled ? this.hitFeel.frame(time) : {}),
             };
         }
     }

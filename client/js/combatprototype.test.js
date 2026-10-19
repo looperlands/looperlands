@@ -280,6 +280,29 @@ test('counter label anchors to the struck mob with its own flight direction',()=
     expect(game.infoManager.addDamageInfo).toHaveBeenLastCalledWith('Counter!',mob.x,mob.y-15,'combo',mob.id,false,{motion:'counter'});
 });
 
+test('confirmed counters request one shake; counter-ready and repeated packets do not',()=>{
+    const {prototype,packet,game}=setup();
+    game.currentTime=1000;game.combatFeedback={addCounterShake:jest.fn()};
+    prototype.receive({...packet,event:{id:2,kind:'evade',label:'Counter ready'}});
+    expect(game.combatFeedback.addCounterShake).not.toHaveBeenCalled();
+    const counter={...packet,event:{id:3,kind:'attack',label:'Counter'}};
+    prototype.receive(counter);prototype.receive(counter);
+    expect(game.combatFeedback.addCounterShake).toHaveBeenCalledTimes(1);
+    expect(game.combatFeedback.addCounterShake).toHaveBeenCalledWith(1000);
+    prototype.receive({...packet,event:{id:4,kind:'attack',label:'Strike'}});
+    expect(game.combatFeedback.addCounterShake).toHaveBeenCalledTimes(1);
+});
+
+test('live field counters request one shake per confirmed event',()=>{
+    const {prototype,game}=setup();
+    game.currentTime=1000;game.combatFeedback={addCounterShake:jest.fn()};
+    prototype.state={fieldAttacks:[],fieldEvent:{id:1,mobId:100,label:'Counter ready'}};
+    prototype.updateFieldAttacks(Date.now());expect(game.combatFeedback.addCounterShake).not.toHaveBeenCalled();
+    prototype.state.fieldEvent={id:2,mobId:100,label:'Counter'};
+    prototype.updateFieldAttacks(Date.now());prototype.updateFieldAttacks(Date.now());
+    expect(game.combatFeedback.addCounterShake).toHaveBeenCalledTimes(1);
+});
+
 
 test('normal gameplay starts without trainer controls and keeps combat on across ambience updates',()=>{
     const {prototype,packet,game,mob}=setup();

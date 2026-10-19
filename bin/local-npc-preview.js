@@ -190,6 +190,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
         particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
         serverTime: Date.now(), epoch: 0,
         previewSlam: slamPreview, previewAttackMode: previewCombat?.fieldAttacks.attackMode,
+        previewHitFeel: process.env.HIT_FEEL_PREVIEW === '1',
         previewPicnic: combatPreview ? null : picnicScene?.state || null,
         previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
@@ -197,7 +198,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls: true, previewHitFeel: process.env.HIT_FEEL_PREVIEW === '1', previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode});
         for (const player of Object.values(world.players)) {
             world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
@@ -238,7 +239,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.scenes.get('lantern-picnic');
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode,
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true, previewHitFeel: process.env.HIT_FEEL_PREVIEW === '1', previewCombat: combatPreview && process.env.COMBAT_LIVE_PREVIEW !== '1', previewSlam:slamPreview, previewAttackMode:previewCombat?.fieldAttacks.attackMode,
             previewStory: combatPreview ? null : {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();

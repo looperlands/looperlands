@@ -253,6 +253,7 @@ define(function () {
 
         showCounterInfo(mob = this.game.player) {
             this.game.infoManager.addDamageInfo('Counter!',mob.x,mob.y-15,'combo',mob.id,false,{motion:'counter'});
+            this.game.combatFeedback?.addCounterShake?.(this.game.currentTime);
         }
 
         receive(packet) {
@@ -353,7 +354,7 @@ define(function () {
                     const mob=game.getEntityById(event.mobId);
                     if(mob)this.playStrike(game.player,mob,event.label);
                     if(event.label==='Counter')this.showCounterInfo(mob);
-                    game.audioManager.playSound('hit1');
+                    if (!(game.combatFeedback?.hitFeel?.enabled && game.combatFeedback.hitFeel.options.audio)) game.audioManager.playSound('hit1');
                 }
             }
             return frames;
@@ -409,7 +410,7 @@ define(function () {
                     if (state.event?.kind === 'attack') {
                         if (state.event.label === 'Counter') this.showCounterInfo(mob);
                         this.playStrike(player,mob,state.event.label);
-                        game.audioManager.playSound('hit1');
+                        if (!(game.combatFeedback?.hitFeel?.enabled && game.combatFeedback.hitFeel.options.audio)) game.audioManager.playSound('hit1');
                     } else if (['lunge','mob-attack'].includes(state.event?.kind)) {
                         const direction = state.direction;
                         if (state.event.kind === 'lunge' && direction) mob.setOrientation(direction.x ? (direction.x > 0 ? Types.Orientations.RIGHT : Types.Orientations.LEFT)

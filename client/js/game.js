@@ -7226,6 +7226,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 });
 
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset) {
+                    self.combatFeedback?.hitFeel?.bindAudioGestures();
                     const reviving = self.reviving === true;
                     if (reviving) self.reviveResponseReceived = true;
                     if (reviving) self.prepareRevivedPlayer();
@@ -7907,6 +7908,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                                         entity.onDeath(function () {
                                             console.log(entity.id + " is dead");
+                                            if (entity instanceof Mob) self.combatFeedback.hitFeel.finish(entity, self.currentTime);
 
                                             if (entity instanceof Mob) {
                                                 // Keep track of where mobs die in order to spawn their dropped items
@@ -8273,6 +8275,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         clearTimeout(self.reviveTimer);
                         clearTimeout(self.playerDeathTimer);
                         self.combatFeedback.clear();
+                        self.combatFeedback.hitFeel?.dispose();
                         self.toolImpactFeedback.clear();
                         self.worldFx?.clear?.();
                         self.combatPrototype?.clear();
@@ -8382,7 +8385,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     if (projectile.shooter.id === self.player.id) {
                                         hitEntity.hit();
                                         self.client.sendHit(hitEntity);
-                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                        if (!(hitEntity instanceof Mob && self.combatFeedback.hitFeel.enabled && self.combatFeedback.hitFeel.options.audio)) self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
 
                                     projectile.impact(() => {
@@ -8406,7 +8409,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     if (finishedProjectile.shooter.id === self.player.id) {
                                         self.client.sendHit(target);
                                         target.hit();
-                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                        if (!(self.combatFeedback.hitFeel.enabled && self.combatFeedback.hitFeel.options.audio)) self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
                                 }
                             }
@@ -9790,7 +9793,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     this.client.sendHit(character.target);
                                 }
 
-                                if (character instanceof Player && this.camera.isVisible(character)) {
+                                if (character instanceof Player && this.camera.isVisible(character) &&
+                                    !(character.id === this.playerId && character.target instanceof Mob && this.combatFeedback.hitFeel.enabled && this.combatFeedback.hitFeel.options.audio)) {
                                     this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                 }
 
