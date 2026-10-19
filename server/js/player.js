@@ -132,7 +132,7 @@ module.exports = Player = Character.extend({
                     self.updatePosition();
                 }
 
-                self.server.addPlayer(self);
+                if (self.server.addPlayer(self) === false) return;
                 self.server.enter_callback(self);
 
                 playerCache.isDirty = true;

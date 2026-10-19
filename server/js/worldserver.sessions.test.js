@@ -18,30 +18,34 @@ function createServer() {
         },
     });
     const sessions = new Map();
-    const server = {worldsMap: {}, cache: {del: id => sessions.delete(id)}};
+    const server = {worldsMap: {}, cache: {get: id => sessions.get(id), del: id => sessions.delete(id)}};
     for (const map of ['main', 'dungeon']) {
         const world = Object.create(module.exports);
         world.init('world_' + map, 100, server);
-        world.addEntity = jest.fn();
-        world.removeEntity = jest.fn();
+        world.addEntity = jest.fn(player => {world.entities[player.id] = player;});
+        world.removeEntity = jest.fn(world.removeEntity.bind(world));
+        world.removeFromGroups = jest.fn();
         world.pushBroadcast = jest.fn();
         server.worldsMap[map] = world;
     }
     let nextId = 0;
-    function join(map, walletId, bot = false) {
+    function join(map, walletId, bot = false, owner) {
         const world = server.worldsMap[map];
         const player = {
-            id: ++nextId, sessionId: 'session-' + nextId, walletId,
+            id: ++nextId, sessionId: 'session-' + nextId, walletId, type: 'player',
+            hasEnteredGame: false, destroy: jest.fn(),
             isBot: () => bot, broadcast: jest.fn(), despawn: () => [],
             playerEventBroker: {destroy: jest.fn()}, connection: {},
         };
         player.connection.close = jest.fn(() => {
+            if (!world.players[player.id]) return;
             world.removePlayer(player);
             if (!bot) world.decrementPlayerCount();
             world.updatePopulation();
         });
-        sessions.set(player.sessionId, {mapId: map, entityId: player.id});
-        world.addPlayer(player);
+        sessions.set(player.sessionId, {mapId: map, entityId: player.id, owner: owner?.id});
+        if (world.addPlayer(player) === false) return player;
+        player.hasEnteredGame = true;
         if (!bot) world.incrementPlayerCount();
         world.updatePopulation();
         return player;
@@ -100,10 +104,10 @@ test('repeated switches and same-map reconnects leave one active session', () =>
     expect(server.worldsMap.dungeon.playerCount).toBe(0);
 });
 
-test('other wallets and bots keep their connections during the handoff', () => {
+test('another wallet and its companion keep their connections during the handoff', () => {
     const {join, sessions} = createServer();
     const other = join('main', 'other-wallet');
-    const bot = join('main', 'wallet', true);
+    const bot = join('main', 'other-wallet', true, other);
     join('dungeon', 'wallet');
     expect(other.connection.close).not.toHaveBeenCalled();
     expect(bot.connection.close).not.toHaveBeenCalled();
@@ -113,6 +117,61 @@ test('other wallets and bots keep their connections during the handoff', () => {
 test('a bot joining does not retire the wallet owner', () => {
     const {join} = createServer();
     const player = join('main', 'wallet');
-    join('dungeon', 'wallet', true);
+    const bot = join('main', 'wallet', true, player);
     expect(player.connection.close).not.toHaveBeenCalled();
+    expect(bot.connection.close).not.toHaveBeenCalled();
 });
+
+test.each(['disconnect', 'map switch', 'reconnect', 'death'])(
+    'owner %s removes its companion without relying on despawn delivery', reason => {
+        const {join, server, sessions} = createServer();
+        const owner = join('main', 'wallet');
+        const bot = join('main', 'WALLET', true, owner);
+        const world = server.worldsMap.main;
+        // No network messages are delivered by this harness. Ownership survives
+        // session eviction too, as can happen before a reconnect closes the socket.
+        sessions.delete(owner.sessionId);
+        if (reason === 'disconnect') owner.connection.close();
+        if (reason === 'map switch') join('dungeon', 'wallet');
+        if (reason === 'reconnect') join('main', 'wallet');
+        if (reason === 'death') world.removeEntity(owner);
+        expect(bot.connection.close).toHaveBeenCalledTimes(1);
+        expect(world.players[bot.id]).toBeUndefined();
+        expect(world.entities[bot.id]).toBeUndefined();
+        expect(world.outgoingQueues[bot.id]).toBeUndefined();
+        expect(sessions.has(bot.sessionId)).toBe(false);
+        expect(bot.destroy).toHaveBeenCalledTimes(1);
+        expect(world.playerCount).toBe(reason === 'disconnect' || reason === 'map switch' ? 0 : 1);
+    }
+);
+
+test('disconnecting a companion keeps its owner and another companion connected', () => {
+    const {join, server} = createServer();
+    const owner = join('main', 'wallet');
+    const other = join('main', 'other-wallet');
+    const bot = join('main', 'wallet', true, owner);
+    const otherBot = join('main', 'other-wallet', true, other);
+    bot.connection.close();
+    expect(owner.connection.close).not.toHaveBeenCalled();
+    expect(otherBot.connection.close).not.toHaveBeenCalled();
+    expect(server.worldsMap.main.playerCount).toBe(2);
+});
+
+test.each(['left', 'changed map', 'reconnected', 'dead', 'not entered', 'different wallet', 'bot', 'missing owner'])(
+    'a companion finishing its join is rejected when its owner is %s', reason => {
+        const {join, server, sessions} = createServer();
+        const owner = join('main', 'wallet');
+        if (reason === 'left') owner.connection.close();
+        if (reason === 'changed map') join('dungeon', 'wallet');
+        if (reason === 'reconnected') join('main', 'wallet');
+        if (reason === 'dead') owner.isDead = true;
+        if (reason === 'not entered') owner.hasEnteredGame = false;
+        if (reason === 'different wallet') owner.walletId = 'other-wallet';
+        if (reason === 'bot') owner.isBot = () => true;
+        const bot = join('main', 'wallet', true, reason === 'missing owner' ? undefined : owner);
+        expect(bot.connection.close).toHaveBeenCalledWith('Companion owner is no longer in this world');
+        expect(bot.hasEnteredGame).toBe(false);
+        expect(server.worldsMap.main.players[bot.id]).toBeUndefined();
+        expect(sessions.has(bot.sessionId)).toBe(false);
+    }
+);
