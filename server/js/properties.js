@@ -483,21 +483,25 @@ let Properties = {
     },
 
     cobchicken: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobcow: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobpig: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobgoat: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
@@ -596,6 +600,7 @@ let Properties = {
     },
 
     alaric: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -603,6 +608,7 @@ let Properties = {
     },
 
     blackdog: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -610,6 +616,7 @@ let Properties = {
     },
 
     turtle: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -617,6 +624,7 @@ let Properties = {
     },
 
     brownspotdog: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -624,24 +632,28 @@ let Properties = {
     },
 
     tabbycat: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     oablackcat: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     browndog: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     whitedog: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -649,6 +661,7 @@ let Properties = {
     },
 
     fvillager1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -656,360 +669,420 @@ let Properties = {
     },
 
     villager1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager4: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager5: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager6: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager7: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager8: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager9: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager10: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager11: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager12: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager13: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager14: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager15: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager16: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager17: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager18: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager19: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager20: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager21: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager22: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager23: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager24: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager25: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager26: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager27: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager28: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     villager29: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager4: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager5: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager6: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager7: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager8: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager9: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager10: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager11: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager12: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager13: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager14: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager15: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager16: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager17: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager18: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager19: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager20: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager21: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager22: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager23: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager24: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager25: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager26: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager27: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager28: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager29: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager30: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     fvillager31: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1017,12 +1090,14 @@ let Properties = {
     },
 
     jayce: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
     },
     orlan: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1030,21 +1105,25 @@ let Properties = {
     },
 
     cobcat: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobcatorange: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobcatbrown: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     cobyorkie: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
@@ -2341,242 +2420,290 @@ let Properties = {
     },
 
     m88nbabymonkey: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabychimp: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabyape: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabypenguin: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabyturtle: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndaddyape: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndaddypenguin: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndaddyturtle: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nparrot: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ntoucan: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nseal: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nwalrus: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbunnyblue: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbunnypink: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbunnyyellow: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbunnywhite: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nkittentabby: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88npuppyyorkie: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ntigercub: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabyduck: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabypig: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nflamingo: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfrog: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ngoat: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nswan: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nvulture: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nmagiccarpet: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndinor: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
     
     m88ndinow: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndinob: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndinog: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nlion: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ntiger: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ncamel: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nflybutterfly: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88ndaddybearbrown: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishy: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishyb: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishyc: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishyd: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishye: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
     
     m88nfishyf: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishyg: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nfishyh: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabyyoda1: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nbabyyoda2: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     m88nreindeer: {
+        nonCombat: true,
         level: 1,
         friendly: true
     },
 
     //m88n Mob Nexans
     nexan1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2584,6 +2711,7 @@ let Properties = {
     },
 
     nexan2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2591,6 +2719,7 @@ let Properties = {
     },
 
     nexan3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2598,6 +2727,7 @@ let Properties = {
     },
 
     nexan6: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2605,6 +2735,7 @@ let Properties = {
     },
 
     nexan7: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2612,6 +2743,7 @@ let Properties = {
     },
 
     nexan8: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2619,6 +2751,7 @@ let Properties = {
     },
 
     nexan9: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2633,6 +2766,7 @@ let Properties = {
     },
 
     nexan21: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2640,6 +2774,7 @@ let Properties = {
     },
 
     nexan22: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2647,6 +2782,7 @@ let Properties = {
     },
 
     nexan23: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2654,6 +2790,7 @@ let Properties = {
     },
 
     nexan24: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2661,6 +2798,7 @@ let Properties = {
     },
 
     nexan25: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2668,6 +2806,7 @@ let Properties = {
     },
 
     nexan26: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2675,6 +2814,7 @@ let Properties = {
     },
 
     nexan27: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2682,6 +2822,7 @@ let Properties = {
     },
 
     nexan30: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2689,6 +2830,7 @@ let Properties = {
     },
 
     m88njeeves: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2696,6 +2838,7 @@ let Properties = {
     },
 
     nexan49: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2703,6 +2846,7 @@ let Properties = {
     },
 
     nexan50: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2710,6 +2854,7 @@ let Properties = {
     },
 
     nexan51: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2717,6 +2862,7 @@ let Properties = {
     },
 
     nexan52: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2724,6 +2870,7 @@ let Properties = {
     },
 
     nexan53: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2731,6 +2878,7 @@ let Properties = {
     },
 
     nexan54: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2738,6 +2886,7 @@ let Properties = {
     },
 
     m88nmermaid1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2745,6 +2894,7 @@ let Properties = {
     },
 
     m88nmermaid2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2752,6 +2902,7 @@ let Properties = {
     },
 
     m88nmermaid3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2759,6 +2910,7 @@ let Properties = {
     },
 
     m88nmermaid4: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2766,6 +2918,7 @@ let Properties = {
     },
 
     m88nmermaid5: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2773,6 +2926,7 @@ let Properties = {
     },
 
     m88nmerman1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2780,6 +2934,7 @@ let Properties = {
     },
 
     m88nmerman2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2787,6 +2942,7 @@ let Properties = {
     },
 
     m88nmerman3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2794,6 +2950,7 @@ let Properties = {
     },
 
     m88nmerman4: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2801,6 +2958,7 @@ let Properties = {
     },
 
     m88nmerman5: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2808,6 +2966,7 @@ let Properties = {
     },
 
     m88nastronaut2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2815,6 +2974,7 @@ let Properties = {
     },
 
     m88nastronaut3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2822,6 +2982,7 @@ let Properties = {
     },
 
     nexanzombie1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2829,6 +2990,7 @@ let Properties = {
     },
 
     m88ngrimreaper: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2836,6 +2998,7 @@ let Properties = {
     },
 
     nexanhazmat1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2843,6 +3006,7 @@ let Properties = {
     },
 
     nexan55: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2850,6 +3014,7 @@ let Properties = {
     },
 
     nexanzenmonk: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2857,6 +3022,7 @@ let Properties = {
     },
 
     nexanmini1: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2864,6 +3030,7 @@ let Properties = {
     },
 
     nexanmini2: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2871,6 +3038,7 @@ let Properties = {
     },
 
     nexanmini3: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2878,6 +3046,7 @@ let Properties = {
     },
 
     nexanmini4: {
+        nonCombat: true,
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -2959,30 +3128,35 @@ let Properties = {
         }
     },
    cobWalkingNpc1: {
+        nonCombat: true,
        hp: 10,
        armor: 1,
        weapon: 1,
        friendly: true
    },
    cobWalkingNpc2: {
+        nonCombat: true,
        hp: 10,
        armor: 1,
        weapon: 1,
        friendly: true
    },
    cobWalkingNpc3: {
+        nonCombat: true,
        hp: 10,
        armor: 1,
        weapon: 1,
        friendly: true
    },
    cobWalkingNpc4: {
+        nonCombat: true,
        hp: 10,
        armor: 1,
        weapon: 1,
        friendly: true
    },
    cobWalkingNpc5: {
+        nonCombat: true,
        hp: 10,
        armor: 1,
        weapon: 1,

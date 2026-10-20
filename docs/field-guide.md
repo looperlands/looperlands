@@ -12,6 +12,8 @@ Discovery and completion are separate lifetime facts for each Looper. Facing a m
 
 Unknown entries show question marks and approved hints. Secret entries are omitted from guide responses and standard totals until discovered; they remain bonuses after discovery. Excluded entries never appear or count.
 
+Permanently non-attackable creatures are omitted from the generated catalog and totals, using `nonCombat: true` in server mob properties. The `friendly` flag alone is insufficient: it also marks attackable targets that are immune to area damage. Harvest targets and enemies that become hostile remain eligible. Spawning alone does not grant discovery.
+
 The game builds map membership once at startup from the actual server/client map exports: roaming and placed mobs, their positive-chance drops, chests, fishing-tile lake species, harvest yields/rare drops/returned seeds, and rewards from quests available at that map's NPCs. Boss adds are included. Pickup variants that award the same inventory item share one entry. Main has no fishing tiles, so its Fish section is empty. Maps remain separate.
 
 NPC dialogue commands are shared between client and server through `shared/js/npctalk.js`. The guide loads each map's actual shop stock through the existing platform shop API, caches it for five minutes, and shares concurrent loads. An unavailable shop read fails the guide refresh rather than silently showing an incomplete catalog. Runtime assets without local artwork retain a question-mark fallback.

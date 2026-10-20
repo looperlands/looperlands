@@ -15,6 +15,9 @@ function entryFactory(types, lakes, properties, overrides = require('../field-gu
         if (!target) return null;
         const category = lakes.isFish(target) ? 'fish' : types.isMob(kind) ? 'monsters' : types.isItem(kind) ? 'items' : null;
         if (!category) return null;
+        // Friendly also marks attackable targets that are immune to area damage.
+        // Only permanent non-combat creatures have an impossible defeat requirement.
+        if (category === 'monsters' && properties[target]?.nonCombat) return null;
         const sprite = (category === 'items' ? ['item-' + target, target] : [target]).find(name =>
             fs.existsSync(path.join(root, 'client/sprites', name + '.json')) && fs.existsSync(path.join(root, 'client/img/1', name + '.png')));
         const label = AltNames.getName(target).replace(/_/g, ' ');
