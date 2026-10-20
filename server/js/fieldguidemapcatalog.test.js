@@ -26,8 +26,9 @@ test('area-damage immunity and temporary friendliness do not exclude combat targ
 test('server non-combat metadata matches permanent friendliness in client mob definitions', () => {
     const fs = require('fs'), vm = require('vm');
     let mobs;
+    const Mob = {extend(definition) {return Object.assign(Object.create(this), definition);}};
     vm.runInNewContext(fs.readFileSync(require.resolve('../../client/js/mobs'), 'utf8'), {
-        Types, define: (_, factory) => {mobs = factory({extend: definition => definition}, function Timer() {});}
+        Types, define: (_, factory) => {mobs = factory(Mob, function Timer() {});}
     });
     const nonCombat = [];
     for (const definition of Object.values(mobs)) {

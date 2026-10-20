@@ -159,18 +159,29 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                         this.stop();
                     }
                 }
-                if(this.isMoving()) {
+                if(this.isMoving() && this.pendingPathRequestId == null) {
                     this.continueTo(x, y);
                 }
                 else {
                     let self = this;
                     const requestId = this.pathRequestId = (this.pathRequestId || 0) + 1;
+                    this.pendingPathRequestId = requestId;
+                    this.newDestination = null;
                     try {
                         this.requestPathfindingTo(x, y).then(function(path){
                             if (self.pathRequestId !== requestId) return;
-                            self.followPath(path);
+                            self.pendingPathRequestId = null;
+                            if (path.length < 2 && self.isMoving()) self.finishPath();
+                            else self.followPath(path);
+                        }, function(error) {
+                            if (self.pathRequestId !== requestId) return;
+                            self.pendingPathRequestId = null;
+                            if (self.isMoving()) self.finishPath();
+                            console.error(error);
                         })
                     } catch (e) {
+                        this.pendingPathRequestId = null;
+                        if (this.isMoving()) this.finishPath();
                         console.error(e);
                     }
                 }
@@ -289,8 +300,10 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
         				y = this.newDestination.y;
                         let self = this;
                         const requestId = this.pathRequestId = (this.pathRequestId || 0) + 1;
+                        this.pendingPathRequestId = requestId;
                         this.requestPathfindingTo(x, y).then(function(path){
                             if (self.pathRequestId !== requestId) return;
+                            self.pendingPathRequestId = null;
                             self.newDestination = null;
                             if(path.length < 2) {
                                 // This response arrives after nextStep has returned.
@@ -302,6 +315,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                             }
                         }, function(error) {
                             if (self.pathRequestId !== requestId) return;
+                            self.pendingPathRequestId = null;
                             self.newDestination = null;
                             self.finishPath();
                             console.error(error);
@@ -325,6 +339,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
         cancelPath: function() {
             // Corrections must invalidate pending worker replies as well as the active tween.
             this.pathRequestId = (this.pathRequestId || 0) + 1;
+            this.pendingPathRequestId = null;
             this.path = null;
             this.newDestination = null;
             this.destination = null;
@@ -362,6 +377,11 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
     	isMoving: function() {
     		return !(this.path === null);
     	},
+
+        isPathingTo: function(x, y) {
+            return this.destination?.gridX === x && this.destination?.gridY === y &&
+                (this.isMoving() || this.pendingPathRequestId != null);
+        },
 
     	hasNextStep: function() {
     		return (this.path.length - 1 > this.step);

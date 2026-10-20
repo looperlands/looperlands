@@ -1038,6 +1038,7 @@ module.exports = World = cls.Class.extend({
     },
 
     findPositionNextTo: function (entity, target) {
+        if (entity.isStationary?.()) return false;
         let positions = ['N', 'S', 'W', 'E'];
 
         while (positions.length > 0) {

@@ -8478,12 +8478,18 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.setCharacterAppearance(entity, state.appearance);
                 }
                 if (entity instanceof Character) {
-                    this.unregisterEntityPosition(entity);
-                    entity.disengage();
-                    entity.cancelPath();
-                    entity.setGridPosition(state.x, state.y);
-                    this.registerEntityPosition(entity);
-                    entity.idle(state.orientation);
+                    if (entity instanceof Mob) {
+                        this.refreshMobState(entity, state);
+                    } else {
+                        this.unregisterEntityPosition(entity);
+                        entity.disengage();
+                        entity.cancelPath();
+                        entity.setGridPosition(state.x, state.y);
+                        this.registerEntityPosition(entity);
+                        entity.idle(state.orientation);
+                        this.setEntityAttack(entity.id, state.target);
+                        this.restoreEntityAttacks(entity.id);
+                    }
                     if (state.name !== undefined) entity.name = state.name;
                     if (state.title !== undefined) entity.title = state.title;
                     if (state.level !== undefined) entity.level = state.level;
@@ -8491,11 +8497,26 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         entity.setShowIndicator(state.indicator);
                         entity.applyBehaviorState(state.behavior);
                     }
-                    this.setEntityAttack(entity.id, state.target);
-                    this.restoreEntityAttacks(entity.id);
                     this.handleScene(entity);
                 }
                 return true;
+            },
+
+            refreshMobState: function (mob, state) {
+                // Scripted attacks already own their position and animation timing.
+                if (this.combatPrototype?.owns(mob)) return;
+                const wasFollowing = mob.followingMode;
+                if (!state.target || mob.target?.id !== state.target || mob.target?.isDead || mob.target?.isDying) mob.disengage();
+                this.setEntityAttack(mob.id, state.target);
+                this.restoreEntityAttacks(mob.id);
+                // Chase the visible target, rather than its server-side destination tile.
+                if (mob.hasTarget()) return;
+                if (mob.gridX === state.x && mob.gridY === state.y && !mob.isMoving() &&
+                    mob.pendingPathRequestId == null) {
+                    mob.idle(state.orientation);
+                } else if (wasFollowing || !mob.isPathingTo(state.x, state.y)) {
+                    this.makeCharacterGoTo(mob, state.x, state.y);
+                }
             },
 
             setCharacterAppearance: function (entity, appearance) {
@@ -8535,7 +8556,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const attacker = this.getEntityById(id), target = this.getEntityById(targetId);
                 if (attacker?.isDead || attacker?.isDying || target?.isDead || target?.isDying) return;
                 if (attacker && target && !target.isDead && !target.isDying) {
-                    this.createAttackLink(attacker, target);
+                    if (attacker.target !== target || !attacker.isAttacking()) {
+                        this.createAttackLink(attacker, target);
+                    } else if ((!attacker.canReachTarget() || attacker.isMoving() || attacker.pendingPathRequestId != null) &&
+                        !attacker.isPathingTo(target.gridX, target.gridY)) {
+                        attacker.follow(target);
+                    }
                 } else if (targetId) {
                     attacker?.disengage();
                     this.pendingEntityTargets ||= new Map();

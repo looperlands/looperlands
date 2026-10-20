@@ -6,6 +6,7 @@ function setup() {
     const modules = {}, callbacks = {};
     const sandbox = {
         _, console: {log() {}, debug() {}, error: jest.fn()}, setTimeout, clearTimeout,
+        AltNames: {getAltNameFromKind() {}},
         define(dependencies, factory) {
             modules.current = typeof dependencies === 'function' ? dependencies()
                 : factory(...dependencies.map(name => modules[name] || function () {}));
@@ -16,11 +17,10 @@ function setup() {
         vm.runInContext(fs.readFileSync(require.resolve(file), 'utf8'), sandbox);
     }
     const Types = sandbox.Types;
-    for (const name of ['entity', 'transition', 'timer', 'character', 'player', 'item']) {
+    for (const name of ['entity', 'transition', 'timer', 'character', 'player', 'item', 'mob', 'mobs']) {
         vm.runInContext(fs.readFileSync(require.resolve('./' + name), 'utf8'), sandbox);
         modules[name] = modules.current;
     }
-    modules.mob = modules.character.extend({});
     modules.npc = modules.character.extend({setShowIndicator() {}, applyBehaviorState() {}});
     modules.projectile = modules.entity.extend({});
     vm.runInContext(fs.readFileSync(require.resolve('./game'), 'utf8'), sandbox);
@@ -35,6 +35,7 @@ function setup() {
         sprites: {rat: {name: 'rat', createAnimations: () => ({})},
             clotharmor: {name: 'clotharmor', createAnimations: () => ({})}},
         getServerInfo: jest.fn(), handleScene: jest.fn(),
+        assignBubbleTo: jest.fn(),
         onCharacterUpdate: jest.fn(), makeCharacterGoTo: jest.fn(),
         findPath: jest.fn((entity, x, y) => Promise.resolve([[entity.gridX, entity.gridY], [x, y]])),
     });
@@ -115,7 +116,7 @@ test('visibility cleanup clears both tiles reserved by an entity in motion', () 
     expect(game.pathingGrid[1][2]).toBe(0);
 });
 
-test('a fresh mob snapshot reconciles the loaded object and discards old path reservations', () => {
+test('a fresh mob snapshot requests walking while preserving its current grid reservations', () => {
     const {game, actor, callbacks, Types} = setup();
     const mob = actor(7);
     mob.nextGridX = 2; mob.nextGridY = 1;
@@ -123,13 +124,45 @@ test('a fresh mob snapshot reconciles the loaded object and discards old path re
     game.registerEntityDualPosition(mob);
     callbacks.EntityState({id: 7, kind: mob.kind, x: 5, y: 4, orientation: Types.Orientations.LEFT, level: 20});
     expect(game.entities[7]).toBe(mob);
-    expect([mob.gridX, mob.gridY, mob.level]).toEqual([5, 4, 20]);
-    expect(mob.path).toBeNull();
-    expect(mob.nextGridX).toBe(-1);
-    expect(game.entityGrid[1][1][7]).toBeUndefined();
-    expect(game.entityGrid[1][2][7]).toBeUndefined();
-    expect(game.pathingGrid[1][2]).toBe(0);
-    expect(game.renderingGrid[4][5][7]).toBe(mob);
+    expect([mob.gridX, mob.gridY, mob.level]).toEqual([1, 1, 20]);
+    expect(mob.nextGridX).toBe(2);
+    expect(game.entityGrid[1][1][7]).toBe(mob);
+    expect(game.entityGrid[1][2][7]).toBe(mob);
+    expect(game.makeCharacterGoTo).toHaveBeenCalledWith(mob, 5, 4);
+});
+
+test.each(['Tentacle', 'Tentacle2', 'SeaCreature'])('%s stays at its spawn tile through snapshots, movement and teleports', name => {
+    const {game, actor, modules, callbacks, Types} = setup();
+    const mob = actor(7, modules.mobs[name], 1, 3);
+    const target = actor(8, modules.player, 4, 4);
+    game.addEntity(mob);
+    game.addEntity(target);
+    const requestPath = jest.fn();
+    mob.onRequestPath(requestPath);
+    const expectAnchored = () => {
+        expect([mob.gridX, mob.gridY, mob.x, mob.y]).toEqual([1, 3, 16, 48]);
+        expect(game.entityGrid[3][1][7]).toBe(mob);
+        expect(game.renderingGrid[3][1][7]).toBe(mob);
+    };
+    expectAnchored();
+    for (const [x, y] of [[5, 4], [6, 5]]) {
+        callbacks.EntityState({id: 7, kind: mob.kind, x, y, orientation: Types.Orientations.LEFT, target: 8});
+        expect(mob.target).toBe(target);
+        expect(mob.isAttacking()).toBe(true);
+        expectAnchored();
+        expect(game.entityGrid[y][x][7]).toBeUndefined();
+    }
+    mob.moveTo_(6, 6);
+    game.makeCharacterTeleportTo(mob, 5, 5);
+    mob.setPosition(96, 96);
+    expectAnchored();
+    expect(requestPath).not.toHaveBeenCalled();
+    expect(game.entityGrid[5][5][7]).toBeUndefined();
+
+    game.removeEntity(mob);
+    const replacement = actor(7, modules.mobs[name], 6, 6);
+    game.addEntity(replacement);
+    expect([replacement.gridX, replacement.gridY, replacement.x, replacement.y]).toEqual([6, 6, 96, 96]);
 });
 
 test('a known remote player keeps its loaded object while position and identity refresh', () => {
@@ -189,6 +222,21 @@ test.each([false, true])('combat restores when target loads after attacker (pack
     expect(mob.isAttacking()).toBe(true);
     expect(game.pendingEntityTargets.size).toBe(0);
     expect(game.pendingEntityAttackers.size).toBe(0);
+});
+
+test.each(['isDead', 'isDying'])('a mob snapshot drops an obsolete %s target without moving the mob', flag => {
+    const {game, actor, modules, callbacks} = setup();
+    const mob = actor(7), target = actor(8, modules.player, 3, 3);
+    game.addEntity(mob);
+    game.addEntity(target);
+    mob.engage(target);
+    target.addAttacker(mob);
+    target[flag] = true;
+    callbacks.EntityState({id: mob.id, kind: mob.kind, x: 5, y: 4, target: target.id});
+    expect(mob.target).toBeNull();
+    expect(target.attackers[mob.id]).toBeUndefined();
+    expect([mob.gridX, mob.gridY]).toEqual([1, 1]);
+    expect(game.makeCharacterGoTo).toHaveBeenCalledWith(mob, 5, 4);
 });
 
 test('a newer MOVE cancels an unresolved attack before the target loads', () => {

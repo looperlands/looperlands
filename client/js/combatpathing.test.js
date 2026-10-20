@@ -21,7 +21,7 @@ function setup(attackerType, targetType, targetPosition) {
         postMessage(data) { this.requests.push(JSON.parse(JSON.stringify(data))); }
     }
     const sandbox = {
-        console, _, Types, Worker, AltNames: {getAltNameFromKind: () => undefined},
+        console, _, Types, Worker, setTimeout, clearTimeout, AltNames: {getAltNameFromKind: () => undefined},
         define(dependencies, factory) {
             modules.current = typeof dependencies === 'function' ? dependencies()
                 : factory(...dependencies.map(name => modules[name] || function () {}));
@@ -50,7 +50,8 @@ function setup(attackerType, targetType, targetPosition) {
         currentTime: 0, playerId: attackerType === 'player' ? attacker.id : target.id,
         player: attackerType === 'player' ? attacker : target,
         finalPathingGrid: grid, pathfinder: new Pathfinder(8, 8),
-        map: {isColliding: (x, y) => grid[y]?.[x] === 1},
+        map: {isColliding: (x, y) => grid[y]?.[x] === 1, isOutOfBounds: (x, y) => !grid[y] || grid[y][x] === undefined},
+        entities: {[attacker.id]: attacker, [target.id]: target}, handleScene: jest.fn(),
         forEachEntity(callback) { callback(attacker); },
         tryMovingToADifferentTile: () => false,
         client: {sendHit: jest.fn(), sendHurt: jest.fn(), sendShoot: jest.fn()},
@@ -77,8 +78,149 @@ function setup(attackerType, targetType, targetPosition) {
             updater.updateTransitions();
         }
     }
-    return {attacker, target, game, grid, engage, settlePath, finishMovement, Player: modules.player};
+    function frame(time) {
+        game.currentTime = time;
+        updater.updateCharacter(attacker);
+        updater.updateTransitions();
+    }
+    return {attacker, target, game, grid, engage, settlePath, finishMovement, frame, workers, Player: modules.player};
 }
+
+test('repeated mob snapshots keep the active tween and path instead of jumping to its destination', async () => {
+    const s = setup('mob', 'player', [6, 6]);
+    const requested = jest.spyOn(s.attacker, 'requestPathfindingTo');
+    const state = {id: s.attacker.id, kind: s.attacker.kind, x: 6, y: 2};
+    for (let i = 0; i < 100; i++) s.game.refreshEntityState(state);
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(s.workers.reduce((n, worker) => n + worker.requests.length, 0)).toBe(1);
+    expect([s.attacker.gridX, s.attacker.gridY, s.attacker.x, s.attacker.y]).toEqual([2, 2, 32, 32]);
+    await s.settlePath();
+    s.frame(0);
+    s.frame(60);
+    const path = s.attacker.path, tween = s.attacker.movement;
+    const position = [s.attacker.x, s.attacker.y];
+    const startTime = tween.startTime;
+    expect(position).toEqual([40, 32]);
+    for (let i = 0; i < 100; i++) s.game.refreshEntityState(state);
+    expect([s.attacker.x, s.attacker.y]).toEqual(position);
+    expect(s.attacker.path).toBe(path);
+    expect(s.attacker.movement.startTime).toBe(startTime);
+    expect(s.attacker.newDestination).toBeNull();
+    expect(requested).toHaveBeenCalledTimes(1);
+    s.frame(120);
+    expect([s.attacker.x, s.attacker.y]).toEqual([48, 32]);
+    for (let time = 140; time <= 480; time += 20) s.frame(time);
+    expect([s.attacker.gridX, s.attacker.gridY]).toEqual([6, 2]);
+    expect(s.attacker.isMoving()).toBe(false);
+});
+
+test('idle mob reconciliation follows a walkable path instead of crossing a wall', async () => {
+    const s = setup('mob', 'player', [6, 6]);
+    s.grid[2][3] = 1;
+    s.game.refreshEntityState({id: s.attacker.id, kind: s.attacker.kind, x: 5, y: 2});
+    expect([s.attacker.x, s.attacker.y]).toEqual([32, 32]);
+    await s.settlePath();
+    expect(s.attacker.path).not.toContainEqual([3, 2]);
+    for (let time = 0; time <= 1600; time += 20) {
+        const previous = [s.attacker.x, s.attacker.y];
+        s.frame(time);
+        expect(Math.hypot(s.attacker.x - previous[0], s.attacker.y - previous[1])).toBeLessThanOrEqual(16 * 20 / 120 + 0.001);
+        expect(s.grid[s.attacker.gridY][s.attacker.gridX]).not.toBe(1);
+    }
+    expect([s.attacker.gridX, s.attacker.gridY]).toEqual([5, 2]);
+});
+
+test('combat snapshots preserve the current chase and resume it when an idle target has moved', async () => {
+    const s = setup('mob', 'player', [6, 2]);
+    const requested = jest.spyOn(s.attacker, 'requestPathfindingTo');
+    const state = {id: s.attacker.id, kind: s.attacker.kind, x: 5, y: 2, target: s.target.id};
+    for (let i = 0; i < 100; i++) s.game.refreshEntityState(state);
+    expect(requested).toHaveBeenCalledTimes(1);
+    await s.settlePath();
+    s.frame(0); s.frame(60);
+    const path = s.attacker.path, x = s.attacker.x;
+    s.game.refreshEntityState(state);
+    expect(s.attacker.path).toBe(path);
+    expect(s.attacker.x).toBe(x);
+    expect(s.attacker.target).toBe(s.target);
+    expect(s.target.attackers[s.attacker.id]).toBe(s.attacker);
+    expect(requested).toHaveBeenCalledTimes(1);
+    s.frame(120); s.frame(240); s.frame(360);
+    expect(s.attacker.canReachTarget()).toBe(true);
+    s.target.setGridPosition(6, 5);
+    for (let i = 0; i < 100; i++) s.game.refreshEntityState(state);
+    expect(requested).toHaveBeenCalledTimes(2);
+    await s.settlePath();
+    for (let time = 380; time <= 1500; time += 20) s.frame(time);
+    expect(s.attacker.canReachTarget()).toBe(true);
+});
+
+test('mob snapshots respect scripted attack ownership', () => {
+    const s = setup('mob', 'player', [6, 6]);
+    s.game.combatPrototype = {owns: () => true};
+    s.attacker.combatMovementHeld = true;
+    s.attacker.x = 35;
+    const cancel = jest.spyOn(s.attacker, 'cancelPath');
+    s.game.refreshEntityState({id: s.attacker.id, kind: s.attacker.kind, x: 5, y: 2, target: s.target.id, level: 20});
+    expect([s.attacker.gridX, s.attacker.gridY, s.attacker.x, s.attacker.y]).toEqual([2, 2, 35, 32]);
+    expect(s.attacker.level).toBe(20);
+    expect(cancel).not.toHaveBeenCalled();
+    expect(s.attacker.target).toBeNull();
+});
+
+test('a target that comes into reach invalidates an older pending chase', async () => {
+    const s = setup('mob', 'player', [6, 2]);
+    const state = {id: s.attacker.id, kind: s.attacker.kind, x: 5, y: 2, target: s.target.id};
+    s.game.refreshEntityState(state);
+    expect(s.attacker.pendingPathRequestId).not.toBeNull();
+    s.target.setGridPosition(3, 2);
+    s.game.refreshEntityState(state);
+    await s.settlePath();
+    expect(s.attacker.isMoving()).toBe(false);
+    expect(s.attacker.canReachTarget()).toBe(true);
+    expect([s.attacker.gridX, s.attacker.gridY, s.attacker.x, s.attacker.y]).toEqual([2, 2, 32, 32]);
+});
+
+test.each(['empty', 'rejected'])('an %s path can retry on the next mob snapshot', async result => {
+    const s = setup('mob', 'player', [6, 6]);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        const requested = jest.spyOn(s.attacker, 'requestPathfindingTo').mockImplementationOnce(() =>
+            result === 'empty' ? Promise.resolve([]) : Promise.reject(new Error('Worker unavailable')));
+        const state = {id: s.attacker.id, kind: s.attacker.kind, x: 6, y: 2};
+        s.game.refreshEntityState(state);
+        await Promise.resolve();
+        expect(s.attacker.isMoving()).toBe(false);
+        expect(s.attacker.pendingPathRequestId).toBeNull();
+        s.game.refreshEntityState(state);
+        expect(requested).toHaveBeenCalledTimes(2);
+        await s.settlePath();
+        for (let time = 0; time <= 600; time += 20) s.frame(time);
+        expect([s.attacker.gridX, s.attacker.gridY]).toEqual([6, 2]);
+    } finally {
+        error.mockRestore();
+    }
+});
+
+test('a newer snapshot supersedes an outstanding path continuation without a jump', async () => {
+    const s = setup('mob', 'player', [6, 6]);
+    const snapshot = (x, y) => s.game.refreshEntityState({id: s.attacker.id, kind: s.attacker.kind, x, y});
+    snapshot(6, 2);
+    await s.settlePath();
+    s.frame(0); s.frame(60);
+    const x = s.attacker.x;
+    snapshot(2, 6);
+    expect(s.attacker.x).toBe(x);
+    s.frame(120);
+    expect(s.attacker.pendingPathRequestId).not.toBeNull();
+    snapshot(6, 4);
+    await s.workers[1].complete(); // deliver the older continuation before the new route
+    expect(s.attacker.pendingPathRequestId).not.toBeNull();
+    await s.settlePath();
+    for (let time = 140; time <= 1400; time += 20) s.frame(time);
+    expect([s.attacker.gridX, s.attacker.gridY]).toEqual([6, 4]);
+    expect(s.attacker.isMoving()).toBe(false);
+});
 
 describe.each([['player', 'mob'], ['mob', 'player'], ['player', 'player']])('%s attacking %s', (attackerType, targetType) => {
     test.each([[3, 3], [1, 3], [3, 1], [1, 1], [6, 6]])('paths beside the target at (%i,%i) and starts melee attacks', async (x, y) => {
