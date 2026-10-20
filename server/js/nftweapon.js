@@ -62,7 +62,7 @@ class NFTWeapon {
         try {
             damageDealt = damageDealt/4;
             damageDealt = Math.round(damageDealt);
-            const xp = this.player.playerClassModifiers.xp * damageDealt;
+            const xp = Math.ceil(this.player.playerClassModifiers.xp * damageDealt);
 
             this.accumulatedExperience += xp;
             this.experience += xp;
