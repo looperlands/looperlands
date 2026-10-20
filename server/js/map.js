@@ -317,6 +317,13 @@ module.exports = class Mapx {
     }
     
     getRandomStartingPosition() {
+        // Some portal-only maps have checkpoints but no designated starting area.
+        // Use their first checkpoint so death before visiting one can still revive.
+        if (this.startingAreas.length === 0) {
+            const checkpoint = Object.values(this.checkpoints)[0];
+            if (!checkpoint) throw new Error('Map has no spawn checkpoints');
+            return this.getCheckpoint(checkpoint.id).getRandomPosition();
+        }
         let nbAreas = _.size(this.startingAreas);
         let i = Utils.randomInt(0, nbAreas-1);
         let area = this.startingAreas[i];

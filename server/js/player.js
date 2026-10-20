@@ -106,6 +106,10 @@ module.exports = Player = Character.extend({
                     connection.close('Session map does not match this world');
                     return;
                 }
+                if (!playerCache.gameData) {
+                    connection.close('Game data unavailable. Please reconnect.');
+                    return;
+                }
                 self.name = gameplayNameFromSession(playerCache);
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;

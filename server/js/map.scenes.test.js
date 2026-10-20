@@ -22,6 +22,26 @@ test('scene lookup uses each map configuration rather than hardcoded main-map na
     expect(map.getSceneAt(10, 28)).toBeUndefined();
 });
 
+test('m88n can spawn and revive before a player has visited a checkpoint', async () => {
+    const map = await new Promise(resolve => {
+        const loaded = new ServerMap(path.join(__dirname, '../maps/world_server_m88n.json'));
+        loaded.ready(() => resolve(loaded));
+    });
+    expect(map.startingAreas).toHaveLength(0);
+    const checkpoint = map.getCheckpoint(1);
+    const position = map.getRandomStartingPosition();
+    expect(position.x).toBeGreaterThanOrEqual(checkpoint.x);
+    expect(position.x).toBeLessThan(checkpoint.x + checkpoint.width);
+    expect(position.y).toBeGreaterThanOrEqual(checkpoint.y);
+    expect(position.y).toBeLessThan(checkpoint.y + checkpoint.height);
+});
+
+test('maps without checkpoints report a configuration error', () => {
+    const map = Object.create(ServerMap.prototype);
+    map.initCheckpoints([]);
+    expect(() => map.getRandomStartingPosition()).toThrow('Map has no spawn checkpoints');
+});
+
 function configuredMap() {
     const map = Object.create(ServerMap.prototype);
     map.initMap({width: 112, height: 48, collisions: [113], roamingAreas: [], chestAreas: [], staticChests: [], staticEntities: [],

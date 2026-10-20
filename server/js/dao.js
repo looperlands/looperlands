@@ -433,9 +433,10 @@ const loadAvatarGameData = async function (avatarId, retry) {
     retry -= 1;
     if (retry > 0) {
       console.log("Retry " + retry);
-      return this.loadAvatarGameData(avatarId, retry);
+      return loadAvatarGameData(avatarId, retry);
     } else {
       console.error("loadAvatarGameData", error);
+      throw error;
     }
   }
 }
