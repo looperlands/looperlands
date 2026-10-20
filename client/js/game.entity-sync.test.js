@@ -116,7 +116,7 @@ test('visibility cleanup clears both tiles reserved by an entity in motion', () 
     expect(game.pathingGrid[1][2]).toBe(0);
 });
 
-test('a fresh mob snapshot reconciles the loaded object and discards old path reservations', () => {
+test('a fresh mob snapshot requests walking while preserving its current grid reservations', () => {
     const {game, actor, callbacks, Types} = setup();
     const mob = actor(7);
     mob.nextGridX = 2; mob.nextGridY = 1;
@@ -124,13 +124,11 @@ test('a fresh mob snapshot reconciles the loaded object and discards old path re
     game.registerEntityDualPosition(mob);
     callbacks.EntityState({id: 7, kind: mob.kind, x: 5, y: 4, orientation: Types.Orientations.LEFT, level: 20});
     expect(game.entities[7]).toBe(mob);
-    expect([mob.gridX, mob.gridY, mob.level]).toEqual([5, 4, 20]);
-    expect(mob.path).toBeNull();
-    expect(mob.nextGridX).toBe(-1);
-    expect(game.entityGrid[1][1][7]).toBeUndefined();
-    expect(game.entityGrid[1][2][7]).toBeUndefined();
-    expect(game.pathingGrid[1][2]).toBe(0);
-    expect(game.renderingGrid[4][5][7]).toBe(mob);
+    expect([mob.gridX, mob.gridY, mob.level]).toEqual([1, 1, 20]);
+    expect(mob.nextGridX).toBe(2);
+    expect(game.entityGrid[1][1][7]).toBe(mob);
+    expect(game.entityGrid[1][2][7]).toBe(mob);
+    expect(game.makeCharacterGoTo).toHaveBeenCalledWith(mob, 5, 4);
 });
 
 test.each(['Tentacle', 'Tentacle2', 'SeaCreature'])('%s stays at its spawn tile through snapshots, movement and teleports', name => {
@@ -224,6 +222,21 @@ test.each([false, true])('combat restores when target loads after attacker (pack
     expect(mob.isAttacking()).toBe(true);
     expect(game.pendingEntityTargets.size).toBe(0);
     expect(game.pendingEntityAttackers.size).toBe(0);
+});
+
+test.each(['isDead', 'isDying'])('a mob snapshot drops an obsolete %s target without moving the mob', flag => {
+    const {game, actor, modules, callbacks} = setup();
+    const mob = actor(7), target = actor(8, modules.player, 3, 3);
+    game.addEntity(mob);
+    game.addEntity(target);
+    mob.engage(target);
+    target.addAttacker(mob);
+    target[flag] = true;
+    callbacks.EntityState({id: mob.id, kind: mob.kind, x: 5, y: 4, target: target.id});
+    expect(mob.target).toBeNull();
+    expect(target.attackers[mob.id]).toBeUndefined();
+    expect([mob.gridX, mob.gridY]).toEqual([1, 1]);
+    expect(game.makeCharacterGoTo).toHaveBeenCalledWith(mob, 5, 4);
 });
 
 test('a newer MOVE cancels an unresolved attack before the target loads', () => {
