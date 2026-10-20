@@ -1,8 +1,8 @@
 # Automatic game deployments and client updates
 
-Production deploys choose HMR or an announced reboot for one running game
-service. One physical server is enough. This does not start a second game
-instance or perform a rolling release.
+Production deploys update both existing game services, choosing HMR or an
+announced reboot independently for each. One physical server is enough.
+Deployment does not create extra instances or perform a rolling release.
 
 ## Deployment decisions
 
@@ -43,13 +43,23 @@ DEPLOY_MODE defaults to auto. Manual workflow runs can force hmr (reject
 incompatible releases) or reboot (always announce and recreate). Reboot reasons
 and the notice period remain configurable; the default notice is 60 seconds.
 
-Set the repository variable GAME_SERVER_LIVE_SERVICE if the host runs multiple
-game services. Otherwise the script selects the only running game image.
-An ambiguous or absent match stops deployment. The selected service must have
-its own writable named chat volume, including the reload-ticket spool.
-Other services are never started or recreated.
+The workflow defaults to `gameserver gameserver2`. Set the repository variable
+`GAME_SERVER_LIVE_SERVICES` to a space-separated list to override the targets.
+The current NA endpoint, `https://looperlands-na.looperlands.io`, uses
+`gameserver2` on host port 8001; `gameserver` uses host port 8000.
 
-Installing this feature on a legacy process requires one announced reboot.
+The script takes one deployment lock for the entire batch and validates every
+target and its private storage before updating either server. Each service must
+match exactly one running game container and have its own writable named chat
+volume, including the reload-ticket spool. Missing or ambiguous targets stop the
+deployment. Services update sequentially and each release is verified before
+continuing. A failure stops the remaining updates; servers already verified keep
+their new release. Re-running the same release safely completes remaining work.
+Only services requiring a reboot receive a restart announcement. Each service
+retains its own image override and player handoff data. Unselected services are
+never started or recreated.
+
+Installing this feature on each legacy process requires one announced reboot.
 Legacy clients must reconnect once because they do not yet contain the update
 handler. Later compatible releases retain server sockets; later reboots use the
 new client handoff. An existing hook with an inaccessible API aborts deployment
@@ -59,6 +69,13 @@ These repository changes do not deploy themselves. They become active after
 the reviewed branch is merged and the production workflow succeeds.
 
 ## Client lifecycle
+
+The settings footer shows the image build date in the player's local time, with
+the UTC timestamp and full release revision in its tooltip. Deployment reads the
+immutable image's creation timestamp and carries it in the active release
+manifest. The per-service Compose override also retains it as `GAME_BUILD_DATE`
+for container recreation. Login and revive packets append optional build metadata;
+older clients ignore it and local builds without metadata show `unavailable`.
 
 The server injects a release-specific base URL and revision into index.html.
 Scripts, stylesheets, maps, sprites and workers resolve beneath
@@ -105,10 +122,12 @@ Automatic deployment after publishing the reviewed image:
 
 ~~~sh
 LIVE_UPDATE_IMAGE=balkshamster/looperlands:<40-character-sha> \
+LIVE_UPDATE_SERVICES='gameserver gameserver2' \
 bash bin/deploy-game-server.sh
 ~~~
 
-Optionally set LIVE_UPDATE_SERVICE to the verified Compose service name.
+For one service, use LIVE_UPDATE_SERVICE instead of LIVE_UPDATE_SERVICES.
+With neither selector, the host must have exactly one running game image.
 The script takes the deployment lock, verifies storage, pulls the image and
 runs only its artifact exporter with no network or game mounts. It checks the
 whole manifest before choosing a method. HMR preparation precedes activation;

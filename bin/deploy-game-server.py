@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Select HMR or an announced reboot for one verified running game service."""
+"""Select HMR or an announced reboot independently for verified game services."""
 import base64
+from datetime import datetime, timezone
 import fcntl
 import json
 import os
@@ -24,6 +25,7 @@ class Deployer:
         self.state_dir = Path(state_dir) if state_dir else Path(self.env['HOME']) / '.looperlands-chat'
         self.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.image = self.env.get('LIVE_UPDATE_IMAGE', '')
+        self.built_at = None
         self.mode = self.env.get('DEPLOY_MODE', 'auto')
         self.action = self.env.get('LIVE_UPDATE_ACTION', 'apply')
         if self.mode not in ('auto', 'hmr', 'reboot') or self.action not in ('apply', 'rollback'):
@@ -137,7 +139,22 @@ for(const filename of [history,spool]){
             '/opt/app/bin/live-update-artifact.js', 'bundle'])
         if bundle.get('manifest', {}).get('revision') != self.image.rsplit(':', 1)[1]:
             raise DeploymentError('Image contents do not match the immutable release tag')
+        self.built_at = self.build_date(self.image)
+        bundle['manifest']['builtAt'] = self.built_at
         return bundle
+
+    def build_date(self, image):
+        try:
+            created = datetime.fromisoformat(self.inspect('{{.Created}}', image).replace('Z', '+00:00'))
+            if created.tzinfo is None:
+                raise ValueError('Missing image build timezone')
+            return created.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+        except ValueError as error:
+            raise DeploymentError('Invalid image build date') from error
+
+    def release_definition(self, image):
+        built_at = self.built_at if image == self.image else self.build_date(image)
+        return {'services': {self.service: {'image': image, 'environment': {'GAME_BUILD_DATE': built_at}}}}
 
     def stage_client(self, before, work):
         data = json.dumps(before).encode()
@@ -167,7 +184,7 @@ for(const filename of [history,spool]){
         revision = bundle['manifest']['revision']
         # Save a durable desired image for future recreation; never replace host Compose.
         override = self.override
-        desired = {'services': {self.service: {'image': self.image}}}
+        desired = self.release_definition(self.image)
         temporary = override.with_suffix('.tmp')
         temporary.write_text(json.dumps(desired)); temporary.chmod(0o600)
         previous = override.read_bytes() if override.exists() else None
@@ -208,49 +225,69 @@ for(const filename of [history,spool]){
         with (self.state_dir / 'deploy.lock').open('a') as lock:
             try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError as error: raise DeploymentError('Another game deployment is running') from error
+            services = self.env.get('LIVE_UPDATE_SERVICES', '')
+            if services:
+                if self.env.get('LIVE_UPDATE_SERVICE'):
+                    raise DeploymentError('Select LIVE_UPDATE_SERVICE or LIVE_UPDATE_SERVICES, not both')
+                names = services.split()
+                if not names or len(names) != len(set(names)) or any(not re.fullmatch(r'[a-zA-Z0-9_-]+', name) for name in names):
+                    raise DeploymentError('LIVE_UPDATE_SERVICES must contain distinct Compose service names separated by spaces')
+                selected = [Deployer(dict(self.env, LIVE_UPDATE_SERVICE=name, LIVE_UPDATE_SERVICES=''),
+                    self.run_process, self.sleep, self.state_dir) for name in names]
+                # Validate every target and its private storage before changing any server.
+                for engine in selected:
+                    engine.discover()
+                results = {}
+                for engine in selected:
+                    print('Deploying Compose service ' + engine.service + '.', flush=True)
+                    results[engine.service] = engine.deploy_selected()
+                return results
             self.discover()
-            before = self.probe()
-            if self.action == 'rollback':
-                if not before or not before.get('rollbackAvailable'):
-                    raise DeploymentError('No HMR rollback is available')
-                result = self.request('rollback', {'expectedRevision': before['revision']})
-                self.readback(result['revision'], before['pid'])
-                self.save_desired_image('balkshamster/looperlands:' + result['revision'])
-                return 'rollback'
-            if self.mode == 'hmr' and (not before or before.get('automaticDeployment') != 1):
-                raise DeploymentError('HMR is unavailable; install live updates with an announced reboot first')
-            bundle = self.pull()
-            revision = bundle['manifest']['revision']
-            if before and before.get('automaticDeployment') == 1:
-                plan = self.request('plan', {'expectedRevision': before['revision'], 'bundle': bundle})
-                if plan.get('method') not in ('hmr', 'reboot'):
-                    raise DeploymentError('Invalid deployment plan')
+            return self.deploy_selected()
+
+    def deploy_selected(self):
+        before = self.probe()
+        if self.action == 'rollback':
+            if not before or not before.get('rollbackAvailable'):
+                raise DeploymentError('No HMR rollback is available')
+            result = self.request('rollback', {'expectedRevision': before['revision']})
+            self.readback(result['revision'], before['pid'])
+            self.save_desired_image('balkshamster/looperlands:' + result['revision'])
+            return 'rollback'
+        if self.mode == 'hmr' and (not before or before.get('automaticDeployment') != 1):
+            raise DeploymentError('HMR is unavailable; install live updates with an announced reboot first')
+        bundle = self.pull()
+        revision = bundle['manifest']['revision']
+        if before and before.get('automaticDeployment') == 1:
+            plan = self.request('plan', {'expectedRevision': before['revision'], 'bundle': bundle})
+            if plan.get('method') not in ('hmr', 'reboot'):
+                raise DeploymentError('Invalid deployment plan')
+        else:
+            plan = {'method': 'reboot', 'files': ['initial live-update installation']}
+        method = 'reboot' if self.mode == 'reboot' else plan['method']
+        if method == 'reboot' and self.mode == 'hmr':
+            raise DeploymentError('This release requires a reboot')
+        print('Selected deployment method: ' + method + '.', flush=True)
+        with tempfile.TemporaryDirectory(prefix='looperlands-deploy-') as work:
+            if method == 'reboot': self.reboot(bundle, before, work)
             else:
-                plan = {'method': 'reboot', 'files': ['initial live-update installation']}
-            method = 'reboot' if self.mode == 'reboot' else plan['method']
-            if method == 'reboot' and self.mode == 'hmr':
-                raise DeploymentError('This release requires a reboot')
-            print('Selected deployment method: ' + method + '.', flush=True)
-            with tempfile.TemporaryDirectory(prefix='looperlands-deploy-') as work:
-                if method == 'reboot': self.reboot(bundle, before, work)
-                else:
-                    manifest = self.request('manifest')
-                    if manifest['revision'] != before['revision']:
-                        raise DeploymentError('Running release changed during deployment')
-                    self.stage_client(manifest, work)
-                    request = {'expectedRevision': before['revision'], 'bundle': bundle}
-                    self.request('prepare', request)
-                    if revision != before['revision']:
-                        self.request('apply', request)
-                    self.readback(revision, before['pid'])
-                    print('Verified HMR in the same game-server process.', flush=True)
-                    self.save_desired_image(self.image)
-            print('Verified release ' + revision + ' for ' + self.service + '.', flush=True)
-            return method
+                manifest = self.request('manifest')
+                if manifest['revision'] != before['revision']:
+                    raise DeploymentError('Running release changed during deployment')
+                self.stage_client(manifest, work)
+                request = {'expectedRevision': before['revision'], 'bundle': bundle}
+                self.request('prepare', request)
+                if revision != before['revision']:
+                    self.request('apply', request)
+                self.readback(revision, before['pid'])
+                print('Verified HMR in the same game-server process.', flush=True)
+                self.save_desired_image(self.image)
+        print('Verified release ' + revision + ' for ' + self.service + '.', flush=True)
+        return method
 
     def save_desired_image(self, image):
         temporary = self.override.with_suffix('.tmp')
-        temporary.write_text(json.dumps({'services': {self.service: {'image': image}}}))
+        temporary.write_text(json.dumps(self.release_definition(image)))
         temporary.chmod(0o600)
         temporary.replace(self.override)
 

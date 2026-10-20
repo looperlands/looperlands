@@ -18,24 +18,28 @@ deployment = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(deployment)
 OLD, NEW = 'a' * 40, 'b' * 40
 IMAGE = 'balkshamster/looperlands:' + NEW
+BUILT_AT = '2026-10-20T23:30:00Z'
 
 
 class Docker:
-    def __init__(self, root):
+    def __init__(self, root, service='gameserver'):
         self.root = root
+        self.service = service
         self.host = root / 'host.yml'
         self.host.write_text('installed compose configuration')
-        self.config = {'services': {'gameserver': {'volumes': [{'type': 'volume', 'source': 'chat', 'target': '/opt/app/data/chat'}],
-            'environment': {'PRIVATE_TOKEN': 'never-log-me'}}}, 'volumes': {'chat': {'name': 'production_chat'}}}
-        self.mounts = [{'Destination': '/opt/app/data/chat', 'Type': 'volume', 'Name': 'production_chat', 'RW': True}]
+        volume = 'chat' if service == 'gameserver' else 'chat2'
+        self.config = {'services': {service: {'volumes': [{'type': 'volume', 'source': volume, 'target': '/opt/app/data/chat'}],
+            'environment': {'PRIVATE_TOKEN': 'never-log-me'}}}, 'volumes': {volume: {'name': 'production_' + volume}}}
+        self.mounts = [{'Destination': '/opt/app/data/chat', 'Type': 'volume', 'Name': 'production_' + volume, 'RW': True}]
         self.calls, self.actions, self.delays = [], [], []
-        self.containers = ['old']
+        self.containers = ['old' if service == 'gameserver' else 'old2']
         self.files = str(self.host)
         self.image = 'balkshamster/looperlands:latest'
         self.requester, self.automatic, self.client_reload, self.rollback_available = True, 1, True, True
         self.method, self.revision, self.pid = 'hmr', OLD, 1
         self.failure, self.after_mounts, self.storage_env, self.announce_env = None, None, {}, {}
         self.bundle = {'manifest': {'protocol': 1, 'revision': NEW, 'files': {}}, 'sources': {}}
+        self.created = '2026-10-20T23:30:00.123456789Z'
 
     def run(self, args, input=None, stdin=None, stdout=None, stderr=None, check=False):
         self.calls.append(args)
@@ -46,7 +50,8 @@ class Docker:
         elif args[:2] == ['docker', 'inspect']:
             template = args[3]
             if template == '{{.Config.Image}}': value = self.image.encode()
-            elif template == '{{json .Config.Labels}}': value = json.dumps({'com.docker.compose.service': 'gameserver',
+            elif template == '{{.Created}}': value = self.created.encode()
+            elif template == '{{json .Config.Labels}}': value = json.dumps({'com.docker.compose.service': self.service,
                 'com.docker.compose.project': 'production', 'com.docker.compose.project.config_files': self.files}).encode()
             elif template == '{{json .Mounts}}': value = json.dumps(self.after_mounts if self.revision == NEW and self.after_mounts is not None else self.mounts).encode()
             else: raise AssertionError(args)
@@ -104,12 +109,12 @@ class Docker:
             if 'config' in args: value = json.dumps(self.config).encode()
             elif 'up' in args:
                 operation = 'recreate'
-                assert args[-1] == 'gameserver'
+                assert args[-1] == self.service
                 assert '--no-deps' in args and '--force-recreate' in args
                 assert args[args.index('--pull') + 1] == 'never'
                 self.revision = NEW
-                self.files = str(self.host) + ',' + str(self.root / 'state/release-gameserver.json')
-            elif 'ps' in args: value = b'new'
+                self.files = str(self.host) + ',' + str(self.root / ('state/release-' + self.service + '.json'))
+            elif 'ps' in args: value = b'new' if self.service == 'gameserver' else b'new2'
             else: raise AssertionError(args)
         else: raise AssertionError(args)
         if self.failure == operation: code = 1
@@ -119,6 +124,32 @@ class Docker:
     def status(self, **extra):
         return dict(protocol=1, revision=self.revision, pid=self.pid, ready=True, automaticDeployment=self.automatic,
             clientReload=self.client_reload, rollbackAvailable=self.rollback_available, **extra)
+
+
+class DockerHost:
+    """Two independently running game processes in the same installed Compose project."""
+    def __init__(self, root):
+        self.servers = {name: Docker(root, name) for name in ('gameserver', 'gameserver2')}
+        config = {'services': {}, 'volumes': {}}
+        for server in self.servers.values():
+            for key in config:
+                config[key].update(server.config[key])
+        for server in self.servers.values():
+            server.config = config
+        self.calls, self.delays = [], []
+        self.active = 'gameserver'
+
+    def run(self, args, **options):
+        self.calls.append(args)
+        if args[:2] == ['docker', 'ps']:
+            assert args[2:4] == ['-q', '--filter']
+            self.active = args[4].split('=', 2)[-1]
+        elif args[:2] in (['docker', 'inspect'], ['docker', 'exec']) and '{{.Created}}' not in args:
+            containers = {'old': 'gameserver', 'new': 'gameserver', 'old2': 'gameserver2', 'new2': 'gameserver2'}
+            self.active = next(containers[argument] for argument in args if argument in containers)
+        elif args[:2] == ['docker', 'compose'] and ('up' in args or 'ps' in args):
+            self.active = args[-1]
+        return self.servers[self.active].run(args, **options)
 
 
 class DeploymentTests(unittest.TestCase):
@@ -144,7 +175,10 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual([name for name, _ in self.docker.actions], ['status', 'plan', 'manifest', 'prepare', 'apply', 'status'])
         self.assertEqual(self.docker.delays, [])
         self.assertFalse(any('up' in call for call in self.docker.calls))
-        self.assertEqual(json.loads((self.root / 'state/release-gameserver.json').read_text()), {'services': {'gameserver': {'image': IMAGE}}})
+        self.assertEqual(json.loads((self.root / 'state/release-gameserver.json').read_text()),
+            {'services': {'gameserver': {'image': IMAGE, 'environment': {'GAME_BUILD_DATE': BUILT_AT}}}})
+        plan = next(body for name, body in self.docker.actions if name == 'plan')
+        self.assertEqual(plan['bundle']['manifest']['builtAt'], BUILT_AT)
         self.assertEqual(self.docker.host.read_text(), 'installed compose configuration')
         self.assertEqual(backup.read_text(), 'private backup')
         self.assertNotIn('never-log-me', self.output.getvalue())
@@ -169,6 +203,16 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual(self.execute(), 'reboot')
         self.stopped('reboot-handoffs'); self.stopped('plan')
         self.assertIn('Please reconnect', json.loads(self.docker.announcement['options']['body'])['message'])
+        override = json.loads((self.root / 'state/release-gameserver.json').read_text())
+        self.assertEqual(override['services']['gameserver']['environment'], {'GAME_BUILD_DATE': BUILT_AT})
+
+    def test_invalid_image_build_date_aborts_before_applying_or_announcing(self):
+        for created in ('not a date', '2026-10-20T23:30:00'):
+            self.docker.created = created
+            with self.assertRaisesRegex(deployment.DeploymentError, 'Invalid image build date'):
+                self.execute()
+        self.stopped('apply')
+        self.assertFalse(any(deployment.ANNOUNCE in call for call in self.docker.calls))
 
     def test_forced_hmr_rejects_incompatible_changes(self):
         self.environment['DEPLOY_MODE'] = 'hmr'; self.docker.method = 'reboot'
@@ -335,6 +379,114 @@ class DeploymentTests(unittest.TestCase):
         with (directory / 'deploy.lock').open('a') as lock:
             deployment.fcntl.flock(lock, deployment.fcntl.LOCK_EX)
             with self.assertRaisesRegex(deployment.DeploymentError, 'Another game deployment'): self.execute()
+        self.assertEqual(self.docker.calls, [])
+
+
+class MultiServiceDeploymentTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(prefix='looperlands-multi-deploy-test-')
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.docker = DockerHost(self.root)
+        self.environment = {'LIVE_UPDATE_IMAGE': IMAGE, 'LIVE_UPDATE_SERVICES': 'gameserver gameserver2',
+            'REBOOT_NOTICE_SECONDS': '1'}
+
+    def execute(self):
+        engine = deployment.Deployer(self.environment, self.docker.run, self.docker.delays.append, self.root / 'state')
+        with contextlib.redirect_stdout(io.StringIO()):
+            return engine.deploy()
+
+    def test_both_servers_use_hmr_and_preserve_separate_release_state(self):
+        self.assertEqual(self.execute(), {'gameserver': 'hmr', 'gameserver2': 'hmr'})
+        for name, server in self.docker.servers.items():
+            self.assertEqual(server.revision, NEW)
+            self.assertEqual(server.pid, 1)
+            self.assertFalse(any('up' in call or deployment.ANNOUNCE in call for call in server.calls))
+            override = json.loads((self.root / ('state/release-' + name + '.json')).read_text())
+            self.assertEqual(override, {'services': {name: {'image': IMAGE, 'environment': {'GAME_BUILD_DATE': BUILT_AT}}}})
+        self.assertEqual(self.docker.delays, [])
+
+    def test_each_server_selects_its_own_method_and_only_rebooting_server_is_notified(self):
+        self.docker.servers['gameserver2'].method = 'reboot'
+        self.assertEqual(self.execute(), {'gameserver': 'hmr', 'gameserver2': 'reboot'})
+        first, second = self.docker.servers.values()
+        self.assertFalse(any('up' in call or deployment.ANNOUNCE in call for call in first.calls))
+        self.assertTrue(any(deployment.ANNOUNCE in call for call in second.calls))
+        self.assertEqual([call[-1] for call in self.docker.calls if 'up' in call], ['gameserver2'])
+        self.assertEqual(self.docker.delays, [1])
+        first_readback = max(i for i, call in enumerate(self.docker.calls) if 'LIVE_UPDATE_ACTION=status' in call and 'old' in call)
+        second_notice = next(i for i, call in enumerate(self.docker.calls) if deployment.ANNOUNCE in call)
+        self.assertLess(first_readback, second_notice)
+
+    def test_both_legacy_servers_receive_their_own_notice_and_restart(self):
+        for server in self.docker.servers.values():
+            server.requester = False
+        self.assertEqual(self.execute(), {'gameserver': 'reboot', 'gameserver2': 'reboot'})
+        self.assertEqual(self.docker.delays, [1, 1])
+        self.assertEqual([call[-1] for call in self.docker.calls if 'up' in call], ['gameserver', 'gameserver2'])
+        for server in self.docker.servers.values():
+            self.assertEqual(sum(deployment.ANNOUNCE in call for call in server.calls), 1)
+            self.assertNotIn('reboot-handoffs', [name for name, _ in server.actions])
+
+    def test_missing_or_ambiguous_second_server_stops_before_changing_the_first(self):
+        for containers in ([], ['old2', 'new2']):
+            with self.subTest(containers=containers):
+                self.docker = DockerHost(self.root)
+                self.docker.servers['gameserver2'].containers = containers
+                with self.assertRaisesRegex(deployment.DeploymentError, 'one running'):
+                    self.execute()
+                self.assertFalse(any(server.actions for server in self.docker.servers.values()))
+                self.assertFalse(any(call[:2] == ['docker', 'pull'] for call in self.docker.calls))
+
+    def test_second_server_storage_is_checked_before_changing_either_server(self):
+        self.docker.servers['gameserver2'].mounts = []
+        with self.assertRaises(deployment.DeploymentError):
+            self.execute()
+        self.assertFalse(any(server.actions for server in self.docker.servers.values()))
+        self.assertFalse(any(call[:2] == ['docker', 'pull'] for call in self.docker.calls))
+
+    def test_failure_stops_the_batch_and_never_uses_a_fallback_restart(self):
+        self.docker.servers['gameserver'].failure = 'prepare'
+        with self.assertRaises(deployment.DeploymentError):
+            self.execute()
+        self.assertEqual(self.docker.servers['gameserver2'].actions, [])
+        self.assertFalse(any('up' in call or deployment.ANNOUNCE in call for call in self.docker.calls))
+
+    def test_retry_after_second_server_failure_preserves_the_completed_first_update(self):
+        first, second = self.docker.servers.values()
+        second.failure = 'prepare'
+        with self.assertRaises(deployment.DeploymentError):
+            self.execute()
+        self.assertEqual((first.revision, second.revision), (NEW, OLD))
+        second.failure = None
+        self.assertEqual(self.execute(), {'gameserver': 'hmr', 'gameserver2': 'hmr'})
+        self.assertEqual((first.revision, second.revision), (NEW, NEW))
+        self.assertEqual(sum(name == 'apply' for name, _ in first.actions), 1)
+
+    def test_configured_subset_does_not_touch_the_other_server(self):
+        self.environment['LIVE_UPDATE_SERVICES'] = 'gameserver2'
+        self.assertEqual(self.execute(), {'gameserver2': 'hmr'})
+        self.assertEqual(self.docker.servers['gameserver'].calls, [])
+        self.assertEqual(self.docker.servers['gameserver2'].revision, NEW)
+
+    def test_one_global_lock_covers_both_servers(self):
+        directory = self.root / 'state'
+        directory.mkdir()
+        with (directory / 'deploy.lock').open('a') as lock:
+            deployment.fcntl.flock(lock, deployment.fcntl.LOCK_EX)
+            with self.assertRaisesRegex(deployment.DeploymentError, 'Another game deployment'):
+                self.execute()
+        self.assertEqual(self.docker.calls, [])
+
+    def test_invalid_duplicate_or_conflicting_selectors_stop_before_docker(self):
+        for names in ('gameserver gameserver', 'gameserver;reboot', '  '):
+            with self.subTest(names=names):
+                self.environment['LIVE_UPDATE_SERVICES'] = names
+                with self.assertRaisesRegex(deployment.DeploymentError, 'distinct Compose service names'):
+                    self.execute()
+        self.environment.update(LIVE_UPDATE_SERVICES='gameserver gameserver2', LIVE_UPDATE_SERVICE='gameserver')
+        with self.assertRaisesRegex(deployment.DeploymentError, 'not both'):
+            self.execute()
         self.assertEqual(self.docker.calls, [])
 
 

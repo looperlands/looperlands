@@ -861,6 +861,12 @@ module.exports = Player = Character.extend({
     },
 
     send: function (message) {
+        if (Array.isArray(message) && message[0] === Types.Messages.WELCOME) {
+            const release = require('./hotreload').current?.()?.manifest;
+            const builtAt = release?.builtAt || process.env.GAME_BUILD_DATE;
+            // Optional trailing metadata keeps existing clients compatible.
+            if (builtAt) message = [...message, {builtAt, revision: release?.revision}];
+        }
         this.connection.send(message);
     },
 

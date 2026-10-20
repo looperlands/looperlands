@@ -102,6 +102,15 @@ class GameSettings {
         });
     }
 
+    setBuildInfo(info) {
+        const element = document.getElementById('settings-build-date');
+        const date = info?.builtAt && new Date(info.builtAt);
+        if (!element || !date || !Number.isFinite(date.getTime())) return;
+        element.textContent = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'short'}).format(date);
+        element.dateTime = date.toISOString();
+        element.title = date.toISOString() + (info.revision ? ' · ' + info.revision : '');
+    }
+
     bindSections() {
         this.sectionTabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
         this.sectionPanels = Array.from(document.querySelectorAll('[data-settings-panel]'));

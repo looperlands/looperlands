@@ -230,7 +230,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 serverTime = data[7]
         
             if(this.welcome_callback) {
-                this.welcome_callback(id, name, x, y, hp, title, serverTime);
+                this.welcome_callback(id, name, x, y, hp, title, serverTime, data[8]);
             }
         },
     
