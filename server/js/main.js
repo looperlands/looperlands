@@ -1,3 +1,5 @@
+const hotReload = require('./hotreload').install();
+
 if (process.env.NODE_ENV === "production") {
     require('newrelic');
 }
@@ -69,6 +71,8 @@ function main(config) {
     };
 
     server.worldsMap = {};
+    if (hotReload?.clients) hotReload.clients.ready = () => !server.clientReloads?.rebooting &&
+        config.maps.every(map => server.worldsMap[map]?.map?.isLoaded);
     _.each(config.maps, function(map) {
         try {
             let world = new WorldServer('world_'+ map, config.nb_players_per_world, server);
@@ -78,6 +82,11 @@ function main(config) {
             worlds.push(world);
             world.onPlayerAdded(world.updatePopulation);
             world.onPlayerRemoved(world.updatePopulation);
+            if (hotReload) {
+                const relative = 'server/mob-combat/' + map + '.json';
+                if (hotReload.manifest.files[relative]) hotReload.config(relative, world.combat.fieldAttacks, 'config',
+                    source => new (require('./combatconfig').CombatConfig)(JSON.parse(source)));
+            }
         } catch (e) {
             console.error(e);
         }

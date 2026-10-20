@@ -29,11 +29,12 @@ test('does not resubmit a slow batch and preserves kills collected during it', a
     await dao.saveMobKillEvent('asset', 'first');
     const request = tick();
     await dao.saveMobKillEvent('asset', 'second');
-    await tick();
+    const duplicate = tick();
     expect(save).toHaveBeenCalledTimes(1);
     expect(save.mock.calls[0][0].map(event => event.mob)).toEqual(['first']);
     resolve();
     await request;
+    await duplicate;
     await tick();
     expect(save.mock.calls[1][0].map(event => event.mob)).toEqual(['second']);
     await tick();

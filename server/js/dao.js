@@ -362,24 +362,38 @@ const avatarHasItem = async function (avatarId, itemId) {
 
 let MOB_KILL_QUEUE = [];
 let processingMobKillQueue = false;
+let mobKillWritePromise = Promise.resolve(true);
 
-const processMobKillEventQueue = async function () {
-  if (processingMobKillQueue || !MOB_KILL_QUEUE.length) { return; }
+const processMobKillEventQueue = function () {
+  if (processingMobKillQueue) return mobKillWritePromise;
+  if (!MOB_KILL_QUEUE.length) return Promise.resolve(true);
   processingMobKillQueue = true;
   const batch = MOB_KILL_QUEUE;
   MOB_KILL_QUEUE = [];
 
-  try {
+  mobKillWritePromise = (async () => { try {
     const response = await platformClient.storeKills(batch);
     printResponseJSON('storeKills', response);
+    return true;
   } catch (error) {
     // Preserve both the failed batch and kills collected during the request.
     MOB_KILL_QUEUE = batch.concat(MOB_KILL_QUEUE);
     console.error("Error saving mob kills", error);
+    return false;
   } finally {
     processingMobKillQueue = false;
-  }
+  } })();
+  return mobKillWritePromise;
 }
+
+const flushPendingWrites = async function () {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('Inventory writes are not saved');
+  }
+  while (processingMobKillQueue || MOB_KILL_QUEUE.length) {
+    if (await processMobKillEventQueue() === false) throw new Error('Kill writes are not saved');
+  }
+};
 
 let MOB_KILL_QUEUE_INTERVAL = undefined;
 
@@ -772,5 +786,6 @@ module.exports = {
   saveFarmPlot,
   deleteFarmPlot,
   processLootEventQueue,
+  flushPendingWrites,
   registerChoice,
 };

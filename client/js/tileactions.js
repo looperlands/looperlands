@@ -76,7 +76,7 @@ define(['../../shared/js/gametypes'], function () {
                         value: item,
                         title: choice.detail ? (choice.title + ' (' + choice.detail + ')') : choice.title,
                         description: choice.description,
-                        image: '/img/3/item-' + imageItem + '.png',
+                        image: 'img/3/item-' + imageItem + '.png',
                         count: choice.count,
                         disabled: choice.disabled || (choice.count <= 0),
                         callback: (selectedItem) => {

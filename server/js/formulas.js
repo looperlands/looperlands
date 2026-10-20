@@ -223,3 +223,5 @@ cron.schedule("0 1 * * *", doubleXP);
 cron.schedule("0 7 * * *", doubleXP);
 cron.schedule("0 13 * * *", doubleXP);
 cron.schedule("0 19 * * * ", doubleXP);
+
+if (typeof process !== 'undefined' && process.env.LIVE_UPDATES_ENABLED === '1') require('./hotreload').capture(module, expression => eval(expression));

@@ -144,6 +144,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 };*/
 
                 this.connection.on("disconnect", function() {
+                    if (self.isReloading) return;
                     self.resetPendingSpawns();
                     console.debug("Connection closed");
                     $('#container').addClass('error');

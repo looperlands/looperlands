@@ -6400,8 +6400,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 for (let name in this.cursors) {
                     let cursor = this.cursors[name];
                     if (cursor !== undefined) {
-                        let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
-                        let src = isLocal ? "/" + cursor.filepath : cursor.filepath;
+                        let src = new URL(cursor.filepath, document.baseURI).href;
                         this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
                     }
                 }

@@ -22,4 +22,7 @@ WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
 RUN npm prune --omit=dev
+ARG GAME_RELEASE_ID=0000000000000000000000000000000000000000
+RUN node bin/live-update-artifact.js manifest "$GAME_RELEASE_ID"
+ENV LIVE_UPDATES_ENABLED=1
 CMD node server/js/main.js

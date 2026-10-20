@@ -238,3 +238,5 @@ module.exports = Mob = Character.extend({
         this.weaponLevel = Properties.getWeaponLevel(this.kind, this.levelOffset);
     }
 });
+
+if (typeof process !== 'undefined' && process.env.LIVE_UPDATES_ENABLED === '1') require('./hotreload').capture(module, expression => eval(expression));

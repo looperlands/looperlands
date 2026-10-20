@@ -37,8 +37,6 @@ const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFO
 
 module.exports = Player = Character.extend({
     init: function (connection, worldServer) {
-        var self = this;
-
         this.server = worldServer;
         this.connection = connection;
 
@@ -62,564 +60,620 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.connection.listen(async function (message) {
+        this.connection.listen(async message => {
+            if (this.clientReloadPending) return;
+            this.pendingMessages = (this.pendingMessages || 0) + 1;
+            try {return await this.handleMessage(message);}
+            finally {this.pendingMessages--;}
+        });
+        this.connection.onClose(() => this.handleDisconnect());
+        this.connection.sendUTF8("go"); // Notify client that the HELLO/WELCOME handshake can start
+    },
 
-            var action = parseInt(message[0]);
+    handleMessage: async function (message) {
+        const self = this, connection = this.connection;
+        if (self.clientReloadPending) return;
 
-            // console.debug("Received: " + message, "from " + self.connection.id);
-            if (!check(message)) {
-                self.connection.close("Invalid " + Types.getMessageTypeAsString(action) + " message format: " + message);
+        var action = parseInt(message[0]);
+
+        // console.debug("Received: " + message, "from " + self.connection.id);
+        if (!check(message)) {
+            self.connection.close("Invalid " + Types.getMessageTypeAsString(action) + " message format: " + message);
+            return;
+        }
+
+        if (!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
+            self.connection.close("Invalid handshake message: " + message);
+            return;
+        }
+        if (self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
+            self.connection.close("Cannot initiate handshake twice: " + message);
+            return;
+        }
+
+        self.resetTimeout();
+
+        // A dead player keeps its authenticated socket and equipment. Revive does
+        // not repeat async login work or register chat/activity a second time.
+        if (self.hasEnteredGame && self.isDead) {
+            if (action === Types.Messages.HELLO && message[4] === self.sessionId) self.revive();
+            return;
+        }
+
+        if (action === Types.Messages.HELLO) {
+            if (self.entering || self.server.server.clientReloads?.rebooting) return;
+            self.entering = true;
+            self.sessionId = message[4];
+            let playerCache = self.server.server.cache.get(self.sessionId);
+            if (playerCache === undefined) {
+                connection.close("Invalid session id: " + self.sessionId);
                 return;
             }
-
-            if (!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
-                self.connection.close("Invalid handshake message: " + message);
+            const activePlayer = self.server.server.worldsMap?.[playerCache.mapId]?.getPlayerById(playerCache.entityId);
+            if (activePlayer && activePlayer !== self && activePlayer.hasEnteredGame) {
+                connection.close('This session already has an active player');
                 return;
             }
-            if (self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
-                self.connection.close("Cannot initiate handshake twice: " + message);
+            if ('world_' + playerCache.mapId !== self.server.id) {
+                connection.close('Session map does not match this world');
                 return;
             }
-
-            self.resetTimeout();
-
-            // A dead player keeps its authenticated socket and equipment. Revive does
-            // not repeat async login work or register chat/activity a second time.
-            if (self.hasEnteredGame && self.isDead) {
-                if (action === Types.Messages.HELLO && message[4] === self.sessionId) self.revive();
+            if (!playerCache.gameData) {
+                connection.close('Game data unavailable. Please reconnect.');
                 return;
             }
+            let resumeState;
+            try { resumeState = self.server.server.clientReloads?.claim(self.sessionId, self.id); }
+            catch (error) { connection.close('Client reload ticket expired. Please reconnect.'); return; }
+            self.name = gameplayNameFromSession(playerCache);
+            self.walletId = playerCache.walletId;
+            self.nftId = playerCache.nftId;
+            self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
+            self.mapId = playerCache.mapId;
+            try { await self.server.server.eventEquipment?.register(self); }
+            catch (error) { self.connection.close('Event equipment service unavailable. Please reconnect.'); return; }
+            if (self.server.server.clientReloads?.rebooting) {connection.close('Server update in progress. Please reconnect.'); return;}
 
-            if (action === Types.Messages.HELLO) {
-                self.sessionId = message[4];
-                let playerCache = self.server.server.cache.get(self.sessionId);
-                if (playerCache === undefined) {
-                    connection.close("Invalid session id: " + self.sessionId);
-                    return;
+            self.kind = Types.Entities.WARRIOR;
+            self.equipArmor(message[2]);
+            self.equipWeapon(message[3]);
+            self.orientation = Utils.randomOrientation();
+
+            if (playerCache.checkpointId !== undefined) {
+                let checkpoint = self.server.map.getCheckpoint(playerCache.checkpointId);
+                if (checkpoint !== undefined) {
+                    self.lastCheckpoint = checkpoint;
                 }
-                const activePlayer = self.server.server.worldsMap?.[playerCache.mapId]?.getPlayerById(playerCache.entityId);
-                if (activePlayer && activePlayer !== self && activePlayer.hasEnteredGame) {
-                    connection.close('This session already has an active player');
-                    return;
-                }
-                if ('world_' + playerCache.mapId !== self.server.id) {
-                    connection.close('Session map does not match this world');
-                    return;
-                }
-                if (!playerCache.gameData) {
-                    connection.close('Game data unavailable. Please reconnect.');
-                    return;
-                }
-                self.name = gameplayNameFromSession(playerCache);
-                self.walletId = playerCache.walletId;
-                self.nftId = playerCache.nftId;
-                self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
-                self.mapId = playerCache.mapId;
-                try { await self.server.server.eventEquipment?.register(self); }
-                catch (error) { self.connection.close('Event equipment service unavailable. Please reconnect.'); return; }
-
-                self.kind = Types.Entities.WARRIOR;
-                self.equipArmor(message[2]);
-                self.equipWeapon(message[3]);
-                self.orientation = Utils.randomOrientation();
-
-                if (playerCache.checkpointId !== undefined) {
-                    let checkpoint = self.server.map.getCheckpoint(playerCache.checkpointId);
-                    if (checkpoint !== undefined) {
-                        self.lastCheckpoint = checkpoint;
-                    }
-                }
-
-                if (playerCache.x !== undefined && playerCache.y !== undefined) {
-                    self.setPosition(playerCache.x, playerCache.y);
-                } else {
-                    self.updatePosition();
-                }
-
-                if (self.server.addPlayer(self) === false) return;
-                self.server.enter_callback(self);
-
-                playerCache.isDirty = true;
-                playerCache.entityId = self.id;
-                playerCache.xp = parseInt(playerCache.xp);
-                playerCache.x = undefined;
-                playerCache.y = undefined;
-                self.server.server.cache.set(self.sessionId, playerCache);
-                self.title = playerCache.title;
-                self.level = Formulas.level(playerCache.xp);
-                self.updateHitPoints();
-                self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title, performance.now()]);
-                self.hasEnteredGame = true;
-                self.isDead = false;
-                self.server.server.fieldGuide?.reconcile(self).catch(error => console.error('[field-guide]', error.message));
-                if (!self.isBot()) {
-                    discord.sendMessage(`👋 **${self.name}** joined the game.`);
-                }
-                dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
-                self.mapId = playerCache.mapId;
-                self.server.server.activity?.start(self);
-                self.server.server.socialChat?.register(self);
-                self.playerEventBroker.setPlayer(self);
-
-                await self.startFlowPolling();
-
-                self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
-
             }
-            else if (action === Types.Messages.WHO) {
-                message.shift();
-                self.server.pushSpawnsToPlayer(self, message);
-            }
-            else if (action === Types.Messages.ZONE) {
-                self.zone_callback();
-            }
-            else if (action === Types.Messages.CHAT) {
-                var msg = Utils.sanitize(message[1].slice(0, Types.MAX_CHAT_LENGTH));
 
-                // Sanitized messages may become empty. No need to broadcast empty chat messages.
-                if (msg && msg !== "") {
-                    if (self.server.server?.socialChat) {
-                        if (self.server.server.socialChat.send(self, 'world', '', message[1])) {
-                            self.broadcastToZone(new Messages.Chat(self, msg), false);
-                        }
-                    } else {
+            if (playerCache.x !== undefined && playerCache.y !== undefined &&
+                (!resumeState || self.server.isValidPosition(playerCache.x, playerCache.y))) {
+                self.setPosition(playerCache.x, playerCache.y);
+            } else {
+                self.updatePosition();
+            }
+
+            if (resumeState) {
+                try {self.server.server.clientReloads.complete(self); delete playerCache.resumeState;}
+                catch (error) {connection.close('Client reload could not be completed. Please reconnect.'); return;}
+            }
+            if (self.server.addPlayer(self) === false) return;
+            self.server.enter_callback(self);
+
+            playerCache.isDirty = true;
+            playerCache.entityId = self.id;
+            playerCache.xp = parseInt(playerCache.xp);
+            playerCache.x = undefined;
+            playerCache.y = undefined;
+            self.server.server.cache.set(self.sessionId, playerCache);
+            self.title = playerCache.title;
+            self.level = Formulas.level(playerCache.xp);
+            self.updateHitPoints();
+            if (resumeState) {
+                self.restoreClientState(resumeState);
+            }
+            self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, resumeState?.dead ? self.maxHitPoints : self.hitPoints, self.title, performance.now()]);
+            self.hasEnteredGame = true;
+            self.isDead = !!resumeState?.dead;
+            if (self.isDead) {
+                self.server.handlePlayerVanish(self);
+                self.send(new Messages.Health(0, false));
+            }
+            self.server.server.fieldGuide?.reconcile(self).catch(error => console.error('[field-guide]', error.message));
+            if (!self.isBot() && !resumeState) {
+                discord.sendMessage(`👋 **${self.name}** joined the game.`);
+            }
+            dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
+            self.mapId = playerCache.mapId;
+            self.server.server.activity?.start(self);
+            self.server.server.socialChat?.register(self);
+            self.playerEventBroker.setPlayer(self);
+
+            await self.startFlowPolling();
+
+            if (!resumeState) self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
+
+        }
+        else if (action === Types.Messages.WHO) {
+            message.shift();
+            self.server.pushSpawnsToPlayer(self, message);
+        }
+        else if (action === Types.Messages.ZONE) {
+            self.zone_callback();
+        }
+        else if (action === Types.Messages.CHAT) {
+            var msg = Utils.sanitize(message[1].slice(0, Types.MAX_CHAT_LENGTH));
+
+            // Sanitized messages may become empty. No need to broadcast empty chat messages.
+            if (msg && msg !== "") {
+                if (self.server.server?.socialChat) {
+                    if (self.server.server.socialChat.send(self, 'world', '', message[1])) {
                         self.broadcastToZone(new Messages.Chat(self, msg), false);
-                        chat.addMessage(self.name, msg);
-                    }
-                }
-            }
-            else if (action === Types.Messages.CHAT_SYNC) {
-                self.server.server.socialChat.sync(self);
-            }
-            else if (action === Types.Messages.CHAT_SEND) {
-                const [type, channel, target, text, requestId] = message;
-                const sent = self.server.server.socialChat.send(self, channel, target, text, requestId.slice(0, 80));
-                if (sent && channel !== 'direct') {
-                    self.broadcastToZone(new Messages.Chat(self, Utils.sanitize(text.slice(0, Types.MAX_CHAT_LENGTH))), false);
-                }
-            }
-            else if (action === Types.Messages.CHAT_INVENTORY_REQUEST) {
-                self.server.server.socialChat.sendInventory(self);
-            }
-            else if (action === Types.Messages.CHAT_GIFT) {
-                const [type, target, text, item, quantity, requestId] = message;
-                await self.server.server.socialChat.sendGift(self, target, text, item, quantity, requestId);
-            }
-            else if (action === Types.Messages.EMOTE) {
-                var emotion = Utils.sanitize(message[1]);
-                self.broadcastToZone(new Messages.Emote(self, emotion), false);
-                let emoticon = Types.emotions[emotion];
-                discord.sendMessage(`**${self.name}** ${emoticon}`);
-            }
-            else if (action === Types.Messages.MOVE) {
-                if (self.move_callback) {
-                    var x = message[1],
-                        y = message[2];
-
-                    if (self.server.isValidPosition(x, y)) {
-                        const changedPosition = self.x !== x || self.y !== y;
-                        self.setPosition(x, y);
-                        self.clearTarget();
-                        self.broadcast(new Messages.Move(self));
-                        self.move_callback(self.x, self.y);
-                        if (changedPosition) self.server.server.activity?.meaningful(self);
-                        self.zone_callback();
-                    }
-                }
-            }
-            else if (action === Types.Messages.SUMMON_FOLLOW) {
-                if (self.move_callback) {
-                    let x = message[1],
-                        y = message[2];
-
-                    let possiblePos = [{ x: x - 1, y: y - 1 }, { x: x, y: y }, { x: x + 1, y: y }, { x: x - 1, y: y }, { x: x, y: y + 1 }, { x: x, y: y - 1 }];
-
-                    for (let pos of possiblePos) {
-                        if (self.server.isValidPosition(pos.x, pos.y)) {
-                            self.setPosition(pos.x, pos.y);
-                            self.clearTarget();
-                            self.broadcast(new Messages.Move(self));
-                            self.move_callback(self.x, self.y);
-                            self.zone_callback();
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (action === Types.Messages.LOOTMOVE) {
-                if (self.lootmove_callback) {
-                    self.setPosition(message[1], message[2]);
-
-                    var item = self.server.getEntityById(message[3]);
-                    if (item) {
-                        self.clearTarget();
-                        if (Types.isWeapon(item.kind) && self.getNFTWeapon() !== undefined) {
-                            console.log("Todo: increment NFT item experience")
-                        } else {
-                            self.broadcast(new Messages.LootMove(self, item));
-                            self.lootmove_callback(self.x, self.y);
-                        }
-
-                    }
-                }
-            }
-            else if (action === Types.Messages.AGGRO) {
-                if (self.move_callback) {
-                    const baseHateAggroHate = 5;
-                    const hate = self.playerClassModifiers.hate * baseHateAggroHate;
-                    self.server.handleMobHate(message[1], self.id, hate);
-
-                    // Handle special attack timeouts on encounter start
-                    let mob = self.server.getEntityById(message[1]);
-                    if (mob) {
-                        self.server.handleMobSpecial(mob);
-                    }
-                }
-            }
-            else if (action === Types.Messages.ATTACK) {
-                var mob = self.server.getEntityById(message[1]);
-                if (mob) {
-                    self.setTarget(mob);
-                    self.server.broadcastAttacker(self);
-                }
-            }
-            else if (action === Types.Messages.SELECTPROJECTILE) {
-                self.selectedProjectile = message[1];
-            }
-            else if (action === Types.Messages.SHOOT) {
-                let nftWeapon = self.getNFTWeapon();
-                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
-                    return;
-                }
-                var mob = self.server.getEntityById(message[1]);
-                if (mob) {
-                    let usedProjectile = self.getProjectileToUse();
-                    if (usedProjectile === null) {
-                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
-                        return;
-                    }
-
-                    let projectileCount = self.getResourceAmount(usedProjectile);
-                    if (projectileCount > 0) {
-                        self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
-                        self.consumeItem(usedProjectile);
-                    } else {
-                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
-                    }
-                }
-            }
-            else if (action === Types.Messages.HIT) {
-                let nftWeapon = self.getNFTWeapon();
-                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
-                    return;
-                }
-
-                var mob = self.server.getEntityById(message[1]);
-
-                if (mob) {
-                    let newAttackRate = BASE_ATTACK_RATE;
-
-                    if (mob instanceof Player) {
-                        mob.handleHurt(self);
-                    } else {
-                        let level = self.getLevel();
-                        let totalLevel = (self.getWeaponLevel() + level);
-                        let buff = self.getActiveBuff();
-                        if (buff && buff.stat === "atk") {
-                            totalLevel = totalLevel * (100 + buff.percent) / 100;
-                        }
-
-                        let weaponTrait = self.getNFTWeaponActiveTrait();
-
-                        //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
-
-                        function handleDamage(mob, totalLevel, multiplier, critical = false) {
-                            // Local trainers use fixed encounter damage, including when caught in splash.
-                            if (self.server.combatPrototype?.mobIds.has(Number(mob.id))) return 0;
-                            let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
-                            dmg *= multiplier;
-                            dmg = Math.round(dmg);
-
-                            if (dmg > 0) {
-                                let damageDealtModifier = 1;
-                                if (self.getNFTWeapon()?.isRanged()) {
-                                    damageDealtModifier = self.playerClassModifiers.rangedDamageDealt;
-                                } else {
-                                    damageDealtModifier = self.playerClassModifiers.meleeDamageDealt;
-                                }
-                                dmg = Math.round(damageDealtModifier * dmg);
-                                mob.receiveDamage(dmg, self.id);
-                                //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
-                                const hate = dmg * self.playerClassModifiers.hate;
-                                self.server.handleMobHate(mob.id, self.id, hate);
-                                self.server.handleHurtEntity(mob, self, dmg, critical);
-                            }
-                            self.incrementNFTWeaponExperience(dmg);
-                            return dmg;
-                        }
-
-                        if (weaponTrait === "aoe") {
-                            const group = self.server.groups[self.group];
-                            if (group === undefined) {
-                                handleDamage(mob, totalLevel, 1);
-                            } else {
-                                let entityIds = Object.keys(group.entities);
-                                let totalCleaveDmg = 0;
-                                entityIds.forEach(function (id) {
-                                    let entity = group.entities[id];
-                                    if (entity && entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
-                                        let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
-                                        if (mob.id === entity.id) {
-                                            handleDamage(mob, totalLevel, 1);
-                                        }
-                                        else if (distance <= 1) {
-                                            totalCleaveDmg += handleDamage(entity, totalLevel, 0.8);
-                                        }
-                                    }
-                                });
-                                if (totalCleaveDmg > 0) {
-                                    let hpHealed = Math.round(Math.min(totalCleaveDmg * 0.25, self.maxHitPoints * 0.1))
-
-                                    if (self.hitPoints + hpHealed > self.maxHitPoints) {
-                                        self.hitPoints = self.maxHitPoints;
-                                    } else {
-                                        self.hitPoints += hpHealed;
-                                    }
-                                    self.server.pushToPlayer(self, self.health());
-                                }
-                            }
-                        } else if (weaponTrait === "crit") {
-                            handleDamage(mob, totalLevel, 3, true);
-                        } else if (weaponTrait === "speed") {
-                            handleDamage(mob, totalLevel, 1);
-                            newAttackRate = BASE_ATTACK_RATE - Formulas.getSpeedTraitBonus(self.getWeaponLevel());
-                        } else {
-                            handleDamage(mob, totalLevel, 1);
-                        }
-                    }
-
-                    if (newAttackRate != self.getAttackRate()) {
-                        self.setAttackRate(newAttackRate);
-                    }
-                }
-            }
-            else if (action === Types.Messages.HURT) {
-                let mob = self.server.getEntityById(message[1]);
-                let botId = message[2];
-                if (botId !== 0) {
-                    let bot = self.server.getEntityById(botId);
-                    if (bot !== undefined) {
-                        bot.handleHurt(mob);
-                    }
-                } else if (mob instanceof Mob) {
-                    let kindString = Types.getKindAsString(mob.kind);
-                    let aoeProps = Properties[kindString].aoe;
-
-                    if (aoeProps !== undefined && aoeProps.onHit) {
-                        self.server.doAoe(mob);
-                    } else {
-                        self.handleHurt(mob);
                     }
                 } else {
-                    self.handleHurt(mob);
+                    self.broadcastToZone(new Messages.Chat(self, msg), false);
+                    chat.addMessage(self.name, msg);
                 }
             }
-            else if (action === Types.Messages.LOOT) {
-                var item = self.server.getEntityById(message[1]);
-
-                if (item) {
-                    var kind = item.kind;
-
-                    if (Types.isItem(kind)) {
-                        self.playerEventBroker.lootEvent(item, 1);
-                        self.broadcast(item.despawn());
-                        self.server.removeEntity(item);
-
-                        if (kind === Types.Entities.LOOPRING || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
-                            self.startInvincibility();
-                            self.updateHitPoints();
-                            self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
-                        } else if (Types.isHealingItem(kind)) {
-                            let amount;
-
-                            switch (kind) {
-                                case Types.Entities.POTION:
-                                case Types.Entities.FLASK:
-                                case Types.Entities.COBAPPLE:
-                                case Types.Entities.POPCORN:
-                                case Types.Entities.REDPOTION:
-                                    amount = 40;
-                                    break;
-                                case Types.Entities.TAIKOBOOST:
-                                case Types.Entities.GREYPOTION:
-                                    amount = 100;
-                                    break;
-                            }
-
-                            if (!self.hasFullHealth()) {
-                                self.regenHealthBy(amount);
-                                self.server.pushToPlayer(self, self.health());
-                            }
-                        } else if (Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
-                            self.equipItem(item);
-                            self.broadcast(self.equip(kind));
-                        }
-
-                        if (Types.isResource(kind)) {
-                            let resourceKind = Collectables.getCollectItem(kind);
-                            let message = new Messages.Resource(resourceKind, self.getResourceAmount(resourceKind));
-                            self.server.pushToPlayer(self, message);
-                        }
-                    }
-                }
-            } else if (action === Types.Messages.EQUIP_INVENTORY) {
-                let playerCache = self.server.server.cache.get(self.sessionId);
-                let _self = self;
-                let nftId = message[2];
-                if (nftId.startsWith("0x")) {
-                    dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
-                        item = { kind: message[1] };
-                        _self.equipItem(item);
-                        _self.broadcast(_self.equip(item.kind));
-                    }).catch(function (error) {
-                        console.error("Asset validation error: " + error);
-                        item = { kind: Types.Entities.SWORD1 };
-                        _self.equipItem(item);
-                        _self.broadcast(_self.equip(item.kind));
-                    });
-                } else {
-                    item = { kind: message[1] };
-                    if (self.getResourceAmount(item.kind) > 0 || await dao.getItemCount(playerCache.nftId, item.kind) > 0) {
-                        _self.equipItem(item);
-                        _self.broadcast(_self.equip(item.kind));
-                    } else {
-                        console.log("Player " + _self.name + " tried to equip item " + nftId + " but does not have it.");
-                    }
-                }
+        }
+        else if (action === Types.Messages.CHAT_SYNC) {
+            self.server.server.socialChat.sync(self);
+        }
+        else if (action === Types.Messages.CHAT_SEND) {
+            const [type, channel, target, text, requestId] = message;
+            const sent = self.server.server.socialChat.send(self, channel, target, text, requestId.slice(0, 80));
+            if (sent && channel !== 'direct') {
+                self.broadcastToZone(new Messages.Chat(self, Utils.sanitize(text.slice(0, Types.MAX_CHAT_LENGTH))), false);
             }
-            else if (action === Types.Messages.TELEPORT) {
-                let _self = self;
+        }
+        else if (action === Types.Messages.CHAT_INVENTORY_REQUEST) {
+            self.server.server.socialChat.sendInventory(self);
+        }
+        else if (action === Types.Messages.CHAT_GIFT) {
+            const [type, target, text, item, quantity, requestId] = message;
+            await self.server.server.socialChat.sendGift(self, target, text, item, quantity, requestId);
+        }
+        else if (action === Types.Messages.EMOTE) {
+            var emotion = Utils.sanitize(message[1]);
+            self.broadcastToZone(new Messages.Emote(self, emotion), false);
+            let emoticon = Types.emotions[emotion];
+            discord.sendMessage(`**${self.name}** ${emoticon}`);
+        }
+        else if (action === Types.Messages.MOVE) {
+            if (self.move_callback) {
                 var x = message[1],
                     y = message[2];
 
-                let requiredNft = self.server.map.getRequiredNFT(x, y);
-                let requiredTrigger = self.server.map.getDoorTrigger(x, y);
+                if (self.server.isValidPosition(x, y)) {
+                    const changedPosition = self.x !== x || self.y !== y;
+                    self.setPosition(x, y);
+                    self.clearTarget();
+                    self.broadcast(new Messages.Move(self));
+                    self.move_callback(self.x, self.y);
+                    if (changedPosition) self.server.server.activity?.meaningful(self);
+                    self.zone_callback();
+                }
+            }
+        }
+        else if (action === Types.Messages.SUMMON_FOLLOW) {
+            if (self.move_callback) {
+                let x = message[1],
+                    y = message[2];
 
-                function teleport() {
-                    if (_self.server.isValidPosition(x, y)) {
-                        _self.setPosition(x, y);
-                        // End local practice only after a teleport is authorized and accepted.
-                        // Keep the destination and current HP; discard old movement/combo state.
-                        if (_self.server.combatPrototype) _self.server.combatPrototype.disable(_self, false);
-                        else _self.server.combat?.teleport(_self);
-                        _self.clearTarget();
+                let possiblePos = [{ x: x - 1, y: y - 1 }, { x: x, y: y }, { x: x + 1, y: y }, { x: x - 1, y: y }, { x: x, y: y + 1 }, { x: x, y: y - 1 }];
 
-                        _self.broadcast(new Messages.Teleport(_self));
-                        _self.server.handlePlayerVanish(_self);
-                        _self.server.pushRelevantEntityListTo(_self);
-                    } else {
-                        console.error("Invalid teleport position : " + x + ", " + y);
+                for (let pos of possiblePos) {
+                    if (self.server.isValidPosition(pos.x, pos.y)) {
+                        self.setPosition(pos.x, pos.y);
+                        self.clearTarget();
+                        self.broadcast(new Messages.Move(self));
+                        self.move_callback(self.x, self.y);
+                        self.zone_callback();
+                        break;
                     }
                 }
+            }
+        }
+        else if (action === Types.Messages.LOOTMOVE) {
+            if (self.lootmove_callback) {
+                self.setPosition(message[1], message[2]);
 
-                let triggerActive = true;
-                if (requiredTrigger !== undefined) {
-                    triggerActive = self.server.checkTriggerActive(requiredTrigger);
+                var item = self.server.getEntityById(message[3]);
+                if (item) {
+                    self.clearTarget();
+                    if (Types.isWeapon(item.kind) && self.getNFTWeapon() !== undefined) {
+                        console.log("Todo: increment NFT item experience")
+                    } else {
+                        self.broadcast(new Messages.LootMove(self, item));
+                        self.lootmove_callback(self.x, self.y);
+                    }
+
                 }
-                if (requiredNft !== undefined) {
-                    let playerCache = self.server.server.cache.get(self.sessionId);
-                    platformClient.checkOwnership(requiredNft, playerCache.walletId)
-                        .then(function (ownsNFT) {
-                            if (ownsNFT === true) {
-                                if (triggerActive) {
-                                    teleport();
-                                }
-                            }
-                        })
-                        .catch(function (error) {
-                            console.error("Asset validation error: " + error);
-                        });
+            }
+        }
+        else if (action === Types.Messages.AGGRO) {
+            if (self.move_callback) {
+                const baseHateAggroHate = 5;
+                const hate = self.playerClassModifiers.hate * baseHateAggroHate;
+                self.server.handleMobHate(message[1], self.id, hate);
+
+                // Handle special attack timeouts on encounter start
+                let mob = self.server.getEntityById(message[1]);
+                if (mob) {
+                    self.server.handleMobSpecial(mob);
+                }
+            }
+        }
+        else if (action === Types.Messages.ATTACK) {
+            var mob = self.server.getEntityById(message[1]);
+            if (mob) {
+                self.setTarget(mob);
+                self.server.broadcastAttacker(self);
+            }
+        }
+        else if (action === Types.Messages.SELECTPROJECTILE) {
+            self.selectedProjectile = message[1];
+        }
+        else if (action === Types.Messages.SHOOT) {
+            let nftWeapon = self.getNFTWeapon();
+            if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
+                return;
+            }
+            var mob = self.server.getEntityById(message[1]);
+            if (mob) {
+                let usedProjectile = self.getProjectileToUse();
+                if (usedProjectile === null) {
+                    self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                    return;
+                }
+
+                let projectileCount = self.getResourceAmount(usedProjectile);
+                if (projectileCount > 0) {
+                    self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
+                    self.consumeItem(usedProjectile);
                 } else {
-                    if (triggerActive) {
-                        teleport();
+                    self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                }
+            }
+        }
+        else if (action === Types.Messages.HIT) {
+            let nftWeapon = self.getNFTWeapon();
+            if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
+                return;
+            }
+
+            var mob = self.server.getEntityById(message[1]);
+
+            if (mob) {
+                let newAttackRate = BASE_ATTACK_RATE;
+
+                if (mob instanceof Player) {
+                    mob.handleHurt(self);
+                } else {
+                    let level = self.getLevel();
+                    let totalLevel = (self.getWeaponLevel() + level);
+                    let buff = self.getActiveBuff();
+                    if (buff && buff.stat === "atk") {
+                        totalLevel = totalLevel * (100 + buff.percent) / 100;
+                    }
+
+                    let weaponTrait = self.getNFTWeaponActiveTrait();
+
+                    //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
+
+                    function handleDamage(mob, totalLevel, multiplier, critical = false) {
+                        // Local trainers use fixed encounter damage, including when caught in splash.
+                        if (self.server.combatPrototype?.mobIds.has(Number(mob.id))) return 0;
+                        let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
+                        dmg *= multiplier;
+                        dmg = Math.round(dmg);
+
+                        if (dmg > 0) {
+                            let damageDealtModifier = 1;
+                            if (self.getNFTWeapon()?.isRanged()) {
+                                damageDealtModifier = self.playerClassModifiers.rangedDamageDealt;
+                            } else {
+                                damageDealtModifier = self.playerClassModifiers.meleeDamageDealt;
+                            }
+                            dmg = Math.round(damageDealtModifier * dmg);
+                            mob.receiveDamage(dmg, self.id);
+                            //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
+                            const hate = dmg * self.playerClassModifiers.hate;
+                            self.server.handleMobHate(mob.id, self.id, hate);
+                            self.server.handleHurtEntity(mob, self, dmg, critical);
+                        }
+                        self.incrementNFTWeaponExperience(dmg);
+                        return dmg;
+                    }
+
+                    if (weaponTrait === "aoe") {
+                        const group = self.server.groups[self.group];
+                        if (group === undefined) {
+                            handleDamage(mob, totalLevel, 1);
+                        } else {
+                            let entityIds = Object.keys(group.entities);
+                            let totalCleaveDmg = 0;
+                            entityIds.forEach(function (id) {
+                                let entity = group.entities[id];
+                                if (entity && entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
+                                    let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
+                                    if (mob.id === entity.id) {
+                                        handleDamage(mob, totalLevel, 1);
+                                    }
+                                    else if (distance <= 1) {
+                                        totalCleaveDmg += handleDamage(entity, totalLevel, 0.8);
+                                    }
+                                }
+                            });
+                            if (totalCleaveDmg > 0) {
+                                let hpHealed = Math.round(Math.min(totalCleaveDmg * 0.25, self.maxHitPoints * 0.1))
+
+                                if (self.hitPoints + hpHealed > self.maxHitPoints) {
+                                    self.hitPoints = self.maxHitPoints;
+                                } else {
+                                    self.hitPoints += hpHealed;
+                                }
+                                self.server.pushToPlayer(self, self.health());
+                            }
+                        }
+                    } else if (weaponTrait === "crit") {
+                        handleDamage(mob, totalLevel, 3, true);
+                    } else if (weaponTrait === "speed") {
+                        handleDamage(mob, totalLevel, 1);
+                        newAttackRate = BASE_ATTACK_RATE - Formulas.getSpeedTraitBonus(self.getWeaponLevel());
+                    } else {
+                        handleDamage(mob, totalLevel, 1);
+                    }
+                }
+
+                if (newAttackRate != self.getAttackRate()) {
+                    self.setAttackRate(newAttackRate);
+                }
+            }
+        }
+        else if (action === Types.Messages.HURT) {
+            let mob = self.server.getEntityById(message[1]);
+            let botId = message[2];
+            if (botId !== 0) {
+                let bot = self.server.getEntityById(botId);
+                if (bot !== undefined) {
+                    bot.handleHurt(mob);
+                }
+            } else if (mob instanceof Mob) {
+                let kindString = Types.getKindAsString(mob.kind);
+                let aoeProps = Properties[kindString].aoe;
+
+                if (aoeProps !== undefined && aoeProps.onHit) {
+                    self.server.doAoe(mob);
+                } else {
+                    self.handleHurt(mob);
+                }
+            } else {
+                self.handleHurt(mob);
+            }
+        }
+        else if (action === Types.Messages.LOOT) {
+            var item = self.server.getEntityById(message[1]);
+
+            if (item) {
+                var kind = item.kind;
+
+                if (Types.isItem(kind)) {
+                    self.playerEventBroker.lootEvent(item, 1);
+                    self.broadcast(item.despawn());
+                    self.server.removeEntity(item);
+
+                    if (kind === Types.Entities.LOOPRING || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
+                        self.startInvincibility();
+                        self.updateHitPoints();
+                        self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
+                    } else if (Types.isHealingItem(kind)) {
+                        let amount;
+
+                        switch (kind) {
+                            case Types.Entities.POTION:
+                            case Types.Entities.FLASK:
+                            case Types.Entities.COBAPPLE:
+                            case Types.Entities.POPCORN:
+                            case Types.Entities.REDPOTION:
+                                amount = 40;
+                                break;
+                            case Types.Entities.TAIKOBOOST:
+                            case Types.Entities.GREYPOTION:
+                                amount = 100;
+                                break;
+                        }
+
+                        if (!self.hasFullHealth()) {
+                            self.regenHealthBy(amount);
+                            self.server.pushToPlayer(self, self.health());
+                        }
+                    } else if (Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
+                        self.equipItem(item);
+                        self.broadcast(self.equip(kind));
+                    }
+
+                    if (Types.isResource(kind)) {
+                        let resourceKind = Collectables.getCollectItem(kind);
+                        let message = new Messages.Resource(resourceKind, self.getResourceAmount(resourceKind));
+                        self.server.pushToPlayer(self, message);
                     }
                 }
             }
-            else if (action === Types.Messages.OPEN) {
-                var chest = self.server.getEntityById(message[1]);
-                if (chest && chest instanceof Chest) {
-                    self.server.handleOpenedChest(chest, self);
+        } else if (action === Types.Messages.EQUIP_INVENTORY) {
+            let playerCache = self.server.server.cache.get(self.sessionId);
+            let _self = self;
+            let nftId = message[2];
+            if (nftId.startsWith("0x")) {
+                dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
+                    item = { kind: message[1] };
+                    _self.equipItem(item);
+                    _self.broadcast(_self.equip(item.kind));
+                }).catch(function (error) {
+                    console.error("Asset validation error: " + error);
+                    item = { kind: Types.Entities.SWORD1 };
+                    _self.equipItem(item);
+                    _self.broadcast(_self.equip(item.kind));
+                });
+            } else {
+                item = { kind: message[1] };
+                if (self.getResourceAmount(item.kind) > 0 || await dao.getItemCount(playerCache.nftId, item.kind) > 0) {
+                    _self.equipItem(item);
+                    _self.broadcast(_self.equip(item.kind));
+                } else {
+                    console.log("Player " + _self.name + " tried to equip item " + nftId + " but does not have it.");
                 }
             }
-            else if (action === Types.Messages.CHECK) {
-                var checkpoint = self.server.map.getCheckpoint(message[1]);
-                if (checkpoint) {
-                    dao.saveAvatarMapAndCheckpoint(self.nftId, self.mapId, checkpoint.id);
-                    self.lastCheckpoint = checkpoint;
-                }
-            } else if (action === Types.Messages.TRIGGER) {
-                var trigger = self.server.triggerAreas[message[1]];
-                if (trigger) {
-                    if (message[2] === true) {
-                        if (self.triggerDeactivationTimer) {
-                            clearTimeout(self.triggerDeactivationTimer);
-                        }
+        }
+        else if (action === Types.Messages.TELEPORT) {
+            let _self = self;
+            var x = message[1],
+                y = message[2];
 
-                        if (!self.area || self.area.id !== trigger.id) {
-                            trigger.addToArea(self);
-                            self.playerEventBroker.enteredArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
-                            if (trigger.trigger) {
-                                self.server.activateTrigger(trigger.trigger);
+            let requiredNft = self.server.map.getRequiredNFT(x, y);
+            let requiredTrigger = self.server.map.getDoorTrigger(x, y);
+
+            function teleport() {
+                if (_self.server.isValidPosition(x, y)) {
+                    _self.setPosition(x, y);
+                    // End local practice only after a teleport is authorized and accepted.
+                    // Keep the destination and current HP; discard old movement/combo state.
+                    if (_self.server.combatPrototype) _self.server.combatPrototype.disable(_self, false);
+                    else _self.server.combat?.teleport(_self);
+                    _self.clearTarget();
+
+                    _self.broadcast(new Messages.Teleport(_self));
+                    _self.server.handlePlayerVanish(_self);
+                    _self.server.pushRelevantEntityListTo(_self);
+                } else {
+                    console.error("Invalid teleport position : " + x + ", " + y);
+                }
+            }
+
+            let triggerActive = true;
+            if (requiredTrigger !== undefined) {
+                triggerActive = self.server.checkTriggerActive(requiredTrigger);
+            }
+            if (requiredNft !== undefined) {
+                let playerCache = self.server.server.cache.get(self.sessionId);
+                platformClient.checkOwnership(requiredNft, playerCache.walletId)
+                    .then(function (ownsNFT) {
+                        if (ownsNFT === true) {
+                            if (triggerActive) {
+                                teleport();
                             }
                         }
-                    } else {
-                        trigger.removeFromArea(self);
-                        self.playerEventBroker.leftArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
+                    })
+                    .catch(function (error) {
+                        console.error("Asset validation error: " + error);
+                    });
+            } else {
+                if (triggerActive) {
+                    teleport();
+                }
+            }
+        }
+        else if (action === Types.Messages.OPEN) {
+            var chest = self.server.getEntityById(message[1]);
+            if (chest && chest instanceof Chest) {
+                self.server.handleOpenedChest(chest, self);
+            }
+        }
+        else if (action === Types.Messages.CHECK) {
+            var checkpoint = self.server.map.getCheckpoint(message[1]);
+            if (checkpoint) {
+                dao.saveAvatarMapAndCheckpoint(self.nftId, self.mapId, checkpoint.id);
+                self.lastCheckpoint = checkpoint;
+            }
+        } else if (action === Types.Messages.TRIGGER) {
+            var trigger = self.server.triggerAreas[message[1]];
+            if (trigger) {
+                if (message[2] === true) {
+                    if (self.triggerDeactivationTimer) {
+                        clearTimeout(self.triggerDeactivationTimer);
+                    }
+
+                    if (!self.area || self.area.id !== trigger.id) {
+                        trigger.addToArea(self);
+                        self.playerEventBroker.enteredArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
                         if (trigger.trigger) {
-                            if (trigger.delay) {
-                                self.triggerDeactivationTimer = setTimeout(() => {
-                                    if (trigger.isEmpty()) {
-                                        self.server.deactivateTrigger(trigger.trigger);
-                                    }
-                                }, trigger.delay);
-                            } else {
+                            self.server.activateTrigger(trigger.trigger);
+                        }
+                    }
+                } else {
+                    trigger.removeFromArea(self);
+                    self.playerEventBroker.leftArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
+                    if (trigger.trigger) {
+                        if (trigger.delay) {
+                            self.triggerDeactivationTimer = setTimeout(() => {
                                 if (trigger.isEmpty()) {
                                     self.server.deactivateTrigger(trigger.trigger);
                                 }
+                            }, trigger.delay);
+                        } else {
+                            if (trigger.isEmpty()) {
+                                self.server.deactivateTrigger(trigger.trigger);
                             }
                         }
                     }
                 }
-            } else if (action === Types.Messages.FISHINGRESULT) {
-                try {
-                    await completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
-                } catch (error) {
-                    console.error('[fishing] catch award failed:', error.message);
-                } finally {
-                    self.server.announceDespawnFloat(self);
-                }
             }
-            else {
-                if (self.message_callback) {
-                    self.message_callback(message);
-                }
+        } else if (action === Types.Messages.FISHINGRESULT) {
+            try {
+                await completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
+            } catch (error) {
+                console.error('[fishing] catch award failed:', error.message);
+            } finally {
+                self.server.announceDespawnFloat(self);
             }
-        });
+        }
+        else {
+            if (self.message_callback) {
+                self.message_callback(message);
+            }
+        }
+    },
 
-        this.connection.onClose(function () {
-            self.server.server.activity?.stop(self.sessionId);
-            self.server.server.eventEquipment?.unregister(self);
-            self.server.server?.socialChat?.unregister(self);
-            if (self.loopringTimeout) {
-                clearTimeout(self.loopringTimeout);
-            }
-            clearTimeout(self.disconnectTimeout);
-            if (self.exit_callback) {
-                self.exit_callback();
-            }
-        });
+    handleDisconnect: function () {
+        const self = this;
+        self.server.server.clientReloads?.disconnected(self);
+        self.server.server.activity?.stop(self.sessionId);
+        self.server.server.eventEquipment?.unregister(self);
+        self.server.server?.socialChat?.unregister(self);
+        if (self.loopringTimeout) {
+            clearTimeout(self.loopringTimeout);
+        }
+        clearTimeout(self.disconnectTimeout);
+        if (self.exit_callback) {
+            self.exit_callback();
+        }
+    },
 
-        this.connection.sendUTF8("go"); // Notify client that the HELLO/WELCOME handshake can start
+    restoreClientState: function (state) {
+        this.orientation = state.orientation;
+        const buff = state.consumableBuff;
+        if (buff?.buff && Number.isFinite(buff.expireTime) && buff.expireTime > Date.now()) {
+            this.consumableBuff = {buff: buff.buff, expireTime: buff.expireTime};
+            this.applyConsumableBuff();
+            this.consumableBuff.buffTimeout = setTimeout(() => {
+                this.removeConsumableBuff(); this.consumableBuff = {};
+            }, buff.expireTime - Date.now());
+            this.send(new Messages.Buffinfo(buff.buff.stat, buff.buff.percent, buff.expireTime - Date.now()).serialize());
+        }
+        this.hitPoints = Math.max(0, Math.min(this.maxHitPoints, state.hp));
+        if (Number.isFinite(state.invincibilityExpiresAt) && state.invincibilityExpiresAt > Date.now()) {
+            this.invincible = true;
+            this.invincibilityExpiresAt = state.invincibilityExpiresAt;
+            this.broadcast(this.equip(Types.Entities.FIREFOX), false);
+            this.loopringTimeout = setTimeout(() => {
+                this.broadcast(this.equip(this.armor), false); this.invincible = false;
+                this.loopringTimeout = null; delete this.invincibilityExpiresAt;
+            }, state.invincibilityExpiresAt - Date.now());
+        }
+        this.server.consumeCooldowns[this.nftId] = this.server.consumeCooldowns[this.nftId] || {};
+        for (const [group, until] of Object.entries(state.cooldowns || {})) {
+            if (Number.isFinite(until) && until > Date.now()) this.server.consumeCooldowns[this.nftId][group] = Math.max(until, this.server.consumeCooldowns[this.nftId][group] || 0);
+        }
     },
 
     incrementNFTWeaponExperience: function (damage) {
@@ -637,7 +691,7 @@ module.exports = Player = Character.extend({
     },
 
     handleHurt: function (mob, damage) {
-        if (mob && this.hitPoints > 0 && !this.invincible) {
+        if (mob && this.hitPoints > 0 && !this.invincible && !this.clientReloadPending) {
             if (damage === undefined) {
                 let level = this.getLevel();
                 let totalLevel = Math.round(level * 0.5);
@@ -1404,3 +1458,5 @@ module.exports = Player = Character.extend({
         }
     }
 });
+
+if (typeof process !== 'undefined' && process.env.LIVE_UPDATES_ENABLED === '1') require('./hotreload').capture(module, expression => eval(expression));
