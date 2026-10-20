@@ -1,1 +1,3 @@
 data/chat/
+.live-update/
+.live-release.json

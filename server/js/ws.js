@@ -200,6 +200,14 @@ WS.socketIOServer = Server.extend({
         var express = require('express');
         var app = express();
         this.app = app;
+        const updates = require('./hotreload').current();
+        updates?.attach(app, process.env.LIVE_UPDATE_KEY || process.env.LOOPWORMS_API_KEY);
+        if (updates?.clients) {
+            updates.clients.notify = packet => self.io?.emit('client-update', packet);
+            updates.clients.ready = () => !self.clientReloads?.rebooting && Object.keys(self.worldsMap || {}).length > 0 &&
+                Object.values(self.worldsMap).every(world => world.map?.isLoaded);
+            updates.clients.attach(app, () => updates.manifest.revision);
+        }
         app.use("/", express.static(__dirname + "/../../client-build"));
 
         let httpInclude = require('http');
@@ -213,6 +221,12 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        if (updates?.clients) {
+            this.clientReloads = new (require('./clientreloadcontroller').ClientReloadController)(this, () => dao.flushPendingWrites());
+            this.clientReloads.attach(app, updates.clients);
+            updates.rebootHandoffs = revision => this.clientReloads.reboot(revision);
+            updates.cancelReboot = () => this.clientReloads.cancelReboot();
+        }
         const playerTitles = new PlayerTitleController(cache, () => self.worldsMap, platformClient, self.socialChat);
         app.put('/session/:sessionId/title', (req, res) => playerTitles.save(req, res));
         app.post('/session/:sessionId/title/prompt', (req, res) => playerTitles.prompt(req, res));
@@ -269,6 +283,7 @@ WS.socketIOServer = Server.extend({
         }
 
         app.post('/session', async (req, res) => {
+            if (this.clientReloads?.rebooting) return res.status(503).json({status: false, error: 'Server update is in progress'});
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
 
@@ -282,6 +297,7 @@ WS.socketIOServer = Server.extend({
             }
 
             let walletAllowed = await dao.walletHasNFT(body.walletId, body.nftId);
+            if (this.clientReloads?.rebooting) return res.status(503).json({status: false, error: 'Server update is in progress'});
             if (!walletAllowed) {
                 console.error("Wallet not allowed", body.walletId, body.nftId);
                 res.status(401).json({
@@ -304,6 +320,8 @@ WS.socketIOServer = Server.extend({
                     return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
                 }
             } else {
+                try {this.clientReloads?.revokeWallet(body.walletId);}
+                catch (error) {return res.status(503).json({status: false, error: 'Session recovery is unavailable'});}
                 let cacheKeys = cache.keys();
                 for (i in cacheKeys) {
                     let key = cacheKeys[i];
@@ -384,7 +402,9 @@ WS.socketIOServer = Server.extend({
             let weapon;
             let avatarGameData;
 
-            if (isDirty === true) {
+            const reloadData = this.clientReloads?.data(sessionData);
+            const reloadPending = sessionData.resumeState?.expiresAt > Date.now();
+            if (isDirty === true && !reloadPending) {
                 res.status(409).json({
                     status: false,
                     error: "Your wallet has an active session",
@@ -393,7 +413,9 @@ WS.socketIOServer = Server.extend({
                 return;
             } else {
                 weapon = await dao.loadWeapon(walletId, nftId);
-                if (sessionData.f2p === true) {
+                if (reloadData) {
+                    avatarGameData = reloadData;
+                } else if (sessionData.f2p === true) {
                     avatarGameData = {
                         mobKills: {},
                         items: {},

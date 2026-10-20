@@ -18,40 +18,46 @@ class CombatController {
 
     bind(player) {
         const socket = player.connection._connection;
-        socket.on('combat', command => {
-            if (!player.hasEnteredGame || player.isDead || this.world.players[player.id] !== player) return;
-            if (!command || typeof command !== 'object') return;
-            if (command.action === 'ready') {
-                if (!this.encounters.has(player.id)) this.enable(player, command);
-                return;
-            }
-            const encounter = this.encounters.get(player.id);
-            if (!encounter) return;
-            if (command.action === 'mob-swing') this.fieldAttacks.reportSwing(encounter,command,this.now());
-            if (command.action === 'move') this.move(encounter, command, this.now());
-            if (command.action === 'technique') this.fieldAttacks.technique(encounter, command.mobId, this.now());
-        });
+        socket.on('combat', command => this.handleCommand(player, command));
         socket.on('disconnect', () => this.disable(player));
         const receive = player.connection.listen_callback;
-        player.connection.listen_callback = message => {
-            const encounter = this.encounters.get(player.id);
-            if (!encounter || !Array.isArray(message)) return receive(message);
-            const type = Number(message[0]);
-            if (type === Types.Messages.HURT && !message[2]) {
-                const mob = this.world.entities[message[1]];
-                if (mob && this.fieldAttacks.intercept(encounter,mob,this.now())) return;
-            }
-            // Positions come from completed tiles; retain normal target clearing on path start.
-            if ([Types.Messages.MOVE, Types.Messages.LOOTMOVE].includes(type)) {
-                player.clearTarget();
-                return;
-            }
-            if (type !== Types.Messages.HIT) return receive(message);
-            const previous = this.activeAttack;
-            this.activeAttack = {player,targetId:Number(message[1]),credited:false};
-            try { return receive(message); }
-            finally { this.activeAttack = previous; }
-        };
+        player.connection.listen_callback = message => this.handleMessage(player, receive, message);
+    }
+
+    handleCommand(player, command) {
+        if (player.clientReloadPending) return;
+        if (!player.hasEnteredGame || player.isDead || this.world.players[player.id] !== player) return;
+        if (!command || typeof command !== 'object') return;
+        if (command.action === 'ready') {
+            if (!this.encounters.has(player.id)) this.enable(player, command);
+            return;
+        }
+        const encounter = this.encounters.get(player.id);
+        if (!encounter) return;
+        if (command.action === 'mob-swing') this.fieldAttacks.reportSwing(encounter,command,this.now());
+        if (command.action === 'move') this.move(encounter, command, this.now());
+        if (command.action === 'technique') this.fieldAttacks.technique(encounter, command.mobId, this.now());
+    }
+
+    handleMessage(player, receive, message) {
+        if (player.clientReloadPending) return;
+        const encounter = this.encounters.get(player.id);
+        if (!encounter || !Array.isArray(message)) return receive(message);
+        const type = Number(message[0]);
+        if (type === Types.Messages.HURT && !message[2]) {
+            const mob = this.world.entities[message[1]];
+            if (mob && this.fieldAttacks.intercept(encounter,mob,this.now())) return;
+        }
+        // Positions come from completed tiles; retain normal target clearing on path start.
+        if ([Types.Messages.MOVE, Types.Messages.LOOTMOVE].includes(type)) {
+            player.clearTarget();
+            return;
+        }
+        if (type !== Types.Messages.HIT) return receive(message);
+        const previous = this.activeAttack;
+        this.activeAttack = {player,targetId:Number(message[1]),credited:false};
+        try { return receive(message); }
+        finally { this.activeAttack = previous; }
     }
 
     enable(player, capabilities = {}) {
@@ -197,3 +203,5 @@ class CombatController {
 
 }
 module.exports = CombatController;
+
+if (typeof process !== 'undefined' && process.env.LIVE_UPDATES_ENABLED === '1') require('./hotreload').capture(module, expression => eval(expression));

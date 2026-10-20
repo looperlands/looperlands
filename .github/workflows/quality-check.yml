@@ -13,7 +13,9 @@ jobs:
     - name: Validate deployment safeguards
       run: |
         bash -n bin/deploy-game-server.sh
+        bash -n bin/deploy-live-game-server.sh
         PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
+        PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-live-game-server.test.py
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:

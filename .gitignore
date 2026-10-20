@@ -1,4 +1,6 @@
 node_modules
+.live-release.json
+.live-update/
 client-build
 build.txt
 config_local*

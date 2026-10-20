@@ -6,6 +6,15 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      deployment_mode:
+        description: Automatically select HMR or reboot (overrides available for maintenance)
+        required: true
+        type: choice
+        default: auto
+        options:
+          - auto
+          - hmr
+          - reboot
       reboot_reason:
         description: Reason shown to players before the reboot (blank uses the repository default)
         required: false
@@ -43,16 +52,20 @@ jobs:
       - name: Validate deployment safeguards
         run: |
           bash -n bin/deploy-game-server.sh
+          bash -n bin/deploy-live-game-server.sh
           PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
+          PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-live-game-server.test.py
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
-        run: docker build -f Dockerfile.prod -t balkshamster/looperlands:latest .
+        run: docker build -f Dockerfile.prod --build-arg GAME_RELEASE_ID=${{ github.sha }} -t balkshamster/looperlands:${{ github.sha }} -t balkshamster/looperlands:latest .
 
       - name: Push Docker Image to Docker Hub
-        run: docker push balkshamster/looperlands:latest
+        run: |
+          docker push balkshamster/looperlands:${{ github.sha }}
+          docker push balkshamster/looperlands:latest
       - name: Check deployment destination
         env:
           DEPLOY_HOST: ${{ secrets.HOST }}
@@ -79,21 +92,24 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          source: "bin/deploy-game-server.sh"
+          source: "bin/deploy-game-server.sh,bin/deploy-game-server.py"
           target: "/tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}"
 
-      - name: Announce reboot and deploy with persistent chat storage
+      - name: Automatically deploy with HMR or an announced reboot
         uses: appleboy/ssh-action@v0.1.7
         env:
           REBOOT_REASON_BASE64: ${{ steps.reboot.outputs.reason_base64 }}
           REBOOT_NOTICE_SECONDS: ${{ steps.reboot.outputs.notice_seconds }}
+          DEPLOY_MODE: ${{ inputs.deployment_mode || 'auto' }}
+          LIVE_UPDATE_IMAGE: balkshamster/looperlands:${{ github.sha }}
+          LIVE_UPDATE_SERVICE: ${{ vars.GAME_SERVER_LIVE_SERVICE }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
           command_timeout: 20m
-          envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS
+          envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS,DEPLOY_MODE,LIVE_UPDATE_IMAGE,LIVE_UPDATE_SERVICE
           script: |
             bash /tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/bin/deploy-game-server.sh
 

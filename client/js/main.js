@@ -1,5 +1,5 @@
 
-define(['jquery', 'app'], function($, App) {
+define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     var app, game;
 
     let gamepadHandler = undefined;
@@ -288,6 +288,8 @@ define(['jquery', 'app'], function($, App) {
     		}
 	
     		game.onGameStart(function() {
+                app.clientUpdates = app.clientUpdates || new ClientUpdates(app);
+                app.clientUpdates.start(game.client.connection);
                 app.initEquipmentIcons();
                 keyboardHandler = new KeyBoardHandler(game, app);
                 game.keyboardHandler = keyboardHandler;

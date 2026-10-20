@@ -12,7 +12,10 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			if (tokenHash !== undefined && assetType !== undefined) {
 				this.loadNFTSprite(tokenHash, assetType, nftId);
 			} else {
-				if (window.location.href.indexOf("127.0.0.1") > -1) {
+				const revision = typeof document !== 'undefined' && document.querySelector?.('meta[name="looperlands-client-revision"]')?.content;
+				if (revision) {
+					this.baseImageURL = new URL('/_client/' + revision + '/img/', window.location.href).href;
+				} else if (window.location.href.indexOf("127.0.0.1") > -1) {
 					this.baseImageURL = 'img/';
 				}
 				else {
