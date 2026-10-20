@@ -2735879,7 +2735879,7 @@
   </object>
   <object id="871" name="Paradise Point West" x="1552" y="3216" width="16" height="16">
    <properties>
-    <property name="collection" value="ZombieTownies"/>
+    <property name="collection" value="Zombie Townies"/>
     <property name="collection_message" value="I wonder what's that way..."/>
     <property name="map" value="m88n2"/>
     <property name="o" value="d"/>
