@@ -70,6 +70,13 @@ the reviewed branch is merged and the production workflow succeeds.
 
 ## Client lifecycle
 
+The settings footer shows the image build date in the player's local time, with
+the UTC timestamp and full release revision in its tooltip. Deployment reads the
+immutable image's creation timestamp and carries it in the active release
+manifest. The per-service Compose override also retains it as `GAME_BUILD_DATE`
+for container recreation. Login and revive packets append optional build metadata;
+older clients ignore it and local builds without metadata show `unavailable`.
+
 The server injects a release-specific base URL and revision into index.html.
 Scripts, stylesheets, maps, sprites and workers resolve beneath
 /_client/<revision>/. Baseline assets stay unchanged in client-build.

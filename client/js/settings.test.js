@@ -37,6 +37,22 @@ test('combat effects default on and retain a saved disabled preference', () => {
     expect(disabled.elements.get('combatEffectsEnabled').checked).toBe(false);
 });
 
+test('build information shows the actual timestamp in local time with release details available', () => {
+    const {settings, elements} = setup();
+    const builtAt = '2026-10-20T23:30:00Z', revision = 'a'.repeat(40);
+    settings.setBuildInfo({builtAt, revision});
+    const element = elements.get('settings-build-date');
+    expect(element.textContent).toBe(new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'short'}).format(new Date(builtAt)));
+    expect(element.dateTime).toBe('2026-10-20T23:30:00.000Z');
+    expect(element.title).toContain(revision);
+});
+
+test.each([undefined, {}, {builtAt: 'invalid'}])('missing or invalid build information keeps the fallback text', info => {
+    const {settings, elements} = setup();
+    settings.setBuildInfo(info);
+    expect(elements.get('settings-build-date').textContent).toBeUndefined();
+});
+
 const subtleHitFeelOptions = [
     ['hitFlashEnabled','flash'],['hitSquashEnabled','squash'],['slashArcsEnabled','slash'],['hitRecoilEnabled','recoil'],
     ['hitStopEnabled','freeze'],['hitSparksEnabled','particles'],['layeredHitAudioEnabled','audio']

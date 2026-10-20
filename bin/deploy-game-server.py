@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Select HMR or an announced reboot independently for verified game services."""
 import base64
+from datetime import datetime, timezone
 import fcntl
 import json
 import os
@@ -24,6 +25,7 @@ class Deployer:
         self.state_dir = Path(state_dir) if state_dir else Path(self.env['HOME']) / '.looperlands-chat'
         self.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.image = self.env.get('LIVE_UPDATE_IMAGE', '')
+        self.built_at = None
         self.mode = self.env.get('DEPLOY_MODE', 'auto')
         self.action = self.env.get('LIVE_UPDATE_ACTION', 'apply')
         if self.mode not in ('auto', 'hmr', 'reboot') or self.action not in ('apply', 'rollback'):
@@ -137,7 +139,22 @@ for(const filename of [history,spool]){
             '/opt/app/bin/live-update-artifact.js', 'bundle'])
         if bundle.get('manifest', {}).get('revision') != self.image.rsplit(':', 1)[1]:
             raise DeploymentError('Image contents do not match the immutable release tag')
+        self.built_at = self.build_date(self.image)
+        bundle['manifest']['builtAt'] = self.built_at
         return bundle
+
+    def build_date(self, image):
+        try:
+            created = datetime.fromisoformat(self.inspect('{{.Created}}', image).replace('Z', '+00:00'))
+            if created.tzinfo is None:
+                raise ValueError('Missing image build timezone')
+            return created.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+        except ValueError as error:
+            raise DeploymentError('Invalid image build date') from error
+
+    def release_definition(self, image):
+        built_at = self.built_at if image == self.image else self.build_date(image)
+        return {'services': {self.service: {'image': image, 'environment': {'GAME_BUILD_DATE': built_at}}}}
 
     def stage_client(self, before, work):
         data = json.dumps(before).encode()
@@ -167,7 +184,7 @@ for(const filename of [history,spool]){
         revision = bundle['manifest']['revision']
         # Save a durable desired image for future recreation; never replace host Compose.
         override = self.override
-        desired = {'services': {self.service: {'image': self.image}}}
+        desired = self.release_definition(self.image)
         temporary = override.with_suffix('.tmp')
         temporary.write_text(json.dumps(desired)); temporary.chmod(0o600)
         previous = override.read_bytes() if override.exists() else None
@@ -270,7 +287,7 @@ for(const filename of [history,spool]){
 
     def save_desired_image(self, image):
         temporary = self.override.with_suffix('.tmp')
-        temporary.write_text(json.dumps({'services': {self.service: {'image': image}}}))
+        temporary.write_text(json.dumps(self.release_definition(image)))
         temporary.chmod(0o600)
         temporary.replace(self.override)
 

@@ -24,6 +24,9 @@ if args[:2] == ['ps', '-q']:
     assert args[2:] == ['--filter', 'label=com.docker.compose.service=gameserver']
     print(state.get('containers', 'selected'))
 elif args[0] == 'inspect':
+    if args[2] == '{{.Created}}':
+        assert args[-1].startswith('balkshamster/looperlands:')
+        print('2026-10-20T23:30:00Z'); finish()
     assert args[-1] == 'selected'
     if args[3-1] == '{{.Config.Image}}': print(state.get('image', 'balkshamster/looperlands:latest'))
     elif args[3-1] == '{{json .Config.Labels}}': print(json.dumps({'com.docker.compose.service':'gameserver',

@@ -18,6 +18,7 @@ deployment = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(deployment)
 OLD, NEW = 'a' * 40, 'b' * 40
 IMAGE = 'balkshamster/looperlands:' + NEW
+BUILT_AT = '2026-10-20T23:30:00Z'
 
 
 class Docker:
@@ -38,6 +39,7 @@ class Docker:
         self.method, self.revision, self.pid = 'hmr', OLD, 1
         self.failure, self.after_mounts, self.storage_env, self.announce_env = None, None, {}, {}
         self.bundle = {'manifest': {'protocol': 1, 'revision': NEW, 'files': {}}, 'sources': {}}
+        self.created = '2026-10-20T23:30:00.123456789Z'
 
     def run(self, args, input=None, stdin=None, stdout=None, stderr=None, check=False):
         self.calls.append(args)
@@ -48,6 +50,7 @@ class Docker:
         elif args[:2] == ['docker', 'inspect']:
             template = args[3]
             if template == '{{.Config.Image}}': value = self.image.encode()
+            elif template == '{{.Created}}': value = self.created.encode()
             elif template == '{{json .Config.Labels}}': value = json.dumps({'com.docker.compose.service': self.service,
                 'com.docker.compose.project': 'production', 'com.docker.compose.project.config_files': self.files}).encode()
             elif template == '{{json .Mounts}}': value = json.dumps(self.after_mounts if self.revision == NEW and self.after_mounts is not None else self.mounts).encode()
@@ -141,7 +144,7 @@ class DockerHost:
         if args[:2] == ['docker', 'ps']:
             assert args[2:4] == ['-q', '--filter']
             self.active = args[4].split('=', 2)[-1]
-        elif args[:2] in (['docker', 'inspect'], ['docker', 'exec']):
+        elif args[:2] in (['docker', 'inspect'], ['docker', 'exec']) and '{{.Created}}' not in args:
             containers = {'old': 'gameserver', 'new': 'gameserver', 'old2': 'gameserver2', 'new2': 'gameserver2'}
             self.active = next(containers[argument] for argument in args if argument in containers)
         elif args[:2] == ['docker', 'compose'] and ('up' in args or 'ps' in args):
@@ -172,7 +175,10 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual([name for name, _ in self.docker.actions], ['status', 'plan', 'manifest', 'prepare', 'apply', 'status'])
         self.assertEqual(self.docker.delays, [])
         self.assertFalse(any('up' in call for call in self.docker.calls))
-        self.assertEqual(json.loads((self.root / 'state/release-gameserver.json').read_text()), {'services': {'gameserver': {'image': IMAGE}}})
+        self.assertEqual(json.loads((self.root / 'state/release-gameserver.json').read_text()),
+            {'services': {'gameserver': {'image': IMAGE, 'environment': {'GAME_BUILD_DATE': BUILT_AT}}}})
+        plan = next(body for name, body in self.docker.actions if name == 'plan')
+        self.assertEqual(plan['bundle']['manifest']['builtAt'], BUILT_AT)
         self.assertEqual(self.docker.host.read_text(), 'installed compose configuration')
         self.assertEqual(backup.read_text(), 'private backup')
         self.assertNotIn('never-log-me', self.output.getvalue())
@@ -197,6 +203,16 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual(self.execute(), 'reboot')
         self.stopped('reboot-handoffs'); self.stopped('plan')
         self.assertIn('Please reconnect', json.loads(self.docker.announcement['options']['body'])['message'])
+        override = json.loads((self.root / 'state/release-gameserver.json').read_text())
+        self.assertEqual(override['services']['gameserver']['environment'], {'GAME_BUILD_DATE': BUILT_AT})
+
+    def test_invalid_image_build_date_aborts_before_applying_or_announcing(self):
+        for created in ('not a date', '2026-10-20T23:30:00'):
+            self.docker.created = created
+            with self.assertRaisesRegex(deployment.DeploymentError, 'Invalid image build date'):
+                self.execute()
+        self.stopped('apply')
+        self.assertFalse(any(deployment.ANNOUNCE in call for call in self.docker.calls))
 
     def test_forced_hmr_rejects_incompatible_changes(self):
         self.environment['DEPLOY_MODE'] = 'hmr'; self.docker.method = 'reboot'
@@ -387,7 +403,7 @@ class MultiServiceDeploymentTests(unittest.TestCase):
             self.assertEqual(server.pid, 1)
             self.assertFalse(any('up' in call or deployment.ANNOUNCE in call for call in server.calls))
             override = json.loads((self.root / ('state/release-' + name + '.json')).read_text())
-            self.assertEqual(override, {'services': {name: {'image': IMAGE}}})
+            self.assertEqual(override, {'services': {name: {'image': IMAGE, 'environment': {'GAME_BUILD_DATE': BUILT_AT}}}})
         self.assertEqual(self.docker.delays, [])
 
     def test_each_server_selects_its_own_method_and_only_rebooting_server_is_notified(self):
