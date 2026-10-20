@@ -377,10 +377,12 @@ module.exports = World = cls.Class.extend({
 
     pushSpawnsToPlayer: function (player, ids) {
         var self = this;
+        const visible = this.groups[player.group]?.entities;
 
-        _.each(ids, function (id) {
+        _.each(_.uniq(ids), function (id) {
             var entity = self.getEntityById(id);
-            if (entity) {
+            // A WHO reply can arrive after the requester has crossed another group.
+            if (entity && visible?.[id] === entity) {
                 if (entity instanceof Npc) {
                     entity.checkIndicator(player.sessionId, self.server.cache);
                 }
@@ -980,7 +982,9 @@ module.exports = World = cls.Class.extend({
             mob.forgetPlayer(player.id, 1000);
         });
 
-        this.handleEntityGroupMembership(player);
+        if (this.handleEntityGroupMembership(player)) {
+            this.pushToPreviousGroups(player, new Messages.Destroy(player));
+        }
     },
 
     setPlayerCount: function (count) {
@@ -1107,7 +1111,7 @@ module.exports = World = cls.Class.extend({
                 var group = self.groups[id];
 
                 if (group) {
-                    if (!_.include(group.entities, entity.id)
+                    if (!Object.prototype.hasOwnProperty.call(group.entities, entity.id)
                         //  Items dropped off of mobs are handled differently via DROP messages. See handleHurtEntity.
                         && (!isItem || isChest || (isItem && !isDroppedItem))) {
                         group.incoming.push(entity);
@@ -1154,7 +1158,9 @@ module.exports = World = cls.Class.extend({
 
                 if (_.size(oldGroups) > 0) {
                     entity.recentlyLeftGroups = _.difference(oldGroups, newGroups);
-                    //console.debug("group diff: " + entity.recentlyLeftGroups);
+                    if (!(entity instanceof Player)) {
+                        this.pushToPreviousGroups(entity, new Messages.Destroy(entity));
+                    }
                 }
             }
         }
@@ -1169,8 +1175,13 @@ module.exports = World = cls.Class.extend({
                 let incoming = self.groups[id].incoming;
                 const incomingLength = incoming.length;
                 if (incomingLength > 0) {
+                    const spawned = new Set();
                     for (let i = 0; i < incomingLength; i++) {
                         let entity = incoming[i];
+                        // Batched movement can enter and leave several groups in one tick.
+                        if (spawned.has(entity.id) || self.groups[id].entities[entity.id] !== entity ||
+                            self.entities[entity.id] !== entity) continue;
+                        spawned.add(entity.id);
                         if (entity instanceof Player) {
                             self.pushToGroup(id, new Messages.Spawn(entity), entity.id);
                         } else {

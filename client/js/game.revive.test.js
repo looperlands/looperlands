@@ -10,7 +10,7 @@ function setup(reduced = false) {
         movement: {stop: jest.fn()}, stopBlinking: jest.fn(), disengage: jest.fn(), idle: jest.fn(),
         forEachAttacker: callback => callback({disengage: jest.fn(), idle: jest.fn()}), setVisible: jest.fn()};
     const game = Object.assign(Object.create(methods), {player, currentTime: 100,
-        client: {connection: {connected: true}}, entities: {42: player}, floats: {},
+        client: {connection: {connected: true}, resetPendingSpawns: jest.fn()}, entities: {42: player}, floats: {},
         conversationHold: {stop: jest.fn()}, app: {settings: {getReducedMotion: () => reduced},
             closeChoicesPopup: jest.fn(), setReviving: jest.fn(), hideDeath: jest.fn(), showReviveFailure: jest.fn()},
         combatFeedback: {clear: jest.fn()}, toolImpactFeedback: {clear: jest.fn()},
@@ -56,6 +56,8 @@ test('revive refreshes stale entity grids but keeps equipment, level, avatar and
     const callback = jest.fn(); player.move_callback = callback;
     game.floats = {42: {despawnTimeout: 1}};
     game.removeFloat = jest.fn();
+    game.pendingEntityTargets = new Map([[7, 8]]);
+    game.pendingEntityAttackers = new Map([[8, new Set([7])]]);
     for (const name of ['initEntityGrid', 'initItemGrid', 'initPathingGrid', 'applyToggledLayers', 'initRenderingGrid']) game[name] = jest.fn();
     game.prepareRevivedPlayer();
     expect(game.entities).toEqual({});
@@ -64,6 +66,9 @@ test('revive refreshes stale entity grids but keeps equipment, level, avatar and
     expect(game.removeFloat).toHaveBeenCalledWith('42');
     expect(game.initItemGrid).toHaveBeenCalledTimes(1);
     expect(game.initRenderingGrid).toHaveBeenCalledTimes(1);
+    expect(game.client.resetPendingSpawns).toHaveBeenCalledTimes(1);
+    expect(game.pendingEntityTargets.size).toBe(0);
+    expect(game.pendingEntityAttackers.size).toBe(0);
 });
 
 test.each([0, 11000])('WELCOME after %i ms restores health and position without recreating game inputs', delay => {
