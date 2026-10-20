@@ -7236,7 +7236,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 });
 
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset, buildInfo) {
-                    self.app.settings?.setBuildInfo(buildInfo);
+                    self.app.settings?.setBuildInfo?.(buildInfo);
                     self.combatFeedback?.hitFeel?.bindAudioGestures();
                     const reviving = self.reviving === true;
                     if (reviving) self.reviveResponseReceived = true;
