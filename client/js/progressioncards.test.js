@@ -5,7 +5,7 @@ function setup({shown = [], reduced = false} = {}) {
     let GameCards;
     const rect = () => ({left: 400, top: 100, width: 258, height: 414});
     vm.runInNewContext(fs.readFileSync(require.resolve('./progressioncards'), 'utf8'), {
-        define: (_, factory) => {GameCards = factory({get: () => null});},
+        define: (_, factory) => {GameCards = factory({sources: () => [], render: () => Promise.resolve(false)});},
         Promise, Date, setTimeout, clearTimeout, innerWidth: 1280,
         document: {hidden: false, getElementById: () => ({getBoundingClientRect: rect})}
     });

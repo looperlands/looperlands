@@ -1,5 +1,5 @@
 /* Player and equipped-item cards. Authoritative state never waits for animation. */
-define(['equipmenticon'], function (EquipmentIcon) {
+define(['cardartwork'], function (CardArtwork) {
     const node = (tag, cls, text) => {
         const el = document.createElement(tag); if (cls) el.className = cls;
         if (text != null) el.textContent = text; return el;
@@ -124,7 +124,9 @@ define(['equipmenticon'], function (EquipmentIcon) {
             top.lastChild.setAttribute('aria-label', 'Close ' + (player ? 'player' : 'weapon') + ' card');
             const name = node('h2', 'lc-name'); const subtitle = node('p', 'lc-subtitle');
             const front = node('div', 'lc-front');
-            const art = node('div', 'lc-art'); const sprite = node('span', 'lc-sprite'); art.append(node('span', 'lc-pedestal'), sprite);
+            const art = node('div', 'lc-art'); const sprite = node('span', 'lc-sprite');
+            const artStatus = node('span', 'lc-art-status'); sprite.setAttribute('role', 'img');
+            art.append(node('span', 'lc-pedestal'), sprite, artStatus);
             const line = node('div', 'lc-level-line'); const level = node('strong', 'lc-level');
             const delta = node('span', 'lc-delta'); line.append(node('span', '', 'Level'), level, delta);
             const progressText = node('div', 'lc-progress-text'); const percent = node('span'); progressText.append(node('span', '', 'Level progress'), percent);
@@ -146,7 +148,7 @@ define(['equipmenticon'], function (EquipmentIcon) {
             const footer = button(player ? 'View class modifiers' : 'View weapon details', () => this.flip(type), 'lc-flip');
             const banner = node('div', 'lc-banner', 'LEVEL UP'); banner.hidden = true;
             el.append(top, name, subtitle, front, back, footer, banner); this.deck.append(el);
-            const card = {el, name, subtitle, art, sprite, level, delta, percent, track, fill, facts, note, front, back, details, footer, banner, flipped: false};
+            const card = {el, name, subtitle, art, sprite, artStatus, level, delta, percent, track, fill, facts, note, front, back, details, footer, banner, flipped: false};
             this.cards[type] = card; return card;
         }
         async loadModifiers() {
@@ -169,7 +171,6 @@ define(['equipmenticon'], function (EquipmentIcon) {
             const info = player ? this.stats.avatarLevelInfo : this.stats.weaponInfo?.weaponLevelInfo;
             const level = Number(info?.currentLevel) || 1, percent = Math.max(0, Math.min(100, Number(info?.percentage) || 0));
             const gamePlayer = this.game.player, weaponName = gamePlayer.getWeaponName();
-            const sprite = player ? gamePlayer.sprite : this.game.sprites['item-' + weaponName];
             const tool = this.stats.weaponInfo?.constructor === 'NFTSpecialItem';
             if (!player) card.el.querySelector('.lc-card-top span').textContent = tool ? 'Equipped tool' : 'Equipped weapon';
             card.track.hidden = !Number.isFinite(Number(info?.percentage)); card.track.previousElementSibling.hidden = card.track.hidden;
@@ -183,24 +184,8 @@ define(['equipmenticon'], function (EquipmentIcon) {
             const facts = player ? [['Class', titleCase(this.modifiers?.playerClass || this.app.storage.trait || 'Looper')], ['Max HP', this.stats.maxHp]] : [['Trait', titleCase(this.stats.weaponInfo?.trait)], ['Next level', level + 1]];
             if (player && Number.isFinite(Number(this.stats.botInfo?.currentLevel))) facts.push(['Companion', 'Lv ' + this.stats.botInfo.currentLevel + ' · ' + Number(this.stats.botInfo.percentage || 0).toFixed(1) + '%']);
             for (const [label, value] of facts) {const fact = node('div'); fact.append(node('span', '', label), node('strong', '', value ?? '—')); card.facts.append(fact);}
-            const completeIcon = !player && EquipmentIcon.get(weaponName);
-            if (completeIcon) {
-                Object.assign(card.sprite.style, completeIcon.style, {
-                    width: completeIcon.width + 'px', height: completeIcon.height + 'px',
-                    transform: 'scale(' + Math.min(6, 114 / Math.max(completeIcon.width, completeIcon.height)) + ')'
-                });
-            } else if (sprite) {
-                card.sprite.style.backgroundSize = '';
-                const width = sprite.width, height = sprite.height;
-                card.sprite.style.width = width + 'px'; card.sprite.style.height = height + 'px';
-                const url = sprite.getUrlByScale(1); card.sprite.style.backgroundImage = 'url("' + new URL(url, document.baseURI).href + '")';
-                card.sprite.style.backgroundPosition = '0px ' + (-(sprite.animationData.idle_down?.row || 0) * height) + 'px';
-                card.sprite.style.transform = 'scale(' + Math.min(player ? 3.5 : 6, 114 / Math.max(width, height)) + ')';
-            } else if (!player) {
-                const icon = this.app.dynamicNFTIconURL[weaponName]?.replace('/3/', '/1/') || new URL('img/1/item-' + weaponName + '.png', document.baseURI).href;
-                Object.assign(card.sprite.style, {width: '16px', height: '16px', backgroundSize: '',
-                    backgroundImage: 'url("' + icon + '")', backgroundPosition: '0 0', transform: 'scale(6)'});
-            }
+            card.sprite.setAttribute('aria-label', card.name.textContent);
+            CardArtwork.render(card.sprite, CardArtwork.sources(this.game, this.app, type), card.artStatus);
             card.details.replaceChildren();
             let rows = player ? [['Melee damage', this.modifiers?.meleeDamageDealt], ['Damage taken', this.modifiers?.meleeDamageTaken],
                 ['Ranged damage', this.modifiers?.rangedDamageDealt], ['Move speed', this.modifiers?.moveSpeed], ['Attack rate', this.modifiers?.attackRate],
