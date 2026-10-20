@@ -1,5 +1,24 @@
 define(['mob', 'timer'], function(Mob, Timer) {
 
+    var StationaryMob = Mob.extend({
+        init: function(id, kind) {
+            this._super(id, kind);
+            // Entity initializes at (0, 0); anchor only on the first real spawn position.
+            this.spawnPosition = null;
+        },
+
+        setGridPosition: function(x, y) {
+            if (this.spawnPosition === null) this.spawnPosition = {x, y};
+            const position = this.spawnPosition;
+            this._super(position ? position.x : x, position ? position.y : y);
+        },
+
+        setPosition: function(x, y) {
+            const position = this.spawnPosition;
+            this._super(position ? position.x * 16 : x, position ? position.y * 16 : y);
+        }
+    });
+
     var Mobs = {
         Rat: Mob.extend({
             init: function(id) {
@@ -1720,7 +1739,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        SeaCreature: Mob.extend({
+        SeaCreature: StationaryMob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SEACREATURE);
                 this.idleSpeed = 250;
@@ -1748,7 +1767,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         }),
 
 
-        Tentacle: Mob.extend({
+        Tentacle: StationaryMob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.TENTACLE);
                 this.idleSpeed = 400;
@@ -1774,7 +1793,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             },
         }),
 
-        Tentacle2: Mob.extend({
+        Tentacle2: StationaryMob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.TENTACLE2);
                 this.idleSpeed = 400;

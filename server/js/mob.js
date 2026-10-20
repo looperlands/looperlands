@@ -21,6 +21,20 @@ module.exports = Mob = Character.extend({
         this.dmgTakenArray = [];
         this.addArray = [];
     },
+
+    isStationary: function() {
+        return this.kind === Types.Entities.TENTACLE || this.kind === Types.Entities.TENTACLE2 ||
+            this.kind === Types.Entities.SEACREATURE;
+    },
+
+    setPosition: function(x, y) {
+        // These actors are anchored to their spawn, including during combat and resets.
+        if (this.isStationary()) {
+            x = this.spawningX;
+            y = this.spawningY;
+        }
+        this._super(x, y);
+    },
     
     destroy: function() {
         this.isDead = true;

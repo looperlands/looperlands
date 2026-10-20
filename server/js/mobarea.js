@@ -41,8 +41,7 @@ module.exports = MobArea = Area.extend({
         setTimeout(function() {
             var pos = self._getRandomPositionInsideArea();
             
-            mob.x = pos.x;
-            mob.y = pos.y;
+            mob.setPosition(pos.x, pos.y);
             mob.isDead = false;
             mob.generateLevel();
             mob.recalculateStats();
