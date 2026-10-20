@@ -58,6 +58,23 @@ describe.each(['avatar', 'weapon', 'tool'])('%s XP persistence', kind => {
     beforeEach(() => { errors = jest.spyOn(console, 'error').mockImplementation(() => {}); });
     afterEach(() => { errors.mockRestore(); });
 
+    test.each([0, 10, 10.1, 10.9])('rounds each reward up before accumulating and persisting: %s XP', async reward => {
+        const expected = Math.ceil(reward);
+        const save = jest.fn().mockResolvedValue(10000 + expected);
+        const asset = createAsset(kind, save);
+        if (kind === 'weapon') {
+            asset.owner.player.playerClassModifiers.xp = reward / 10;
+            await asset.addXp(10);
+        } else {
+            await asset.addXp(reward);
+        }
+        expect(asset.readXp()).toBe(10000 + expected);
+        expect(asset.owner.accumulatedExperience).toBe(expected);
+        await asset.sync();
+        if (expected > 0) expect(save.mock.calls[0].at(-1)).toBe(expected);
+        else expect(save).not.toHaveBeenCalled();
+    });
+
     test('combines all targets in one attack into one exact XP increment', async () => {
         const save = jest.fn().mockResolvedValue(11000);
         const asset = createAsset(kind, save);

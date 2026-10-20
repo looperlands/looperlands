@@ -713,6 +713,7 @@ module.exports = Player = Character.extend({
     },
 
     handleExperience: async function (experience) {
+        experience = Math.ceil(experience);
 
         let session = this.server.server.cache.get(this.sessionId);
 
@@ -1146,7 +1147,7 @@ module.exports = Player = Character.extend({
         for (quest of completedQuests) {
             if (!this.completedQuestsIDs.includes(quest.id)) {
                 let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
-                xpReward = xpReward * this.playerClassModifiers.xp;
+                xpReward = Math.ceil(xpReward * this.playerClassModifiers.xp);
                 this.handleExperience(xpReward);
                 let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
                 this.server.pushToPlayer(this, msg);

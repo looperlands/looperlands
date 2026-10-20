@@ -1389,6 +1389,7 @@ module.exports = World = cls.Class.extend({
                 if (self.combat) {
                     accompliceShare = self.combat.killExperience(mob, accomplice, killer, accompliceShare);
                 }
+                accompliceShare = Math.ceil(accompliceShare);
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

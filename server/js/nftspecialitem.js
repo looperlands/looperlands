@@ -36,6 +36,7 @@ class NFTSpecialItem{
 
     async incrementExperience(experience) {
         try {
+            experience = Math.ceil(experience);
             this.accumulatedExperience += experience;
             this.experience += experience;
             let updatedLevel = Formulas.toolLevel(this.experience);
