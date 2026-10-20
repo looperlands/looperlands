@@ -141,11 +141,14 @@ for(const filename of [history,spool]){
             raise DeploymentError('Image contents do not match the immutable release tag')
         self.built_at = self.build_date(self.image)
         bundle['manifest']['builtAt'] = self.built_at
+        print('Image build date: ' + self.built_at, flush=True)
         return bundle
 
     def build_date(self, image):
         try:
-            created = datetime.fromisoformat(self.inspect('{{.Created}}', image).replace('Z', '+00:00'))
+            # Docker emits nanoseconds; older host Python versions accept fewer digits.
+            timestamp = re.sub(r'(\d{2}:\d{2}:\d{2})\.\d+', r'\1', self.inspect('{{.Created}}', image))
+            created = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             if created.tzinfo is None:
                 raise ValueError('Missing image build timezone')
             return created.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')

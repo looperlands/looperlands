@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location('deployment', Path(__file__).with_name('deploy-game-server.py'))
 deployment = importlib.util.module_from_spec(SPEC)
@@ -213,6 +214,17 @@ class DeploymentTests(unittest.TestCase):
                 self.execute()
         self.stopped('apply')
         self.assertFalse(any(deployment.ANNOUNCE in call for call in self.docker.calls))
+
+    def test_docker_nanoseconds_are_compatible_with_older_host_python(self):
+        parser = deployment.datetime.fromisoformat
+        def legacy_parse(value):
+            if '.' in value:
+                raise ValueError('Unsupported fractional precision')
+            return parser(value)
+        with patch.object(deployment, 'datetime', SimpleNamespace(fromisoformat=legacy_parse)):
+            self.assertEqual(self.execute(), 'hmr')
+        plan = next(body for name, body in self.docker.actions if name == 'plan')
+        self.assertEqual(plan['bundle']['manifest']['builtAt'], BUILT_AT)
 
     def test_forced_hmr_rejects_incompatible_changes(self):
         self.environment['DEPLOY_MODE'] = 'hmr'; self.docker.method = 'reboot'
