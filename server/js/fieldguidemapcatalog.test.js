@@ -6,6 +6,44 @@ const {entryFactory, mapCollection} = require('./fieldguidemapcatalog');
 const {loadCatalog} = require('./fieldguidecatalog');
 const makeEntry = entryFactory(Types, Lakes, Properties);
 
+test('permanently non-combat creatures cannot create impossible guide entries', () => {
+    for (const target of ['alaric', 'blackdog', 'turtle', 'villager1', 'cobchicken', 'm88nbabymonkey', 'cobWalkingNpc1']) {
+        expect(makeEntry(target)).toBeNull();
+        expect(makeEntry(Types.getKindFromString(target))).toBeNull();
+    }
+    const catalog = loadCatalog(Types, Lakes);
+    for (const collection of Object.values(catalog.maps)) {
+        expect(collection.entries.some(entry => Properties[entry.target]?.nonCombat)).toBe(false);
+    }
+});
+
+test('area-damage immunity and temporary friendliness do not exclude combat targets', () => {
+    for (const target of ['cobdirt', 'cobhay', 'm88nmine', 'm88ntrainer', 'm88ncow', 'ghostie', 'rat']) {
+        expect(makeEntry(target)).toMatchObject({target, category: 'monsters', completion: 'defeat'});
+    }
+});
+
+test('server non-combat metadata matches permanent friendliness in client mob definitions', () => {
+    const fs = require('fs'), vm = require('vm');
+    let mobs;
+    vm.runInNewContext(fs.readFileSync(require.resolve('../../client/js/mobs'), 'utf8'), {
+        Types, define: (_, factory) => {mobs = factory({extend: definition => definition}, function Timer() {});}
+    });
+    const nonCombat = [];
+    for (const definition of Object.values(mobs)) {
+        let kind;
+        const mob = new Proxy({_super: (_, value) => {kind = value;}}, {
+            get: (object, key) => key in object ? object[key] : () => {}
+        });
+        definition.init.call(mob, 1);
+        const permanent = mob.isFriendly === true && !definition.breakFriendly && !definition.appear;
+        const target = Types.getKindAsString(kind);
+        expect(!!Properties[target]?.nonCombat).toBe(permanent);
+        if (permanent) nonCombat.push(target);
+    }
+    expect(nonCombat.length).toBeGreaterThan(0);
+});
+
 test('actual map membership covers main spawns, drops, chests and boss adds without importing another map', () => {
     const catalog = loadCatalog(Types, Lakes), entries = catalog.maps.main.entries;
     for (const target of ['ogre', 'm88nmine', 'spectre', 'deathknight', 'eye', 'snake', 'skeleton2', 'tentacle', 'tentacle2', 'manacrystal', 'loopring', 'goldensword', 'firefox', 'm88ndiamondworm']) {
