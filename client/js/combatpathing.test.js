@@ -183,7 +183,7 @@ test('late ordinary MOVE packets cannot clear a charged mob target or start anot
     let receive;
     const mob={disengage:jest.fn(),idle:jest.fn()};
     const game={client:{onEntityMove:callback=>{receive=callback;}},getEntityById:()=>mob,
-        combatPrototype:{owns:()=>true},makeCharacterGoTo:jest.fn()};
+        combatPrototype:{owns:()=>true},makeCharacterGoTo:jest.fn(),clearPendingEntityAttack:jest.fn()};
     vm.runInNewContext(source.slice(start,end),{self:game});
     receive(7,5,5);expect(mob.disengage).not.toHaveBeenCalled();expect(game.makeCharacterGoTo).not.toHaveBeenCalled();
     game.combatPrototype.owns=()=>false;receive(7,5,5);

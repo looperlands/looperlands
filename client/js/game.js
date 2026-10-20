@@ -6682,8 +6682,15 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             removeEntity: function (entity) {
-                if (entity.id in this.entities) {
+                if (this.entities[entity.id] === entity) {
+                    this.forgetEntityAttacks(entity.id);
                     this.unregisterEntityPosition(entity);
+                    if (entity instanceof Character) {
+                        entity.cancelPath();
+                        entity.disengage();
+                    }
+                    entity.clean();
+                    if (entity instanceof Item) this.removeFromItemGrid(entity, entity.gridX, entity.gridY);
                     delete this.entities[entity.id];
                 }
             },
@@ -6867,19 +6874,19 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             removeFromRenderingGrid: function (entity, x, y) {
-                if (entity && this.renderingGrid[y][x] && entity.id in this.renderingGrid[y][x]) {
+                if (entity && this.renderingGrid[y][x]?.[entity.id] === entity) {
                     delete this.renderingGrid[y][x][entity.id];
                 }
             },
 
             removeFromEntityGrid: function (entity, x, y) {
-                if (this.entityGrid[y][x][entity.id]) {
+                if (this.entityGrid[y][x][entity.id] === entity) {
                     delete this.entityGrid[y][x][entity.id];
                 }
             },
 
             removeFromItemGrid: function (item, x, y) {
-                if (item && this.itemGrid[y][x][item.id]) {
+                if (item && this.itemGrid[y][x][item.id] === item) {
                     delete this.itemGrid[y][x][item.id];
                 }
             },
@@ -7206,22 +7213,26 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     sendHello();
                 });
 
-                this.client.onEntityList(function (list) {
-                    list = list.filter(item => item !== null);
-                    var entityIds = _.pluck(self.entities, 'id'),
-                        knownIds = _.intersection(entityIds, list),
-                        newIds = _.difference(list, knownIds);
+                this.client.onEntityState(state => self.refreshEntityState(state));
 
+                this.client.onEntityList(function (list) {
+                    list = list.filter(id => Number.isFinite(id) && id !== self.player.id);
+                    const visible = new Set(list);
                     self.obsoleteEntities = _.reject(self.entities, function (entity) {
-                        return _.include(knownIds, entity.id) || entity.id === self.player.id;
+                        return visible.has(entity.id) || entity.id === self.player.id || entity instanceof Projectile;
                     });
 
-                    // Destroy entities outside of the player's zone group
-                    //self.removeObsoleteEntities();
+                    self.removeObsoleteEntities();
+                    for (const [id, targetId] of self.pendingEntityTargets || []) {
+                        if (!visible.has(id) || !visible.has(targetId) && targetId !== self.playerId) {
+                            self.clearPendingEntityAttack(id);
+                        }
+                    }
 
-                    // Ask the server for spawn information about unknown entities
-                    if (_.size(newIds) > 0) {
-                        self.client.sendWho(newIds);
+                    // Refresh known entities too: activity may have changed while away.
+                    // WHO/SPAWN replies share the existing per-player outgoing batch.
+                    if (list.length > 0) {
+                        self.client.sendWho(list);
                     }
                 });
 
@@ -7732,46 +7743,15 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onSpawnCharacter(function (entity, x, y, orientation, targetId) {
-                        // Only remote players may be replaced by visibility-based respawns.
-                        // Removing the local player also stops its movement updates.
-                        if (entity.id !== self.playerId && self.entityIdExists(entity.id) && entity instanceof Player) {
-                            var existingEntity = self.entities[entity.id];
-                            if (!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
-                                console.log("Entity " + existingEntity.id + " is outside of the camera view so removing for respawn.");
-                                self.removeEntity(existingEntity);
-                                self.removeFromRenderingGrid(existingEntity, existingEntity.gridX, existingEntity.gridY);
-                            }
-                        }
+                        if (self.refreshEntityState({id: entity.id, kind: entity.kind, x, y, orientation,
+                            target: targetId, name: entity.name, title: entity.title, level: entity.level,
+                            armor: entity.networkArmor, weapon: entity.networkWeapon, appearance: entity})) return;
 
                         if (!self.entityIdExists(entity.id)) {
                             try {
                                 if (entity.id !== self.playerId) {
 
-                                    if (entity.dynamicArmorNFTData) {
-                                        const sprite = self.loadSprite(
-                                            entity.spriteName,
-                                            entity.dynamicArmorNFTData.tokenHash,
-                                            entity.dynamicArmorNFTData.assetType,
-                                            entity.dynamicArmorNFTData.nftId
-                                        );
-                                        entity.setSprite(sprite);
-                                    } else {
-                                        entity.setSprite(self.sprites[entity.getSpriteName()]);
-                                    }
-
-                                    if (entity.dynamicWeaponNFTData) {
-                                        const sprite = self.loadSprite(
-                                            entity.weaponName,
-                                            entity.dynamicWeaponNFTData.tokenHash,
-                                            entity.dynamicWeaponNFTData.assetType,
-                                            entity.dynamicWeaponNFTData.nftId
-                                        );
-                                        self.sprites[entity.weaponName] = sprite;
-                                        const dynamicNFTData = entity.dynamicWeaponNFTData;
-                                        if (dynamicNFTData !== undefined && dynamicNFTData.assetType === "ranged_weapon") {
-                                            loadProjectileSprites(dynamicNFTData, self);
-                                        }
-                                    }
+                                    self.setCharacterAppearance(entity, entity);
                                     entity.setGridPosition(x, y);
                                     entity.setOrientation(orientation);
                                     entity.idle();
@@ -7953,14 +7933,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                             self.assignBubbleTo(entity); // Make chat bubbles follow moving entities
                                         });
 
-                                        if (entity instanceof Mob || entity instanceof Player) {
-                                            if (targetId) {
-                                                var player = self.getEntityById(targetId);
-                                                if (player) {
-                                                    self.createAttackLink(entity, player);
-                                                }
-                                            }
-                                        }
+                                        self.setEntityAttack(entity.id, targetId);
+                                        self.restoreEntityAttacks(entity.id);
 
                                         if (self.map.getCurrentTrigger(entity)) {
                                             self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
@@ -7978,6 +7952,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onDespawnEntity(function (entityId) {
+                        self.forgetEntityAttacks(entityId);
                         var entity = self.getEntityById(entityId);
 
                         // A dying character remains in the scene until its animation finishes.
@@ -8022,6 +7997,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onEntityMove(function (id, x, y) {
+                        self.clearPendingEntityAttack(id);
                         var entity = null;
                         entity = self.getEntityById(id);
 
@@ -8033,6 +8009,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onEntityDestroy(function (id) {
+                        self.forgetEntityAttacks(id);
                         var entity = self.getEntityById(id);
                         if (entity) {
                             if (entity instanceof Item) {
@@ -8045,6 +8022,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onPlayerMoveToItem(function (playerId, itemId) {
+                        self.clearPendingEntityAttack(playerId);
                         var player, item;
 
                         if (playerId !== self.playerId) {
@@ -8065,12 +8043,17 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             console.debug(attacker.id + " attacks " + target.id);
 
                             if (attacker && target instanceof Player && target.id !== self.playerId && target.target && target.target.id === attacker.id && attacker.getDistanceToEntity(target) < 3) {
+                                const attack = {};
+                                attacker.pendingNetworkAttack = attack;
                                 setTimeout(function () {
-                                    self.createAttackLink(attacker, target);
+                                    if (self.getEntityById(attackerId) === attacker && self.getEntityById(targetId) === target &&
+                                        attacker.pendingNetworkAttack === attack) self.setEntityAttack(attackerId, targetId);
                                 }, 200); // delay to prevent other players attacking mobs from ending up on the same tile as they walk towards each other.
                             } else {
-                                self.createAttackLink(attacker, target);
+                                self.setEntityAttack(attackerId, targetId);
                             }
+                        } else if (attackerId !== self.playerId) {
+                            self.setEntityAttack(attackerId, targetId);
                         }
                     });
 
@@ -8174,6 +8157,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onPlayerTeleport(function (id, x, y) {
+                        self.clearPendingEntityAttack(id);
                         var entity = null,
                             currentOrientation;
 
@@ -8294,15 +8278,16 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onMobDoSpecial(function (id) {
                         let mob = self.getEntityById(id);
 
-                        if (typeof mob.doSpecial === 'function') {
+                        if (typeof mob?.doSpecial === 'function') {
                             mob.doSpecial();
                         }
                     });
 
                     self.client.onMobExitCombat(function (id) {
+                        self.clearPendingEntityAttack(id);
                         let mob = self.getEntityById(id);
 
-                        if (typeof mob.exitCombat === 'function') {
+                        if (typeof mob?.exitCombat === 'function') {
                             mob.exitCombat();
                         }
                     });
@@ -8475,6 +8460,104 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 if (attacker.id !== this.playerId) {
                     target.addAttacker(attacker);
+                }
+            },
+
+            refreshEntityState: function (state) {
+                const entity = this.getEntityById(state.id);
+                if (!entity) return false;
+                if (entity.id === this.playerId) return true;
+                const appearanceChanged = entity instanceof Player &&
+                    (entity.networkArmor !== state.armor || entity.networkWeapon !== state.weapon);
+                if (entity.kind !== state.kind || entity.isDead || entity.isDying) {
+                    this.removeEntity(entity);
+                    return false;
+                }
+                if (appearanceChanged) {
+                    if (!state.appearance) return false;
+                    this.setCharacterAppearance(entity, state.appearance);
+                }
+                if (entity instanceof Character) {
+                    this.unregisterEntityPosition(entity);
+                    entity.disengage();
+                    entity.cancelPath();
+                    entity.setGridPosition(state.x, state.y);
+                    this.registerEntityPosition(entity);
+                    entity.idle(state.orientation);
+                    if (state.name !== undefined) entity.name = state.name;
+                    if (state.title !== undefined) entity.title = state.title;
+                    if (state.level !== undefined) entity.level = state.level;
+                    if (entity instanceof Npc) {
+                        entity.setShowIndicator(state.indicator);
+                        entity.applyBehaviorState(state.behavior);
+                    }
+                    this.setEntityAttack(entity.id, state.target);
+                    this.restoreEntityAttacks(entity.id);
+                    this.handleScene(entity);
+                }
+                return true;
+            },
+
+            setCharacterAppearance: function (entity, appearance) {
+                const armor = appearance.dynamicArmorNFTData, weapon = appearance.dynamicWeaponNFTData;
+                const sprite = armor ? this.loadSprite(appearance.spriteName, armor.tokenHash, armor.assetType, armor.nftId)
+                    : this.sprites[appearance.getSpriteName()];
+                entity.setSprite(sprite);
+                if (weapon) {
+                    this.sprites[appearance.weaponName] = this.loadSprite(appearance.weaponName,
+                        weapon.tokenHash, weapon.assetType, weapon.nftId);
+                    if (weapon.assetType === 'ranged_weapon') loadProjectileSprites(weapon, this);
+                }
+                if (entity instanceof Player) {
+                    entity.spriteName = appearance.spriteName;
+                    entity.setWeaponName(appearance.weaponName);
+                    entity.dynamicArmorNFTData = armor;
+                    entity.dynamicWeaponNFTData = weapon;
+                    entity.networkArmor = appearance.networkArmor;
+                    entity.networkWeapon = appearance.networkWeapon;
+                }
+            },
+
+            clearPendingEntityAttack: function (id) {
+                const entity = this.getEntityById(id);
+                if (entity) entity.pendingNetworkAttack = null;
+                const targetId = this.pendingEntityTargets?.get(id);
+                if (targetId === undefined) return;
+                this.pendingEntityTargets.delete(id);
+                const waiting = this.pendingEntityAttackers.get(targetId);
+                waiting.delete(id);
+                if (!waiting.size) this.pendingEntityAttackers.delete(targetId);
+            },
+
+            setEntityAttack: function (id, targetId) {
+                if (id === this.playerId) return;
+                this.clearPendingEntityAttack(id);
+                const attacker = this.getEntityById(id), target = this.getEntityById(targetId);
+                if (attacker?.isDead || attacker?.isDying || target?.isDead || target?.isDying) return;
+                if (attacker && target && !target.isDead && !target.isDying) {
+                    this.createAttackLink(attacker, target);
+                } else if (targetId) {
+                    attacker?.disengage();
+                    this.pendingEntityTargets ||= new Map();
+                    this.pendingEntityAttackers ||= new Map();
+                    this.pendingEntityTargets.set(id, targetId);
+                    if (!this.pendingEntityAttackers.has(targetId)) this.pendingEntityAttackers.set(targetId, new Set());
+                    this.pendingEntityAttackers.get(targetId).add(id);
+                }
+            },
+
+            restoreEntityAttacks: function (id) {
+                const targetId = this.pendingEntityTargets?.get(id);
+                if (targetId !== undefined) this.setEntityAttack(id, targetId);
+                for (const attackerId of [...(this.pendingEntityAttackers?.get(id) || [])]) {
+                    this.setEntityAttack(attackerId, id);
+                }
+            },
+
+            forgetEntityAttacks: function (id) {
+                this.clearPendingEntityAttack(id);
+                for (const attackerId of [...(this.pendingEntityAttackers?.get(id) || [])]) {
+                    this.clearPendingEntityAttack(attackerId);
                 }
             },
 
@@ -10074,6 +10157,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 // Refresh entity membership after time spent dead, preserving loaded
                 // assets, the renderer, world clock, ambience, and input listeners.
                 this.entities = {};
+                this.pendingEntityTargets?.clear();
+                this.pendingEntityAttackers?.clear();
+                this.client.resetPendingSpawns();
                 this.initEntityGrid();
                 this.initItemGrid();
                 this.initPathingGrid();

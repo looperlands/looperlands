@@ -10,6 +10,13 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sessionId = sessionId;
             this.mapId = mapId;
             this.debugMessages = false;
+            this.dynamicAppearances = new Map();
+            this.resetPendingSpawns();
+            this.deferredEntityActions = new Set([
+                Types.Messages.MOVE, Types.Messages.LOOTMOVE, Types.Messages.ATTACK,
+                Types.Messages.TELEPORT, Types.Messages.EQUIP, Types.Messages.NPC_STATE,
+                Types.Messages.MOBEXITCOMBAT, Types.Messages.PLAYER_TITLE
+            ]);
 
             console.log("Game client", this.host, this.port, this.protocol);
     
@@ -76,6 +83,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         disable: function() {
             this.isListening = false;
+            this.resetPendingSpawns();
+        },
+
+        resetPendingSpawns: function() {
+            this.pendingSpawns = new Map();
         },
         
         connect: function(dispatcherMode) {
@@ -132,6 +144,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 };*/
 
                 this.connection.on("disconnect", function() {
+                    self.resetPendingSpawns();
                     console.debug("Connection closed");
                     $('#container').addClass('error');
 
@@ -174,6 +187,16 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         receiveAction: function(data) {
             var action = data[0];
+            const pending = this.pendingSpawns.get(data[1]);
+            if (pending && this.deferredEntityActions.has(action)) {
+                // Keep only the latest action of each type, in arrival order.
+                // Asset loading must not replay an unbounded history of movement.
+                const key = action === Types.Messages.EQUIP
+                    ? `${action}:${Types.isArmor(data[2]) ? 'armor' : 'weapon'}` : action;
+                pending.actions.delete(key);
+                pending.actions.set(key, data);
+                return;
+            }
             if(this.handlers[action] && _.isFunction(this.handlers[action])) {
                 try {
                     this.handlers[action].call(this, data);
@@ -238,13 +261,28 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
     
+        readSpawnState: function(data) {
+            const state = {id: data[1], kind: data[2], x: data[3], y: data[4]};
+            if (Types.isPlayer(state.kind)) {
+                Object.assign(state, {name: data[5], orientation: data[6], armor: data[7],
+                    weapon: data[8], title: data[9], level: data[10], target: data[11]});
+            } else if (Types.isMob(state.kind)) {
+                Object.assign(state, {orientation: data[5], level: data[6], target: data[7]});
+            } else if (Types.isNpc(state.kind)) {
+                Object.assign(state, {indicator: data[5], behavior: data[6], orientation: data[6]?.orientation});
+            }
+            return state;
+        },
+
         receiveSpawn: function(data) {
-            var id = data[1],
-                kind = data[2],
-                x = data[3],
-                y = data[4];
-        
-            if(Types.isItem(kind)) {
+            const state = this.readSpawnState(data);
+            const {id, kind, x, y} = state;
+            // Reconcile an existing object without constructing it or reloading NFTs.
+            if (this.entity_state_callback?.(state)) {
+                this.pendingSpawns.delete(id);
+                return;
+            }
+            if (Types.isItem(kind)) {
                 var item = EntityFactory.createEntity(kind, id);
             
                 if(this.spawn_item_callback) {
@@ -263,78 +301,98 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     this.spawn_fieldEffect_callback(fieldEffect, x, y);
                 }
             } else {
-                var name, orientation, target, weapon, armor, title, level;
-            
-                if(Types.isPlayer(kind)) {
-                    name = data[5];
-                    orientation = data[6];
-                    armor = data[7];
-                    weapon = data[8];
-                    title = data[9];
-                    level = data[10]
-                    if(data.length > 11) {
-                        target = data[11];
-                    }
+                const appearance = JSON.stringify([kind, state.armor, state.weapon]);
+                const loading = this.pendingSpawns.get(id);
+                if (loading?.appearance === appearance) {
+                    // A newer snapshot supersedes earlier state, sharing the asset load.
+                    loading.state = state;
+                    loading.actions.clear();
+                    return;
                 }
-                else if(Types.isMob(kind)) {
-                    orientation = data[5];
-                    level = data[6];
-                    if(data.length > 7) {
-                        target = data[7];
+                const pending = {appearance, state, actions: new Map()};
+                this.pendingSpawns.delete(id);
+                var character = EntityFactory.createEntity(kind, id, state.name);
+                if (!character) return;
+                this.pendingSpawns.set(id, pending);
+                const current = () => this.pendingSpawns.get(id) === pending;
+                const load = (kind, apply) => {
+                    const cached = this.dynamicAppearances.get(kind);
+                    if (cached) { apply(cached); return; }
+                    let delivered = false;
+                    const request = loadDynamicNFTByKind(kind, this.sessionId, nft => {
+                        this.dynamicAppearances.set(kind, nft);
+                        if (!current()) return;
+                        delivered = true;
+                        apply(nft);
+                    });
+                    // The loader handles HTTP failures without invoking its callback.
+                    // Release the ticket so the next visibility snapshot can retry.
+                    request?.then?.(() => {
+                        if (!delivered && current()) this.pendingSpawns.delete(id);
+                    }, error => {
+                        if (current()) this.pendingSpawns.delete(id);
+                        console.error('Failed to load entity appearance', id, error);
+                    });
+                };
+                const complete = () => {
+                    if (!current()) return;
+                    this.pendingSpawns.delete(id);
+                    const latest = pending.state;
+                    if (latest.name !== undefined) character.name = latest.name;
+                    if (latest.title !== undefined) character.title = latest.title;
+                    if (latest.level !== undefined) character.level = latest.level;
+                    if (Types.isNpc(kind)) {
+                        character.setShowIndicator(latest.indicator);
+                        character.applyBehaviorState(latest.behavior);
                     }
-                }
-                var character = EntityFactory.createEntity(kind, id, name);
-            
+                    this.spawn_character_callback?.(character, latest.x, latest.y, latest.orientation, latest.target);
+                    for (const action of pending.actions.values()) this.receiveAction(action);
+                };
+
                 if(character instanceof Player) {
-                    character.weaponName = Types.getKindAsString(weapon);
-                    character.spriteName = Types.getKindAsString(armor);
-                    character.title = title;
+                    character.weaponName = Types.getKindAsString(state.weapon);
+                    character.spriteName = Types.getKindAsString(state.armor);
+                    character.networkArmor = state.armor;
+                    character.networkWeapon = state.weapon;
                 }
-
-                if(character instanceof Mob || character instanceof Player) {
-                    character.level = level;
-                }
-
-                if(Types.isNpc(kind)) {
-                    character.setShowIndicator(data[5]);
-                    character.applyBehaviorState(data[6]);
-                    orientation = data[6]?.orientation;
-                }
-
                 if(this.spawn_character_callback) {
-                    const isDynamicNFT = character.spriteName === undefined || character.weaponName === undefined;
-                    if (character instanceof Player && isDynamicNFT) {
+                    const loadArmor = character.spriteName === undefined || Types.isDynamicNFT(state.armor);
+                    const loadWeapon = character.weaponName === undefined || Types.isDynamicNFT(state.weapon);
+                    if (character instanceof Player && (loadArmor || loadWeapon)) {
                         const loadDynamicNFTWeapon = () => {
-                            loadDynamicNFTByKind(weapon, this.sessionId, (weaponNFTData) => {
+                            load(state.weapon, weaponNFTData => {
                                 console.log("load dynamic weapon", weaponNFTData);
                                 character.weaponName = weaponNFTData.nftId.replace("0x", "NFT_");
                                 character.dynamicWeaponNFTData = weaponNFTData;
-                                this.spawn_character_callback(character, x, y, orientation, target);
+                                complete();
                             });
                         };
-                        if (character.spriteName === undefined) {
-                            loadDynamicNFTByKind(armor, this.sessionId, (armorNFTData) => {
+                        if (loadArmor) {
+                            load(state.armor, armorNFTData => {
                                 character.spriteName = armorNFTData.nftId.replace("0x", "NFT_");
                                 character.dynamicArmorNFTData = armorNFTData;
-                                if (character.weaponName === undefined) {
+                                if (loadWeapon) {
                                     loadDynamicNFTWeapon();
                                 } else {
-                                    this.spawn_character_callback(character, x, y, orientation, target);
+                                    complete();
                                 }
                             });
-                        } else if (character.weaponName === undefined) {
+                        } else if (loadWeapon) {
                             loadDynamicNFTWeapon();
                         }
 
                     } else {
-                        this.spawn_character_callback(character, x, y, orientation, target);
+                        complete();
                     }
+                } else {
+                    this.pendingSpawns.delete(id);
                 }
             }
         },
     
         receiveDespawn: function(data) {
             var id = data[1];
+            this.pendingSpawns.delete(id);
         
             if(this.despawn_callback) {
                 this.despawn_callback(id);
@@ -442,7 +500,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         receiveList: function(data) {
-            data.shift();
+            data = data.slice(1);
+            const visible = new Set(data);
+            for (const id of this.pendingSpawns.keys()) {
+                if (!visible.has(id)) this.pendingSpawns.delete(id);
+            }
         
             if(this.list_callback) {
                 this.list_callback(data);
@@ -451,6 +513,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         receiveDestroy: function(data) {
             var id = data[1];
+            this.pendingSpawns.delete(id);
         
             if(this.destroy_callback) {
                 this.destroy_callback(id);
@@ -668,6 +731,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onSpawnCharacter: function(callback) {
             this.spawn_character_callback = callback;
+        },
+
+        onEntityState: function(callback) {
+            this.entity_state_callback = callback;
         },
     
         onSpawnItem: function(callback) {

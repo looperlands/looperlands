@@ -75,7 +75,7 @@ test.each([true, false])('duplicate local SPAWN keeps the avatar registered and 
     expect(player.isMoving()).toBe(false);
 });
 
-test.each([true, false])('remote SPAWN still replaces only offscreen players (visible=%s)', visible => {
+test.each([true, false])('remote SPAWN refreshes the existing avatar in every visibility state (visible=%s)', visible => {
     const {game, spawn, duplicate} = setup(visible);
     const remote = duplicate(7);
     remote.setGridPosition(1, 1);
@@ -83,9 +83,9 @@ test.each([true, false])('remote SPAWN still replaces only offscreen players (vi
     const replacement = duplicate(7);
     spawn(replacement, 4, 4, Types.Orientations.DOWN);
 
-    expect(game.getEntityById(7)).toBe(visible ? remote : replacement);
-    expect(game.renderingGrid[visible ? 1 : 4][visible ? 1 : 4][7])
-        .toBe(visible ? remote : replacement);
+    expect(game.getEntityById(7)).toBe(remote);
+    expect(game.renderingGrid[4][4][7]).toBe(remote);
+    expect(game.renderingGrid[1][1][7]).toBeUndefined();
     expect(game.getEntityById(game.playerId)).toBe(game.player);
 });
 
