@@ -1,0 +1,13 @@
+{
+  "modes": [
+    {"id":"checkpoint","name":"Checkpoint Rush","kind":"Solo or race","players":[1,4],"duration":75,"description":"Find your line through town. Touch three checkpoints in order and beat your time.","rules":["Three checkpoints, in order","75 seconds to finish","Movement only; no combat"],"preset":"town-sprint"},
+    {"id":"duel","name":"Duel","kind":"Versus","players":[2,2],"duration":90,"description":"A friendly best-of-three. Challenge another player and settle it in the ring.","rules":["First to win two rounds","Defeat leaves you at 1 HP","Healing items are disabled"],"preset":"best-of-three"},
+    {"id":"laststand","name":"Last Stand","kind":"Solo or co-op","players":[1,4],"duration":120,"description":"Three waves of familiar enemies. Hold your ground, then catch your breath together.","rules":["Three waves; everyone shares progress","Recover health between waves","Defeat ends the practice run"],"preset":"practice-waves"}
+  ],
+  "venues": [
+    {"id":"town-green","name":"Town Green","map":"main","location":"Town · beside the activity keeper","description":"An open practice ground, a few steps from spawn.","modes":["duel","laststand"],"access":"public","area":{"x":34,"y":206,"w":17,"h":14},"waiting":{"x":40,"y":211},"spawns":[{"x":39,"y":215},{"x":45,"y":215}],"npc":{"x":39,"y":209},"enemySpawns":[{"x":39,"y":213},{"x":45,"y":213},{"x":42,"y":214}]},
+    {"id":"town-trail","name":"Town Trail","map":"main","location":"Town · a short route through the square","description":"A quick route through familiar streets. Choose your own line.","modes":["checkpoint"],"access":"public","area":{"x":25,"y":200,"w":45,"h":40},"waiting":{"x":40,"y":211},"spawns":[{"x":40,"y":211}],"checkpoints":[{"x":46,"y":216},{"x":54,"y":222},{"x":56,"y":226}]},
+    {"id":"crypt-court","name":"Crypt Court","map":"main","location":"Town · private practice court","description":"A gated version of the same practice area, for trying invitations and access.","modes":["duel","laststand"],"access":"crypt-pass","area":{"x":34,"y":206,"w":17,"h":14},"waiting":{"x":40,"y":211},"spawns":[{"x":39,"y":215},{"x":45,"y":215}],"enemySpawns":[{"x":39,"y":213},{"x":45,"y":213},{"x":42,"y":214}],"sharesSpaceWith":"town-green"}
+  ],
+  "waves": [["rat"],["rat","rat"],["skeleton","rat","rat"]]
+}

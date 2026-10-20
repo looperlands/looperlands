@@ -139,6 +139,7 @@ class FieldAttacks {
     }
     strike(encounter,mob,multiplier,label){
         const player=encounter.player;
+        if(this.world.server?.gameModes && !this.world.server.gameModes.canDamage(player,mob))return;
         const buff=player.getActiveBuff?.();
         const power=(player.getLevel()+player.getWeaponLevel())*(buff?.stat==='atk' ? 1+buff.percent/100 : 1);
         const points=Math.max(1,Math.round(Formulas.dmg(power,mob.armorLevel)*multiplier*player.playerClassModifiers.meleeDamageDealt));
@@ -200,7 +201,8 @@ class FieldAttacks {
         targetId:a.encounter.player.id,mob:this.mobState(a.mob)};}
     visibleState(player){
         const entities=this.world.groups?.[player.group]?.entities || {};
-        return [...this.attacks.values()].filter(a=>a.encounter.player===player || entities[a.mob.id]===a.mob).map(a=>this.attackState(a));
+        return [...this.attacks.values()].filter(a=>(a.encounter.player===player || entities[a.mob.id]===a.mob)
+            && (!this.world.server?.gameModes || this.world.server.gameModes.canSee(player,a.mob))).map(a=>this.attackState(a));
     }
     state(encounter){
         const combo=encounter.fieldCombo;

@@ -69,6 +69,17 @@ class LooperLandsPlatformClient {
         return response.data;
     }
 
+    async isServerAdminWallet(walletId) {
+        const response = await this.client.get('/api/game/wallet/' + encodeURIComponent(walletId) + '/permissions', {timeout: 5000});
+        const permissions = response.data;
+        // Never inherit a linked wallet's privileges or accept a mismatched reply.
+        if (typeof permissions?.walletAddress !== 'string' || permissions.walletAddress.toLowerCase() !== walletId.toLowerCase()
+            || typeof permissions.serverAdmin !== 'boolean') {
+            throw new Error('Invalid wallet permissions response');
+        }
+        return permissions.serverAdmin;
+    }
+
     async claimPlayerTitlePrompt(walletId) {
         const response = await this.client.post(`/api/game/wallet/${encodeURIComponent(walletId)}/title/prompt`, {}, {timeout: 10000});
         return response.data;

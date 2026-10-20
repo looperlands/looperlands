@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork', 'gamemodes'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork, GameModes) {
 
     var App = Class.extend({
         init: function () {
@@ -58,6 +58,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.progressionCards?.destroy();
             this.progressionCards = new ProgressionCards(this, game);
             this.game.sessionId = this.sessionId;
+            this.gameModes?.destroy();
+            this.gameModes = new GameModes(this, game);
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
             if (!this.playerName && typeof PlayerName === 'function') this.playerName = new PlayerName(this);

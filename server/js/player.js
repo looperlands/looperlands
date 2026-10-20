@@ -306,6 +306,7 @@ module.exports = Player = Character.extend({
         }
         else if (action === Types.Messages.ATTACK) {
             var mob = self.server.getEntityById(message[1]);
+            if (mob && self.server.server?.gameModes && !self.server.server.gameModes.canDamage(self, mob)) return;
             if (mob) {
                 self.setTarget(mob);
                 self.server.broadcastAttacker(self);
@@ -322,6 +323,7 @@ module.exports = Player = Character.extend({
             var mob = self.server.getEntityById(message[1]);
             if (mob) {
                 let usedProjectile = self.getProjectileToUse();
+                if (self.server.server?.gameModes && !self.server.server.gameModes.canDamage(self, mob)) return;
                 if (usedProjectile === null) {
                     self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                     return;
@@ -362,6 +364,7 @@ module.exports = Player = Character.extend({
                     //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
 
                     function handleDamage(mob, totalLevel, multiplier, critical = false) {
+                        if (self.server.server?.gameModes && !self.server.server.gameModes.canDamage(self, mob)) return 0;
                         // Local trainers use fixed encounter damage, including when caught in splash.
                         if (self.server.combatPrototype?.mobIds.has(Number(mob.id))) return 0;
                         let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
@@ -677,6 +680,7 @@ module.exports = Player = Character.extend({
     },
 
     incrementNFTWeaponExperience: function (damage) {
+        if (this.server.server?.gameModes?.playing(this)) return;
         let nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined && (nftWeapon instanceof NFTWeapon.NFTWeapon)) {
             nftWeapon.incrementExperience(damage);
@@ -691,6 +695,8 @@ module.exports = Player = Character.extend({
     },
 
     handleHurt: function (mob, damage) {
+        if (this.clientReloadPending) return;
+        if (this.server.server?.gameModes?.handlePlayerHurt(this, mob, damage)) return;
         if (mob && this.hitPoints > 0 && !this.invincible && !this.clientReloadPending) {
             if (damage === undefined) {
                 let level = this.getLevel();
@@ -1234,6 +1240,7 @@ module.exports = Player = Character.extend({
     },
 
     consumeItem: function (item) {
+        if (this.server.server?.gameModes?.playing(this)) return false;
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
         if (gameData.items === undefined) {
