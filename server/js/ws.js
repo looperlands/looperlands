@@ -295,7 +295,15 @@ WS.socketIOServer = Server.extend({
 
             let nftId = body.nftId.replace("0x", "NFT_");
             let bot = Types.isBot(Types.getKindFromString(nftId));
-            if (!bot) {
+            if (bot) {
+                // Companions send HELLO directly without the browser's GET /session step.
+                try {
+                    body.gameData = await dao.loadAvatarGameData(body.nftId);
+                    if (!body.gameData) throw new Error('Companion game data is unavailable');
+                } catch (error) {
+                    return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
+                }
+            } else {
                 let cacheKeys = cache.keys();
                 for (i in cacheKeys) {
                     let key = cacheKeys[i];
