@@ -95,21 +95,21 @@ jobs:
           source: "bin/deploy-game-server.sh,bin/deploy-game-server.py"
           target: "/tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}"
 
-      - name: Automatically deploy with HMR or an announced reboot
+      - name: Deploy both game servers with automatic HMR or announced reboots
         uses: appleboy/ssh-action@v0.1.7
         env:
           REBOOT_REASON_BASE64: ${{ steps.reboot.outputs.reason_base64 }}
           REBOOT_NOTICE_SECONDS: ${{ steps.reboot.outputs.notice_seconds }}
           DEPLOY_MODE: ${{ inputs.deployment_mode || 'auto' }}
           LIVE_UPDATE_IMAGE: balkshamster/looperlands:${{ github.sha }}
-          LIVE_UPDATE_SERVICE: ${{ vars.GAME_SERVER_LIVE_SERVICE }}
+          LIVE_UPDATE_SERVICES: ${{ vars.GAME_SERVER_LIVE_SERVICES || 'gameserver gameserver2' }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
           command_timeout: 20m
-          envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS,DEPLOY_MODE,LIVE_UPDATE_IMAGE,LIVE_UPDATE_SERVICE
+          envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS,DEPLOY_MODE,LIVE_UPDATE_IMAGE,LIVE_UPDATE_SERVICES
           script: |
             bash /tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/bin/deploy-game-server.sh
 

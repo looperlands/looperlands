@@ -81,16 +81,19 @@ The gameserver accepts announcements per map. Not including `maps` will send to 
 
 # Deployment reboot notices
 
-The `deploy` GitHub Actions workflow announces the reboot to every running
-game-server Docker Compose container in the production project on the configured SSH
-host(s), waits 60 seconds, then restarts the `looperlands` service. Each container
-receives the announcement on all its maps through its local `/announce` endpoint,
-using its own `LOOPWORMS_API_KEY`. No additional GitHub secret is needed.
+The `deploy` GitHub Actions workflow updates both existing Docker Compose game
+services (`gameserver` and `gameserver2`) on the configured SSH host(s). It chooses
+HMR or a reboot independently for each service. A service requiring a reboot
+receives an announcement on all its maps through its local `/announce` endpoint,
+using its own `LOOPWORMS_API_KEY`, followed by a 60-second warning before recreation.
+No additional GitHub secret is needed. The current NA endpoint uses `gameserver2`
+on host port 8001. Override the targets with the space-separated repository variable
+`GAME_SERVER_LIVE_SERVICES`; see [live updates](docs/live-updates.md) for details.
 
 To explain a deployment, open **Actions → deploy → Run workflow**, select `main`,
 and enter `reboot_reason`, for example `Fixing combat lag and improving chat.`
-The announcement always includes the restart countdown and asks players to
-reconnect afterwards. `reboot_notice_seconds` lets you change the warning period
+The announcement includes the restart countdown and explains whether clients can
+reconnect automatically. `reboot_notice_seconds` lets you change the warning period
 from 1 to 600 seconds. Reasons are rendered as plain text.
 
 For automatic deployments on pushes to `main`, set the repository Actions variable
@@ -99,10 +102,12 @@ players see `We are deploying a game update.` Manual reasons override the variab
 blank manual reasons use the variable or the default. Push deployments always use
 the 60-second warning period.
 
-Announcements run only after the image has built and pushed successfully. If any
-container rejects the announcement, or no running game-server container is found,
-the workflow fails before restarting. Deployments are serialized so a later push
-does not cancel a reboot that players have already been warned about.
+Announcements run only after the image has built and pushed successfully. Every
+selected service must pass discovery and storage checks before any service is
+updated. If a container rejects its announcement, that service is not restarted
+and the batch stops; previously verified updates remain active. Deployments are
+serialized so a later push does not cancel a reboot that players have already
+been warned about.
 The notice runs after the existing chat-storage checks and image pull, while
 the deployment lock is held. The existing checks for persistent chat storage
 also run after the restart. The SSH user uses the existing Docker permissions;
