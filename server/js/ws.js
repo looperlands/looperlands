@@ -393,7 +393,12 @@ WS.socketIOServer = Server.extend({
                         consumables: {}
                     }
                 } else {
-                    avatarGameData = await dao.loadAvatarGameData(nftId);
+                    try {
+                        avatarGameData = await dao.loadAvatarGameData(nftId);
+                        if (!avatarGameData) throw new Error('Avatar game data is unavailable');
+                    } catch (error) {
+                        return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
+                    }
                 }
 
                 sessionData.isDirty = true;
@@ -717,7 +722,10 @@ WS.socketIOServer = Server.extend({
                 });
 
             } else {
-                let owns = sessionData.gameData.items[entityItemId] !== undefined;
+                if (!sessionData.gameData) {
+                    return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
+                }
+                let owns = sessionData.gameData.items?.[entityItemId] !== undefined;
                 res.status(200).json(owns);
                 return;
             }

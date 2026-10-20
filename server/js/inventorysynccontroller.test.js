@@ -77,4 +77,18 @@ describe('InventorySyncController', () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ success: true });
     });
+
+    it.each(['reject', 'undefined'])('preserves loaded inventory when refresh fails: %s', async failure => {
+        const session = {nftId: '123', gameData: {items: {gold: 42}}};
+        cache.get.mockReturnValue(session);
+        if (failure === 'reject') dao.loadAvatarGameData.mockRejectedValue(new Error('platform unavailable'));
+        else dao.loadAvatarGameData.mockResolvedValue(undefined);
+        const req = {body: {nftId: '123'}, headers: {'x-api-key': process.env.LOOPWORMS_API_KEY}};
+        const res = {status: jest.fn().mockReturnThis(), json: jest.fn()};
+        await controller.syncPlayer(req, res);
+        expect(res.status).toHaveBeenCalledWith(503);
+        expect(res.json).toHaveBeenCalledWith({success: false, error: expect.any(String)});
+        expect(session.gameData).toEqual({items: {gold: 42}});
+        expect(cache.set).not.toHaveBeenCalled();
+    });
 });

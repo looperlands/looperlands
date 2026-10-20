@@ -29,7 +29,13 @@ class InventorySyncController {
             const found = sessionData.nftId === nftId;
             if (found) {
                 await this.dao.processLootEventQueue();
-                const gameData = await this.dao.loadAvatarGameData(nftId);
+                let gameData;
+                try {
+                    gameData = await this.dao.loadAvatarGameData(nftId);
+                    if (!gameData) throw new Error('Avatar game data is unavailable');
+                } catch (error) {
+                    return res.status(503).json({success: false, error: 'Game data unavailable. Please try again.'});
+                }
                 sessionData.gameData = gameData;
                 this.cache.set(sessionId, sessionData);
             }
