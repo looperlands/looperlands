@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork) {
 
     var App = Class.extend({
         init: function () {
@@ -720,40 +720,36 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 armorPath = 'img/3/' + armor + '.png';
             }
 
-            const completeIcon = EquipmentIcon.get(weapon, scale);
-            const imageUrl = weaponPath;
-            let preloaderImg = document.createElement("img");
-
-            const dynamicRangedWeapon = Types.spriteIsDynamicRangedWeapon(weapon);
-            if (!dynamicRangedWeapon) {
-                preloaderImg.src = imageUrl;
+            const weaponElement = document.getElementById('weapon'), iconRequest = {};
+            this.equipmentIconRequest = iconRequest; CardArtwork.cancel(weaponElement);
+            if (Types.isRangedWeapon(Types.getKindFromString(weapon))) {
+                CardArtwork.render(weaponElement, CardArtwork.sources(this.game, this, 'weapon'), null, {slot: true});
             } else {
-                preloaderImg.src = "-1";
-            }
+                const completeIcon = EquipmentIcon.get(weapon, scale);
+                let preloaderImg = document.createElement("img");
 
-            preloaderImg.onerror = () => {
-                preloaderImg.onerror = undefined;
-                let spriteWeaponPath;
-                if (dynamicRangedWeapon) {
-                    spriteWeaponPath = this.dynamicNFTIconURL[weapon].replace("/3/", "/1/");
-                } else {
-                    spriteWeaponPath = 'img/1/' + weapon + '.png';
+                preloaderImg.onerror = () => {
+                    if (this.equipmentIconRequest !== iconRequest) return;
+                    preloaderImg.onerror = undefined;
+                    const spriteWeaponPath = 'img/1/' + weapon + '.png';
+                    $('#weapon').css({
+                        'background-image': 'url("' + spriteWeaponPath + '")',
+                        'background-size': 'initial',
+                        'background-position': '-5px -402px'
+                    });
                 }
-                $('#weapon').css({
-                    'background-image': 'url("' + spriteWeaponPath + '")',
-                    'background-size': 'initial',
-                    'background-position': '-5px -402px'
-                });
-            }
-            preloaderImg.addEventListener('load', (event) => {
-                $('#weapon').css(completeIcon?.style || {
-                    'background-image': 'url("' + weaponPath + '")',
-                    'background-size': 'cover',
-                    'background-position': '0 0'
-                });
+                preloaderImg.addEventListener('load', (event) => {
+                    if (this.equipmentIconRequest !== iconRequest) return;
+                    $('#weapon').css(completeIcon?.style || {
+                        'background-image': 'url("' + weaponPath + '")',
+                        'background-size': 'cover',
+                        'background-position': '0 0'
+                    });
 
-                preloaderImg = null;
-            });
+                    preloaderImg = null;
+                });
+                preloaderImg.src = weaponPath;
+            }
 
             if (armor !== 'firefox') {
                 if (scale === 2) {

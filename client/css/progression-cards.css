@@ -21,6 +21,7 @@
 .lc-art { position: relative; height: 122px; margin: 0 -2px 10px; display: grid; place-items: center; overflow: hidden; background: #34242f; border-bottom: 1px solid #a5785655; transition: background-color calc(240ms * var(--lc-time)) ease-out; }
 .lc-weapon .lc-art { background-color: #26313b; }
 .lc-sprite { position: relative; display: inline-block; background-repeat: no-repeat; background-position: 0 0; image-rendering: pixelated; transform-origin: center; z-index: 1; }
+.lc-art-status { position: relative; z-index: 1; color: var(--lc-accent); font-size: 11px; }
 .lc-pedestal { position: absolute; left: calc(50% - 35px); bottom: 18px; width: 70px; height: 8px; border-radius: 50%; background: #17121c7a; }
 .lc-level-line { display: flex; align-items: baseline; gap: 8px; color: #d7ab97; font-size: 12px; padding: 0 1px; }
 .lc-level { font: 39px/1 AdvoCut, GraphicPixel, sans-serif; font-variant-numeric: tabular-nums; color: var(--lc-accent); }
