@@ -7157,6 +7157,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     connecting = false; // always in dispatcher mode in the build version
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
+                this.client.isRecovering = this.app.clientUpdates?.recovering;
+                if (this.client.isRecovering) this.app.clientUpdates.recoveryStatus('Reconnecting to the game server…');
                 this.bindTileActionCallbacks();
                 this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
                 this.client.onPlayerTitle((id, name, title) => {

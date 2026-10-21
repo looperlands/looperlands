@@ -3019,6 +3019,12 @@ footer div  {display:inline-block;}
 #settings .settings-list label { padding: 3px 0; }
 #settings .settings-actions { flex-shrink: 0; padding-top: 8px; }
 #settings .settings-build { display: block; color: #d3bec9; font-size: 12px; line-height: 1.4; margin-top: 8px; }
+#client-recovery { position: fixed; inset: 0; z-index: 30000; display: grid; place-items: center; padding: 24px; background: #21151f; color: #fff2cf; font-family: 'GraphicPixel', sans-serif; text-align: center; }
+#client-recovery[hidden], #client-recovery-reconnect[hidden] { display: none; }
+.client-recovery-card { padding: 24px; max-width: 440px; border: 3px solid #b99761; background: #3f2a35; }
+.client-recovery-card h1 { margin: 0 0 16px; color: #f1ce92; font-size: 24px; }
+.client-recovery-card p { font-size: 16px; line-height: 1.5; }
+#client-recovery-reconnect { display: inline-block; margin-top: 12px; color: #f1ce92; }
 #settings .hit-feel-settings h2 { line-height: 1.4; }
 #settings .hit-feel-settings .settings-hint, #settings .hit-feel-settings label { font-size: 14px; line-height: 1.5; }
 #settingsForm label { cursor: pointer; }

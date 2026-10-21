@@ -7,10 +7,11 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     var initApp = function() {
         $(document).ready(function() {
         	app = new App();
+            app.clientUpdates = new ClientUpdates(app);
 
             app.center();
 
-            app.storage.loadData().then((data) => {
+            app.clientUpdates.loadSession().then((data) => {
 
                 $("#welcome").hide();
 
@@ -258,7 +259,8 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 initGame(data.mapId);
             }).catch((error) => {
                 console.error(error);
-                if (error.response.status === 404) {
+                if (app.clientUpdates.recovering) {app.clientUpdates.failRecovery(); return;}
+                if (error.response?.status === 404) {
                     $("#welcomeMessage").text("Session not found. Make sure you don't have two LooperLands open.");
                 } else {
                     $("#welcomeMessage").text("Error loading your user data. Please try again later.");

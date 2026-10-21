@@ -90,7 +90,12 @@ CSS replacements load without being visible, then switch together. Failed
 loads keep the existing styles and retry.
 
 For other client changes, an active player waits until out of combat. The
-server briefly freezes input, saves accumulated avatar/equipment XP, flushes
+client first warms the new release's scripts, styles, map and startup sprite
+images in the browser cache while the existing game remains connected. Failed
+downloads retry before a reload ticket freezes the player. Worker-loaded sprite
+images for visible characters are included explicitly; the background NFT
+catalogue is not prefetched. Removed assets do not block the update.
+The server then briefly freezes input, saves accumulated avatar/equipment XP, flushes
 inventory and kill writes and issues a random, short-lived session ticket.
 The page reloads automatically and reconnects with position, HP, checkpoint,
 quest/inventory state, buff expiry and cooldown expiry preserved. Buffs and
@@ -98,7 +103,12 @@ cooldowns retain their original deadlines. The ticket cannot be claimed by a
 second socket and is consumed durably before the resumed player can act.
 
 Client JavaScript updates briefly reconnect the socket. They do not require
-returning to character selection. An unresponsive client loses its temporary
+returning to character selection. A recovery screen stays visible after page
+navigation until the resumed game has started rendering. It waits for server
+readiness and retries temporary session errors; dispatcher requests are sent
+again after a transport reconnect. Expired tickets and a two-minute startup
+timeout show a character-selection recovery link instead of a blank loading
+screen or automatic redirect. An unresponsive client loses its temporary
 freeze after five seconds; a stalled save loses it after ten seconds.
 Tickets expire after three minutes. Dead players wait for revive before a
 client-only reload.

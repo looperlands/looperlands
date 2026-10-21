@@ -5,9 +5,9 @@ define(function() {
             this.sessionId = sessionId;
         },
         dirty: false,
-        loadData: async function() {
+        loadData: async function(options = {}) {
             console.log("Loading data");
-            let response = await axios.get(`/session/${this.sessionId}`);
+            let response = await axios.get(`/session/${this.sessionId}`, options);
             this.data = response.data;
             this.nftId = this.data.nftId;
             this.walletId = this.data.walletId;

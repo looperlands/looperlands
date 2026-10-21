@@ -152,6 +152,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 this.center();
                 this.game.run(function () {
                     $('body').addClass('started');
+                    self.clientUpdates?.completeRecovery?.();
                     if (firstTimePlaying || self.storage.f2p) {
                         self.toggleInstructions();
                     }

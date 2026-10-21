@@ -90,6 +90,16 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 	<body class="intro upscaled">
     <![endif]-->
 	<body class="intro">
+        <div id="client-recovery" role="status" aria-live="polite" hidden>
+            <div class="client-recovery-card">
+                <h1>Updating game</h1>
+                <p id="client-recovery-message">Loading the updated game…</p>
+                <a id="client-recovery-reconnect" href="https://looperlands.io" hidden>Choose your character</a>
+            </div>
+        </div>
+        <script>
+            if (new URLSearchParams(window.location.search).has('clientRevision')) document.getElementById('client-recovery').hidden = false;
+        </script>
 	    <noscript>
 	       <div class="alert">
 	           You need to enable JavaScript to play LooperLands.

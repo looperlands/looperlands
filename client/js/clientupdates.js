@@ -7,7 +7,101 @@ define(function () {
             this.fetch = options.fetch || window.fetch.bind(window);
             this.later = options.later || ((fn, delay) => setTimeout(fn, delay));
             this.cancel = options.cancel || (id => clearTimeout(id));
+            this.now = options.now || Date.now;
+            this.performance = options.performance || (typeof window !== 'undefined' ? window.performance : null);
             this.revision = this.document.querySelector('meta[name="looperlands-client-revision"]')?.content;
+            this.recovering = /^[a-f0-9]{40}$/.test(this.revision || '') && new URL(this.location.href).searchParams.has('clientRevision');
+        }
+
+        recoveryStatus(message) {
+            const overlay = this.document.getElementById?.('client-recovery');
+            const label = this.document.getElementById?.('client-recovery-message');
+            if (overlay) overlay.hidden = false;
+            if (label) label.textContent = message;
+        }
+
+        failRecovery() {
+            this.cancel(this.recoveryTimer);
+            this.recoveryFailed = true;
+            this.recoveryStatus('The game could not reconnect. Choose your character to continue.');
+            const link = this.document.getElementById?.('client-recovery-reconnect');
+            if (link) link.hidden = false;
+            this.app.game?.client?.connection?.disconnect();
+        }
+
+        completeRecovery() {
+            if (!this.recovering || this.recoveryFailed) return;
+            this.cancel(this.recoveryTimer);
+            this.recovering = false;
+            // WELCOME precedes the first rendered frame. Keep the cover until it can paint.
+            this.later(() => {
+                const overlay = this.document.getElementById?.('client-recovery');
+                if (overlay) overlay.hidden = true;
+            }, 100);
+        }
+
+        async loadSession() {
+            if (!this.recovering) return this.app.storage.loadData();
+            const deadline = this.now() + 120000;
+            this.recoveryTimer = this.later(() => this.failRecovery(), 120000);
+            while (!this.recoveryFailed && this.now() < deadline) {
+                try {
+                    this.recoveryStatus('Waiting for the game server…');
+                    const update = await this.request('/client-update?from=' + this.revision);
+                    if (!/^[a-f0-9]{40}$/.test(update.revision || '') || !update.ready || update.serverRevision !== update.revision) throw new Error('Server is starting');
+                    this.recoveryStatus('Restoring your character…');
+                    const result = await this.app.storage.loadData({timeout: 10000});
+                    if (this.recoveryFailed || this.now() >= deadline) break;
+                    this.recoveryStatus('Loading the updated game assets…');
+                    return result;
+                } catch (error) {
+                    if ([401, 403, 404].includes(error.response?.status)) {this.failRecovery(); throw error;}
+                    await new Promise(resolve => this.later(resolve, 1000));
+                }
+            }
+            this.failRecovery();
+            throw new Error('Client recovery timed out');
+        }
+
+        async warmAssets(revision, files = []) {
+            const mapId = this.app.game.mapId;
+            if (this.warmedRevision === revision && this.warmedMap === mapId) return;
+            const root = new URL('/_client/' + revision + '/', this.location.href);
+            const urls = new Set();
+            const add = value => {
+                if (typeof value !== 'string') return;
+                const url = new URL(value, this.document.baseURI || this.location.href);
+                if (url.origin !== root.origin || !/^\/_client\/[a-f0-9]{40}\//.test(url.pathname)) return;
+                url.pathname = url.pathname.replace(/^\/_client\/[a-f0-9]{40}\//, root.pathname);
+                url.hash = ''; urls.add(url.href);
+            };
+            for (const file of files) add(new URL(file, root).href);
+            for (const element of this.document.querySelectorAll('script[src], link[rel="stylesheet"]')) add(element.src || element.href);
+            for (const entry of this.performance?.getEntriesByType('resource') || []) add(entry.name);
+            // Background NFT sprites do not block startup. Warming the entire catalogue
+            // would evict startup assets from smaller browser caches.
+            for (const sprites of this.app.game.spritesets || []) for (const sprite of Object.values(sprites)) {
+                if (!sprite.id?.startsWith('NFT_') || sprite.image) add(sprite.filepath);
+            }
+            // Visible sprites fetched by render workers have no window resource timing.
+            for (const entity of Object.values(this.app.game.entities || {})) add(entity.sprite?.filepath);
+            if (mapId) add(new URL('maps/world_client_' + mapId + '.js', root).href);
+            const queue = [...urls];
+            this.app.game.showNotification('Downloading game update…');
+            const results = await Promise.allSettled(Array.from({length: Math.min(4, queue.length)}, async () => {
+                while (queue.length) {
+                    const response = await this.fetch(queue.shift(), {cache: 'force-cache', credentials: 'same-origin',
+                        ...(typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? {signal: AbortSignal.timeout(30000)} : {})});
+                    // Changed-file lists also include assets removed by the new release.
+                    if (response.status === 404) continue;
+                    if (!response.ok) throw new Error('Updated asset is unavailable');
+                    await response.arrayBuffer();
+                }
+            }));
+            const failure = results.find(result => result.status === 'rejected');
+            if (failure) throw failure.reason;
+            this.warmedRevision = revision;
+            this.warmedMap = mapId;
         }
 
         start(socket) {
@@ -39,11 +133,16 @@ define(function () {
                 const update = await this.request('/client-update?from=' + this.revision);
                 if (!/^[a-f0-9]{40}$/.test(update.revision || '')) throw new Error('Invalid client release');
                 if (this.waiting) {
-                    if (update.ready && update.serverRevision === this.waiting.revision) this.navigate(this.waiting.sessionId, update.revision);
+                    if (update.ready && update.serverRevision === this.waiting.revision) {
+                        await this.warmAssets(update.revision, update.files);
+                        this.navigate(this.waiting.sessionId, update.revision);
+                    }
                 } else if (update.ready && update.revision !== this.revision) {
                     if (update.mode === 'none') this.adopt(update.revision);
                     else if (update.mode === 'css') {await this.styles(update.revision); this.adopt(update.revision);}
                     else if (update.mode === 'reload' && this.app.game?.started) {
+                        await this.warmAssets(update.revision, update.files);
+                        if (this.warmedMap !== this.app.game.mapId) return;
                         const ticket = await this.request('/session/' + this.app.sessionId + '/client-reload', {revision: update.revision});
                         if (!/^[a-f0-9]{40}$/.test(ticket.sessionId || '') || ticket.revision !== update.revision) throw new Error('Invalid client reload ticket');
                         this.app.game.showNotification('Applying game update…');

@@ -107,12 +107,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
              ******/
             if(dispatcherMode) {
 
-                this.connection.emit("dispatch", true)
-
-                this.connection.on("dispatched", function(reply) {
+                const dispatcher = this.connection;
+                dispatcher.on("dispatched", function(reply) {
                     console.log("Dispatched: ")
                     console.log(reply)
                     if(reply.status === 'OK') {
+                        dispatcher.disconnect();
                         self.dispatched_callback(reply.host, reply.port);
                     } else if(reply.status === 'FULL') {
                         console.log("LooerpQuest is currently at maximum player population. Please retry later.");
@@ -120,6 +120,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                         console.log("Unknown error while connecting to LooperLands.");
                     }
                 });
+                dispatcher.on('connect', () => dispatcher.emit('dispatch', true));
                 
             } else {
 
@@ -144,7 +145,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 };*/
 
                 this.connection.on("disconnect", function() {
-                    if (self.isReloading) return;
+                    if (self.isReloading || self.isRecovering) return;
                     self.resetPendingSpawns();
                     console.debug("Connection closed");
                     $('#container').addClass('error');
@@ -232,6 +233,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             if(this.welcome_callback) {
                 this.welcome_callback(id, name, x, y, hp, title, serverTime, data[8]);
             }
+            this.isRecovering = false;
         },
     
         receiveMove: function(data) {
