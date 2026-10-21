@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG MAP_FILE
 RUN apt-get update -yq && apt-get install -yq curl
 ENV NVM_DIR=/usr/local/nvm
-ENV NODE_VERSION=v20.9.0
+ENV NODE_VERSION=v24.22.1
 RUN mkdir -p /usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
