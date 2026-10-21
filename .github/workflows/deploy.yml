@@ -111,7 +111,18 @@ jobs:
           command_timeout: 20m
           envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS,DEPLOY_MODE,LIVE_UPDATE_IMAGE,LIVE_UPDATE_SERVICES
           script: |
+            set -eu
             bash /tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/bin/deploy-game-server.sh
+            for service in $LIVE_UPDATE_SERVICES; do
+              container="$(docker ps -q --filter "label=com.docker.compose.service=$service")"
+              docker exec "$container" node -e '
+                const assert = require("node:assert/strict");
+                const fs = require("node:fs");
+                const expected = fs.readFileSync("/opt/app/.nvmrc", "utf8").trim();
+                assert.equal(process.versions.node, expected);
+                console.log("Verified Node.js runtime:", process.env.GAMESERVER_NAME, process.version);
+              '
+            done
 
       - name: Clean deployment uploads
         if: always()

@@ -17,12 +17,34 @@ jobs:
         PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
         PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-live-game-server.test.py
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v6
       with:
-        node-version: '20.9.0' # Specify your project's Node.js version
+        node-version-file: '.nvmrc'
     - name: Install dependencies
-      run: npm install
+      run: npm ci
     - name: Run linter
       run: npx eslint client --ext .js,.jsx,.ts,.tsx --quiet && npx eslint server --ext .js,.jsx,.ts,.tsx --quiet && npx eslint shared --ext .js,.jsx,.ts,.tsx --quiet
     - name: Run unit tests
       run: npm run coverage
+    - name: Build production image
+      run: docker build -f Dockerfile.prod --build-arg GAME_RELEASE_ID=${{ github.sha }} -t looperlands-node-validation .
+    - name: Check production runtime
+      run: |
+        docker run --rm --network none --entrypoint node looperlands-node-validation -e '
+          const assert = require("node:assert/strict");
+          const fs = require("node:fs");
+          assert.equal(process.version, "v" + fs.readFileSync(".nvmrc", "utf8").trim());
+          Object.assign(process.env, {
+            NEW_RELIC_APP_NAME: "runtime-validation",
+            NEW_RELIC_LICENSE_KEY: "0".repeat(40),
+            NEW_RELIC_HOST: "127.0.0.1",
+            NEW_RELIC_PORT: "1",
+            NEW_RELIC_SSL: "false"
+          });
+          const newrelic = require("newrelic");
+          assert.ok(newrelic.agent, "New Relic agent must initialize");
+          require("express");
+          require("socket.io");
+          console.log("Production runtime:", process.version);
+          newrelic.shutdown({collectPendingData: false}, error => { if (error) throw error; });
+        '
