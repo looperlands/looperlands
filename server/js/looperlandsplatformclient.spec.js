@@ -49,6 +49,26 @@ describe('LooperLandsPlatformClient', () => {
     });
   });
 
+  describe('isServerAdminWallet', () => {
+    const wallet = '0x' + 'a'.repeat(40);
+    it('uses the authenticated game endpoint and validates the wallet identity', async () => {
+      client.client.get.mockResolvedValue({data: {walletAddress: wallet.toUpperCase(), serverAdmin: true}});
+      await expect(client.isServerAdminWallet(wallet)).resolves.toBe(true);
+      expect(client.client.get).toHaveBeenCalledWith('/api/game/wallet/' + wallet + '/permissions', {timeout: 5000});
+    });
+    it.each([
+      {}, {walletAddress: wallet}, {walletAddress: '0xother', serverAdmin: true},
+      {walletAddress: wallet, serverAdmin: 'true'}, {walletAddress: wallet, serverAdmin: 1}
+    ])('rejects mismatched or malformed role responses: %j', async data => {
+      client.client.get.mockResolvedValue({data});
+      await expect(client.isServerAdminWallet(wallet)).rejects.toThrow('permissions response');
+    });
+    it('propagates a timeout so the caller can deny access', async () => {
+      client.client.get.mockRejectedValue(new Error('timeout'));
+      await expect(client.isServerAdminWallet(wallet)).rejects.toThrow('timeout');
+    });
+  });
+
 
 
   describe('createOrUpdateGameServer', () => {

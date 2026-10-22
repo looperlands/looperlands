@@ -91,3 +91,21 @@ test.each([true,false])('live door travel rebases combat only after destination 
     expect([player.x,player.y]).toEqual(allowed?[150,50]:[10,10]);
     expect(world.combat.teleport).toHaveBeenCalledTimes(allowed?1:0);
 });
+
+test('normal HIT messages cannot damage a practice mob without match admission', async () => {
+    const {player, mob, world, receive} = setup();
+    world.server = {gameModes: {canDamage: () => false}};
+    await receive([Types.Messages.HIT, mob.id]);
+    expect(mob.receiveDamage).not.toHaveBeenCalled(); expect(world.handleHurtEntity).not.toHaveBeenCalled(); expect(player.incrementNFTWeaponExperience).not.toHaveBeenCalled();
+});
+
+test('practice AoE cannot spill into nearby ordinary mobs', async () => {
+    const {player, mob, world, receive} = setup('aoe');
+    Object.assign(mob, {type: 'mob', kind: Types.Entities.RAT, x: 1, y: 1});
+    const bystander = {...mob, id: 9, receiveDamage: jest.fn()};
+    Object.assign(world, {server: {gameModes: {canDamage: (actor, target) => target === mob}},
+        groups: {test: {entities: {7: mob, 9: bystander}}}, pushToPlayer: jest.fn()});
+    Object.assign(player, {group: 'test', x: 1, y: 1, hitPoints: 50, maxHitPoints: 100, health: () => ({})});
+    await receive([Types.Messages.HIT, mob.id]);
+    expect(mob.receiveDamage).toHaveBeenCalled(); expect(bystander.receiveDamage).not.toHaveBeenCalled();
+});

@@ -55,6 +55,17 @@ test('tickets contain server-authored position, health, quests and absolute buff
     } finally {clearTimeout(f.player.consumableBuff.buffTimeout);}
 });
 
+test('a practice round ends before the reload ticket captures health and position', async () => {
+    const f = fixture();
+    f.server.gameModes = {beforeClientReload: jest.fn(player => {
+        expect(player.clientReloadPending).toBeUndefined();
+        player.x = 40; player.y = 211; player.hitPoints = 74;
+    })};
+    const id = await f.controller.ticket(f.player, REVISION);
+    expect(f.server.gameModes.beforeClientReload).toHaveBeenCalledWith(f.player);
+    expect(f.server.cache.get(id)).toMatchObject({x: 40, y: 211, resumeState: {hp: 74}});
+});
+
 test('only one socket can claim a ticket; consumption is durable before the player can act', async () => {
     const f = fixture(), id = await f.controller.ticket(f.player, REVISION);
     expect(f.controller.claim(id, 10).hp).toBe(41);

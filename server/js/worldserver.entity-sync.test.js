@@ -12,8 +12,9 @@ function setup() {
     const Types = {Messages: {SPAWN: 2, MOVE: 4, DESTROY: 22}};
     const Messages = {};
     for (const [name, type] of Object.entries({Spawn: 2, Move: 4, Destroy: 22})) {
-        Messages[name] = function (entity) { this.serialize = () => [type, entity.id, entity.x, entity.y]; };
+        Messages[name] = function (entity) { this.entity = entity; this.serialize = () => [type, entity.id, entity.x, entity.y]; };
     }
+    Messages.List = function (ids) {this.serialize = () => [19, ...ids];};
     function load(name, requireFn) {
         const module = {exports: {}};
         vm.runInNewContext(fs.readFileSync(require.resolve(name), 'utf8'), {module, require: requireFn});
@@ -127,4 +128,26 @@ test('vanishing inside the same group preserves the existing death/teleport deli
     traveler.forEachAttacker = () => {};
     world.handlePlayerVanish(traveler);
     expect(world.outgoingQueues[1]).toEqual([]);
+});
+
+test('practice spawns and movement are withheld from a nearby nonparticipant', () => {
+    const {world, add, Player, Mob} = setup();
+    add(Player, 1, 30, 14); add(Player, 2, 30, 14);
+    const mob = add(Mob, 50, 114, 14); mob.gameModesMatchId = 'round';
+    world.server = {gameModes: {canSee: (player, entity) => !entity?.gameModesMatchId || player.id === 1}};
+    mob.x = 30; world.handleEntityGroupMembership(mob);
+    world.processGroups();
+    expect(world.outgoingQueues[1].some(packet => packet[1] === mob.id)).toBe(true);
+    expect(world.outgoingQueues[2].some(packet => packet[1] === mob.id)).toBe(false);
+    mob.x++; world.onMobMoveCallback(mob);
+    expect(world.outgoingQueues[2].some(packet => packet[1] === mob.id)).toBe(false);
+});
+
+test('forged WHO requests and entity lists cannot disclose a hidden practice mob', () => {
+    const {world, add, Player, Mob} = setup(); const observer = add(Player, 2, 30, 14);
+    const mob = add(Mob, 50, 30, 14); mob.gameModesMatchId = 'round'; add(Mob, 51, 30, 14);
+    world.server = {gameModes: {canSee: (player, entity) => !entity?.gameModesMatchId}};
+    world.pushRelevantEntityListTo(observer); world.pushSpawnsToPlayer(observer, [50, 51]);
+    expect(world.outgoingQueues[2].some(packet => packet.slice(1).includes(50))).toBe(false);
+    expect(world.outgoingQueues[2].some(packet => packet.includes(51))).toBe(true);
 });

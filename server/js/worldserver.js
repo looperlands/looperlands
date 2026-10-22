@@ -367,6 +367,7 @@ module.exports = World = cls.Class.extend({
                 return parseInt(id);
             });
             entities = entities.filter(id => id != null);
+            if (this.server?.gameModes) entities = entities.filter(id => this.server.gameModes.canSee(player, this.entities[id]));
 
             if (entities) {
                 this.pushToPlayer(player, new Messages.List(entities));
@@ -410,6 +411,10 @@ module.exports = World = cls.Class.extend({
     },
 
     pushToPlayer: function (player, message) {
+        if (this.server?.gameModes) {
+            const related = [message?.entity, this.entities[message?.entityId], this.entities[message?.attackerId], this.entities[message?.targetId], this.entities[message?.mob]];
+            if (related.some(entity => !this.server.gameModes.canSee(player, entity))) return;
+        }
         let playerIdInQueue = player.id in this.outgoingQueues;
         if (player && playerIdInQueue) {
             if (message !== undefined) {
@@ -745,7 +750,7 @@ module.exports = World = cls.Class.extend({
         var mob = this.getEntityById(mobId),
             player = this.getEntityById(playerId);
 
-        if (player && mob) {
+        if (player && mob && (!this.server?.gameModes || this.server.gameModes.canDamage(player, mob))) {
             mob.increaseHateFor(playerId, hatePoints);
             player.addHater(mob);
 
@@ -826,6 +831,7 @@ module.exports = World = cls.Class.extend({
     },
 
     handleHurtEntity: function (entity, attacker, damage, critical = false) {
+        if (this.server?.gameModes?.handleHurtEntity(this, entity, attacker, damage, critical)) return;
         var self = this;
 
         if (damage > 0) {

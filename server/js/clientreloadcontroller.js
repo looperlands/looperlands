@@ -81,6 +81,7 @@ class ClientReloadController {
         if (this.requests.get(player.sessionId) || player.pendingMessages) throw new Error('Player requests are still finishing');
         for (const [wallet, until] of this.recent) if (until <= this.now()) this.recent.delete(wallet);
         if (!reboot && this.recent.has(player.walletId)) throw new Error('Client reload is cooling down');
+        this.server.gameModes?.beforeClientReload(player);
         const state = {invincible: player.invincible, invincibilityExpiresAt: player.invincibilityExpiresAt, revision};
         player.clientReloadPending = state;
         player.invincible = true;

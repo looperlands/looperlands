@@ -26,6 +26,8 @@ const { SocialChat } = require('./socialchat');
 const PlayerTitleController = require('./playertitlecontroller');
 const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
+const {GameModes} = require('./gamemodes');
+const GameModesAccess = require('./gamemodesaccess');
 const {FieldGuide} = require('./fieldguide');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
 const { NpcMemory } = require('./npcmemory');
@@ -180,7 +182,10 @@ WS.socketIOServer = Server.extend({
         this.activity = new ActivityTracker(platformClient);
         this.fieldGuide = new FieldGuide(cache, () => this.worldsMap || {}, platformClient);
         const closeFieldGuide = () => this.fieldGuide.close().catch(error => console.error('[field-guide]', error.message));
-        platformClient.beforeShutdown = () => Promise.all([this.activity.close(), closeFieldGuide()]);
+        platformClient.beforeShutdown = () => {
+            this.gameModes?.close();
+            return Promise.all([this.activity.close(), closeFieldGuide()]);
+        };
         this.eventEquipment = new EventEquipment(platformClient);
         process.once('beforeExit', () => this.activity.close());
         process.once('beforeExit', closeFieldGuide);
@@ -221,6 +226,10 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        this.gameModes = new GameModes(this, {authorization: new GameModesAccess(platformClient)});
+        app.get('/session/:sessionId/game-modes/access', (req, res) => self.gameModes.respond(req, res, 'access-check'));
+        app.get('/session/:sessionId/game-modes/state', (req, res) => self.gameModes.respond(req, res, 'state'));
+        app.post('/session/:sessionId/game-modes/action', (req, res) => self.gameModes.respond(req, res, req.body?.action));
         if (updates?.clients) {
             this.clientReloads = new (require('./clientreloadcontroller').ClientReloadController)(this, () => dao.flushPendingWrites());
             this.clientReloads.attach(app, updates.clients);
