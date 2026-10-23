@@ -295,7 +295,7 @@ function createToolboxApp(toolbox) {
 async function start() {
     if (!require('../server/js/localplaytest').isLocalPlaytest()) throw new Error('The Mapmaker Toolbox requires the local development configuration.');
     const toolbox = new MapmakerToolbox();
-    const server = createToolboxApp(toolbox).listen(Number(process.env.MAPMAKER_PORT || 8010), '0.0.0.0');
+    const server = createToolboxApp(toolbox).listen(Number(process.env.MAPMAKER_PORT || 8010), process.env.LOOPERLANDS_BIND_ADDRESS || '0.0.0.0');
     await new Promise((resolve, reject) => {
         server.once('listening', resolve);
         server.once('error', error => reject(new Error('Could not start the Mapmaker Toolbox: ' + error.message)));
