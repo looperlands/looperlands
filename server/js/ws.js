@@ -63,6 +63,35 @@ const minigameController = new MinigameController(cache, platformClient);
 const dialogueController = new DialogueController(cache, platformClient);
 const tileActionsController = new TileActionsController(cache, platformClient);
 
+// Local map builds restart this process; drain rewards below the normal batch sizes.
+WS.flushLocalGameplay = function (server) {
+    return server.localShutdownPromise ||= (async () => {
+        const worlds = Object.values(server.worldsMap || {});
+        const players = [...new Set(worlds.flatMap(world => Object.values(world.players || {})))];
+        for (const player of players) {
+            clearTimeout(player.clientReloadPending?.timer);
+            clearTimeout(player.clientReloadPending?.freezeTimer);
+            player.clientReloadPending = {localShutdown: true};
+            player.invincible = true;
+            clearInterval(player.flowInterval);
+        }
+        for (const world of worlds) for (const player of Object.values(world.players || {})) world.combat?.disable(player);
+        const deadline = Date.now() + 10000;
+        while (players.some(player => player.pendingMessages > 0)) {
+            if (Date.now() >= deadline) throw new Error('Local gameplay requests did not finish before shutdown');
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        for (const player of players) {
+            await player.syncExperience?.();
+            const equipment = player.getNFTWeapon?.();
+            await equipment?.syncExperience?.();
+            if (player.accumulatedExperience > 0) throw new Error('Local player experience is not saved yet');
+            if (equipment?.accumulatedExperience > 0) throw new Error('Local equipment experience is not saved yet');
+        }
+        await dao.flushPendingWrites();
+    })();
+};
+
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
     let protocol = parsedUrl.protocol;
@@ -186,6 +215,7 @@ WS.socketIOServer = Server.extend({
         process.once('beforeExit', closeFieldGuide);
         // Configured platform clients own shutdown and await beforeShutdown above.
         if (!platformClient.platformDefined) for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => {
+            if (platformClient.localPlaytest) await WS.flushLocalGameplay(this);
             await this.activity.close();
             await closeFieldGuide();
             process.kill(process.pid, signal);
@@ -207,6 +237,9 @@ WS.socketIOServer = Server.extend({
             updates.clients.ready = () => !self.clientReloads?.rebooting && Object.keys(self.worldsMap || {}).length > 0 &&
                 Object.values(self.worldsMap).every(world => world.map?.isLoaded);
             updates.clients.attach(app, () => updates.manifest.revision);
+        }
+        if (require('./localplaytest').isLocalPlaytest()) {
+            app.get('/', (req, res, next) => req.query.sessionId ? next() : res.redirect(process.env.LOOPERLANDS_TOOLBOX_URL || '/local/'));
         }
         app.use("/", express.static(__dirname + "/../../client-build"));
 
@@ -282,7 +315,7 @@ WS.socketIOServer = Server.extend({
             return responseJson;
         }
 
-        app.post('/session', async (req, res) => {
+        const createSession = async (req, res) => {
             if (this.clientReloads?.rebooting) return res.status(503).json({status: false, error: 'Server update is in progress'});
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
@@ -308,6 +341,8 @@ WS.socketIOServer = Server.extend({
                 return;
             }
             ;
+
+            await platformClient.prepareSession?.(body);
 
             let nftId = body.nftId.replace("0x", "NFT_");
             let bot = Types.isBot(Types.getKindFromString(nftId));
@@ -344,7 +379,8 @@ WS.socketIOServer = Server.extend({
             let responseJson = await newSession(body);
 
             res.status(200).send(responseJson);
-        });
+        };
+        app.post('/session', createSession);
 
         app.post('/session/:sessionId/teleport', async (req, res) => {
             const sessionId = req.params.sessionId;
@@ -1593,6 +1629,11 @@ WS.socketIOServer = Server.extend({
         app.post("/music", async (req, res) => {
             const music = await platformClient.loadMusic(req.body.map);
             res.status(200).send(music);
+        });
+
+        require('./localplaytestlauncher').installLocalLauncher(app, {
+            worlds: () => self.worldsMap || {}, platform: platformClient, createSession,
+            appUrl: APP_URL, apiKey: process.env.LOOPWORMS_API_KEY
         });
 
         self.io.on('connection', function (connection) {

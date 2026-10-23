@@ -1,188 +1,89 @@
 # Run LooperLands Natively
 
-This documents the local native workflow that mirrors `docker-compose-local.yml` and the map builder container, without running the game server itself in Docker.
-
-## What Docker Does
-
-`docker-compose-local.yml` starts two services:
-
-- `jsonserver`: `codfish/json-server:0.17.3`, serving `mock/db.js`, `mock/middleware.js`, and `mock/routes.json` on port `3000`.
-- `gameserver`: builds `Dockerfile`, runs `bin/build.sh`, then starts `node server/js/main.js` on port `8000`.
-
-`Dockerfile.map` exports maps by running:
-
-```bash
-python3 ./export.py server <map-file>
-python3 ./export.py client <map-file>
-```
-
-from `tools/maps`.
+This runs the same ownership-permissive local mode as `docker-compose-local.yml`,
+without Docker or a Platform account.
 
 ## Prerequisites
 
-- Node.js and npm.
-- Python 3 with `lxml`.
-- Existing `node_modules`, or run `npm ci` first.
-
-The Docker image uses Node `v20.9.0`. The app has also been run successfully with the locally installed Node version, but Node `20.9.0` is the closest match to Docker.
-
-On this machine, `lxml` is available through Miniconda Python:
-
-```bash
-PATH=/Users/andredegroot/miniconda3/bin:$PATH python3 -c 'import lxml; print("lxml ok")'
-```
-
-## Start The Mock Backend
-
-From the repo root:
-
-```bash
-npx --yes json-server@0.17.3 \
-  --watch mock/db.js \
-  --middlewares mock/middleware.js \
-  --routes mock/routes.json \
-  --host 127.0.0.1 \
-  --port 3000
-```
-
-Smoke test:
-
-```bash
-curl 'http://127.0.0.1:3000/api/asset/nft/0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a/owns?wallet=0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'
-```
-
-Expected response:
-
-```text
-true
-```
+- Node.js matching `.nvmrc` and npm.
+- Python 3 with `lxml` for exporting map changes.
+- Run `npm ci` from the repository root.
 
 ## Build The Client
 
-The game server serves `client-build`, not `client`, so rebuild after map or client asset changes.
-
-From the repo root:
+The game server serves `client-build`, so rebuild after client or map changes:
 
 ```bash
-cd bin
-./build.sh
+node bin/build-client.js
 ```
 
-The script may print:
+## Start The Mapmaker Toolbox
 
-```text
-find: -: unknown primary or operator
-```
-
-This is an existing warning from `bin/build.sh`; the build can still complete successfully.
-
-## Start The Game Server
-
-From the repo root:
+From the repository root:
 
 ```bash
 NODE_ENV=development \
+LOOPERLANDS_LOCAL_PLAYTEST=1 \
 LOOPWORMS_API_KEY=placeholder \
-LOOPWORMS_LOOPERLANDS_BASE_URL=http://127.0.0.1:3000 \
-LOOPERLANDS_BACKEND_BASE_URL=http://127.0.0.1:3000 \
-LOOPERLANDS_BACKEND_API_KEY=placeholder \
 APP_URL=http://127.0.0.1:8000 \
-LOOPERLANDS_PLATFORM_BASE_URL=https://platform.looperlands.io \
-LOOPERLANDS_PLATFORM_API_KEY=WeIJ2QCDSKZr9Q \
+LOOPERLANDS_BIND_ADDRESS=127.0.0.1 \
 GAMESERVER_NAME=local \
-node server/js/main.js
+node bin/local-mapmaker.js
 ```
 
-Smoke test:
+Open [the Mapmaker Toolbox](http://127.0.0.1:8010/local/). In **Playtest**, choose
+a map, avatar, checkpoint, avatar level and weapon level, then click **Start game**.
+The toolbox runs on port 8010 and supervises the game server on port 8000. Keep
+both ports available. **Build tools** exports maps and rebuilds the client while
+the toolbox stays open. **Troubleshoot** runs environment checks and can check
+for main branch updates, suggesting fetch/merge commands without changing files.
+**Documentation** is reserved for future guides.
 
-```bash
-curl -I http://127.0.0.1:8000/
-```
+The explicit local flag works only with `NODE_ENV=development`. NFT and collection
+ownership checks pass for any wallet. Avatar artwork must exist in the client;
+quest, item and level requirements still apply. The session endpoint still
+requires the matching `LOOPWORMS_API_KEY`.
 
-Expected response includes:
-
-```text
-HTTP/1.1 200 OK
-```
-
-If the sandbox blocks binding to `0.0.0.0:8000` with `EPERM`, run the same command outside the sandbox or from a normal terminal.
+All player data and progress use the local provider. Platform credentials and the
+legacy mock server are not needed. ENS lookups are skipped. Data is saved under
+`data/local-playtest/`; set `LOOPERLANDS_LOCAL_DATA_DIR` to use another directory.
+Map flows, shop stock, events and companions from the live Platform are not loaded.
 
 ## Create A Local Session
 
-Create a session:
+The command-line session launcher remains available. In another terminal, from
+the repository root (requires `jq` and `curl`):
 
 ```bash
-curl -X POST \
-  -H 'Content-Type: application/json' \
-  -H 'x-api-key: placeholder' \
-  -d '{"walletId":"0x1e8ab2cc09be581530bb9f3ac94353f6f7412239","nftId":"0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a","title":"Title","xp":10000,"mapId":"duckville","checkpointId":"1","f2p":false,"trait":"rogue"}' \
-  http://127.0.0.1:8000/session
+./local-session.sh \
+  0x1e8ab2cc09be581530bb9f3ac94353f6f7412239 \
+  0xb69e3e44f58d5399faad29b94108a88dbed79e6a14c676fb202e817ac5697560 \
+  m88n2 1 1000000
 ```
 
-Then open:
+The five arguments are wallet, avatar NFT, map, checkpoint and starting XP.
+Open the new URL printed by the launcher. If the server uses a custom
+`LOOPWORMS_API_KEY`, set the same value when running `local-session.sh`.
 
-```text
-http://127.0.0.1:8000/?sessionId=<returned-session-id>
-```
+Local progress survives server restarts. If an old session URL is rejected after
+a restart, create a fresh session in the toolbox or run the session launcher
+again. Stop the toolbox and its game server with Ctrl+C.
 
-## Export Map Changes Natively
+## Export Map Changes
 
-Map source files live in:
-
-```text
-tools/maps/tmx/
-```
-
-For Duckville, edit:
-
-```text
-tools/maps/tmx/duckville.tmx
-```
-
-Then export both server and client map artifacts:
+Edit the TMX file in `tools/maps/tmx/`, then use **Build tools → Build map and
+restart game** in the toolbox. It exports both maps, rebuilds the client and
+starts the game again. The following terminal workflow also remains available;
+stop the toolbox first. From the repository root, for `m88n2`:
 
 ```bash
 cd tools/maps
-PATH=/Users/andredegroot/miniconda3/bin:$PATH python3 ./export.py server duckville.tmx
-PATH=/Users/andredegroot/miniconda3/bin:$PATH python3 ./export.py client duckville.tmx
+python3 ./export.py server m88n2.tmx
+python3 ./export.py client m88n2.tmx
+cd ../..
+node bin/build-client.js
 ```
 
-For another map, replace `duckville.tmx` with the TMX filename in `tools/maps/tmx/`.
-
-The exporter writes:
-
-```text
-server/maps/world_server_<map>.json
-client/maps/world_client_<map>.json
-client/maps/world_client_<map>.js
-```
-
-Then rebuild the served client:
-
-```bash
-cd ../../bin
-./build.sh
-```
-
-Finally, restart `node server/js/main.js`. Server map data is loaded into memory at startup, so server-side map changes do not take effect until restart. Browser/client map changes require the rebuilt `client-build` files and a hard refresh or a new session.
-
-## Full Map Update Loop
-
-From the repo root, for Duckville:
-
-```bash
-cd tools/maps
-PATH=/Users/andredegroot/miniconda3/bin:$PATH python3 ./export.py server duckville.tmx
-PATH=/Users/andredegroot/miniconda3/bin:$PATH python3 ./export.py client duckville.tmx
-cd ../../bin
-./build.sh
-```
-
-Then restart the game server and create/open a new session.
-
-## Useful URLs
-
-- Game: `http://127.0.0.1:8000/`
-- Mock backend: `http://127.0.0.1:3000/`
-- Duckville client map: `http://127.0.0.1:8000/maps/world_client_duckville.json`
-
+This updates the exported server and client maps. Restart the toolbox to
+reload server-side map data, then create a fresh session. Replace `m88n2` with
+the map being edited.

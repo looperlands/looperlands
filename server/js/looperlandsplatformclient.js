@@ -1,8 +1,12 @@
 const axios = require('axios');
+const {isLocalPlaytest} = require('./localplaytest');
 
 class LooperLandsPlatformClient {
     static playerClasses;
     constructor(apiKey, baseUrl) {
+        if (isLocalPlaytest()) {
+            return require('./localplatformclient').getLocalPlatformClient();
+        }
         this.platformDefined = apiKey && baseUrl;
         if (!this.platformDefined) {
             console.warn("Platform API KEY and baseUrl not defined");

@@ -490,6 +490,9 @@ const getBots = async function (walletId) {
 }
 
 const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, dynamicNFTData, retry) {
+  if (platformClient.localPlaytest) {
+    return {error: 'Companions are not configured for local playtests'};
+  }
   const options = { headers: { 'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY } }
   const url = `${LOOPERLANDS_BACKEND_BASE_URL}/newBot`;
   try {
@@ -592,6 +595,7 @@ const transferResourceFromTo = async function (from, to, amount = 1, resource = 
 }
 
 const completePartnerTask = async function (walletId, taskId) {
+  if (platformClient.localPlaytest) return platformClient.completePartnerTask(walletId, taskId);
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasks.php?walletID=${walletId}&task=${taskId}`
@@ -605,6 +609,7 @@ const completePartnerTask = async function (walletId, taskId) {
 }
 
 const getPartnerTask = async function (walletId, taskId) {
+  if (platformClient.localPlaytest) return platformClient.getPartnerTask(walletId, taskId);
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasksRpt.php?walletID=${walletId}&task=${taskId}`

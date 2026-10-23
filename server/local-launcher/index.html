@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Mapmaker Toolbox · LooperLands</title>
+  <link rel="stylesheet" href="./launcher.css">
+  <script src="./launcher.js" defer></script>
+</head>
+<body>
+  <main class="launcher">
+    <header class="page-header">
+      <div>
+        <a class="wordmark" href="/local/">LooperLands</a>
+        <h1>Mapmaker Toolbox</h1>
+        <p>Build your map. Set up a player. Jump in.</p>
+      </div>
+      <span class="local-label">Local playtest</span>
+    </header>
+
+    <nav class="tool-tabs" role="tablist" aria-label="Mapmaker tools">
+      <button id="tab-playtest" type="button" role="tab" aria-selected="true" aria-controls="playtest-pane" data-pane="playtest">Playtest</button>
+      <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
+      <button id="tab-troubleshoot" type="button" role="tab" aria-selected="false" aria-controls="troubleshoot-pane" data-pane="troubleshoot" tabindex="-1">Troubleshoot</button>
+      <button id="tab-documentation" type="button" role="tab" aria-selected="false" aria-controls="documentation-pane" data-pane="documentation" tabindex="-1">Documentation</button>
+    </nav>
+    <section id="playtest-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-playtest">
+    <p id="notice" class="notice" role="alert" tabindex="-1" hidden></p>
+    <div class="initial-status">
+      <p id="catalog-status" role="status">Loading maps and avatars…</p>
+      <button id="retry" type="button" class="secondary" hidden>Try again</button>
+    </div>
+
+    <form id="launcher-form" aria-busy="true">
+      <fieldset id="launcher-fields" disabled>
+        <div class="presets" aria-label="Saved setups">
+          <div class="preset-group">
+            <label for="preset-select">Saved setup</label>
+            <div class="inline-controls">
+              <select id="preset-select"><option value="">Choose a setup</option></select>
+              <button id="preset-load" type="button" class="secondary" disabled>Load</button>
+              <button id="preset-delete" type="button" class="text-button" disabled>Delete</button>
+            </div>
+          </div>
+          <div class="preset-group">
+            <label for="preset-name">Setup name</label>
+            <div class="inline-controls">
+              <input id="preset-name" type="text" maxlength="60" placeholder="Name this setup" autocomplete="off">
+              <button id="preset-save" type="button" class="secondary" disabled>Save</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="form-section" aria-labelledby="map-heading">
+          <div class="section-heading"><h2 id="map-heading">Map</h2><p>Where to start.</p></div>
+          <div class="section-fields two-columns">
+            <div class="field">
+              <label for="map">Map</label>
+              <select id="map" name="mapId" required></select>
+            </div>
+            <div class="field">
+              <label for="checkpoint">Checkpoint</label>
+              <select id="checkpoint" name="checkpointId" required aria-describedby="checkpoint-hint"></select>
+              <span id="checkpoint-hint" class="field-hint"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="player-heading">
+          <div class="section-heading"><h2 id="player-heading">Player</h2><p>Your avatar and level.</p></div>
+          <div class="section-fields">
+            <div class="asset-row">
+              <div class="field asset-picker" id="avatar-picker">
+                <label for="avatar-search">Avatar</label>
+                <div class="search-control">
+                  <input id="avatar-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="avatar-results" aria-describedby="avatar-hint" autocomplete="off" placeholder="Search avatars by name or NFT ID">
+                  <button type="button" class="browse-button">Browse</button>
+                </div>
+                <div id="avatar-results" class="asset-results" role="listbox" aria-label="Avatars" hidden></div>
+                <span id="avatar-hint" class="field-hint">Choose an avatar included in the game.</span>
+              </div>
+              <div id="avatar-preview" class="sprite-stage" role="img" aria-label="No avatar selected"><span class="sprite"></span></div>
+            </div>
+            <div class="field">
+              <label for="avatar-nft">Avatar NFT ID</label>
+              <input id="avatar-nft" name="nftId" class="address" type="text" required spellcheck="false" autocomplete="off" placeholder="0x…" aria-describedby="nft-hint">
+              <span id="nft-hint" class="field-hint">You can also paste a bundled avatar’s NFT ID.</span>
+            </div>
+            <div class="two-columns">
+              <div class="field">
+                <label for="avatar-level">Avatar level</label>
+                <input id="avatar-level" name="level" type="number" min="1" step="1" inputmode="numeric" required>
+              </div>
+              <div class="field">
+                <label for="display-name">Display name</label>
+                <input id="display-name" name="title" type="text" maxlength="24" autocomplete="off" placeholder="Local player">
+              </div>
+            </div>
+            <div class="field">
+              <label for="wallet">Wallet address</label>
+              <input id="wallet" name="walletId" class="address" type="text" required spellcheck="false" autocomplete="off" placeholder="0x…" aria-describedby="wallet-hint">
+              <span id="wallet-hint" class="field-hint">Any wallet can play locally. No connection or signature needed.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="equipment-heading">
+          <div class="section-heading"><h2 id="equipment-heading">Equipment</h2><p>Set up your loadout.</p></div>
+          <div class="section-fields">
+            <div class="asset-row">
+              <div class="field asset-picker" id="weapon-picker">
+                <label for="weapon-search">Weapon</label>
+                <div class="search-control">
+                  <input id="weapon-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="weapon-results" aria-describedby="weapon-hint" autocomplete="off" placeholder="Search weapons by name or NFT ID">
+                  <button type="button" class="browse-button">Browse</button>
+                </div>
+                <div id="weapon-results" class="asset-results" role="listbox" aria-label="Weapons" hidden></div>
+                <span id="weapon-hint" class="field-hint">Search the bundled weapons.</span>
+              </div>
+              <div id="weapon-preview" class="sprite-stage" role="img" aria-label="No weapon selected"><span class="sprite"></span></div>
+            </div>
+            <div class="two-columns">
+              <div class="field">
+                <label for="weapon-level">Weapon level</label>
+                <input id="weapon-level" name="weaponLevel" type="number" min="0" step="1" inputmode="numeric" aria-describedby="weapon-level-hint" required disabled>
+                <span id="weapon-level-hint" class="field-hint">Only NFT weapons have a configurable level.</span>
+              </div>
+              <div class="field">
+                <label for="trait">Player class</label>
+                <select id="trait" name="trait" required></select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section advanced-section" aria-label="Advanced spawn settings">
+          <div class="section-heading"><h2>Spawn</h2><p>Optional position override.</p></div>
+          <details id="advanced-spawn" class="section-fields">
+            <summary>Set a custom spawn position</summary>
+            <p class="field-hint">Leave both empty to use the checkpoint. Coordinates use map tiles.</p>
+            <div class="two-columns">
+              <div class="field"><label for="spawn-x">X coordinate</label><input id="spawn-x" name="x" type="number" min="0" step="1" inputmode="numeric"></div>
+              <div class="field"><label for="spawn-y">Y coordinate</label><input id="spawn-y" name="y" type="number" min="0" step="1" inputmode="numeric"></div>
+            </div>
+            <button id="clear-spawn" type="button" class="text-button">Use checkpoint instead</button>
+          </details>
+        </section>
+
+        <footer class="form-footer">
+          <div><p id="form-status" role="status" aria-live="polite">Your progress stays on this computer.</p><p class="footer-hint">Your last settings are remembered automatically.</p></div>
+          <button id="start-game" class="primary" type="submit">Start game</button>
+        </footer>
+      </fieldset>
+    </form>
+    </section>
+
+    <section id="build-pane" class="tool-pane build-pane" role="tabpanel" aria-labelledby="tab-build" hidden>
+      <header class="pane-heading"><h2>Build a map</h2><p>Export your map, rebuild the client, and restart the local game.</p></header>
+      <p id="build-error" class="notice" role="alert" tabindex="-1" hidden></p>
+      <form id="build-form">
+        <div class="field"><label for="build-map">Map to build</label><select id="build-map" required disabled></select></div>
+        <button id="build-start" class="primary" type="submit" disabled>Build map and restart game</button>
+      </form>
+      <p class="field-hint build-impact">Active local sessions end when the game restarts. You can start a new playtest afterward.</p>
+      <section class="build-progress" aria-labelledby="build-status">
+        <h3 id="build-status" role="status" aria-live="polite">Ready to build</h3>
+        <p id="build-step" class="field-hint">Choose the map you edited to rebuild it.</p>
+        <ol id="build-steps" class="build-steps" aria-label="Build steps" hidden>
+          <li>Export server map</li><li>Export client map</li><li>Build game client</li><li>Restart game</li>
+        </ol>
+        <label class="log-label" for="build-log">Build output</label>
+        <pre id="build-log" class="build-log" tabindex="0" aria-label="Build output">Build output will appear here.</pre>
+      </section>
+    </section>
+
+    <section id="troubleshoot-pane" class="tool-pane troubleshoot-pane" role="tabpanel" aria-labelledby="tab-troubleshoot" hidden>
+      <header class="pane-heading checks-heading"><div><h2>Environment checks</h2><p>Check what the toolbox needs to build and run your maps.</p></div><button id="run-checks" type="button" class="secondary">Run checks</button></header>
+      <p id="checks-error" class="notice" role="alert" tabindex="-1" hidden></p>
+      <p id="checks-status" class="checks-status" role="status" aria-live="polite">Run the checks to see what is ready and what needs attention.</p>
+      <ul id="checks-results" class="checks-results" aria-label="Environment check results"></ul>
+      <section class="updates-panel" aria-labelledby="updates-heading">
+        <div class="checks-heading"><div><h3 id="updates-heading">Main branch updates</h3><p>Check for new changes before your next map edit.</p></div><button id="check-updates" type="button" class="secondary">Check main updates</button></div>
+        <p id="updates-status" class="updates-status" role="status" aria-live="polite">Check when you are ready. Your files will stay as they are.</p>
+        <div id="updates-result" hidden>
+          <p id="updates-detail" class="check-detail"></p>
+          <p id="updates-revisions" class="revision-detail"></p>
+          <div id="updates-command-section" hidden>
+            <div class="command-heading"><label for="updates-commands">Suggested commands</label><button id="copy-commands" type="button" class="text-button">Copy commands</button></div>
+            <pre id="updates-commands" class="build-log command-log" tabindex="0" aria-label="Suggested Git commands"></pre>
+            <p id="copy-status" class="field-hint" role="status"></p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section id="documentation-pane" class="tool-pane documentation-pane" role="tabpanel" aria-labelledby="tab-documentation" hidden>
+      <h2>Documentation</h2>
+      <p>Mapmaker documentation will be added here.</p>
+    </section>
+    <noscript><p class="notice">Enable JavaScript to choose a map and start a local game.</p></noscript>
+  </main>
+</body>
+</html>
