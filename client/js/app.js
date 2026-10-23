@@ -94,6 +94,11 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                     }
                     this.$playDiv.unbind('click');
                     var watchCanStart = setInterval(function () {
+                        if (self.game?.map?.loadError) {
+                            clearInterval(watchCanStart);
+                            $play.removeClass('loading');
+                            return;
+                        }
                         console.debug("waiting...");
                         if (self.canStartGame()) {
                             setTimeout(function () {
