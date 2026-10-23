@@ -15,7 +15,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				const revision = typeof document !== 'undefined' && document.querySelector?.('meta[name="looperlands-client-revision"]')?.content;
 				if (revision) {
 					this.baseImageURL = new URL('/_client/' + revision + '/img/', window.location.href).href;
-				} else if (window.location.href.indexOf("127.0.0.1") > -1) {
+				} else if (['127.0.0.1', 'localhost', '[::1]'].includes(new URL(window.location.href).hostname)) {
 					this.baseImageURL = 'img/';
 				}
 				else {
@@ -107,12 +107,28 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			let self = this;
 
 			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
+				let finished = false;
+				const fail = function () {
+					if (finished) return;
+					finished = true;
+					clearTimeout(timer);
+					self.image.onload = self.image.onerror = null;
+					self.loadError = new Error('Sprite artwork could not be loaded: ' + self.filepath);
+					console.error('[sprite]', self.loadError.message);
+				};
+				// Startup queues many sprite requests; allow time for slower connections.
+				const timer = setTimeout(fail, 120000);
 				this.image = new Image();
 				this.image.crossOrigin = "Anonymous";
 				this.image.onload = function () {
+					if (finished) return;
+					finished = true;
+					clearTimeout(timer);
+					self.image.onload = self.image.onerror = null;
 					self.sendToWorker();
 					self.isLoaded = true;
 				};
+				this.image.onerror = fail;
 				this.image.src = this.filepath;
 			} else {
 				this.isLoaded = true;
@@ -123,7 +139,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 		sendToWorker: function () {
 			let self = this;
 			let src;
-			if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
+			if (!this.dynamicNFT) {
 				src = new URL(this.filepath, window.location.href).href;
 			} else {
 				src = this.filepath;

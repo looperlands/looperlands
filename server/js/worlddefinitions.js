@@ -15,6 +15,16 @@ class WorldDefinitions {
         for (const listener of this.listeners) listener();
     }
     subscribe(listener) {this.listeners.add(listener); return () => this.listeners.delete(listener);}
+    replaceQuest(id, definition) {
+        const index = this.quests.findIndex(quest => quest.id === id);
+        if (index === -1 || definition?.id !== id) throw new Error('Only an existing quest with the same ID can be replaced');
+        // Preserve the exported array reference used by the quest engine and
+        // leave source module objects untouched for later clean registrations.
+        this.quests[index] = definition;
+        for (const [map, entries] of this.maps) this.maps.set(map, entries.map(entry => ({...entry,
+            ...(entry.quests ? {quests: entry.quests.map(quest => quest.id === id ? definition : quest)} : {})})));
+        for (const listener of this.listeners) listener();
+    }
     dialogues(map) {return (this.maps.get(map) || []).flatMap(entry => entry.dialogues || []);}
     behavior(map) {
         const sources = (this.maps.get(map) || []).map(entry => entry.npcBehavior).filter(Boolean);

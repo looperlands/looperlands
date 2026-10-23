@@ -44,6 +44,20 @@ test('startup stops polling failed maps without opening a server connection', ()
     expect(game.spritesLoaded).not.toHaveBeenCalled();
 });
 
+test.each([false, true])('a failed sprite stops startup and exposes recovery controls (update recovery=%s)', recovering => {
+    const game = gameFixture(recovering);
+    game.map = {isLoaded: true};
+    game.sprites = {missing: {id: 'missing-sprite', filepath: 'img/1/missing-sprite.png', loadError: new Error('404')}};
+    game.run(); jest.advanceTimersByTime(1000);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(game.connect).not.toHaveBeenCalled();
+    if (recovering) {
+        expect(game.app.clientUpdates.failRecovery).toHaveBeenCalledTimes(1);
+    } else {
+        expect(game.app.showDeath).toHaveBeenCalledWith(expect.stringContaining('img/1/missing-sprite.png'));
+    }
+});
+
 test('the play-button poll also stops and removes its spinner after a map failure', () => {
     let methods;
     vm.runInNewContext(fs.readFileSync(require.resolve('./app'), 'utf8'), {

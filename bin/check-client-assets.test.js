@@ -73,3 +73,37 @@ test('production pruning retains the on-demand arcade module', () => {
     expect(fs.existsSync(path.join(fixture, 'js/arcade.js'))).toBe(true);
     expect(check().status).toBe(0);
 });
+
+function startupSprites(names, metadata) {
+    const modules = metadata.map(data => `define(${JSON.stringify('text!../sprites/' + data.id + '.json')}, function () {
+        return ${JSON.stringify(JSON.stringify(data))};
+    });`).join('\n');
+    write('js/game.js', modules + `\ndefine('game', function () {
+        this.spriteNames = ${JSON.stringify(names)};
+        throw new Error('Asset validation must not execute the bundle');
+    });`);
+}
+
+test('rejects missing startup sprite images from embedded custom metadata', () => {
+    startupSprites(['hand', 'custom-garden-creature'], [{id: 'hand'}, {id: 'custom-garden-creature'}]);
+    write('img/1/hand.png');
+    let result = check();
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('img/1/custom-garden-creature.png');
+    write('img/1/custom-garden-creature.png');
+    result = check();
+    expect(result.status).toBe(0);
+});
+
+test('ignores unused sprite metadata and scales the renderer does not load', () => {
+    startupSprites(['hand'], [{id: 'hand'}, {id: 'arrow'}, {id: 'impact'}]);
+    write('img/1/hand.png');
+    expect(check().status).toBe(0);
+});
+
+test('rejects startup sprites absent from the embedded metadata', () => {
+    startupSprites(['custom-garden-creature'], [{id: 'hand'}]);
+    const result = check();
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('missing startup sprite metadata: custom-garden-creature');
+});

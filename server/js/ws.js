@@ -1048,6 +1048,9 @@ WS.socketIOServer = Server.extend({
             try {await player.playerEventBroker.npcTalked(npcId, '', npcKey);}
             catch (error) {return res.status(409).json({error: error.message});}
 
+            const builderQuest = quests.handleMapmakerNPCClick(cache, sessionId, parseInt(npcId));
+            if (builderQuest) return res.status(202).json(builderQuest);
+
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {
                 let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId, npcKey)
                 if (node) {

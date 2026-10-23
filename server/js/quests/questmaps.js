@@ -15,6 +15,6 @@ function mapResolver(worlds, registry) {
             maps.add(map); declared.set(quest.id, maps);
         }
     }
-    return quest => [...(byNpc.get(String(quest.npc)) || declared.get(quest.id) || [])].sort();
+    return quest => quest.mapId ? [quest.mapId] : [...(byNpc.get(String(quest.npc)) || declared.get(quest.id) || [])].sort();
 }
 module.exports = {mapResolver};

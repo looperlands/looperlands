@@ -27,14 +27,29 @@ function indexDefinitions() {
 indexDefinitions(); definitions.subscribe(indexDefinitions);
 
 exports.handleNPCClick = function (cache, sessionId, npcId) {
+    return handleNPCQuests(quests, cache, sessionId, npcId);
+}
+
+// Local authored jobs remain reachable when their NPC also has a story tree.
+// Once there is no builder interaction, the normal dialogue route takes over.
+exports.handleMapmakerNPCClick = function (cache, sessionId, npcId) {
+    return handleNPCQuests(quests.filter(quest => quest.localBuilder), cache, sessionId, npcId);
+}
+
+function onMap(quest, sessionData) {
+    return !quest.mapId || quest.mapId === sessionData?.mapId;
+}
+
+function handleNPCQuests(source, cache, sessionId, npcId) {
     const sessionData = cache.get(sessionId);
-    const npcQuests = questsByNPC[npcId]?.filter(quest => !quest.dialogueOnly);
+    const available = source.filter(quest => !quest.dialogueOnly && onMap(quest, sessionData));
+    const npcQuests = available.filter(quest => quest.npc === npcId);
     const broker = PlayerEventBroker.playerEventBrokers[sessionId];
 
     let response = handleHandoutQuests(npcQuests, sessionData, cache, sessionId) ||
         handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId) ||
-        handleNpcTargetQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId) ||
-        handleReturnToNpcQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId, cache, sessionId, broker);
+        handleNpcTargetQuests(available, sessionData, npcId) ||
+        handleReturnToNpcQuests(available, sessionData, npcId, cache, sessionId, broker);
 
     cache.set(sessionId, sessionData);
 
@@ -55,6 +70,7 @@ exports.completeQuest = function (cache, sessionId, questID) {
     }
 
     let sessionData = cache.get(sessionId);
+    if (!questsByID[questID] || !onMap(questsByID[questID], sessionData)) return false;
     if (questsByID[questID]?.objectives && !objectives.ready(sessionData.gameData, questsByID[questID])) return false;
     completeQuest(questID, sessionData);
     cache.set(sessionId, sessionData);
@@ -86,7 +102,7 @@ function handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId
                 quest.amount = progress.length; quest.done = progress.filter(o => o.done).length; quest.remaining = quest.amount - quest.done;
             }
             const isCompleted = quest.objectives ? objectives.ready(sessionData.gameData, quest) : eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
-            if (isCompleted && !quest.returnToNpc) {
+            if (isCompleted && (!quest.returnToNpc || quest.returnToNpc === quest.npc)) {
                 completeQuest(questID, sessionData);
                 broker.player.handleCompletedQuests([quest]);
                 cache.set(sessionId, sessionData);
@@ -149,7 +165,7 @@ function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, b
 function handoutQuest(questID, sessionData) {
     let newQuest = questsByID[questID];
 
-    if (_.isEmpty(newQuest)) {
+    if (_.isEmpty(newQuest) || !onMap(newQuest, sessionData)) {
         return "";
     }
 
@@ -207,6 +223,7 @@ function completeQuest(questID, sessionData) {
     }
 
     const definition = questsByID[questID];
+    if (!onMap(definition, sessionData)) return;
     if (definition.objectives && !objectives.ready(sessionData.gameData, definition)) return;
     eventConsumer.completeQuest(sessionData, questID, definition);
 }
@@ -252,6 +269,7 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
+            if (!onMap(quest, sessionData)) continue;
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData?.quests)) {
                 continue;
             }
@@ -278,6 +296,7 @@ exports.npcHasOpenQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
+            if (!onMap(quest, sessionData)) continue;
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
                 continue;
             }
@@ -309,6 +328,7 @@ exports.npcHasOpenQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
+            if (!onMap(quest, sessionData)) continue;
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
                 continue;
             }

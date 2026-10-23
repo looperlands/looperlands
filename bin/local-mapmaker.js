@@ -248,7 +248,23 @@ function createToolboxApp(toolbox) {
         res.setHeader('Cache-Control', 'no-store');
         next();
     });
-    app.use(express.json({limit: '64kb'}));
+    app.use(express.json({limit: '256kb'}));
+    app.get('/local/api/quests', (req, res) => {
+        try {res.json(require('../server/js/localquestbuilder').readQuests(toolbox.root, req.query.mapId));}
+        catch (error) {res.status(error.status || 500).json({error: error.message});}
+    });
+    app.post('/local/api/quests', (req, res) => {
+        try {
+            if (toolbox.closed) return res.status(503).json({error: 'The toolbox is shutting down.'});
+            if (toolbox.job?.status === 'running') return res.status(409).json({error: 'Wait for the map build to finish before saving quests.'});
+            res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
+        } catch (error) {res.status(error.status || 500).json({error: error.message});}
+    });
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder']);
+    app.get('/local/guides/:slug.md', (req, res) => {
+        if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
+        res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));
+    });
     app.get('/local/api/build', (req, res) => res.json({job: toolbox.job}));
     app.get('/local/api/checks', async (req, res) => {
         try {res.json(await toolbox.checks());}
@@ -278,7 +294,8 @@ function createToolboxApp(toolbox) {
     };
     app.get('/local/api/catalog', proxy);
     app.post('/local/api/session', proxy);
-    for (const prefix of ['/img', '/fonts']) app.use(prefix, async (req, res) => {
+    app.use('/fonts', express.static(path.join(toolbox.root, 'client/fonts')));
+    for (const prefix of ['/img']) app.use(prefix, async (req, res) => {
         try {
             const response = await toolbox.fetch(new URL(req.originalUrl, toolbox.gameUrl), {signal: AbortSignal.timeout(10000)});
             res.status(response.status);
@@ -288,7 +305,8 @@ function createToolboxApp(toolbox) {
     });
     app.use('/local', express.static(path.join(toolbox.root, 'server/local-launcher')));
     app.get('/', (req, res) => res.redirect('/local/'));
-    app.use((error, req, res, next) => res.status(error.status || 500).json({error: 'The toolbox could not read the request.'}));
+    app.use((error, req, res, next) => res.status(error.status || 500).json({error: error.type === 'entity.too.large' ?
+        'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.' : 'The toolbox could not read the request.'}));
     return app;
 }
 

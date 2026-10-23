@@ -67,7 +67,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             const questKey = saved.questKey || saved.id;
             const definition = quests.questsByID[questKey];
             const quest = definition && {...definition, ...(saved.completed === true ? {completed: true} : {})};
-            if(!quest) {
+            if(!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId)) {
                 continue;
             }
             if(quest.eventType !== event.eventType) {
@@ -90,7 +90,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         const changedQuests = [];
         for (const saved of [...event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]]) {
             const key = saved.questKey || saved.id, quest = quests.questsByID[key];
-            if (!quest) continue;
+            if (!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId)) continue;
             const checker = this.completionCheckers[event.eventType];
             const done = quest.objectives ? await objectives.consume(quest, event) :
                 quest.eventType === event.eventType && checker?.({...quest}, event.playerCache, event);
@@ -105,6 +105,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     completeQuest(playerCache, questKey, quest) {
+        if (quest.mapId && quest.mapId !== playerCache.mapId) return;
         if(quests.hasCompletedQuest(questKey, playerCache)) {
             return;
         }

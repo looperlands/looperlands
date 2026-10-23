@@ -515,26 +515,40 @@
         }
     });
     const tabs = [...document.querySelectorAll('.tool-tabs [role=tab]')];
+    let activePane;
     function openPane(tab) {
         for (const item of tabs) {
             const selected = item === tab;
             item.setAttribute('aria-selected', String(selected)); item.tabIndex = selected ? 0 : -1;
             byId(item.getAttribute('aria-controls')).hidden = !selected;
         }
+        if (activePane !== tab.dataset.pane) window.scrollTo(0, 0);
+        activePane = tab.dataset.pane;
         if (tab.dataset.pane === 'build' && !buildLoaded) loadBuild();
+        document.dispatchEvent(new CustomEvent('toolbox:pane', {detail: tab.dataset.pane}));
     }
     tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => openPane(tab));
+        tab.addEventListener('click', () => {location.hash = tab.dataset.pane;});
         tab.addEventListener('keydown', event => {
             let next;
-            if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-            else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
+            else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + tabs.length) % tabs.length;
             else if (event.key === 'Home') next = 0;
             else if (event.key === 'End') next = tabs.length - 1;
             else return;
-            event.preventDefault(); tabs[next].focus(); openPane(tabs[next]);
+            event.preventDefault(); tabs[next].focus(); location.hash = tabs[next].dataset.pane;
         });
     });
+    function routePane() {
+        const pane = location.hash.slice(1).split('/')[0] || 'playtest';
+        openPane(tabs.find(tab => tab.dataset.pane === pane) || tabs[0]);
+    }
+    window.addEventListener('hashchange', routePane);
+    const sidebarLayout = window.matchMedia('(min-width: 821px)');
+    function tabOrientation() {document.querySelector('.tool-tabs').setAttribute('aria-orientation', sidebarLayout.matches ? 'vertical' : 'horizontal');}
+    sidebarLayout.addEventListener('change', tabOrientation);
+    tabOrientation();
+    routePane();
     boot();
     loadBuild();
 })();

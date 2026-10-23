@@ -26,6 +26,15 @@ blocked, open it through Finder's **Open** action or use the terminal flow below
 The services keep running after the launcher closes. To stop them, use Docker
 Desktop or run `docker compose -f docker-compose-local.yml stop` from this folder.
 
+## Mapmaker Toolbox documentation
+
+The toolbox's **Documentation** tab includes these guides:
+
+- [Mapmaker Toolbox](docs/mapmaker-toolbox.md): setup, tools and the local editing loop.
+- [Starting game sessions](docs/mapmaker-sessions.md): maps, avatars, equipment, saved setups and player progress.
+- [Building maps](docs/mapmaker-building.md): Tiled sources, exports, rebuilds and recovery.
+- [Quest builder](docs/mapmaker-quest-builder.md): custom local quests, objectives, rewards and playtesting.
+
 ## Terminal flow
 
 The existing terminal workflow remains available. It requires a Bash-compatible
@@ -50,7 +59,9 @@ the previous generated files. **Troubleshoot** checks the local runtime, map
 sources, writable output folders and game server, with a suggested fix for failures.
 Its **Check main updates** button checks for new changes and suggests fetch/merge
 commands when needed; it does not update your checkout. **Documentation** is
-reserved for future guides.
+available inside the toolbox. **Quest builder** saves custom per-map quests in
+`tools/quests/<mapId>.json`; use **Build tools** afterward to restart the game with
+those definitions. Custom toolbox quests are enabled only for local playtests.
 
 To get a new session run in a second terminal after the server starts:
 ```bash
