@@ -27,7 +27,10 @@ services:
       - ./:/workspace:ro
       - ./client:/opt/app/client
       - ./server/maps:/opt/app/server/maps
+      - ./server/local-launcher:/opt/app/server/local-launcher:ro
+      - ./docs:/opt/app/docs:ro
       - ./tools/maps:/opt/app/tools/maps
+      - ./tools/quests:/opt/app/tools/quests
     depends_on:
       - jsonserver
     develop:

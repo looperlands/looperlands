@@ -7117,6 +7117,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         clearInterval(wait);
                         return;
                     }
+                    const failedSprite = Object.values(self.sprites).find(sprite => sprite.loadError);
+                    if (failedSprite) {
+                        clearInterval(wait);
+                        if (self.app.clientUpdates?.recovering) self.app.clientUpdates.failRecovery();
+                        else self.app.showDeath('Sprite artwork could not be loaded: ' + failedSprite.filepath + '. Check the file and reconnect.');
+                        return;
+                    }
                     if (self.map.isLoaded && self.spritesLoaded()) {
                         self.ready = true;
                         console.debug('All sprites loaded.');

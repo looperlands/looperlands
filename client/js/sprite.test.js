@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
+beforeEach(() => jest.useFakeTimers());
+afterEach(() => {jest.clearAllTimers(); jest.useRealTimers();});
+
 function createSprite(name, href = 'https://looperlands.io/game/', nft = false) {
     let Sprite;
     const requests = [];
@@ -12,10 +15,10 @@ function createSprite(name, href = 'https://looperlands.io/game/', nft = false) 
         Class: {extend: methods => function (...args) { Object.assign(this, methods); this.init(...args); }},
         Image: function () {
             Object.defineProperty(this, 'src', {set(url) {
-                requests.push({url, crossOrigin: this.crossOrigin, onload: this.onload});
+                requests.push({url, crossOrigin: this.crossOrigin, onload: this.onload, onerror: this.onerror});
             }});
         },
-        window: {location: {href}}, URL, console: {log: jest.fn()}
+        window: {location: {href}}, URL, setTimeout, clearTimeout, console: {log: jest.fn(), error: jest.fn()}
     });
     const sprite = nft ? new Sprite(name, 1, renderWorker, 'token-hash', 'armor', '0xabc')
         : new Sprite(name, 1, renderWorker);
@@ -25,7 +28,7 @@ function createSprite(name, href = 'https://looperlands.io/game/', nft = false) 
 test('startup sprites load from the repository and send the same URL to the worker', () => {
     const {sprite, requests, renderWorker} = createSprite('villager9');
     const url = 'https://raw.githubusercontent.com/looperlands/looperlands/main/client/img/1/villager9.png';
-    expect(requests[0]).toEqual({url, crossOrigin: 'Anonymous', onload: expect.any(Function)});
+    expect(requests[0]).toEqual(expect.objectContaining({url, crossOrigin: 'Anonymous', onload: expect.any(Function)}));
     expect(sprite.isLoaded).toBe(false);
     requests[0].onload();
     expect(sprite.isLoaded).toBe(true);
@@ -41,13 +44,44 @@ test('static NFT sprites also bypass the CDN when loaded directly by the worker'
     }));
 });
 
-test('local sprites keep local image requests and absolute worker URLs', () => {
-    const {requests, renderWorker} = createSprite('villager9', 'http://127.0.0.1:8000/');
+test.each(['127.0.0.1', 'localhost', '[::1]'])('local sprites use the checkout on %s', host => {
+    const {requests, renderWorker} = createSprite('villager9', `http://${host}:8000/`);
     expect(requests[0].url).toBe('img/1/villager9.png');
     requests[0].onload();
     expect(renderWorker.postMessage).toHaveBeenCalledWith(expect.objectContaining({
-        src: 'http://127.0.0.1:8000/img/1/villager9.png'
+        src: `http://${host}:8000/img/1/villager9.png`
     }));
+});
+
+test('an image 404 becomes a load error without sending broken artwork to the renderer', () => {
+    const {sprite, requests, renderWorker} = createSprite('missing-sprite');
+    requests[0].onerror();
+    expect(sprite.loadError.message).toContain('missing-sprite.png');
+    expect(sprite.isLoaded).toBe(false);
+    expect(renderWorker.postMessage).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
+    requests[0].onload();
+    expect(renderWorker.postMessage).not.toHaveBeenCalled();
+});
+
+test('an image request that never finishes times out and ignores a late load', () => {
+    const {sprite, requests, renderWorker} = createSprite('stalled-sprite');
+    jest.advanceTimersByTime(120000);
+    expect(sprite.loadError.message).toContain('stalled-sprite.png');
+    requests[0].onload();
+    expect(sprite.isLoaded).toBe(false);
+    expect(renderWorker.postMessage).not.toHaveBeenCalled();
+});
+
+test('success clears the image timeout', () => {
+    const {sprite, requests} = createSprite('villager9');
+    jest.advanceTimersByTime(20000);
+    expect(sprite.loadError).toBeUndefined();
+    requests[0].onload();
+    jest.advanceTimersByTime(120000);
+    expect(sprite.loadError).toBeUndefined();
+    expect(sprite.isLoaded).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
 });
 
 test('dynamic NFT sprites keep their Spaces asset URL', () => {

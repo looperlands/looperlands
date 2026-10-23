@@ -31,3 +31,17 @@ test('scene lifecycle and presentation are registered and merged without quest h
     expect(registry.create({id: 'unknown'}).packet(player)).toEqual({rendererExtensions: [], musicAreas: []});
     expect(new WorldScenes([{id: 'none', scene: {}}]).packet(player).rendererExtensions).toEqual([]);
 });
+
+test('replacing an existing quest preserves indexes, map registration, source objects and listener updates', () => {
+    const registry = new WorldDefinitions(), source = {id: 'legacy', name: 'Original'}, listener = jest.fn();
+    registry.register('one', {id: 'quests', quests: [source]});
+    const exported = registry.quests;
+    registry.subscribe(listener);
+    const changed = {...source, name: 'Local edit'};
+    registry.replaceQuest(source.id, changed);
+    expect(registry.quests).toBe(exported); expect(exported[0]).toBe(changed);
+    expect(registry.maps.get('one')[0].quests[0]).toBe(changed); expect(source.name).toBe('Original');
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(() => registry.replaceQuest(source.id, {...changed, id: 'Other'})).toThrow('same ID');
+    expect(() => registry.replaceQuest('Missing', changed)).toThrow('existing quest');
+});

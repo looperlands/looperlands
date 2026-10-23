@@ -1092,13 +1092,15 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         showDeath: function (message) {
+            const local = ['127.0.0.1', 'localhost', '[::1]'].includes(window.location.hostname);
             this.hideWindows();
             this.hideChat();
             this.closeChoicesPopup();
             $('#container, #intro').prop('inert', true);
             $('#death-title').text(message ? 'Connection lost' : 'You fell');
             $('#death-description').text(message || 'Take a breath. Your adventure continues.');
-            $('#death-status').text(message ? 'Choose your character to reconnect.' : 'Return to your last checkpoint.');
+            $('#death-status').text(message ? (local ? 'Return to local setup to try again.' : 'Choose your character to reconnect.') : 'Return to your last checkpoint.');
+            $('#death a').attr('href', local ? '/' : 'https://looperlands.io').text(local ? 'Local setup' : 'Character selection');
             $('#respawn').prop('hidden', !!message).prop('disabled', false).text('Revive');
             $('#death').removeClass('reviving')
                 .attr('aria-hidden', 'false').prop('inert', false).attr('aria-busy', 'false');

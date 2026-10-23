@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const {EventEmitter} = require('events');
+global.Types = {};
 const {MapmakerToolbox, createToolboxApp, validateMap, rewriteSession, runCommand} = require('./local-mapmaker');
 
 let root, toolbox, server;
@@ -228,4 +229,36 @@ test('spawn errors settle only after close and do not start subsequent build ste
     await Promise.resolve(); expect(settled).toBe(false);
     child.emit('close', -2);
     await rejected; expect(settled).toBe(true);
+});
+
+test('quest API persists a validated map file, enforces origin and revision checks, and blocks writes during builds', async () => {
+    const Types = require('../shared/js/gametypes');
+    write('server/maps/world_server_testmap.json', JSON.stringify({...output, staticEntities: {1: 'guard', 2: 'rat'}}));
+    const base = await listen(), headers = {origin: base, 'content-type': 'application/json'};
+    const initial = await (await fetch(base + '/local/api/quests?mapId=testmap')).json();
+    expect(initial.quests).toEqual([]);
+    expect(initial.catalog.npcs).toContainEqual({id: Types.Entities.GUARD, name: 'guard'});
+    const quest = {id: 'TOOLBOX_PATROL', name: 'Gate patrol', npc: Types.Entities.GUARD, startText: 'Defeat a rat.', endText: 'Thank you.',
+        objectives: [{id: 'rat', eventType: 'KILL_MOB', target: Types.Entities.RAT}]};
+    const body = JSON.stringify({mapId: 'testmap', revision: initial.revision, quests: [quest]});
+    expect((await fetch(base + '/local/api/quests', {method: 'POST', headers: {...headers, origin: 'https://untrusted.example'}, body})).status).toBe(403);
+    expect(fs.existsSync(path.join(root, 'tools/quests/testmap.json'))).toBe(false);
+    const saved = await fetch(base + '/local/api/quests', {method: 'POST', headers, body});
+    expect(saved.status).toBe(200);
+    expect((await saved.json()).quests).toEqual([quest]);
+    expect(JSON.parse(fs.readFileSync(path.join(root, 'tools/quests/testmap.json'), 'utf8'))).toEqual({version: 1, quests: [quest]});
+    expect((await fetch(base + '/local/api/quests', {method: 'POST', headers, body})).status).toBe(409);
+    toolbox.job = {status: 'running'};
+    expect((await fetch(base + '/local/api/quests', {method: 'POST', headers, body})).status).toBe(409);
+});
+
+test('only the four mapmaker documentation sources can be opened through the toolbox', async () => {
+    write('docs/mapmaker-toolbox.md', '# Mapmaker Toolbox\n');
+    write('docs/private-note.md', 'Do not serve this file');
+    const base = await listen();
+    const response = await fetch(base + '/local/guides/mapmaker-toolbox.md');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/plain');
+    expect(await response.text()).toBe('# Mapmaker Toolbox\n');
+    expect((await fetch(base + '/local/guides/private-note.md')).status).toBe(404);
 });
