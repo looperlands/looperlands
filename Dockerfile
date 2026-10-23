@@ -15,7 +15,7 @@ ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
 ENV PATH $NODE_PATH:$PATH
 ENV NODE_ENV development
 RUN apt-get update -yq \
-    && apt-get install build-essential -yq
+    && apt-get install build-essential python3 python3-lxml git -yq
 WORKDIR /opt/app
 COPY ./package.json ./package-lock.json /opt/app/
 RUN npm ci
@@ -23,7 +23,7 @@ COPY . /opt/app
 RUN mkdir -p /opt/app/client/js
 COPY shared/js/gametypes.js /opt/app/client/js/gametypes.js
 WORKDIR /opt/app/bin
-RUN ./build.sh
+RUN sed -i 's/\r$//' ./build.sh && bash ./build.sh
 WORKDIR /opt/app
 CMD node server/js/main.js
 # CMD node --inspect=0.0.0.0:9229 server/js/main.js # comment this in to enable debugging

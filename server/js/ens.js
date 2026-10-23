@@ -1,4 +1,5 @@
 const axios = require('axios');
+const {isLocalPlaytest} = require('./localplaytest');
 const alchemy = require('alchemy-sdk');
 
 const ALCHEMY_API_KEY = process.env['ALCHEMY_API_KEY'];
@@ -42,6 +43,7 @@ getDotTaikoName = async function (walletId) {
 
 // Full resolved name, or null when no name is available. Keep wallet fallbacks separate.
 const getEnsName = async function (walletId) {
+    if (isLocalPlaytest()) return null;
     const key = walletId.toLowerCase();
     const cached = cache.get(key);
     if (cached !== undefined) return cached;

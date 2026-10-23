@@ -7,7 +7,7 @@ test('platform shutdown waits for activity persistence before exiting', async ()
     const moduleStub = {exports: {}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./looperlandsplatformclient'), 'utf8'), {
         module: moduleStub, exports: moduleStub.exports, process: processStub, console,
-        require: () => ({create: () => ({})}),
+        require: name => name === './localplaytest' ? {isLocalPlaytest: () => false} : {create: () => ({})},
     });
     const client = new moduleStub.exports.LooperLandsPlatformClient('key', 'https://example.test');
     let release;

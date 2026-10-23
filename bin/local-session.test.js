@@ -70,3 +70,13 @@ test('successful creation opens its session and sends the expected map and API k
         walletId: 'wallet', nftId: 'avatar', mapId: 'duckville', checkpointId: '1', xp: 10000
     });
 });
+
+
+test('LAN sessions use the same configured address for creation and the browser', () => {
+    const sessionId = 'b'.repeat(40);
+    const result = run(200, {sessionId}, {LOCAL_IP: '192.0.2.8'});
+    expect(result.status).toBe(0);
+    const args = JSON.parse(fs.readFileSync(path.join(fixture, 'request.json'), 'utf8'));
+    expect(args).toContain('http://192.0.2.8:8000/session');
+    expect(fs.readFileSync(path.join(fixture, 'opened'), 'utf8')).toBe('http://192.0.2.8:8000/?sessionId=' + sessionId);
+});

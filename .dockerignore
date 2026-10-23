@@ -1,3 +1,8 @@
 data/chat/
 .live-update/
 .live-release.json
+data/local-playtest/
+.git
+node_modules
+client-build
+coverage

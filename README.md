@@ -9,22 +9,48 @@
 To rebuild the PDF, install the optional documentation dependency `reportlab` and run `python3 tools/docs/build_event_toolkit_guide.py`. The output is written to `output/pdf/looperlands-event-toolkit-guide.pdf`; copy the reviewed PDF to `docs/event-toolkit-guide.pdf` when updating the guide.
 
 # Local development
-Install some dependencies.
-```bash
-sudo apt-get install jq
-sudo apt-get install docker-compose
-```
+Install and start Docker Desktop. No Node.js, wallet login, Platform credentials
+or `jq` installation is needed for the browser launcher.
+
+- **macOS:** double-click `start-local.command` in the repository folder.
+- **Windows:** double-click `start-local.bat` in the repository folder.
+
+The launcher builds and starts the local Docker services, waits until the game is
+ready, and opens [the Mapmaker Toolbox](http://127.0.0.1:8010/local/). Choose a map,
+avatar, checkpoint, avatar level and weapon level in **Playtest**, then click
+**Start game**. Use this page again whenever you
+need a fresh session. The first Docker build can take several minutes. If startup
+fails, the launcher keeps the error visible. On macOS, if a downloaded script is
+blocked, open it through Finder's **Open** action or use the terminal flow below.
+
+The services keep running after the launcher closes. To stop them, use Docker
+Desktop or run `docker compose -f docker-compose-local.yml stop` from this folder.
+
+## Terminal flow
+
+The existing terminal workflow remains available. It requires a Bash-compatible
+shell and Docker Compose; `local-session.sh` also requires `jq` and `curl`.
 
 Build a map
 ```bash
 ./build_maps.sh main.tmx
 ```
 
-The following script will build the client and server and run them locally, so you do not have to run the above steps.
+The following script builds the client and server and runs them in the foreground.
 ```bash
 ./run-local.sh
 ```
 To kill it, press Ctrl+C.
+
+Open [the Mapmaker Toolbox](http://127.0.0.1:8010/local/) to choose your playtest.
+After editing a map in Tiled, use **Build tools** to export its server and client
+maps, rebuild the game client and restart the local game. The toolbox stays open
+and shows each build step and its logs. A failed export or client build restores
+the previous generated files. **Troubleshoot** checks the local runtime, map
+sources, writable output folders and game server, with a suggested fix for failures.
+Its **Check main updates** button checks for new changes and suggests fetch/merge
+commands when needed; it does not update your checkout. **Documentation** is
+reserved for future guides.
 
 To get a new session run in a second terminal after the server starts:
 ```bash
@@ -35,9 +61,17 @@ Replace `duckville` and `1` with your map and checkpoint. This prints and opens 
 new session URL. Sessions are kept in server memory; create a fresh session if
 an old URL is rejected after a restart.
 
-The current Docker setup uses the live Platform API for avatar ownership, player
-data and progress. The wallet must own the avatar according to that API; entries
-in `mock/db.js` do not override Platform ownership. The launcher stops and prints
+Local Docker playtests accept any wallet with any avatar whose artwork is included
+in the client. NFT and collection ownership checks always pass locally; quest,
+item and level requirements still apply. No Platform account or credentials are
+needed. Player progress stays in the `local-game-data` Docker volume and is never
+sent to the live Platform. Map flows, shop stock, events and companions from the
+live Platform are not loaded by this local provider.
+
+This mode requires both `NODE_ENV=development` and
+`LOOPERLANDS_LOCAL_PLAYTEST=1`, which are set in `docker-compose-local.yml`.
+Production ignores the local flag and retains its ownership checks. For a native
+setup, see [the native guide](RUN-NATIVE-README.md). The launcher stops and prints
 the server error if session creation fails.
 
 If the browser redirects to `looperlands.io`, inspect the failed

@@ -23,11 +23,12 @@ payload=$(jq -n --arg walletId "$1" --arg nftId "$2" --arg mapId "$3" \
     '{walletId: $walletId, nftId: $nftId, mapId: $mapId, checkpointId: $checkpointId,
       xp: $xp, title: "Title 🏛️", f2p: false, trait: "rogue"}')
 
+IP=${LOCAL_IP:-127.0.0.1}
 if ! response=$(curl --silent --show-error --connect-timeout 5 --max-time 30 \
     --write-out '\n%{http_code}' \
     --header 'Content-Type: application/json' \
     --header "x-api-key: ${LOOPWORMS_API_KEY:-placeholder}" \
-    --data "$payload" http://127.0.0.1:8000/session); then
+    --data "$payload" "http://$IP:8000/session"); then
     echo "Could not reach the local session endpoint. Check that the server is running on port 8000." >&2
     exit 1
 fi
@@ -46,7 +47,6 @@ if ! sessionId=$(jq -er '.sessionId | select(type == "string") | select(test("^[
     exit 1
 fi
 
-IP=${LOCAL_IP:-127.0.0.1}
 url="http://$IP:8000/?sessionId=$sessionId"
 printf 'Navigate to the following URL to start playing: %s\n' "$url"
 if command -v open >/dev/null 2>&1; then

@@ -33,7 +33,7 @@ function setup() {
         source.indexOf("        app.post('/session/:sessionId/teleport'")
     ), {
         app: {post: (path, handler) => {createSession = handler;}},
-        cache, dao, Types, crypto: require('crypto'),
+        cache, dao, Types, platformClient: {}, crypto: require('crypto'),
         process: {env: {LOOPWORMS_API_KEY: 'test-key'}}, console: {error: jest.fn()}
     });
 
