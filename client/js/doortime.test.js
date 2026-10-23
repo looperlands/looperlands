@@ -49,7 +49,7 @@ function entrance(dest, hour = 12) {
     const game = Object.create(loadDefinition('game.js', {'worldtime-worker': WorldTime}));
     const axios = {get: jest.fn(() => Promise.resolve({data: true})),
         post: jest.fn(() => Promise.resolve({status: 200, data: {sessionId: 'next'}}))};
-    const window = {location: {}, open: jest.fn()};
+    const window = {location: {}, open: jest.fn(), sessionStorage: {setItem: jest.fn()}};
     let stop;
     Object.assign(game, {
         getWorldTime: () => at(hour), showNotification: jest.fn(),
@@ -80,6 +80,24 @@ test.each([undefined, '08:00-18:00'])('open or unrestricted hours preserve NFT a
     for (let i = 0; i < 10; i++) await Promise.resolve();
     expect(axios.get).toHaveBeenCalledTimes(2);
     expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('looperlands:map-transition', 'next');
+    expect(window.location.href).toBe('/?sessionId=next');
+});
+
+test('failed cross-map travel does not mark a successful handoff or navigate', async () => {
+    const {axios, window, stop} = entrance({map: 'main'});
+    axios.post.mockRejectedValue(new Error('Unavailable'));
+    stop();
+    for (let i = 0; i < 10; i++) await Promise.resolve();
+    expect(window.sessionStorage.setItem).not.toHaveBeenCalled();
+    expect(window.location.href).toBeUndefined();
+});
+
+test('cross-map travel still navigates when browser storage is disabled', async () => {
+    const {window, stop} = entrance({map: 'main'});
+    window.sessionStorage.setItem.mockImplementation(() => {throw new Error('Storage disabled');});
+    stop();
+    for (let i = 0; i < 10; i++) await Promise.resolve();
     expect(window.location.href).toBe('/?sessionId=next');
 });
 

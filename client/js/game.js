@@ -7261,6 +7261,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.player.setGridPosition(x, y);
                     self.combatPrototype?.connect(self.client.connection);
                     self.playerPositionReady = true;
+                    self.map.preloadNearDoors(x, y);
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;
                     self.app.playerName?.onWelcome(title);
@@ -7308,6 +7309,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         var i = path.length - 1,
                             x = path[i][0],
                             y = path[i][1];
+
+                        self.map.preloadNearDoors(x, y);
 
                         if (self.player.isMovingToLoot()) {
                             self.player.isLootMoving = false;
@@ -7366,6 +7369,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     self.player.onStep(function () {
                         self.combatPrototype?.reportPosition();
+                        self.map.preloadNearDoors(self.player.gridX, self.player.gridY);
                         if (self.keyboardMovement) self.lootItemAt(self.player.gridX, self.player.gridY);
 
                         self.handleScene(self.player)
@@ -7475,6 +7479,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     axios.post(url, dest).then(function (response) {
                                         if (response.status === 200) {
                                             let newSessionID = response.data.sessionId;
+                                            try {
+                                                window.sessionStorage.setItem('looperlands:map-transition', newSessionID);
+                                            } catch (error) {
+                                                // Travel must also work when browser storage is disabled.
+                                            }
                                             window.location.href = '/?sessionId=' + newSessionID;
                                         } else {
                                             console.error(response);

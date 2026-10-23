@@ -15,6 +15,14 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.ready = false;
             this.storage = new Storage(sessionId);
             this.sessionId = sessionId;
+            this.resumingMapTransition = false;
+            try {
+                const transitionSession = window.sessionStorage.getItem('looperlands:map-transition');
+                window.sessionStorage.removeItem('looperlands:map-transition');
+                this.resumingMapTransition = Boolean(sessionId) && transitionSession === sessionId;
+            } catch (error) {
+                // Storage can be disabled; travel still uses the normal startup path.
+            }
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
             this.$playButton = $('.play');
             this.$playDiv = $('.play div');
@@ -235,10 +243,12 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         hideIntro: function (hidden_callback) {
             clearInterval(this.watchNameInputInterval);
             $('body').removeClass('intro');
+            const introDelay = this.resumingMapTransition ? 0 : 1000;
+            this.resumingMapTransition = false;
             setTimeout(function () {
                 $('body').addClass('game');
                 hidden_callback();
-            }, 1000);
+            }, introDelay);
         },
 
         showChat: function () {
