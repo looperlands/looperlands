@@ -23,7 +23,6 @@ fi
 "$docker_bin" compose version >/dev/null 2>&1 || fail 'Update Docker Desktop to a version with Docker Compose, then try again.'
 "$docker_bin" info >/dev/null 2>&1 || fail 'Start Docker Desktop and wait until its engine is running, then double-click start-local.command again.'
 
-export DOCKER_DEFAULT_PLATFORM=linux/amd64
 export LOCAL_IP=127.0.0.1
 printf 'Starting LooperLands. The first build can take a few minutes.\n'
 "$docker_bin" compose -f docker-compose-local.yml up --build -d || fail 'The local build failed. Check the Docker output above, fix the reported error, then try again.'
