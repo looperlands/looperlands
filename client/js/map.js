@@ -20,7 +20,7 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         _checkReady: function () {
-            if (this.tilesetsLoaded && this.mapLoaded) {
+            if (!this.loadError && !this.isLoaded && this.tilesetsLoaded && this.mapLoaded) {
                 this.isLoaded = true;
                 if (this.ready_func) {
                     this.ready_func();
@@ -66,33 +66,82 @@ define(['jquery', 'area'], function ($, Area) {
             }
         },
 
+        _failLoad: function (error) {
+            if (this.loadError || this.isLoaded) return;
+            this.loadError = error;
+            console.error('[map] Failed to load ' + this.mapId, error);
+            if (this.error_func) this.error_func(error);
+        },
+
         _loadMap: function (useWorker) {
             var self = this,
                 filepath = "maps/world_client_" + this.mapId + ".json";
 
-            if (useWorker) {
-                console.log("Loading map with web worker." + this.mapId);
-                let worker = new Worker('js/mapworker.js');
-                worker.postMessage(this.mapId);
-
-                worker.onmessage = function (event) {
-                    var map = event.data;
-                    self._initMap(map);
-                    self.grid = map.grid;
-                    self.plateauGrid = map.plateauGrid;
-                    self.mapLoaded = true;
-                    self._checkReady();
-                    worker.terminate();
-                };
-            } else {
+            if (!useWorker) {
                 console.log("Loading map via Ajax.");
-                $.get(filepath, function (data) {
-                    self._initMap(data);
-                    self._generateCollisionGrid();
-                    self._generatePlateauGrid();
-                    self.mapLoaded = true;
+                $.ajax({url: filepath, dataType: 'json', timeout: 20000})
+                    .done(function (data) {
+                        if (self.loadError) return;
+                        try {
+                            self._initMap(data);
+                            self._generateCollisionGrid();
+                            self._generatePlateauGrid();
+                            self.mapLoaded = true;
+                            self._checkReady();
+                        } catch (error) {
+                            self._failLoad(error);
+                        }
+                    })
+                    .fail(function () {
+                        self._failLoad(new Error('Map data could not be downloaded: ' + filepath));
+                    });
+                return;
+            }
+
+            console.log("Loading map with web worker." + this.mapId);
+            var worker, timer, finished = false;
+            function stopWorker() {
+                finished = true;
+                clearTimeout(timer);
+                if (worker) {
+                    worker.onmessage = worker.onerror = worker.onmessageerror = null;
+                    worker.terminate();
+                }
+            }
+            function fallback() {
+                if (finished) return;
+                stopWorker();
+                if (!self.loadError) {
+                    console.warn('[map] Worker unavailable for ' + self.mapId + '; loading map via Ajax.');
+                    self._loadMap(false);
+                }
+            }
+            try {
+                worker = new Worker('js/mapworker.js');
+                worker.onerror = function (event) {
+                    event.preventDefault();
+                    fallback();
+                };
+                worker.onmessageerror = fallback;
+                worker.onmessage = function (event) {
+                    if (finished || self.loadError) {stopWorker(); return;}
+                    try {
+                        var map = event.data;
+                        self._initMap(map);
+                        self.grid = map.grid;
+                        self.plateauGrid = map.plateauGrid;
+                        self.mapLoaded = true;
+                    } catch (error) {
+                        fallback();
+                        return;
+                    }
+                    stopWorker();
                     self._checkReady();
-                }, 'json');
+                };
+                timer = setTimeout(fallback, 15000);
+                worker.postMessage(this.mapId);
+            } catch (error) {
+                fallback();
             }
         },
 
@@ -246,13 +295,20 @@ define(['jquery', 'area'], function ($, Area) {
             var self = this;
             var tileset = new Image();
 
-            tileset.src = filepath;
-
             console.log("Loading tileset: " + filepath);
-
+            var timer = setTimeout(function () {
+                self._failLoad(new Error('Tileset download timed out: ' + filepath));
+            }, 20000);
+            tileset.onerror = function () {
+                clearTimeout(timer);
+                self._failLoad(new Error('Tileset could not be downloaded: ' + filepath));
+            };
             tileset.onload = function () {
+                clearTimeout(timer);
+                if (self.loadError) return;
                 if (tileset.width % self.tilesize > 0) {
-                    throw Error("Tileset size should be a multiple of " + self.tilesize);
+                    self._failLoad(new Error("Tileset size should be a multiple of " + self.tilesize));
+                    return;
                 }
                 console.log("Map tileset loaded.");
 
@@ -265,11 +321,18 @@ define(['jquery', 'area'], function ($, Area) {
                 }
             };
 
+            tileset.src = filepath;
             return tileset;
         },
 
-        ready: function (f) {
+        ready: function (f, onError) {
             this.ready_func = f;
+            this.error_func = onError;
+            if (this.loadError) {
+                if (onError) onError(this.loadError);
+            } else if (this.isLoaded) {
+                f();
+            }
         },
 
         tileIndexToGridPosition: function (tileNum) {

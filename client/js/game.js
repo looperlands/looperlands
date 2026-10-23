@@ -6332,6 +6332,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(map.tilesets[tilesetIndex]);
                     map._initStreamCheck();
+                }, function () {
+                    if (self.map !== map) return;
+                    if (self.app.clientUpdates?.recovering) self.app.clientUpdates.failRecovery();
+                    else self.app.showDeath('This map could not be loaded. Please reconnect.');
                 });
             },
 
@@ -6992,6 +6996,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.setSpriteScale(this.renderer.scale);
 
                 var wait = setInterval(function () {
+                    if (self.map.loadError) {
+                        clearInterval(wait);
+                        return;
+                    }
                     if (self.map.isLoaded && self.spritesLoaded()) {
                         self.ready = true;
                         console.debug('All sprites loaded.');
