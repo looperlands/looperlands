@@ -205,11 +205,7 @@ class GameSettings {
 
     setFullscreen(enabled) {
         localStorage.setItem('fullscreen', enabled ? 'true' : 'false');
-        if (enabled) {
-            $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')')
-        } else {
-            $("#container").css('transform', 'scale(1)')
-        }
+        this.app.fitGameToViewport();
     }
 
     setRenderMyText(enabled) {

@@ -2105,6 +2105,38 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             clearTimeout(this.messageTimer);
         },
 
+        scheduleResize: function () {
+            if (this.resizeFrame !== undefined) return;
+            this.resizeFrame = window.requestAnimationFrame(() => {
+                this.resizeFrame = undefined;
+                this.resizeUi();
+            });
+        },
+
+        fitGameToViewport: function () {
+            const container = document.getElementById('container');
+            // Portrait mode hides the frame. Wait for a visible layout to fit it.
+            if (!container || !container.offsetWidth || !container.offsetHeight) return;
+
+            const viewport = window.visualViewport;
+            const width = viewport ? viewport.width : window.innerWidth;
+            const height = viewport ? viewport.height : window.innerHeight;
+            if (width <= 0 || height <= 0) return;
+            const scale = this.settings.getFullscreen()
+                ? Math.min(width / container.offsetWidth, height / container.offsetHeight) * 0.95
+                : 1;
+
+            // Safari can resize its visible viewport after the orientation event.
+            // Use that same viewport for both fitting and centering the whole HUD.
+            Object.assign(container.style, {
+                position: 'fixed',
+                margin: '0',
+                left: ((viewport ? viewport.offsetLeft : 0) + width / 2) + 'px',
+                top: ((viewport ? viewport.offsetTop : 0) + height / 2) + 'px',
+                transform: 'translate(-50%, -50%) scale(' + scale + ')',
+            });
+        },
+
         resizeUi: function () {
             if (this.game) {
                 if (this.game.started) {
@@ -2116,6 +2148,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                     this.game.renderer.rescale(newScale);
                 }
             }
+            this.fitGameToViewport();
         },
 
         showFishing: function () {

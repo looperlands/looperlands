@@ -19,7 +19,7 @@ function setup() {
     camera.follow({x: 800, y: 3600}, 1000);
     camera.follow({x: 804, y: 3600}, 1016);
     renderer.worker.postMessage.mockClear();
-    return {renderer, camera};
+    return {renderer, camera, sandbox};
 }
 
 test('same-size resize retains town bounds and camera easing without clearing canvas layers', () => {
@@ -48,4 +48,36 @@ test('scale and mobile viewport changes resize layers while retaining scene boun
     expect(camera.bounds).toBe(bounds);
     expect(renderer.worker.postMessage).toHaveBeenLastCalledWith({type:'setCanvasSize',width:480,height:224});
     expect(renderer.forecanvas).toEqual({width:480,height:224});
+});
+
+test('app resize is safe before sprites load and selects them once initialized', () => {
+    const {renderer, sandbox} = setup();
+    sandbox.window = {innerWidth: 1280, innerHeight: 720};
+    const container = {offsetWidth: 980, offsetHeight: 504, style: {}};
+    sandbox.document = {getElementById: () => container};
+    sandbox.define = (dependencies, factory) => {sandbox.Game = factory();};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'game.js'), 'utf8'), sandbox);
+    sandbox.define = (dependencies, factory) => {sandbox.App = factory();};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8'), sandbox);
+
+    const game = Object.assign(Object.create(sandbox.Game.prototype), {renderer, started: false});
+    const app = Object.assign(Object.create(sandbox.App.prototype), {
+        game, settings: {getFullscreen: () => true},
+    });
+    Object.assign(renderer, {
+        game, upscaledRendering: true, context: {}, background: {}, foreground: {},
+        initFont: jest.fn(), initFPS: jest.fn(),
+    });
+
+    expect(() => app.resizeUi()).not.toThrow();
+    expect(game.spritesets).toBeUndefined();
+    expect(container.style.left).toBe('640px');
+
+    game.spritesets = [{player: {}}];
+    Object.assign(sandbox.window, {innerWidth: 844, innerHeight: 390});
+    app.resizeUi();
+    expect(game.sprites).toBe(game.spritesets[0]);
+    expect(renderer.mobile).toBe(true);
+    expect(renderer.canvas).toEqual({width: 480, height: 224});
+    expect(container.style.left).toBe('422px');
 });
