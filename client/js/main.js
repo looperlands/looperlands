@@ -2,8 +2,6 @@
 define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     var app, game;
 
-    let gamepadHandler = undefined;
-
     var initApp = function() {
         $(document).ready(function() {
         	app = new App();
@@ -293,11 +291,12 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 app.clientUpdates = app.clientUpdates || new ClientUpdates(app);
                 app.clientUpdates.start(game.client.connection);
                 app.initEquipmentIcons();
-                keyboardHandler = new KeyBoardHandler(game, app);
-                game.keyboardHandler = keyboardHandler;
-                game.touchListener = new TouchListener(game);
-                game.gamepadListener = new GamePadListener(game);
-                if (new URLSearchParams(window.location.search).get('profileKills') === '1') {
+                if (!game.keyboardHandler) {
+                    game.keyboardHandler = new KeyBoardHandler(game, app);
+                    game.touchListener = new TouchListener(game);
+                    game.gamepadListener = new GamePadListener(game);
+                }
+                if (new URLSearchParams(window.location.search).get('profileKills') === '1' && !window.__killAudioProbe) {
                     require(['kill-audio-probe'], function (probe) {
                         window.__killAudioProbe = probe.install(game);
                     });

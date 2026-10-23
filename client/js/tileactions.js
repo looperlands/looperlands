@@ -7,14 +7,37 @@ define(['../../shared/js/gametypes'], function () {
             this.actionAnimations = {};
         },
 
+        destroy: function () {
+            if (this.isDisposed) return;
+            this.isDisposed = true;
+            Object.values(this.actionAnimations).forEach(cleanup => cleanup());
+            this.actionAnimations = {};
+            this.stageDefinitions = {};
+            this.activeStages = {};
+            this.localActionInProgress = false;
+        },
+
+        captureContext: function () {
+            return {mapId: this.game.mapId, sessionId: this.game.sessionId, player: this.game.player};
+        },
+
+        isCurrent: function (context) {
+            return !this.isDisposed && this.game.mapId === context.mapId &&
+                this.game.sessionId === context.sessionId && this.game.player === context.player;
+        },
+
         findCurrentStage: function (tileAction) {
+            if (this.isDisposed) return Promise.resolve();
+            const context = this.captureContext();
             const url = '/session/' + this.game.sessionId + '/tileStage';
             return axios.post(url, {map: this.game.mapId, tileAction: tileAction})
                 .then((response) => {
+                    if (!this.isCurrent(context)) return;
                     this.cacheStage(tileAction, response.data);
                     return response.data;
                 })
-                .catch(function (error) {
+                .catch((error) => {
+                    if (!this.isCurrent(context)) return;
                     console.error("Error while checking the trigger:", error);
                     throw error; // Ensure the error propagates
                 });
@@ -33,6 +56,7 @@ define(['../../shared/js/gametypes'], function () {
         },
 
         cacheStage: function (tileAction, stage) {
+            if (this.isDisposed) return;
             const key = this.getTileActionKey(tileAction);
             if (stage) {
                 this.stageDefinitions[key] = stage;
@@ -42,7 +66,7 @@ define(['../../shared/js/gametypes'], function () {
         },
 
         executeStage: function (tileAction, stage, selectedItem) {
-            if(!stage || stage.inProgress) {
+            if(this.isDisposed || !stage || stage.inProgress) {
                 return;
             }
 
@@ -55,6 +79,7 @@ define(['../../shared/js/gametypes'], function () {
             }
 
             if (this.localActionInProgress) return;
+            const context = this.captureContext();
 
             const activeKey = this.getTileActionKey(tileAction);
             if (this.activeStages[activeKey]) {
@@ -67,8 +92,6 @@ define(['../../shared/js/gametypes'], function () {
             }
 
             if (selectedItem === undefined && stage.requirements && stage.requirements.items) {
-                const selectionMap = this.game.mapId;
-                const selectionSession = this.game.sessionId;
                 this.game.app.showSelectionPopup(stage.name, stage.requirements.items.map((item) => {
                     const choice = stage.itemChoices[item];
                     const imageItem = (choice.imageItem || item).toLowerCase();
@@ -80,8 +103,9 @@ define(['../../shared/js/gametypes'], function () {
                         count: choice.count,
                         disabled: choice.disabled || (choice.count <= 0),
                         callback: (selectedItem) => {
-                            if (this.game.mapId !== selectionMap || this.game.sessionId !== selectionSession) return;
+                            if (!this.isCurrent(context)) return;
                             return Promise.resolve(this.executeStage(tileAction, stage, item)).catch((error) => {
+                                if (!this.isCurrent(context)) return;
                                 console.error("Tile action failed", error);
                                 this.game.showNotification("Could not complete this action. Please try again.");
                             });
@@ -90,10 +114,12 @@ define(['../../shared/js/gametypes'], function () {
                 }));
             } else {
                 const runStage = () => {
+                    if (!this.isCurrent(context)) return;
                     const url = '/session/' + this.game.sessionId + '/tileStage/execute';
                     const optimisticState = this.applyOptimisticStage(tileAction, stage, selectedItem);
                     return axios.post(url, {map: this.game.mapId, tileAction: tileAction, item: selectedItem, expectedStage: stage.key, expectedRevision: stage.revision})
                         .then((response) => {
+                            if (!this.isCurrent(context)) return;
                             this.cacheStage(tileAction, null);
                             if (response.data && response.data.success === false) {
                                 this.revertOptimisticStage(optimisticState);
@@ -107,6 +133,7 @@ define(['../../shared/js/gametypes'], function () {
                             return response;
                         })
                         .catch((error) => {
+                            if (!this.isCurrent(context)) return;
                             this.revertOptimisticStage(optimisticState);
                             this.cacheStage(tileAction, null);
                             throw error;
@@ -127,6 +154,7 @@ define(['../../shared/js/gametypes'], function () {
                     return axios.post('/session/' + this.game.sessionId + '/tileStage/start', {
                         map: mapId, tileAction, expectedStage: stage.key, expectedRevision: stage.revision,
                     }).then(async (response) => {
+                        if (!this.isCurrent(context)) return;
                         const result = response.data;
                         if (!result?.success) {
                             if (result?.message) this.game.showNotification(result.message);
@@ -134,10 +162,12 @@ define(['../../shared/js/gametypes'], function () {
                         }
                         if (this.game.player !== player || this.game.mapId !== mapId || this.game.sessionId !== sessionId || player.isDead || this.game.isStopped) return;
                         const completed = await this.showActionAnimation(result.animation);
-                        if (!completed) return;
+                        if (!completed || !this.isCurrent(context)) return;
                         // Execute only after the approved animation; the server checks inventory again.
                         Object.assign(stage, result.stage);
                         return runStage();
+                    }).catch(error => {
+                        if (this.isCurrent(context)) throw error;
                     }).finally(() => {
                         stage.inProgress = false;
                         delete this.activeStages[activeKey];
@@ -167,6 +197,7 @@ define(['../../shared/js/gametypes'], function () {
         },
 
         applyOptimisticStage: function (tileAction, stage, selectedItem) {
+            if (this.isDisposed) return null;
             const optimisticStage = this.getOptimisticStage(stage, selectedItem);
             if (!optimisticStage || !this.game.handleTileStage) {
                 return null;
@@ -190,16 +221,17 @@ define(['../../shared/js/gametypes'], function () {
                 previousStages,
                 mapId: this.game.mapId,
                 sessionId: this.game.sessionId,
+                player: this.game.player,
                 revision: this.game.tileStageRevisions?.[baseKey] || 0,
             };
         },
 
         revertOptimisticStage: function (optimisticState) {
-            if (!optimisticState || !this.game.handleTileStage) {
+            if (this.isDisposed || !optimisticState || !this.game.handleTileStage) {
                 return;
             }
 
-            if (this.game.mapId !== optimisticState.mapId || this.game.sessionId !== optimisticState.sessionId) return;
+            if (!this.isCurrent(optimisticState)) return;
             const tileAction = optimisticState.tileAction;
             const baseKey = this.getTileActionKey(tileAction);
             if ((this.game.tileStageRevisions?.[baseKey] || 0) !== optimisticState.revision) return;
@@ -223,7 +255,7 @@ define(['../../shared/js/gametypes'], function () {
         },
 
         refreshInventory: function () {
-            if (!this.game.app) {
+            if (this.isDisposed || !this.game.app) {
                 return;
             }
 
@@ -237,7 +269,7 @@ define(['../../shared/js/gametypes'], function () {
         },
 
         showActionAnimation: function (state) {
-            if (!state) return Promise.resolve(false);
+            if (this.isDisposed || !state) return Promise.resolve(false);
             const entity = this.game.getEntityById(state.entityId);
             if (!entity || entity.isDead || !Number.isFinite(state.duration) || state.duration <= 0 || state.duration > 30000) {
                 return Promise.resolve(false);
@@ -245,6 +277,7 @@ define(['../../shared/js/gametypes'], function () {
             if (this.actionAnimations[entity.id]) this.actionAnimations[entity.id]();
             const mapId = this.game.mapId;
             const sessionId = this.game.sessionId;
+            const player = this.game.player;
             const previousOrientation = entity.orientation;
             const previousTool = entity.actionToolName;
             const sprite = this.game.sprites[state.animationSprite];
@@ -261,7 +294,7 @@ define(['../../shared/js/gametypes'], function () {
             actionAnimation?.setSpeed?.(140);
             actionAnimation?.reset?.();
             this.game.toolImpactFeedback?.startAction(entity, state, actionAnimation);
-            const isCurrent = () => this.game.mapId === mapId && this.game.sessionId === sessionId && !this.game.isStopped && !entity.isDead &&
+            const isCurrent = () => !this.isDisposed && this.game.player === player && this.game.mapId === mapId && this.game.sessionId === sessionId && !this.game.isStopped && !entity.isDead &&
                 this.game.getEntityById(entity.id) === entity && !entity.isMoving() &&
                 entity.currentAnimation === actionAnimation;
             return new Promise((resolve) => {
