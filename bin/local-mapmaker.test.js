@@ -119,8 +119,16 @@ test('game readiness waits for every configured map rather than the first succes
 
 test('build readiness requires checkpoints on its selected map', async () => {
     toolbox.child = {};
-    toolbox.fetch.mockResolvedValueOnce({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: []}]})})
-        .mockResolvedValue({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: [{id: 1}]}]})});
+    toolbox.fetch.mockResolvedValueOnce({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: []}, {id: 'missing', checkpoints: []}]})})
+        .mockResolvedValue({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: [{id: 1}]}, {id: 'missing', checkpoints: []}]})});
+    await toolbox.waitForGame(2000, 'testmap');
+    expect(toolbox.fetch).toHaveBeenCalledTimes(2);
+});
+
+test('build readiness waits for other configured maps after the rebuilt map is ready', async () => {
+    toolbox.child = {};
+    toolbox.fetch.mockResolvedValueOnce({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: [{id: 1}]}]})})
+        .mockResolvedValue({ok: true, json: async () => ({maps: [{id: 'testmap', checkpoints: [{id: 1}]}, {id: 'missing', checkpoints: []}]})});
     await toolbox.waitForGame(2000, 'testmap');
     expect(toolbox.fetch).toHaveBeenCalledTimes(2);
 });

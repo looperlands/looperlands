@@ -71,7 +71,7 @@ class MapmakerToolbox {
     }
     async waitForGame(timeout = 120000, requiredMap) {
         const deadline = Date.now() + timeout;
-        const expectedMaps = requiredMap ? [requiredMap] : JSON.parse(fs.readFileSync(path.join(this.root, 'server/config.json'), 'utf8')).maps;
+        const expectedMaps = JSON.parse(fs.readFileSync(path.join(this.root, 'server/config.json'), 'utf8')).maps;
         let missing = expectedMaps;
         while (Date.now() < deadline && !this.closed) {
             if (!this.child) throw new Error('The game server exited. Check the Docker game logs, then start the toolbox again.');
@@ -79,7 +79,7 @@ class MapmakerToolbox {
                 const response = await this.fetch(new URL('/local/api/catalog', this.gameUrl), {signal: AbortSignal.timeout(10000)});
                 if (response.ok) {
                     const catalog = await response.json();
-                    const ready = (catalog.maps || []).filter(map => !requiredMap || map.checkpoints?.length).map(map => map.id);
+                    const ready = (catalog.maps || []).filter(map => map.id !== requiredMap || map.checkpoints?.length).map(map => map.id);
                     missing = expectedMaps.filter(map => !ready.includes(map));
                     if (!missing.length) return;
                 }
