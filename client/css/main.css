@@ -21,6 +21,69 @@ body {
     line-height: 1;
     image-rendering: pixelated;
 }
+#map-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 24px;
+    background: rgba(20, 17, 25, 0.22);
+    color: #f5e5c9;
+    font: 16px/1.5 'GraphicPixel', sans-serif;
+    text-align: center;
+    cursor: wait;
+    touch-action: none;
+}
+#map-transition[hidden], #map-transition button[hidden], #map-transition a[hidden] { display: none; }
+#map-transition .map-transition-panel {
+    box-sizing: border-box;
+    max-width: 320px;
+    padding: 10px 16px;
+    border: 6px solid transparent;
+    border-image: url('../img/common/panel.png') 12 fill / 6px / 0 round;
+    image-rendering: pixelated;
+    overflow-wrap: anywhere;
+}
+#map-transition-status {
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+}
+#map-transition button {
+    display: block;
+    min-height: 44px;
+    margin: 12px auto 0;
+    padding: 6px 12px;
+    border: 4px solid transparent;
+    border-image: url('../img/common/panel.png') 9 / 4px / 0 round;
+    border-radius: 0;
+    background: #533642;
+    color: #fce045;
+    font: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+#map-transition button:hover { background: #624a4d; color: #fff0cd; }
+#map-transition a {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 44px;
+    margin-top: 8px;
+    padding: 10px;
+    color: #e6c1a5;
+    font-size: 16px;
+    text-underline-offset: 4px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+#map-transition a:hover { color: #ffe8b5; }
+#map-transition :focus-visible { outline: 2px solid #ffe8b5; outline-offset: 4px; }
+#map-transition ::selection { background: #f5d58d; color: #382936; }
 ol, ul {
     list-style: none;
 }

@@ -105,16 +105,29 @@ define(function () {
         }
 
         start(socket) {
-            if (!this.revision || this.started) return;
-            this.started = true;
-            this.socket = socket;
-            socket.on('client-update', () => this.check());
-            socket.on('server-reboot', packet => this.waitForReboot(packet));
-            socket.on('server-reboot-cancelled', () => {
-                this.waiting = null; this.app.game.client.isReloading = false;
-                this.app.game.showNotification('The update was postponed. You can keep playing.');
-            });
-            this.check();
+            if (!this.revision) return;
+            if (!this.socketHandlers) {
+                this.socketHandlers = {
+                    'client-update': () => this.check(),
+                    'server-reboot': packet => this.waitForReboot(packet),
+                    'server-reboot-cancelled': () => {
+                        this.waiting = null; this.app.game.client.isReloading = false;
+                        this.app.game.showNotification('The update was postponed. You can keep playing.');
+                    },
+                };
+            }
+            if (this.socket !== socket || !this.socketBound) {
+                for (const [event, handler] of Object.entries(this.socketHandlers)) {
+                    if (this.socketBound) this.socket?.off(event, handler);
+                    socket.on(event, handler);
+                }
+                this.socket = socket;
+                this.socketBound = true;
+            }
+            if (!this.started) {
+                this.started = true;
+                this.check();
+            }
         }
 
         async request(url, body) {
@@ -130,11 +143,14 @@ define(function () {
             this.cancel(this.timer);
             this.pending = true;
             try {
+                if (this.app.game?.mapTransition?.active) return;
                 const update = await this.request('/client-update?from=' + this.revision);
+                if (this.app.game?.mapTransition?.active) return;
                 if (!/^[a-f0-9]{40}$/.test(update.revision || '')) throw new Error('Invalid client release');
                 if (this.waiting) {
                     if (update.ready && update.serverRevision === this.waiting.revision) {
                         await this.warmAssets(update.revision, update.files);
+                        if (this.app.game?.mapTransition?.active) return;
                         this.navigate(this.waiting.sessionId, update.revision);
                     }
                 } else if (update.ready && update.revision !== this.revision) {
@@ -142,8 +158,10 @@ define(function () {
                     else if (update.mode === 'css') {await this.styles(update.revision); this.adopt(update.revision);}
                     else if (update.mode === 'reload' && this.app.game?.started) {
                         await this.warmAssets(update.revision, update.files);
-                        if (this.warmedMap !== this.app.game.mapId) return;
-                        const ticket = await this.request('/session/' + this.app.sessionId + '/client-reload', {revision: update.revision});
+                        if (this.app.game?.mapTransition?.active || !this.app.game?.started || this.warmedMap !== this.app.game.mapId) return;
+                        const sessionId = this.app.sessionId;
+                        const ticket = await this.request('/session/' + sessionId + '/client-reload', {revision: update.revision});
+                        if (this.app.game?.mapTransition?.active || this.app.sessionId !== sessionId) return;
                         if (!/^[a-f0-9]{40}$/.test(ticket.sessionId || '') || ticket.revision !== update.revision) throw new Error('Invalid client reload ticket');
                         this.app.game.showNotification('Applying game update…');
                         this.navigate(ticket.sessionId, ticket.revision);

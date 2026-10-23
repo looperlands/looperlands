@@ -49,10 +49,10 @@ function entrance(dest, hour = 12) {
     const game = Object.create(loadDefinition('game.js', {'worldtime-worker': WorldTime}));
     const axios = {get: jest.fn(() => Promise.resolve({data: true})),
         post: jest.fn(() => Promise.resolve({status: 200, data: {sessionId: 'next'}}))};
-    const window = {location: {}, open: jest.fn()};
+    const window = {location: {}, open: jest.fn(), sessionStorage: {setItem: jest.fn()}};
     let stop;
     Object.assign(game, {
-        getWorldTime: () => at(hour), showNotification: jest.fn(),
+        getWorldTime: () => at(hour), showNotification: jest.fn(), travelToMap: jest.fn(),
         handleScene: jest.fn(), isItemAt: () => false, updatePos: jest.fn(),
         map: {isDoor: () => true, getDoorDestination: () => dest, getCurrentTrigger: () => undefined},
         player: {hasTarget: () => false, forEachAttacker: jest.fn(),
@@ -75,12 +75,30 @@ test('closed hours block cross-map travel and other gate requests with a custom 
 });
 
 test.each([undefined, '08:00-18:00'])('open or unrestricted hours preserve NFT and trigger checks (%s)', async timeRange => {
-    const {axios, window, stop} = entrance({map: 'main', nft: 'token', triggerId: 'switch', timeRange});
+    const {game, axios, window, stop} = entrance({map: 'main', nft: 'token', triggerId: 'switch', timeRange});
     stop();
     for (let i = 0; i < 10; i++) await Promise.resolve();
     expect(axios.get).toHaveBeenCalledTimes(2);
-    expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(window.location.href).toBe('/?sessionId=next');
+    expect(game.travelToMap).toHaveBeenCalledTimes(1);
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(window.location.href).toBeUndefined();
+});
+
+test('cross-map travel hands the destination to the running client without writing browser storage', () => {
+    const destination = {map: 'main', x: 12, y: 25};
+    const {game, window, stop} = entrance(destination);
+    stop();
+    expect(game.travelToMap).toHaveBeenCalledWith(destination);
+    expect(window.sessionStorage.setItem).not.toHaveBeenCalled();
+    expect(window.location.href).toBeUndefined();
+});
+
+test('cross-map travel does not depend on browser storage', () => {
+    const {game, window, stop} = entrance({map: 'main'});
+    window.sessionStorage.setItem.mockImplementation(() => {throw new Error('Storage disabled');});
+    stop();
+    expect(game.travelToMap).toHaveBeenCalledTimes(1);
+    expect(window.location.href).toBeUndefined();
 });
 
 test('hours are checked again if an ownership request finishes after closing', async () => {

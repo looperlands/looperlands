@@ -18,9 +18,9 @@ function createWorker({supportsFonts = true} = {}) {
     const fetch = jest.fn();
     const createImageBitmap = jest.fn();
     const log = jest.fn();
-    const self = {FontFace: supportsFonts ? FontFace : undefined, fonts: {add: jest.fn()}};
+    const self = {FontFace: supportsFonts ? FontFace : undefined, fonts: {add: jest.fn()}, postMessage: jest.fn()};
     const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log}};
-    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name], getLights: () => lights});`, sandbox);
+    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name], getLights: () => lights, getTileset: () => tileset});`, sandbox);
     return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self};
 }
 
@@ -42,6 +42,47 @@ test.each([undefined, null, []])('clears previous map lights when setLights rece
     const nextLights = [{x: 64, y: 80, radius: 2}];
     worker.send({type: 'setLights', lights: nextLights});
     expect(worker.getLights()).toEqual(nextLights);
+});
+
+test('acknowledges a map tileset only after its bitmap is decoded', async () => {
+    const worker = createWorker({supportsFonts: false});
+    const image = mockImage(worker), decoding = deferred();
+    worker.createImageBitmap.mockReturnValue(decoding.promise);
+    worker.send({type: 'setTileset', src: 'main.png', requestId: 4});
+    await flushPromises();
+    expect(worker.getTileset()).toBeUndefined();
+    expect(worker.self.postMessage).not.toHaveBeenCalled();
+    decoding.resolve(image);
+    await flushPromises();
+    expect(worker.getTileset()).toBe(image);
+    expect(worker.self.postMessage).toHaveBeenCalledWith({type: 'tilesetReady', requestId: 4});
+});
+
+test('late tileset decoding cannot replace the current map and releases its obsolete bitmap', async () => {
+    const worker = createWorker({supportsFonts: false});
+    const slow = deferred(), previous = {close: jest.fn()}, current = {close: jest.fn()};
+    mockImage(worker);
+    worker.createImageBitmap.mockReturnValueOnce(slow.promise).mockResolvedValueOnce(current);
+    worker.send({type: 'setTileset', src: 'old.png', requestId: 1});
+    await flushPromises();
+    worker.send({type: 'setTileset', src: 'new.png', requestId: 2});
+    await flushPromises();
+    expect(worker.getTileset()).toBe(current);
+    slow.resolve(previous);
+    await flushPromises();
+    expect(worker.getTileset()).toBe(current);
+    expect(previous.close).toHaveBeenCalledTimes(1);
+    expect(current.close).not.toHaveBeenCalled();
+    expect(worker.self.postMessage.mock.calls).toEqual([[{type: 'tilesetReady', requestId: 2}]]);
+});
+
+test('reports a failed tileset load so map transitions can recover', async () => {
+    const worker = createWorker({supportsFonts: false});
+    worker.fetch.mockRejectedValue(new Error('offline'));
+    worker.send({type: 'setTileset', src: 'missing.png', requestId: 9});
+    await flushPromises();
+    expect(worker.getTileset()).toBeUndefined();
+    expect(worker.self.postMessage).toHaveBeenCalledWith({type: 'tilesetReady', requestId: 9, error: 'Map tileset could not be loaded'});
 });
 
 test('shares one sprite fetch and decode across repeated pending loads and reuses the loaded image', async () => {

@@ -1,11 +1,11 @@
 define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', 'maptransition', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype, MapTransition) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -6307,7 +6307,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.bubbleManager = bubbleManager;
             },
 
-            loadMap: function (mapId) {
+            loadMap: function (mapId, preparedMap) {
                 var self = this;
                 this.arcadeSession?.close({resumeMusic: false, rearm: false});
                 this.mapId = mapId;
@@ -6322,7 +6322,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 if (this.map) this.map.stopStreamCheck();
                 if (this.audioManager) this.audioManager.playStreamMusic(null);
-                var map = this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
+                var map = this.map = preparedMap || new Mapx(!this.renderer.upscaledRendering, this, mapId);
 
                 this.storage.setMapId(mapId);
 
@@ -6337,6 +6337,111 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     if (self.app.clientUpdates?.recovering) self.app.clientUpdates.failRecovery();
                     else self.app.showDeath('This map could not be loaded. Please reconnect.');
                 });
+            },
+
+            travelToMap: function (destination) {
+                this.mapTransition = this.mapTransition || new MapTransition(this);
+                return this.mapTransition.start(destination);
+            },
+
+            pauseForMapTransition: function () {
+                this.app.hideChat();
+                this.started = false;
+                this.isStopped = true;
+                this.client.disable();
+                this.client.isReloading = true;
+                this.playerPositionReady = false;
+                this.keyboardHandler?.handleBlur();
+                this.touchListener?.reset();
+                this.player.cancelPath();
+                this.player.movement?.stop();
+                this.player.path = this.player.newDestination = null;
+                this.player.idle();
+                this.arcadeSession?.close({resumeMusic: false, rearm: false});
+                this.conversationHold.stop();
+                this.app.closeChoicesPopup();
+                this.app.hideWindows();
+                this.app.fieldGuide?.close();
+                this.app.eventBoard?.close();
+                clearInterval(this.scenePollingInterval);
+                this.scenePollingInterval = null;
+                clearTimeout(this.uniFishTimeout);
+                clearInterval(this.slidingFish);
+                this.app.hideFishing();
+            },
+
+            resetForMapTransition: function (map, storage) {
+                const previousPlayer = this.player;
+                this.client.dispose();
+                this.tileActions.destroy();
+                for (const entity of Object.values(this.entities)) {
+                    entity.cancelPath?.();
+                    entity.stopBlinking?.();
+                    clearTimeout(entity.hurting);
+                    clearTimeout(entity.exitingCombat);
+                    this.removeEntity(entity);
+                }
+                this.pathfinder.destroy();
+                Object.keys(this.floats).forEach(id => this.removeFloat(id));
+                this.bubbleManager.clean();
+                clearTimeout(this.playerDeathTimer);
+                clearTimeout(this.reviveTimer);
+                clearInterval(this.buffTickInterval);
+                this.entities = {};
+                this.deathpositions = {};
+                this.pendingEntityTargets?.clear();
+                this.pendingEntityAttackers?.clear();
+                this.zoningQueue = [];
+                this.currentZoning = null;
+                this.previousClickPosition = {};
+                this.toggledLayers = {};
+                this.tileStages = {};
+                this.tileActionStageRequestId++;
+                this.tileActions = new TileActions(this);
+                this.doorCheck = this.keyboardMovement = this.mousedown = false;
+                this.selectedCellVisible = this.targetCellVisible = false;
+                this.hoveringMob = this.hoveringItem = this.hoveringNpc = this.hoveringChest = this.hoveringTarget = false;
+                this.highlightedTarget = this.lastActionBubbleId = null;
+                this.lastMinigameTrigger = null;
+                this.hoveringMinigamePrompt = this.minigameLoaded = false;
+                $('#minigameprompt').removeClass('active').removeAttr('style').off();
+                this.reviving = this.deathReady = this.disconnected = false;
+                this.app.hideDeath();
+                $('#container').removeClass('error');
+                this.player = new Warrior('player', '');
+                this.playerId = null;
+                this.playerPositionReady = false;
+                this.lastHPCall = undefined;
+                this.storage = this.app.storage = storage;
+                this.sessionId = this.app.sessionId = storage.sessionId;
+                this.username = storage.data.player.name;
+                this.worldAmbience.clear();
+                this.previewTimeMode = undefined;
+                WorldScenery.update(this.renderer, null, this);
+                this.audioManager.areas = [];
+                this.worldMusicAreas = [];
+                this.worldMusicSnapshot = undefined;
+                this.renderer.syncedLights = false;
+                this.renderer.renderStaticCanvases();
+                this.visibleTerrainTiles = this.visibleHighTiles = [];
+                this.visibleAnimatedTiles = this.visibleAnimatedHighTiles = [];
+                this.loadMap(map.mapId, map);
+                this.initEntityGrid();
+                this.initItemGrid();
+                this.initPathingGrid();
+                this.applyToggledLayers();
+                this.initRenderingGrid();
+                this.setPathfinder(new Pathfinder(map.width, map.height));
+                this.initMusicAreas();
+                this.initPlayer();
+                if (previousPlayer.spriteName === this.player.spriteName) {
+                    this.player.dynamicArmorNFTData = previousPlayer.dynamicArmorNFTData;
+                    this.player.hasShadow = previousPlayer.hasShadow;
+                }
+                if (previousPlayer.weaponName === this.player.weaponName) this.player.dynamicWeaponNFTData = previousPlayer.dynamicWeaponNFTData;
+                if (this.keyboardHandler) this.player.onPathContinuation(() => this.keyboardHandler.getContinuationPath());
+                this.setCursor('hand');
+                this.app.refreshConsumableHud();
             },
 
             initPlayer: function () {
@@ -6493,9 +6598,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             initAchievements: function () {
-                var self = this;
+                const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
+                const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId && !self.mapTransition?.active;
+                if (!isCurrent()) return;
                 var questLogUrl = "/session/" + self.sessionId + "/quests";
                 axios.get(questLogUrl).then(function (response) {
+                    if (!isCurrent()) return;
                     self.achievements = response.data
                     let unlockedAchievements = [];
 
@@ -6516,6 +6624,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     if (self.storage.hasAlreadyPlayed()) {
                         self.app.initUnlockedAchievements(unlockedAchievements);
                     }
+                }).catch(function (error) {
+                    if (isCurrent()) console.error("Error while loading quests.", error);
                 });
             },
 
@@ -7192,18 +7302,20 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 this.client.onConnected(function () {
                     console.log("Starting client/server handshake");
+                    const client = self.client, player = self.player;
 
                     function sendHello() {
-                        if (!self.player || self.isStopped) return;
+                        if (self.client !== client || self.player !== player || self.isStopped) return;
                         console.log("Dynamic nft loaded", self.player.dyanmicNFTLoaded);
                         if (self.player.dyanmicNFTLoaded) {
                             self.player.name = self.username;
                             self.player.setSpriteName(self.storage.data.player.armor);
-                            self.started = true;
+                            if (!self.mapTransition?.active) self.started = true;
 
                             const weaponName = Types.getKindFromString(self.player.getWeaponName());
                             if (weaponName === undefined) {
                                 loadDynamicNFT(self.player.getWeaponName(), self.sessionId, (spriteName, nftData) => {
+                                    if (self.client !== client || self.player !== player || self.isStopped) return;
                                     console.log("load dynamic weapon", spriteName, nftData);
                                     self.player.setWeaponName(spriteName);
                                     spriteName = loadAssetSprites(nftData, self);
@@ -7261,6 +7373,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.player.setGridPosition(x, y);
                     self.combatPrototype?.connect(self.client.connection);
                     self.playerPositionReady = true;
+                    self.map.preloadNearDoors(x, y);
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;
                     self.app.playerName?.onWelcome(title);
@@ -7308,6 +7421,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         var i = path.length - 1,
                             x = path[i][0],
                             y = path[i][1];
+
+                        self.map.preloadNearDoors(x, y);
 
                         if (self.player.isMovingToLoot()) {
                             self.player.isLootMoving = false;
@@ -7366,6 +7481,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     self.player.onStep(function () {
                         self.combatPrototype?.reportPosition();
+                        self.map.preloadNearDoors(self.player.gridX, self.player.gridY);
                         if (self.keyboardMovement) self.lootItemAt(self.player.gridX, self.player.gridY);
 
                         self.handleScene(self.player)
@@ -7471,19 +7587,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 // Ownership/trigger requests may finish after the opening window ends.
                                 if (!_self.canEnterDoorByTime(dest)) return;
                                 if (dest.map !== undefined) {
-                                    let url = '/session/' + self.sessionId + '/teleport';
-                                    axios.post(url, dest).then(function (response) {
-                                        if (response.status === 200) {
-                                            let newSessionID = response.data.sessionId;
-                                            window.location.href = '/?sessionId=' + newSessionID;
-                                        } else {
-                                            console.error(response);
-                                        }
-                                    }).catch(function (error) {
-                                        console.log(error);
-                                    }).finally(function (e) {
-
-                                    });
+                                    _self.travelToMap(dest);
                                 } else {
                                     _self.player.setGridPosition(dest.x, dest.y);
                                     _self.player.nextGridX = dest.x;
@@ -7799,6 +7903,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                         });
 
                                         entity.onStopPathing(function (x, y) {
+                                            const map = self.map, player = self.player, sessionId = self.sessionId;
+                                            const isCurrent = () => self.map === map && self.player === player && self.sessionId === sessionId &&
+                                                !self.mapTransition?.active && self.getEntityById(entity.id) === entity;
+                                            if (!isCurrent()) return;
                                             if (!entity.isDying) {
                                                 if (entity.hasTarget() && entity.isAdjacent(entity.target)) {
                                                     entity.lookAtTarget();
@@ -7814,14 +7922,17 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                                         var dest = self.map.getDoorDestination(gridX, gridY);
 
                                                         function checkTrigger() {
+                                                            if (!isCurrent()) return;
                                                             if (dest.triggerId !== undefined) {
                                                                 let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
                                                                 axios.get(trUrl).then(function (response) {
+                                                                    if (!isCurrent()) return;
                                                                     if (response.data === true) {
                                                                         entity.setGridPosition(dest.x, dest.y);
                                                                         self.updatePos(entity);
                                                                     }
                                                                 }).catch(function (error) {
+                                                                    if (!isCurrent()) return;
                                                                     console.error("Error while checking the trigger.");
                                                                 });
                                                             } else {
@@ -7833,10 +7944,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                                         if (dest.nft !== undefined) {
                                                             var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
                                                             axios.get(url).then(function (response) {
+                                                                if (!isCurrent()) return;
                                                                 if (response.data === true) {
                                                                     checkTrigger()
                                                                 }
                                                             }).catch(function (error) {
+                                                                if (!isCurrent()) return;
                                                                 console.error("Error while checking ownership of token gate.");
                                                             });
                                                         } else {
@@ -8259,6 +8372,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onDisconnected(function (message) {
+                        if (self.mapTransition?.active) {
+                            self.mapTransition.connectionLost();
+                            return;
+                        }
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.disconnected = true;
                         self.reviving = false;
@@ -8343,7 +8460,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     function cleanProjectile(projectile, x, y) {
-                        if (projectile) {
+                        if (projectile && self.getEntityById(projectile.id) === projectile) {
                             projectile.lastUpdate = self.currentTime;
                             projectile.setVisible(false);
                             self.removeFromRenderingGrid(projectile, x, y);
@@ -8447,6 +8564,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     })
 
                     self.gamestart_callback();
+
+                    if (self.mapTransition?.active) {
+                        self.mapTransition.complete();
+                        return;
+                    }
 
                     if (self.hasNeverStarted) {
                         self.start();
@@ -8807,11 +8929,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.app.eventBoard?.open();
                     return;
                 }
-                const self = this;
+                const self = this, tileActions = this.tileActions;
                 if (this.lastActionBubbleId) this.destroyBubble(this.lastActionBubbleId);
                 this.getTileActionStage(action)
                     .then((stage) => {
-                        return self.tileActions.executeStage(action, stage);
+                        if (self.tileActions !== tileActions) return;
+                        return tileActions.executeStage(action, stage);
                     }).catch((error) => {
                         console.error("Tile action failed", error);
                         self.showNotification("Could not complete this action. Please try again.");
@@ -8819,21 +8942,28 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             checkForPartnerTask: function (npc) {
-                let self = this;
+                const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
+                const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId &&
+                    !self.mapTransition?.active && self.getEntityById(npc.id) === npc;
+                if (!isCurrent()) return;
                 if (npc.name === "taikoguard") {
                     axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function (response) {
+                        if (!isCurrent()) return;
                         console.log("PartnerTask Response", response);
                         if (response.data === true) {
                             self.showQuestCompleteNotification("Taiko Midle Task", "You completed the Taiko Midle task", 0, Types.Medals.TREE);
                         }
                     }).catch(function (error) {
-                        console.error(error);
+                        if (isCurrent()) console.error(error);
                     });
                 }
             },
 
             checkForQuests: function (npc) {
-                let self = this;
+                const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
+                const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId &&
+                    !self.mapTransition?.active && self.getEntityById(npc.id) === npc;
+                if (!isCurrent()) return;
                 npc.dialogueUntil = Date.now() + 20000;
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '?entityId=' + npc.id;
                 if (npc.thoughts.length > 0) {
@@ -8845,6 +8975,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
                         setTimeout(() => {
+                            if (!isCurrent()) return;
                             if (npc.thoughtsClearedCallback) {
                                 npc.thoughtsClearedCallback();
                                 npc.thoughtsClearedCallback = null
@@ -8854,6 +8985,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     return;
                 }
                 axios.get(url).then(function (response) {
+                    if (!isCurrent()) return;
                     if (response.data !== "") {
                         if (response.data.options) {
                             self.handleInputOptions(npc.id, response.data);
@@ -8871,6 +9003,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         let message = messages.shift()
                         if (messages.length > 0) {
                             npc.addThoughts(messages, () => {
+                                if (!isCurrent()) return;
                                 if (response.data.quest) {
                                     self.showNewQuestPopup(response.data.quest)
                                 }
@@ -8878,6 +9011,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         } else {
                             if (response.data.quest) {
                                 setTimeout(() => {
+                                    if (!isCurrent()) return;
                                     self.showNewQuestPopup(response.data.quest);
                                 }, 1500);
                             }
@@ -8909,6 +9043,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                     }
                 }).catch(function (error) {
+                    if (!isCurrent()) return;
                     console.error("Error while checking for quests.", error);
                 });
             },
@@ -10296,16 +10431,21 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             makeChoice: function (npcId, choice) {
-                let self = this;
+                const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
                 let npc = self.getEntityById(npcId);
                 if (!npc) return;
+                const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId &&
+                    !self.mapTransition?.active && self.getEntityById(npcId) === npc;
+                if (!isCurrent()) return;
                 this.conversationHold.start(npcId);
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice + '?entityId=' + npc.id;
                 axios.get(url).then(function (response) {
+                    if (!isCurrent()) return;
                     setTimeout(() => {
+                        if (!isCurrent()) return;
                         self.makeNpcTalk(npc);
                     }, 500);
-                }).catch(() => { self.conversationHold.stop(); });
+                }).catch(() => { if (isCurrent()) self.conversationHold.stop(); });
             },
 
             showNewQuestPopup: function (quest) {
@@ -10595,9 +10735,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             getServerInfo: function () {
-                self = this;
-
-                now = new Date().getTime();
+                const self = this, player = this.player, sessionId = this.sessionId, mapId = this.mapId;
+                const now = new Date().getTime();
 
                 if (self.lastHPCall !== undefined) {
                     if (now - self.lastHPCall < 500) {
@@ -10607,6 +10746,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 self.lastHPCall = now;
 
                 axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
+                    if (self.player !== player || self.sessionId !== sessionId || self.mapId !== mapId) return;
                     if (response.data !== null && response.data !== undefined) {
                         if (response.data.playerInfo !== undefined) {
                             const {playerClass, level} = response.data.playerInfo;
@@ -10683,13 +10823,15 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             startFishing: function (gX, gY) {
+                const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
+                const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId && !self.mapTransition?.active;
+                if (!isCurrent()) return;
                 if (!this.player.isFishing) {
-                    let self = this;
-
                     self.player.isFishing = true;
 
                     let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                     axios.get(url).then(function (response) {
+                        if (!isCurrent()) return;
                         if (!response.data.allowed) {
                             self.player.isFishing = false;
                             self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
@@ -10704,12 +10846,14 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
                         clearTimeout(self.uniFishTimeout);
                         self.uniFishTimeout = setTimeout(function () {
+                            if (!isCurrent() || !player.isFishing) return;
                             self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed, response.data.bullseyeSize);
                             if (traitText) {
                                 self.infoManager.addDamageInfo(traitText, float.gridX * 16, float.gridY * 16 - 5, "fishTrait");
                             }
                         }, waitDuration);
                     }).catch(function (error) {
+                        if (!isCurrent()) return;
                         console.error("Error while requesting a fish.");
                         self.player.isFishing = false;
                         self.showNotification("Could not cast. Please try again.");

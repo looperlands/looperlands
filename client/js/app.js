@@ -241,6 +241,99 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             }, 1000);
         },
 
+        setMapTransition: function (active, message = 'Loading map…') {
+            if (!active && (!this.mapTransition || this.mapTransition.overlay.hidden)) return;
+            if (!this.mapTransition) {
+                const overlay = document.createElement('div');
+                overlay.id = 'map-transition';
+                overlay.hidden = true;
+                overlay.tabIndex = -1;
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+                overlay.setAttribute('aria-label', 'Map travel');
+                overlay.setAttribute('aria-describedby', 'map-transition-status');
+                const panel = document.createElement('div');
+                panel.className = 'map-transition-panel';
+                const status = document.createElement('p');
+                status.id = 'map-transition-status';
+                status.setAttribute('aria-atomic', 'true');
+                const retry = document.createElement('button');
+                retry.type = 'button';
+                retry.textContent = 'Retry map travel';
+                retry.hidden = true;
+                const chooseCharacter = document.createElement('a');
+                chooseCharacter.href = 'https://looperlands.io';
+                chooseCharacter.textContent = 'Choose character';
+                chooseCharacter.hidden = true;
+                panel.appendChild(status);
+                panel.appendChild(retry);
+                panel.appendChild(chooseCharacter);
+                overlay.appendChild(panel);
+                overlay.addEventListener('click', event => event.stopPropagation());
+                overlay.addEventListener('keydown', event => {
+                    event.stopPropagation();
+                    if (event.key === 'Tab') {
+                        event.preventDefault();
+                        const visibleControls = [retry, chooseCharacter].filter(control => !control.hidden);
+                        const controls = visibleControls.length ? visibleControls : [overlay];
+                        const index = controls.indexOf(document.activeElement);
+                        const next = event.shiftKey ? (index <= 0 ? controls.length - 1 : index - 1) : (index + 1) % controls.length;
+                        controls[next].focus({preventScroll: true});
+                    }
+                });
+                document.body.appendChild(overlay);
+                this.mapTransition = {overlay, status, retry, chooseCharacter, container: document.getElementById('container')};
+            }
+            const transition = this.mapTransition;
+            if (active) {
+                const opening = transition.overlay.hidden;
+                if (opening) {
+                    transition.previousFocus = document.activeElement;
+                    transition.previousInert = transition.container?.inert;
+                }
+                transition.status.setAttribute('role', 'status');
+                transition.status.setAttribute('aria-live', 'polite');
+                transition.status.textContent = message;
+                transition.retry.hidden = true;
+                transition.chooseCharacter.hidden = true;
+                transition.retry.onclick = null;
+                transition.overlay.hidden = false;
+                if (transition.container) {
+                    transition.container.inert = true;
+                    transition.container.setAttribute('aria-busy', 'true');
+                }
+                if (opening || document.activeElement === transition.retry || document.activeElement === transition.chooseCharacter) {
+                    transition.overlay.focus({preventScroll: true});
+                }
+            } else {
+                transition.overlay.hidden = true;
+                transition.retry.onclick = null;
+                if (transition.container) {
+                    transition.container.inert = transition.previousInert;
+                    transition.container.removeAttribute('aria-busy');
+                }
+                if (transition.previousFocus?.isConnected) transition.previousFocus.focus({preventScroll: true});
+            }
+        },
+
+        showMapTransitionFailure: function (retryCallback, message = 'Could not load this map. Try again to continue.') {
+            this.setMapTransition(true, message);
+            const transition = this.mapTransition;
+            transition.status.setAttribute('role', 'alert');
+            transition.status.setAttribute('aria-live', 'assertive');
+            transition.chooseCharacter.hidden = false;
+            if (typeof retryCallback === 'function') {
+                transition.retry.hidden = false;
+                transition.retry.onclick = () => {
+                    this.setMapTransition(true);
+                    retryCallback();
+                };
+                transition.retry.focus({preventScroll: true});
+            } else {
+                transition.chooseCharacter.focus({preventScroll: true});
+            }
+        },
+
         showChat: function () {
             if (this.game.started) {
                 $('#chatbox').addClass('active');

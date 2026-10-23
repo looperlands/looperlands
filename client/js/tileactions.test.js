@@ -128,13 +128,161 @@ test('optimistic rollback still restores its own rejected action', () => {
     expect(game.tileStages['1.2']).toEqual({tile: 99, stage: 0});
 });
 
-test('an old seed selection cannot execute after a map change', () => {
+test.each(['map', 'session', 'player', 'destroy'])('an old seed selection cannot execute after %s changes', reason => {
     const {actions, game, axios} = setup();
     game.app = {showSelectionPopup: jest.fn()};
     actions.executeStage({gridX: 1, gridY: 2}, {key: 'plant', name: 'Plant',
         requirements: {items: ['M88NLETTUCE']}, itemChoices: {M88NLETTUCE: {count: 1, title: 'Lettuce'}}});
     const choice = game.app.showSelectionPopup.mock.calls[0][1][0];
-    game.mapId = 'other';
+    if (reason === 'map') game.mapId = 'other';
+    if (reason === 'session') game.sessionId = 'other';
+    if (reason === 'player') game.player = {id: 2};
+    if (reason === 'destroy') actions.destroy();
     choice.callback('M88NLETTUCE');
     expect(axios.post).not.toHaveBeenCalled();
+});
+
+function deferredRequest(axios) {
+    let resolve, reject;
+    axios.post.mockReturnValueOnce(new Promise((done, fail) => {resolve = done; reject = fail;}));
+    return {resolve, reject};
+}
+
+function leaveMap(actions, game, reason) {
+    if (reason === 'destroy') actions.destroy();
+    if (reason === 'map') game.mapId = 'other';
+    if (reason === 'session') game.sessionId = 'other';
+    if (reason === 'player') game.player = {id: 2};
+}
+
+test('destroying cancels animations immediately and prevents new activity', async () => {
+    const {actions, actor, game, axios} = setup();
+    const done = actions.showActionAnimation(state);
+    actions.cacheStage({gridX: 1, gridY: 2}, {name: 'Plant'});
+    actions.activeStages['1.2'] = true;
+    actions.localActionInProgress = true;
+    actions.destroy(); actions.destroy();
+    expect(await done).toBe(false);
+    expect(actor.actionToolName).toBeUndefined();
+    expect(game.toolImpactFeedback.stopAction).toHaveBeenCalledTimes(1);
+    expect(game.toolImpactFeedback.stopAction).toHaveBeenCalledWith(actor, true);
+    expect(actions.actionAnimations).toEqual({});
+    expect(actions.stageDefinitions).toEqual({});
+    expect(actions.activeStages).toEqual({});
+    expect(actions.localActionInProgress).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+
+    actions.cacheStage({gridX: 1, gridY: 2}, {name: 'Stale'});
+    await actions.findCurrentStage({gridX: 1, gridY: 2});
+    actions.executeStage({gridX: 1, gridY: 2}, {waiting: true, message: 'Stale'});
+    expect(await actions.showActionAnimation(state)).toBe(false);
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(game.showNotification).not.toHaveBeenCalled();
+    expect(actions.stageDefinitions).toEqual({});
+});
+
+test.each(['destroy', 'map', 'session', 'player'])('pending stage lookup ignores a response after %s changes', async reason => {
+    const {actions, game, axios} = setup();
+    const request = deferredRequest(axios);
+    const result = actions.findCurrentStage({gridX: 1, gridY: 2});
+    leaveMap(actions, game, reason);
+    request.resolve({data: {name: 'Plant'}});
+    expect(await result).toBeUndefined();
+    expect(actions.stageDefinitions).toEqual({});
+});
+
+test('a lookup failure after teardown cannot trigger the game error notification', async () => {
+    const {actions, axios} = setup();
+    const request = deferredRequest(axios);
+    const result = actions.findCurrentStage({gridX: 1, gridY: 2});
+    actions.destroy();
+    request.reject(new Error('Old map request failed'));
+    await expect(result).resolves.toBeUndefined();
+});
+
+test.each(['success', 'rejection', 'failure'])('pending execution %s cannot alter the new map after teardown', async outcome => {
+    const {actions, game, axios} = setup();
+    game.tileStages = {'1.2': {tile: 99}};
+    game.handleTileStage = jest.fn();
+    game.app = {initResourcesDisplay: jest.fn(), isInventoryVisible: true, showInventory: jest.fn()};
+    const request = deferredRequest(axios);
+    const stage = {key: 'water', revision: 5, optimisticStage: {tile: 123, stage: 1}};
+    const result = actions.executeStage({gridX: 1, gridY: 2}, stage);
+    expect(game.handleTileStage).toHaveBeenCalledTimes(1);
+    actions.destroy();
+    game.mapId = 'other'; game.sessionId = 'other'; game.player = {id: 2};
+    game.handleTileStage.mockClear();
+    if (outcome === 'failure') request.reject(new Error('Old map request failed'));
+    else request.resolve({data: {success: outcome === 'success', message: 'Old map rejection'}});
+    expect(await result).toBeUndefined();
+    expect(game.handleTileStage).not.toHaveBeenCalled();
+    expect(game.app.initResourcesDisplay).not.toHaveBeenCalled();
+    expect(game.app.showInventory).not.toHaveBeenCalled();
+    expect(game.showNotification).not.toHaveBeenCalled();
+    expect(actions.stageDefinitions).toEqual({});
+});
+
+test.each(['map', 'session', 'player'])('pending execution cannot refresh inventory after %s changes', async reason => {
+    const {actions, game, axios} = setup();
+    game.app = {initResourcesDisplay: jest.fn()};
+    const request = deferredRequest(axios);
+    const result = actions.executeStage({gridX: 1, gridY: 2}, {key: 'water'});
+    leaveMap(actions, game, reason);
+    request.resolve({data: {success: true}});
+    expect(await result).toBeUndefined();
+    expect(game.app.initResourcesDisplay).not.toHaveBeenCalled();
+});
+
+test.each(['success', 'rejection', 'failure'])('a pending animation approval %s is abandoned on teardown', async outcome => {
+    const {actions, game, axios} = setup();
+    const request = deferredRequest(axios);
+    const stage = {key: 'water', playAnimation: true};
+    const result = actions.executeStage({gridX: 1, gridY: 2}, stage);
+    actions.destroy();
+    if (outcome === 'failure') request.reject(new Error('Old map request failed'));
+    else request.resolve({data: {success: outcome === 'success', message: 'Old map rejection', animation: state}});
+    expect(await result).toBeUndefined();
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(game.showNotification).not.toHaveBeenCalled();
+    expect(game.toolImpactFeedback.startAction).not.toHaveBeenCalled();
+    expect(stage.inProgress).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+});
+
+test.each([false, true])('teardown prevents execution after animation completion (timer completed=%s)', async completed => {
+    const {actions, axios} = setup();
+    const stage = {key: 'water', playAnimation: true};
+    axios.post.mockResolvedValueOnce({data: {success: true, stage, animation: state}});
+    const result = actions.executeStage({gridX: 1, gridY: 2}, stage);
+    await Promise.resolve(); await Promise.resolve();
+    if (completed) jest.advanceTimersByTime(3000);
+    actions.destroy();
+    expect(await result).toBeUndefined();
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(stage.inProgress).toBe(false);
+    expect(actions.localActionInProgress).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+});
+
+test.each(['success', 'rejection', 'failure'])('live execution retains %s handling', async outcome => {
+    const {actions, game, axios} = setup();
+    game.tileStages = {'1.2': {tile: 99}};
+    game.handleTileStage = jest.fn();
+    game.app = {initResourcesDisplay: jest.fn()};
+    const request = deferredRequest(axios);
+    const stage = {key: 'water', revision: 5, optimisticStage: {tile: 123, stage: 1}};
+    const result = actions.executeStage({gridX: 1, gridY: 2}, stage);
+    const error = new Error('Unavailable');
+    if (outcome === 'failure') request.reject(error);
+    else request.resolve({data: {success: outcome === 'success', message: 'Missing water'}});
+    if (outcome === 'failure') await expect(result).rejects.toBe(error);
+    else await result;
+    expect(axios.post).toHaveBeenCalledWith('/session/session/tileStage/execute', {
+        map: 'main', tileAction: {gridX: 1, gridY: 2}, item: undefined, expectedStage: 'water', expectedRevision: 5,
+    });
+    expect(game.app.initResourcesDisplay).toHaveBeenCalledTimes(outcome === 'success' ? 1 : 0);
+    expect(game.handleTileStage).toHaveBeenCalledTimes(outcome === 'success' ? 1 : 2);
+    expect(game.showNotification).toHaveBeenCalledTimes(outcome === 'rejection' ? 1 : 0);
+    expect(stage.inProgress).toBe(false);
+    expect(actions.activeStages).toEqual({});
 });

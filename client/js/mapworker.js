@@ -34,20 +34,21 @@ function generateCollisionGrid() {
 }
 
 function generatePlateauGrid() {
-    var tileIndex = 0;
-
     mapData.plateauGrid = [];
     for(var	j, i = 0; i < mapData.height; i++) {
         mapData.plateauGrid[i] = [];
         for(j = 0; j < mapData.width; j++) {
-            if(_.include(mapData.plateau, tileIndex)) {
-                mapData.plateauGrid[i][j] = 1;
-            } else {
-                mapData.plateauGrid[i][j] = 0;
-            }
-            tileIndex += 1;
+            mapData.plateauGrid[i][j] = 0;
         }
     }
+
+    // Mark each plateau once instead of searching the full list for every tile.
+    _.each(mapData.plateau, function(tileIndex) {
+        if(typeof tileIndex === 'number' && tileIndex >= 0 &&
+            tileIndex < mapData.width * mapData.height && tileIndex % 1 === 0) {
+            mapData.plateauGrid[Math.floor(tileIndex / mapData.width)][tileIndex % mapData.width] = 1;
+        }
+    });
 }
 
 function tileIndexToGridPosition(tileNum) {

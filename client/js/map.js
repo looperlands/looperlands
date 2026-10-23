@@ -1,4 +1,4 @@
-define(['jquery', 'area'], function ($, Area) {
+define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
 
     var Mapx = Class.extend({
         init: function (loadMultiTilesheets, game, mapId) {
@@ -151,19 +151,7 @@ define(['jquery', 'area'], function ($, Area) {
             /**
              * This allows for shared tilesheets among maps.
              */
-            let mapIdToTileset = {
-                "oa": "oa",
-                "oadungeon": "oa",
-                "oaoverworld": "oa",
-                "cobsfarm": "cobsfarm",
-                "cobsfarmcity": "cobsfarmcity"
-            }
-
-            let tilesetId = mapIdToTileset[this.mapId];
-
-            if (tilesetId === undefined) {
-                tilesetId = this.mapId;
-            }
+            let tilesetId = MapAssets.tilesetId(this.mapId);
 
             if (!this.loadMultiTilesheets) {
                 this.tilesetCount = 1;
@@ -180,6 +168,11 @@ define(['jquery', 'area'], function ($, Area) {
             }
 
             this.tilesets = [tileset1, tileset2, tileset3];
+        },
+
+        preloadNearDoors: function (x, y) {
+            this.assetPreloader = this.assetPreloader || new MapAssets(this.game.renderer);
+            this.assetPreloader.near(this, x, y);
         },
 
         _initMap: function (map) {
@@ -413,20 +406,23 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         _generatePlateauGrid: function () {
-            var tileIndex = 0;
+            var self = this;
 
             this.plateauGrid = [];
             for (var j, i = 0; i < this.height; i++) {
                 this.plateauGrid[i] = [];
                 for (j = 0; j < this.width; j++) {
-                    if (_.include(this.plateau, tileIndex)) {
-                        this.plateauGrid[i][j] = 1;
-                    } else {
-                        this.plateauGrid[i][j] = 0;
-                    }
-                    tileIndex += 1;
+                    this.plateauGrid[i][j] = 0;
                 }
             }
+
+            // Mark each plateau once instead of searching the full list for every tile.
+            _.each(this.plateau, function (tileIndex) {
+                if (typeof tileIndex === 'number' && tileIndex >= 0 &&
+                    tileIndex < self.width * self.height && tileIndex % 1 === 0) {
+                    self.plateauGrid[Math.floor(tileIndex / self.width)][tileIndex % self.width] = 1;
+                }
+            });
             console.log("Plateau grid generated.");
         },
 

@@ -84,3 +84,13 @@ test('successful batches preserve order and disabled clients ignore incoming act
     expect(handled).toEqual([['damage', 42], ['despawn', 42]]);
     expect(errors).not.toHaveBeenCalled();
 });
+
+test('disposing from a callback stops the remaining actions in the same batch', () => {
+    const {client, receive, messages: M} = setup();
+    const removed = jest.fn();
+    client.onPlayerDamageMob(() => client.dispose());
+    client.onDespawnEntity(removed);
+    receive([[M.DAMAGE, 42, 10], [M.DESPAWN, 42]]);
+    expect(removed).not.toHaveBeenCalled();
+    expect(client.isDisposed).toBe(true);
+});

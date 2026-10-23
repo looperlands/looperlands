@@ -87,7 +87,7 @@ test('armor and weapon updates each survive an outstanding avatar load', () => {
     expect(equipped.mock.calls).toEqual([[42, s.Types.Entities.LEATHERARMOR], [42, s.Types.Entities.AXE]]);
 });
 
-test.each(['despawn', 'destroy', 'list', 'disable', 'revive'])(
+test.each(['despawn', 'destroy', 'list', 'disable', 'revive', 'dispose'])(
     '%s invalidates an outstanding spawn before its asset callback completes', action => {
         const s = setup();
         s.receive(s.player());
@@ -96,11 +96,24 @@ test.each(['despawn', 'destroy', 'list', 'disable', 'revive'])(
         if (action === 'list') s.receive([s.M.LIST, 7]);
         if (action === 'disable') s.client.disable();
         if (action === 'revive') s.client.resetPendingSpawns();
+        if (action === 'dispose') s.client.dispose();
         s.loads[0].done({nftId: '0xavatar'});
         expect(s.spawned).not.toHaveBeenCalled();
         expect(s.client.pendingSpawns.size).toBe(0);
     }
 );
+
+test('disposing abandons dynamic armor and weapon loads without repopulating appearance state', () => {
+    const s = setup();
+    s.receive(s.player({weapon: 900000002}));
+    s.client.dispose();
+    s.loads[0].done({nftId: '0xavatar'});
+    s.client.receiveSpawn(s.player({x: 8}));
+    expect(s.loads).toHaveLength(1);
+    expect(s.spawned).not.toHaveBeenCalled();
+    expect(s.client.pendingSpawns.size).toBe(0);
+    expect(s.client.dynamicAppearances.size).toBe(0);
+});
 
 test('returning to an area cannot publish the asset callback from a previous visit', () => {
     const s = setup();

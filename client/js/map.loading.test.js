@@ -1,4 +1,8 @@
 const fs = require('fs'), vm = require('vm'), _ = require('underscore');
+let MapAssets;
+vm.runInNewContext(fs.readFileSync(require.resolve('./mapassets'), 'utf8'), {
+    define: factory => {MapAssets = factory();},
+});
 const raw = () => ({width: 2, height: 2, tilesize: 16, data: [1, 1, 1, 1],
     collisions: [1], blocking: [2], plateau: [3], doors: [], triggers: [], checkpoints: []});
 beforeEach(() => jest.useFakeTimers());
@@ -18,7 +22,7 @@ function fixture(options = {}) {
             function Map(...args) {this.init(...args);}
             Object.assign(Map.prototype, methods); return Map;
         }},
-        define: (_dependencies, factory) => {Mapx = factory($);},
+        define: (_dependencies, factory) => {Mapx = factory($, undefined, MapAssets);},
         Worker: function () {
             if (options.workerThrows) throw new Error('Worker blocked');
             this.postMessage = jest.fn(() => {if (options.postThrows) throw new Error('Message failed');});
