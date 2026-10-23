@@ -1,0 +1,49 @@
+{
+	"id": "m88nxemoebit",
+	"width": 64,
+	"height": 64,
+	"animations": {
+		"death": {
+			"length": 10,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 9,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 8,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 6,
+			"row": 3
+		},
+		"atk_up": {
+			"length": 9,
+			"row": 4
+		},
+		"walk_up": {
+			"length": 8,
+			"row": 5
+		},
+		"idle_up": {
+			"length": 6,
+			"row": 6
+		},
+		"atk_down": {
+			"length": 9,
+			"row": 7
+		},
+		"walk_down": {
+			"length": 8,
+			"row": 8
+		},
+		"idle_down": {
+			"length": 6,
+			"row": 9
+		}
+	},
+	"offset_x": 0,
+	"offset_y": -20
+}

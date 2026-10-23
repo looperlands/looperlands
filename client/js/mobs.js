@@ -2884,6 +2884,99 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88namoebit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NAMOEBIT);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = false;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nflagellabit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFLAGELLABIT);
+                this.moveSpeed = 250;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nnemoebit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNEMOEBIT);
+                this.moveSpeed = 300;
+                this.idleSpeed = 500;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 5;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nplasmoebit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NPLASMOEBIT);
+                this.moveSpeed = 300;
+                this.idleSpeed = 500;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 5;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88npyromoebit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NPYROMOEBIT);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 2;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nxemoebit: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NXEMOEBIT);
+                this.moveSpeed = 300;
+                this.idleSpeed = 500;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 5;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nskorch: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NSKORCH);
+                this.atkSpeed = 420;
+        		this.moveSpeed = 220;
+        		this.walkSpeed = 100;
+        		this.idleSpeed = 220;
+        		this.setAttackRate(800);
+                this.deathAnimated = true;
+        		this.aggroRange = 4;
+            },
+            
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88nsaw: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NSAW);

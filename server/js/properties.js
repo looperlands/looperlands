@@ -1692,7 +1692,7 @@ let Properties = {
     },
 
     m88njaws: {
-        level: 369,
+        level: 420,
         drops: {
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
@@ -1721,9 +1721,9 @@ let Properties = {
             GOLD5: 1
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 2,
-        hpMod: 20,
-        weaponMod: 2,
+        armorMod: 2.4,
+        hpMod: 30,
+        weaponMod: 2.4,
         respawnDelay: 60000
     },
 
@@ -2228,6 +2228,110 @@ let Properties = {
         hpMod: 20,
         weaponMod: 2.0,
         respawnDelay: 900000 //fifteen minutes
+    },
+
+    m88namoebit: {
+        level: 40,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 15,
+            m88ndirt: 1
+        },
+        messages: ['Greetings!', 'I like to snack on m88n grubs. Do you?', 'I am the first form of life on Lunaria...', 'Please do not hurt me, I am trying to evolve.'],
+        armorMod: 1.2,
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 480000 //eight minutes
+    },
+
+    m88nflagellabit: {
+        level: 88,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 30,
+            m88ndirt: 1
+        },
+        messages: ['Greetings!', 'I like to snack on m88n grubs. Do you?', 'I can feel myself changing...', 'Please do not hurt me, I am trying to evolve into something more powerful.'],
+        armorMod: 1.4,
+        hpMod: 20,
+        weaponMod: 1.4,
+        respawnDelay: 1200000 //twenty minutes
+    },
+
+    m88nnemoebit: {
+        level: 111,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 10,
+            m88nspicyseeds: 2
+        },
+        messages: ['Greetings!', 'I like to snack on spicy seeds. Do you?', 'I can feel myself charging up...', 'I came down here from Lunaria, searching for warmth.'],
+        armorMod: 1.8,
+        hpMod: 20,
+        weaponMod: 1.8,
+        respawnDelay: 1200000 //twenty minutes
+    },
+
+    m88nplasmoebit: {
+        level: 174,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 50,
+            m88nglowstick: 2
+        },
+        messages: ['Greetings!', 'I like to snack on m88n grubs. Do you?', 'I can feel myself charging up...', 'I really like that plasma lake, for drinking/bathing/whatever.'],
+        armorMod: 2.2,
+        hpMod: 20,
+        weaponMod: 2.2,
+        respawnDelay: 1200000 //twenty minutes
+    },
+
+    m88npyromoebit: {
+        level: 30,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 10,
+            m88ndirt: 1
+        },
+        messages: ['Greetings!', 'I like to snack on m88n grubs. Do you?', 'I came from Lunaria, that place is way too cold for me...', 'Please do not hurt me, I am trying to evolve.'],
+        armorMod: 1.2,
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 420000 //seven minutes
+    },
+
+    m88nskorch: {
+        level: 69,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88nspicyseeds: 1
+        },
+        messages: ['Ahhhhh!', 'I am coming for you!', 'You cannot avoid me or my flames...', 'You should have never come down here!'],
+        armorMod: 1.6,
+        hpMod: 25,
+        weaponMod: 1.6,
+        respawnDelay: 900000 //fifteen minutes
+    },
+
+    m88nxemoebit: {
+        level: 147,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngrub: 50,
+            m88ndirt: 1
+        },
+        messages: ['Greetings!', 'I like to snack on m88n grubs. Do you?', 'This side of Lunaria is pretty cool, I like the other side better...', 'I need to find a new source of xenon, have you seen any?'],
+        armorMod: 2.2,
+        hpMod: 20,
+        weaponMod: 2.2,
+        respawnDelay: 1200000 //twenty minutes
     },
 
     m88nsaw: {
