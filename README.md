@@ -26,11 +26,29 @@ The following script will build the client and server and run them locally, so y
 ```
 To kill it, press Ctrl+C.
 
-To get a new session run:
+To get a new session run in a second terminal after the server starts:
 ```bash
-./local-session.sh
+./local-session.sh '<wallet-address>' '<avatar-nft-id>' duckville 1 10000
 ```
-This will print out a URL and open up the URL in your browser
+The five arguments are wallet address, avatar NFT ID, map ID, checkpoint ID and XP.
+Replace `duckville` and `1` with your map and checkpoint. This prints and opens a
+new session URL. Sessions are kept in server memory; create a fresh session if
+an old URL is rejected after a restart.
+
+The current Docker setup uses the live Platform API for avatar ownership, player
+data and progress. The wallet must own the avatar according to that API; entries
+in `mock/db.js` do not override Platform ownership. The launcher stops and prints
+the server error if session creation fails.
+
+If the browser redirects to `looperlands.io`, inspect the failed
+`GET /session/<session-id>` request in the browser Network tab with Preserve log
+enabled. The client redirects on session-load errors: HTTP 404 means the session
+is missing, HTTP 409 means it is already active, and HTTP 503 means player game data
+could not be loaded. This redirect does not establish that your map is broken.
+
+For an isolated playtest with local avatars and fixture data, follow the
+[local playtest guide](docs/living-worlds.md#local-playtest). That launcher currently
+supports the `main` map only.
 
 ## Using docker-compose watch
 Docker compose watch automatically will rebuild the gameserver when you make local changes.
