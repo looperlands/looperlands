@@ -26,7 +26,7 @@ function launch(mode = '') {
     const result = spawnSync('/bin/bash', [path.join(repository, 'start-local.command')], {
         cwd: os.tmpdir(), encoding: 'utf8', timeout: 10000,
         env: {...process.env, PATH: path.join(fixture, 'bin') + ':/usr/bin:/bin',
-            LAUNCHER_TEST_LOG: log, LAUNCHER_TEST_MODE: mode, LOCAL_IP: '192.0.2.1'}
+            LAUNCHER_TEST_LOG: log, LAUNCHER_TEST_MODE: mode, LOCAL_IP: '192.0.2.1', DOCKER_DEFAULT_PLATFORM: ''}
     });
     if (result.error) throw result.error;
     return {...result, calls: fs.existsSync(log) ? fs.readFileSync(log, 'utf8') : ''};
@@ -35,7 +35,7 @@ function launch(mode = '') {
 test('macOS launcher builds from a path with spaces and opens the ready local page', () => {
     const result = launch();
     expect(result.status).toBe(0);
-    expect(result.calls).toContain('docker|' + repository + '|compose -f docker-compose-local.yml up --build -d|127.0.0.1|linux/amd64');
+    expect(result.calls).toContain('docker|' + repository + '|compose -f docker-compose-local.yml up --build -d|127.0.0.1|');
     expect(result.calls).toContain('http://127.0.0.1:8010/local/api/catalog');
     expect(result.calls).toContain('open|http://127.0.0.1:8010/local/');
     expect(result.calls).not.toMatch(/docker\|[^\n]*\b(?:down|rm|kill)\b/);

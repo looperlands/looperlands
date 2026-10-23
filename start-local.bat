@@ -12,7 +12,6 @@ if errorlevel 1 goto compose_missing
 docker info >nul 2>&1
 if errorlevel 1 goto docker_stopped
 
-set "DOCKER_DEFAULT_PLATFORM=linux/amd64"
 set "LOCAL_IP=127.0.0.1"
 echo Starting LooperLands. The first build can take a few minutes.
 docker compose -f docker-compose-local.yml up --build -d
