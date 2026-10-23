@@ -43,6 +43,7 @@ module.exports = Player = Character.extend({
         this._super(this.connection.id, "player", Types.Entities.WARRIOR, 0, 0, "");
 
         this.hasEnteredGame = false;
+        this.disconnected = false;
         this.isDead = false;
         this.haters = {};
         this.lastCheckpoint = null;
@@ -72,7 +73,7 @@ module.exports = Player = Character.extend({
 
     handleMessage: async function (message) {
         const self = this, connection = this.connection;
-        if (self.clientReloadPending) return;
+        if (self.clientReloadPending || self.disconnected) return;
 
         var action = parseInt(message[0]);
 
@@ -83,6 +84,12 @@ module.exports = Player = Character.extend({
         }
 
         if (!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
+            // Legacy companion clients send follow immediately after HELLO, while
+            // equipment registration is still pending. Keep only the latest move.
+            if (self.entering && action === Types.Messages.SUMMON_FOLLOW && self.isBot()) {
+                self.pendingCompanionFollow = message.slice();
+                return;
+            }
             self.connection.close("Invalid handshake message: " + message);
             return;
         }
@@ -132,6 +139,10 @@ module.exports = Player = Character.extend({
             self.mapId = playerCache.mapId;
             try { await self.server.server.eventEquipment?.register(self); }
             catch (error) { self.connection.close('Event equipment service unavailable. Please reconnect.'); return; }
+            if (self.disconnected) {
+                self.server.server.eventEquipment?.unregister(self);
+                return;
+            }
             if (self.server.server.clientReloads?.rebooting) {connection.close('Server update in progress. Please reconnect.'); return;}
 
             self.kind = Types.Entities.WARRIOR;
@@ -189,9 +200,14 @@ module.exports = Player = Character.extend({
             self.server.server.socialChat?.register(self);
             self.playerEventBroker.setPlayer(self);
 
+            const pendingFollow = self.pendingCompanionFollow;
+            delete self.pendingCompanionFollow;
+            if (pendingFollow) await self.handleMessage(pendingFollow);
+            if (self.disconnected) return;
+
             await self.startFlowPolling();
 
-            if (!resumeState) self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
+            if (!resumeState && !self.disconnected) self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
         }
         else if (action === Types.Messages.WHO) {
@@ -636,6 +652,9 @@ module.exports = Player = Character.extend({
 
     handleDisconnect: function () {
         const self = this;
+        if (self.disconnected) return;
+        self.disconnected = true;
+        delete self.pendingCompanionFollow;
         self.server.server.clientReloads?.disconnected(self);
         self.server.server.activity?.stop(self.sessionId);
         self.server.server.eventEquipment?.unregister(self);
