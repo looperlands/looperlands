@@ -12,6 +12,8 @@ Private messages target opaque IDs and reach only their participants. Public mes
 
 ## Chat display
 
+The chat icon shows a count of unread incoming public and direct messages received during the current game session, capped at `99+`. Opening World clears public unread messages; My map clears only messages from the current map. Direct messages stay unread until their conversation is opened. Messages in the visible channel, your own messages, duplicate deliveries and restored history do not add to the count. A hidden browser tab does not mark messages as read. The Direct messages tab retains its separate private-message count.
+
 Map overlay closes the panel and shows the latest six incoming public messages directly above the health bar, with no background or border. History synchronization does not populate this live feed, and private messages remain in the main panel. Open chat restores the World panel without passing the click to the map; Hide removes the overlay. The original minus control hides chat. Overlay visibility persists in local browser storage and is off by default. The expand control keeps the existing full-size panel.
 
 ## Chat storage

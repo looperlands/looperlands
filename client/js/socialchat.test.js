@@ -17,7 +17,7 @@ function chat(globals = {}) {
     });
     const instance = Object.create(Chat.prototype);
     Object.assign(instance, {
-        overlayMessages: [], me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(), avatarSources: new Map(),
+        overlayMessages: [], me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(), publicUnread: new Map(), avatarSources: new Map(),
         connected: true, tab: 'world', target: '', players: [{id: 'bob'}],
         app: {game: {client: {connection: {connected: true}, sendChatGift: jest.fn(), sendSocialChat: jest.fn()}}},
         renderMessages: jest.fn(), renderBadges: jest.fn(), renderComposerState: jest.fn(), clearError: jest.fn(), error: jest.fn()
@@ -25,6 +25,197 @@ function chat(globals = {}) {
     const input = {value: ''}; instance.node = () => input;
     return {instance, input, timers};
 }
+
+function unreadChat({open = false, hidden = false} = {}) {
+    const makeNode = () => {
+        const classes = new Set();
+        const attributes = new Map();
+        return {
+            hidden: false, textContent: '',
+            classList: {
+                contains: name => classes.has(name),
+                toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); }
+            },
+            setAttribute: (name, value) => attributes.set(name, String(value)),
+            getAttribute: name => attributes.get(name),
+            removeAttribute: name => attributes.delete(name)
+        };
+    };
+    const button = makeNode();
+    const directBadge = makeNode();
+    const document = {hidden, getElementById: id => id === 'chatbutton' ? button : directBadge};
+    const {instance, input} = chat({document});
+    instance.panel = {classList: {contains: () => open}};
+    instance.node = id => id === 'chatinput' ? input : document.getElementById(id);
+    instance.renderHud = jest.fn();
+    instance.renderBadges = Object.getPrototypeOf(instance).renderBadges;
+    instance.app.game.audioManager = {playSound: jest.fn()};
+    return {instance, button, directBadge, document, setOpen(value) {open = value;}};
+}
+
+function incomingMessage(id, channel = 'world', overrides = {}) {
+    return {
+        id, channel, sender: {id: 'bob', label: 'Bob'}, message: 'Hello', mapId: 'main', epoch: 1,
+        ...(channel === 'direct' ? {recipient: {id: 'alice', label: 'Alice'}} : {}), ...overrides
+    };
+}
+
+test('closed chat badges public and private messages while the Direct tab keeps its own count', () => {
+    const {instance, button, directBadge} = unreadChat();
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('public'));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('private', 'direct'));
+    expect(instance.publicUnread.size).toBe(1);
+    expect(instance.unread.get('bob')).toBe(1);
+    expect(button.classList.contains('sc-unread')).toBe(true);
+    expect(button.getAttribute('data-unread-count')).toBe('2');
+    expect(button.getAttribute('title')).toBe('Chat · 2 unread messages');
+    expect(button.getAttribute('aria-label')).toBe('Chat · 2 unread messages');
+    expect(directBadge.hidden).toBe(false);
+    expect(String(directBadge.textContent)).toBe('1');
+});
+
+test.each([
+    ['World', 'world', '', 'world', 'main', 0],
+    ['My map on the same map', 'map', '', 'world', 'main', 0],
+    ['My map on another map', 'map', '', 'world', 'elsewhere', 1],
+    ['a direct conversation', 'direct', 'bob', 'world', 'main', 1],
+    ['World with an incoming DM', 'world', '', 'direct', 'main', 1],
+    ['the direct inbox', 'direct', '', 'direct', 'main', 1],
+    ['the matching direct conversation', 'direct', 'bob', 'direct', 'main', 0],
+    ['another direct conversation', 'direct', 'charlie', 'direct', 'main', 1]
+])('visible %s only reads messages shown in that view', (name, tab, target, channel, mapId, count) => {
+    const {instance, button} = unreadChat({open: true});
+    instance.tab = tab; instance.target = target;
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('new', channel, {mapId}));
+    expect(instance.publicUnread.size + [...instance.unread.values()].reduce((sum, value) => sum + value, 0)).toBe(count);
+    expect(button.classList.contains('sc-unread')).toBe(count > 0);
+});
+
+test.each(['world', 'direct'])('a hidden browser document does not read incoming %s messages', channel => {
+    const {instance, button} = unreadChat({open: true, hidden: true});
+    instance.tab = channel; instance.target = channel === 'direct' ? 'bob' : '';
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('hidden', channel));
+    expect(button.getAttribute('data-unread-count')).toBe('1');
+    expect(button.getAttribute('title')).toBe('Chat · 1 unread message');
+});
+
+test('self messages and replayed deliveries never add unread messages or repeat the DM sound', () => {
+    const {instance, button} = unreadChat();
+    const publicMessage = incomingMessage('public');
+    const directMessage = incomingMessage('private', 'direct');
+    for (const message of [publicMessage, publicMessage, directMessage, directMessage,
+        incomingMessage('own-public', 'world', {sender: {id: 'ALICE'}}),
+        incomingMessage('own-private', 'direct', {sender: {id: 'ALICE'}, recipient: {id: 'bob'}})]) {
+        instance.receive(Types.Messages.CHAT_MESSAGE, message);
+    }
+    expect(instance.histories.get('world')).toHaveLength(2);
+    expect(instance.histories.get('direct:bob')).toHaveLength(2);
+    expect(instance.publicUnread.size).toBe(1);
+    expect(instance.unread.get('bob')).toBe(1);
+    expect(button.getAttribute('data-unread-count')).toBe('2');
+    expect(instance.app.game.audioManager.playSound).toHaveBeenCalledTimes(1);
+});
+
+test('history synchronization preserves live unread counts without treating restored history as new', () => {
+    const {instance, button} = unreadChat();
+    const publicMessage = incomingMessage('live-public');
+    const directMessage = incomingMessage('live-private', 'direct');
+    instance.receive(Types.Messages.CHAT_MESSAGE, publicMessage);
+    instance.receive(Types.Messages.CHAT_MESSAGE, directMessage);
+    instance.render = jest.fn();
+    const state = {
+        me: instance.me, players: [instance.me, {id: 'bob'}],
+        world: [incomingMessage('old-public'), publicMessage],
+        map: [incomingMessage('old-public'), publicMessage],
+        direct: [incomingMessage('old-private', 'direct'), directMessage]
+    };
+    instance.receive(Types.Messages.CHAT_STATE, state);
+    instance.receive(Types.Messages.CHAT_STATE, state);
+    instance.receive(Types.Messages.CHAT_MESSAGE, state.world[0]);
+    instance.receive(Types.Messages.CHAT_MESSAGE, state.direct[0]);
+    expect(instance.publicUnread.size).toBe(1);
+    expect(instance.unread.get('bob')).toBe(1);
+    expect(button.getAttribute('data-unread-count')).toBe('2');
+    expect(instance.app.game.audioManager.playSound).toHaveBeenCalledTimes(1);
+});
+
+test('history for a different authenticated player clears the previous player unread state', () => {
+    const {instance, button} = unreadChat();
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('public'));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('private', 'direct'));
+    instance.render = () => instance.renderBadges();
+    const me = {id: 'charlie', mapId: 'main'};
+    instance.receive(Types.Messages.CHAT_STATE, {me, players: [me], world: [], map: [], direct: []});
+    expect(instance.publicUnread.size).toBe(0);
+    expect(instance.unread.size).toBe(0);
+    expect(button.classList.contains('sc-unread')).toBe(false);
+});
+
+test('a map sync reads only the new map public messages in the visible My map view', () => {
+    const {instance, setOpen} = unreadChat();
+    const oldMapMessage = incomingMessage('old-map');
+    const newMapMessage = incomingMessage('new-map', 'world', {mapId: 'elsewhere'});
+    instance.receive(Types.Messages.CHAT_MESSAGE, oldMapMessage);
+    instance.receive(Types.Messages.CHAT_MESSAGE, newMapMessage);
+    setOpen(true); instance.tab = 'map'; instance.render = () => instance.renderBadges();
+    const me = {id: 'alice', mapId: 'elsewhere'};
+    instance.receive(Types.Messages.CHAT_STATE, {
+        me, players: [me], world: [oldMapMessage, newMapMessage], map: [newMapMessage], direct: []
+    });
+    expect([...instance.publicUnread.keys()]).toEqual(['old-map']);
+});
+
+test('reading My map and World clears the matching public messages while preserving unread DMs', () => {
+    const {instance, button, setOpen} = unreadChat();
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('here'));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('elsewhere', 'world', {mapId: 'elsewhere'}));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('private', 'direct'));
+    setOpen(true); instance.tab = 'map';
+    instance.renderBadges();
+    expect([...instance.publicUnread.keys()]).toEqual(['elsewhere']);
+    expect(instance.unread.get('bob')).toBe(1);
+    expect(button.getAttribute('data-unread-count')).toBe('2');
+    instance.tab = 'world'; instance.renderBadges();
+    expect(instance.publicUnread.size).toBe(0);
+    expect(instance.unread.get('bob')).toBe(1);
+    expect(button.getAttribute('data-unread-count')).toBe('1');
+});
+
+test('opening one direct conversation leaves other conversations and public unread intact', () => {
+    const {instance, button, directBadge, setOpen} = unreadChat();
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('public'));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('bob-private', 'direct'));
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('charlie-private', 'direct', {sender: {id: 'charlie'}}));
+    setOpen(true); instance.tab = 'direct'; instance.target = 'bob'; instance.renderBadges();
+    expect(instance.unread.has('bob')).toBe(false);
+    expect(instance.unread.get('charlie')).toBe(1);
+    expect(instance.publicUnread.size).toBe(1);
+    expect(button.getAttribute('data-unread-count')).toBe('2');
+    expect(String(directBadge.textContent)).toBe('1');
+});
+
+test('returning to a visible conversation clears its unread badge and resets the icon label', () => {
+    const {instance, button, directBadge, document} = unreadChat({open: true, hidden: true});
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('hidden-public'));
+    expect(button.classList.contains('sc-unread')).toBe(true);
+    document.hidden = false; instance.renderBadges();
+    expect(instance.publicUnread.size).toBe(0);
+    expect(button.classList.contains('sc-unread')).toBe(false);
+    expect(button.getAttribute('title')).toBe('Chat');
+    expect(button.getAttribute('aria-label')).toBe('Chat');
+    expect(directBadge.hidden).toBe(true);
+});
+
+test('the icon caps its displayed count while its accessible label keeps the full unread total', () => {
+    const {instance, button} = unreadChat();
+    for (let index = 0; index < 101; index++) {
+        instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('public-' + index));
+    }
+    instance.receive(Types.Messages.CHAT_MESSAGE, incomingMessage('private', 'direct'));
+    expect(button.getAttribute('data-unread-count')).toBe('99+');
+    expect(button.getAttribute('title')).toBe('Chat · 102 unread messages');
+    expect(button.getAttribute('aria-label')).toBe('Chat · 102 unread messages');
+});
 
 test.each([
     '_a7757eb05782aa7784d6c25b4b4291da370af19de23d9175613d1efe988ed59ei0',
