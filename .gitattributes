@@ -1,0 +1,7 @@
+# Scripts executed by Linux containers must keep Unix line endings on Windows.
+*.sh text eol=lf
+*.command text eol=lf
+Dockerfile* text eol=lf
+bin/local-mapmaker.js text eol=lf
+server/local-launcher/* text eol=lf
+*.bat text eol=crlf

@@ -92,6 +92,10 @@ async function setupMinigamePlatform() {
         // ADD MINIGAME MENU
         $("#minigame").append(`<div id="minigameMenu"></div>`);
         $("#minigameMenu").append(MINIGAME_MENU);
+        // Menu actions must not follow the versioned asset <base> away from the session.
+        $('#minigameMenu').on('click', 'a[href="#"]', function (event) {
+            event.preventDefault();
+        });
 
 
         // LOAD MINIGAME.CSS

@@ -78,6 +78,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         enable: function() {
+            if (this.isDisposed) return;
             this.isListening = true;
         },
     
@@ -89,15 +90,35 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         resetPendingSpawns: function() {
             this.pendingSpawns = new Map();
         },
+
+        closeConnection: function() {
+            const connection = this.connection;
+            this.connection = null;
+            if (!connection) return;
+            connection.removeAllListeners();
+            connection.disconnect();
+        },
+
+        dispose: function() {
+            if (this.isDisposed) return;
+            this.isDisposed = true;
+            this.disable();
+            this.dynamicAppearances?.clear();
+            this.closeConnection();
+        },
         
         connect: function(dispatcherMode) {
+            if (this.isDisposed) return;
+            this.closeConnection();
              var url = this.protocol + "://" + this.host + ":" + this.port + "/",
              self = this;
              console.log(url);
 
              
-            this.connection = io(url, {'force new connection':true, query : "mapId=" + this.mapId});
-            this.connection.on('connection', function(socket){
+            const connection = this.connection = io(url, {'force new connection':true, query : "mapId=" + this.mapId});
+            const current = () => !self.isDisposed && self.connection === connection;
+            connection.on('connection', function(socket){
+                if (!current()) return;
                 console.log("Connected to server " + url);
             });
 
@@ -109,10 +130,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
                 const dispatcher = this.connection;
                 dispatcher.on("dispatched", function(reply) {
+                    if (!current()) return;
                     console.log("Dispatched: ")
                     console.log(reply)
                     if(reply.status === 'OK') {
-                        dispatcher.disconnect();
+                        self.closeConnection();
                         self.dispatched_callback(reply.host, reply.port);
                     } else if(reply.status === 'FULL') {
                         console.log("LooerpQuest is currently at maximum player population. Please retry later.");
@@ -120,11 +142,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                         console.log("Unknown error while connecting to LooperLands.");
                     }
                 });
-                dispatcher.on('connect', () => dispatcher.emit('dispatch', true));
+                dispatcher.on('connect', () => {if (current()) dispatcher.emit('dispatch', true);});
                 
             } else {
 
-                this.connection.on("message", function(data) {
+                connection.on("message", function(data) {
+                    if (!current()) return;
 
                     if(data === "go") {
                         if(self.connected_callback) {
@@ -144,8 +167,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     console.error(e, true);
                 };*/
 
-                this.connection.on("disconnect", function() {
-                    if (self.isReloading || self.isRecovering) return;
+                connection.on("disconnect", function() {
+                    if (!current() || self.isReloading || self.isRecovering) return;
                     self.resetPendingSpawns();
                     console.debug("Connection closed");
                     $('#container').addClass('error');
@@ -162,7 +185,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         sendMessage: function(json) {
-            if(this.connection.connected) {
+            if(!this.isDisposed && this.connection?.connected) {
                 this.connection.emit("message", json);
             }
         },
@@ -188,6 +211,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         receiveAction: function(data) {
+            if (this.isDisposed) return;
             var action = data[0];
             const pending = this.pendingSpawns.get(data[1]);
             if (pending && this.deferredEntityActions.has(action)) {
@@ -278,6 +302,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         receiveSpawn: function(data) {
+            if (this.isDisposed) return;
             const state = this.readSpawnState(data);
             const {id, kind, x, y} = state;
             // Reconcile an existing object without constructing it or reloading NFTs.
@@ -317,12 +342,13 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 var character = EntityFactory.createEntity(kind, id, state.name);
                 if (!character) return;
                 this.pendingSpawns.set(id, pending);
-                const current = () => this.pendingSpawns.get(id) === pending;
+                const current = () => !this.isDisposed && this.pendingSpawns.get(id) === pending;
                 const load = (kind, apply) => {
                     const cached = this.dynamicAppearances.get(kind);
                     if (cached) { apply(cached); return; }
                     let delivered = false;
                     const request = loadDynamicNFTByKind(kind, this.sessionId, nft => {
+                        if (this.isDisposed) return;
                         this.dynamicAppearances.set(kind, nft);
                         if (!current()) return;
                         delivered = true;
@@ -333,6 +359,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     request?.then?.(() => {
                         if (!delivered && current()) this.pendingSpawns.delete(id);
                     }, error => {
+                        if (this.isDisposed) return;
                         if (current()) this.pendingSpawns.delete(id);
                         console.error('Failed to load entity appearance', id, error);
                     });

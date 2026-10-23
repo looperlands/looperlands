@@ -67,6 +67,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 this.worker.addEventListener("message", (e) => {
                     if (e.data.type === "rendered") {
                         self.game.tick();
+                    } else if (e.data.type === 'tilesetReady') {
+                        self.handleTilesetReady(e.data);
                     }
                 });
             },
@@ -91,8 +93,29 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             setTileset: function(tileset) {
+                this.tilesetLoad?.reject(new Error('Tileset replaced'));
                 this.tileset = tileset;
-                this.worker.postMessage({type: "setTileset", src: tileset.src});
+                const requestId = this.tilesetRequestId = (this.tilesetRequestId || 0) + 1;
+                const load = {requestId};
+                load.promise = new Promise((resolve, reject) => {
+                    load.resolve = resolve;
+                    load.reject = reject;
+                });
+                // Initial startup does not await the worker; transitions can opt in.
+                load.promise.catch(() => {});
+                this.tilesetLoad = load;
+                this.worker.postMessage({type: "setTileset", src: tileset.src, requestId});
+            },
+
+            whenTilesetReady: function() {
+                return this.tilesetLoad?.promise || Promise.resolve(this.tileset);
+            },
+
+            handleTilesetReady: function(data) {
+                const load = this.tilesetLoad;
+                if (!load || load.requestId !== data.requestId) return;
+                if (data.error) load.reject(new Error(data.error));
+                else load.resolve(this.tileset);
             },
     
             getScaleFactor: function() {
@@ -131,7 +154,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 if(!this.upscaledRendering && this.game.map && this.game.map.tilesets) {
                     this.setTileset(this.game.map.tilesets[this.scale - 1]);
                 }
-                if(this.game.renderer) {
+                if(this.game.renderer && this.game.spritesets) {
                     this.game.setSpriteScale(this.scale);
                 }
             },

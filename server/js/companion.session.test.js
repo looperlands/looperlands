@@ -1,7 +1,13 @@
 const fs = require('fs');
 const vm = require('vm');
 global.Types = {};
+jest.mock('./lib/class', () => {
+    const exports = {};
+    require('vm').runInNewContext(require('fs').readFileSync(require.resolve('./lib/class'), 'utf8'), {exports});
+    return exports;
+});
 const Types = require('../../shared/js/gametypes');
+const Messages = require('./message');
 
 const [companionId, companionKind] = Object.entries(Types.Entities)
     .find(([id, kind]) => id.startsWith('NFT_') && Types.isBot(kind));
@@ -27,7 +33,7 @@ function setup() {
         source.indexOf("        app.post('/session/:sessionId/teleport'")
     ), {
         app: {post: (path, handler) => {createSession = handler;}},
-        cache, dao, Types, crypto: require('crypto'),
+        cache, dao, Types, platformClient: {}, crypto: require('crypto'),
         process: {env: {LOOPWORMS_API_KEY: 'test-key'}}, console: {error: jest.fn()}
     });
 
@@ -40,7 +46,7 @@ function setup() {
     return {sessions, cache, dao, gameData, body, res, create};
 }
 
-function connectCompanion(cache, sessionId) {
+function connectCompanion(cache, sessionId, eventEquipment) {
     const worldModule = {exports: {}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./worldserver'), 'utf8'), {
         module: worldModule,
@@ -52,18 +58,29 @@ function connectCompanion(cache, sessionId) {
     const owner = {id: 'owner', walletId: 'wallet', hasEnteredGame: true, isBot: () => false};
     const world = Object.assign(Object.create(worldModule.exports), {
         id: 'world_main', players: {owner}, entities: {owner}, outgoingQueues: {},
-        server: {cache}, addEntity: jest.fn(), enter_callback: jest.fn()
+        server: {cache, eventEquipment}, addEntity: jest.fn(), enter_callback: jest.fn(),
+        isValidPosition: jest.fn().mockReturnValue(true)
     });
     world.server.worldsMap = {main: world};
+    world.enter_callback.mockImplementation(player => {
+        player.onMove(jest.fn());
+        player.onZone(jest.fn());
+    });
 
+    const formatModule = {exports: {}};
+    vm.runInNewContext(fs.readFileSync(require.resolve('./format'), 'utf8'), {
+        exports: formatModule.exports, Class: require('./lib/class').Class,
+        require: name => name === 'underscore' ? require('underscore') : Types
+    });
     const playerModule = {exports: {}};
     vm.runInNewContext(fs.readFileSync(require.resolve('./player'), 'utf8'), {
-        module: playerModule, process: {env: {}}, performance: {now: () => 1000},
+        module: playerModule, process: {env: {}}, performance: {now: () => 1000}, clearTimeout,
         Character: {extend: methods => methods}, FormatChecker: function () {},
         require: name => {
             switch (name) {
                 case '../../shared/js/gametypes': return Types;
-                case './format': return {check: () => true};
+                case './format': return formatModule.exports;
+                case './message': return Messages;
                 case './utils': return {randomOrientation: () => 1};
                 case './formulas': return {level: () => 1};
                 case './socialchat': return {gameplayNameFromSession: data => data.name};
@@ -79,15 +96,17 @@ function connectCompanion(cache, sessionId) {
     });
     const player = playerModule.exports;
     const connection = {id: 'companion', listen: jest.fn(), onClose: jest.fn(), close: jest.fn(), sendUTF8: jest.fn()};
+    connection.close.mockImplementation(() => connection.onClose.mock.calls[0][0]());
     player._super = () => {player.id = connection.id;};
     player.init(connection, world);
     Object.assign(player, {
         resetTimeout: jest.fn(), equipArmor: jest.fn(), equipWeapon: jest.fn(),
         setPosition: (x, y) => Object.assign(player, {x, y}),
-        updateHitPoints: jest.fn(), send: jest.fn(), startFlowPolling: jest.fn().mockResolvedValue()
+        updateHitPoints: jest.fn(), send: jest.fn(), startFlowPolling: jest.fn().mockResolvedValue(),
+        clearTarget: jest.fn(), broadcast: jest.fn()
     });
     return {
-        player, connection, world,
+        player, connection, world, receive: connection.listen.mock.calls[0][0],
         hello: () => connection.listen.mock.calls[0][0]([
             Types.Messages.HELLO, 'Companion', companionKind, Types.Entities.TRANSPARENT_WEAPON, sessionId
         ])
@@ -137,4 +156,102 @@ test('an ordinary avatar still loads data through the browser login flow', async
     expect(dao.loadAvatarGameData).not.toHaveBeenCalled();
     const {sessionId} = res.send.mock.calls[0][0];
     expect(cache.get(sessionId).gameData).toBeUndefined();
+});
+
+
+function delayedEquipment() {
+    let finish;
+    const pending = new Promise(resolve => {finish = resolve;});
+    return {register: jest.fn(() => pending), unregister: jest.fn(), finish};
+}
+
+test('immediate companion follow packets wait for HELLO and keep the latest owner position', async () => {
+    const {create, res, cache} = setup();
+    await create();
+    const equipment = delayedEquipment();
+    const {player, connection, world, hello, receive} = connectCompanion(cache, res.send.mock.calls[0][0].sessionId, equipment);
+    const joining = hello();
+    await receive([Types.Messages.SUMMON_FOLLOW, 12, 20]);
+    await receive([Types.Messages.SUMMON_FOLLOW, 40, 50]);
+    expect(player.hasEnteredGame).toBe(false);
+    expect(player.move_callback).toBeUndefined();
+    equipment.finish();
+    await joining;
+
+    expect(connection.close).not.toHaveBeenCalled();
+    expect(player.hasEnteredGame).toBe(true);
+    expect(player).toMatchObject({x: 39, y: 49});
+    expect(player.move_callback).toHaveBeenCalledTimes(1);
+    expect(player.broadcast.mock.invocationCallOrder[0]).toBeGreaterThan(player.playerEventBroker.setPlayer.mock.invocationCallOrder[0]);
+    expect(player.broadcast.mock.calls[0][0].serialize()).toEqual([Types.Messages.MOVE, player.id, 39, 49]);
+    expect(world.players[player.id]).toBe(player);
+    expect(player.pendingCompanionFollow).toBeUndefined();
+
+    await receive([Types.Messages.SUMMON_FOLLOW, 45, 55]);
+    expect(player).toMatchObject({x: 44, y: 54});
+    expect(player.move_callback).toHaveBeenCalledTimes(2);
+    expect(player.zone_callback).toHaveBeenCalledTimes(2);
+});
+
+test('disconnect during companion registration cannot leave a frozen spawn or restore registration', async () => {
+    const {create, res, cache} = setup();
+    await create();
+    const equipment = delayedEquipment();
+    const {player, connection, world, hello, receive} = connectCompanion(cache, res.send.mock.calls[0][0].sessionId, equipment);
+    const joining = hello();
+    await receive([Types.Messages.SUMMON_FOLLOW, 40, 50]);
+    connection.onClose.mock.calls[0][0]();
+    // Model registration completing after disconnect cleanup already ran.
+    equipment.unregister.mockClear();
+    equipment.finish();
+    await joining;
+
+    expect(equipment.unregister).toHaveBeenCalledWith(player);
+    expect(world.addEntity).not.toHaveBeenCalled();
+    expect(world.enter_callback).not.toHaveBeenCalled();
+    expect(world.players[player.id]).toBeUndefined();
+    expect(player.send).not.toHaveBeenCalled();
+    expect(player.hasEnteredGame).toBe(false);
+    expect(player.pendingCompanionFollow).toBeUndefined();
+    await receive([Types.Messages.SUMMON_FOLLOW, 45, 55]);
+    expect(player.move_callback).toBeUndefined();
+});
+
+test.each(['before HELLO', 'ordinary avatar', 'other action', 'malformed follow'])(
+    'early packets remain invalid for %s', async scenario => {
+        const {create, res, cache} = setup();
+        await create();
+        const equipment = delayedEquipment();
+        const {player, connection, world, hello, receive} = connectCompanion(cache, res.send.mock.calls[0][0].sessionId, equipment);
+        const joining = scenario === 'before HELLO' ? Promise.resolve() : hello();
+        if (scenario === 'ordinary avatar') player.isBot = () => false;
+        const action = scenario === 'other action' ? Types.Messages.MOVE : Types.Messages.SUMMON_FOLLOW;
+        const packet = [action, 40, scenario === 'malformed follow' ? 'invalid' : 50];
+        await receive(packet);
+        equipment.finish();
+        await joining;
+        const reason = scenario === 'malformed follow'
+            ? 'Invalid SUMMON_FOLLOW message format: ' : 'Invalid handshake message: ';
+        expect(connection.close).toHaveBeenCalledWith(reason + packet);
+        expect(world.addEntity).not.toHaveBeenCalled();
+        expect(player.hasEnteredGame).toBe(false);
+    }
+);
+
+
+test('failed companion equipment registration discards buffered follow without entering the world', async () => {
+    const {create, res, cache} = setup();
+    await create();
+    let reject;
+    const equipment = {register: () => new Promise((resolve, fail) => {reject = fail;}), unregister: jest.fn()};
+    const {player, connection, world, hello, receive} = connectCompanion(cache, res.send.mock.calls[0][0].sessionId, equipment);
+    const joining = hello();
+    await receive([Types.Messages.SUMMON_FOLLOW, 40, 50]);
+    reject(new Error('equipment unavailable'));
+    await joining;
+    expect(connection.close).toHaveBeenCalledWith('Event equipment service unavailable. Please reconnect.');
+    expect(world.addEntity).not.toHaveBeenCalled();
+    expect(player.hasEnteredGame).toBe(false);
+    expect(player.pendingCompanionFollow).toBeUndefined();
+    expect(player.move_callback).toBeUndefined();
 });

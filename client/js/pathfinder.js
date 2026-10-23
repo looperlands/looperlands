@@ -24,6 +24,20 @@ class Pathfinder {
         }
     }
 
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+        for (const worker of this.workers) {
+            worker.onmessage = null;
+            worker.terminate();
+        }
+        this.workers = [];
+        this.clearIgnoreList();
+        const pending = this.pendingRequests;
+        this.pendingRequests = {};
+        for (const resolve of Object.values(pending)) resolve([]);
+    }
+
     generateUniqueId() {
         return '_' + Math.random().toString(36).substring(2, 9);
     }
@@ -35,6 +49,7 @@ class Pathfinder {
     }
 
     findPath(grid, entity, x, y, requireCardinalEnd = false) {
+        if (this.destroyed) return Promise.resolve([]);
         return new Promise((resolve, reject) => {
             let requestId;
             try {

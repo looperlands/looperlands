@@ -78,7 +78,7 @@ test.each([0, 11000])('WELCOME after %i ms restores health and position without 
     let welcome;
     game.client.onWelcome = callback => { welcome = callback; };
     Object.assign(game, {deathReady: true, storage: {incrementRevives: jest.fn()},
-        renderer: {getEntityBoundingRect: () => ({})},
+        renderer: {getEntityBoundingRect: () => ({})}, map: {preloadNearDoors: jest.fn()},
         app: {...game.app, initEquipmentIcons: jest.fn()}});
     for (const name of ['prepareRevivedPlayer', 'updateBars', 'resetCamera', 'updatePlateauMode', 'syncWorldTime', 'addEntity', 'startScenePolling', 'handleScene', 'renderStatistics', 'gamestart_callback']) game[name] = jest.fn();
     player.setGridPosition = jest.fn(); player.setMaxHitPoints = jest.fn();
@@ -90,6 +90,7 @@ test.each([0, 11000])('WELCOME after %i ms restores health and position without 
     jest.advanceTimersByTime(delay);
     welcome(42, 'Looper', 12, 20, 200, 'Explorer', 1234);
     expect(player.setGridPosition).toHaveBeenCalledWith(12, 20);
+    expect(game.map.preloadNearDoors).toHaveBeenCalledWith(12, 20);
     expect(player.setMaxHitPoints).toHaveBeenCalledWith(200);
     expect(player.pixelDissolve).toMatchObject({incoming: true, duration: 1000});
     expect(game.reviving).toBe(false);

@@ -1,25 +1,33 @@
-version: '3.8'
 services:
   gameserver:
     build: .
     image: looperlands-gameserver
+    command: ["node", "bin/local-mapmaker.js"]
     environment:
+      NODE_ENV: development
+      LOOPERLANDS_LOCAL_PLAYTEST: "1"
+      LOOPERLANDS_LOCAL_DATA_DIR: /opt/app/data/local-playtest
+      MAPMAKER_CHECKOUT_DIR: /workspace
       LOOPWORMS_API_KEY: ${LOOPWORMS_API_KEY:-placeholder}
       LOOPWORMS_LOOPERLANDS_BASE_URL: ${LOOPWORMS_LOOPERLANDS_BASE_URL:-http://jsonserver}
-      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      DISCORD_TOKEN: ""
       LOOPERLANDS_BACKEND_BASE_URL: ${LOOPERLANDS_BACKEND_BASE_URL:-http://jsonserver}
       LOOPERLANDS_BACKEND_API_KEY: ${LOOPERLANDS_BACKEND_API_KEY:-http://jsonserver}
       APP_URL: http://${LOCAL_IP:-127.0.0.1}:8000
-      LOOPERLANDS_PLATFORM_BASE_URL: https://platform.looperlands.io
-      LOOPERLANDS_PLATFORM_API_KEY: ${LOOPERLANDS_PLATFORM_API_KEY:-WeIJ2QCDSKZr9Q}
       GAMESERVER_NAME: local
     ports:
-      - "8000:8000"
-      - "9229:9229"
+      - "${LOCAL_IP:-127.0.0.1}:8000:8000"
+      - "${LOCAL_IP:-127.0.0.1}:8010:8010"
+      - "127.0.0.1:9229:9229"
     stdin_open: true
     tty: true
     volumes:
       - local-chat-history:/opt/app/data/chat
+      - local-game-data:/opt/app/data/local-playtest
+      - ./:/workspace:ro
+      - ./client:/opt/app/client
+      - ./server/maps:/opt/app/server/maps
+      - ./tools/maps:/opt/app/tools/maps
     depends_on:
       - jsonserver
     develop:
@@ -32,13 +40,15 @@ services:
           action: rebuild
 
   jsonserver:
+    platform: linux/amd64
     image: codfish/json-server:0.17.3
     volumes:
       - ./mock/db.js:/app/db.js:delegated
       - ./mock/middleware.js:/app/middleware.js:delegated
       - ./mock/routes.json:/app/routes.json:delegated
     ports:
-      - 3000:80
+      - "127.0.0.1:3000:80"
 
 volumes:
   local-chat-history:
+  local-game-data:

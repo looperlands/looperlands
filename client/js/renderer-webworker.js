@@ -1,6 +1,7 @@
 let rendererExtensions = null;
 const extensionModules = new Set();
 let tileset = undefined;
+let tilesetGeneration = 0;
 let tilesize = 16;
 let canvases = {};
 let contexes = {};
@@ -400,11 +401,20 @@ onmessage = (e) => {
     }
 
     if (e.data.type === "setTileset") {
+        const generation = ++tilesetGeneration;
+        const {requestId, src} = e.data;
+        const previousTileset = tileset;
         tileset = undefined;
         clearImageCache();
         terrainCache.clear();
-        loadImg(e.data.src).then((img) => {
+        previousTileset?.close?.();
+        loadImg(src).then((img) => {
+            if (generation !== tilesetGeneration) {
+                img?.close?.();
+                return;
+            }
             tileset = img;
+            self.postMessage({type: 'tilesetReady', requestId, ...(img ? {} : {error: 'Map tileset could not be loaded'})});
         });
     } else if (e.data.type === "loadCursor") {
         loadImg(e.data.src).then((img) => {

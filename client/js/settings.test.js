@@ -22,7 +22,7 @@ function setup(saved = {}) {
     document.querySelector=()=>options;
     const reducedMotion = {matches: false};
     const window = {matchMedia: jest.fn(() => reducedMotion)};
-    const app = {toggleSettings: jest.fn(),game: {combatFeedback: {clear: jest.fn()}, audioManager: {enable: jest.fn(), disable: jest.fn()}}};
+    const app = {toggleSettings: jest.fn(), fitGameToViewport: jest.fn(), game: {combatFeedback: {clear: jest.fn()}, audioManager: {enable: jest.fn(), disable: jest.fn()}}};
     const $ = () => ({css: jest.fn(), width: () => 600, height: () => 400});
     const GameSettings = vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'settings.js'), 'utf8') + '\nGameSettings;', {
         localStorage, document, window, $, console,
@@ -183,4 +183,15 @@ test.each([['ArrowRight',3,0],['ArrowLeft',0,3],['Home',2,0],['End',0,3]])('%s m
 test('ordinary Tab navigation remains native',()=>{
     const {tabs}=setup(),event={key:'Tab',preventDefault:jest.fn(),stopPropagation:jest.fn()};
     listener(tabs[0],'keydown')(event);expect(event.preventDefault).not.toHaveBeenCalled();
+});
+
+
+test('fullscreen changes persist before refitting through the shared viewport layout', () => {
+    const {settings, app, values} = setup();
+    const saved = [];
+    app.fitGameToViewport.mockImplementation(() => saved.push(values.get('fullscreen')));
+    settings.setFullscreen(false);
+    settings.setFullscreen(true);
+    expect(app.fitGameToViewport).toHaveBeenCalledTimes(2);
+    expect(saved).toEqual(['false', 'true']);
 });

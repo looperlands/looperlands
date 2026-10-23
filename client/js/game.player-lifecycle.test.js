@@ -33,7 +33,7 @@ function setup(visible) {
         renderer: {mobile: true}, camera: {isVisiblePosition: () => visible},
         entityGrid: cells(), renderingGrid: cells(), itemGrid: cells(),
         pathingGrid: Array.from({length: 8}, () => Array(8).fill(0)),
-        map: {isOutOfBounds: () => false, getCurrentTrigger: () => null},
+        map: {isOutOfBounds: () => false, getCurrentTrigger: () => null, preloadNearDoors: jest.fn()},
         sprites: {clotharmor: {name: 'clotharmor', createAnimations: () => ({})}},
         getServerInfo: jest.fn(), handleScene: jest.fn(),
         onCharacterUpdate: jest.fn(),

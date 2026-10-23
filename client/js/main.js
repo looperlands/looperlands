@@ -2,8 +2,6 @@
 define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     var app, game;
 
-    let gamepadHandler = undefined;
-
     var initApp = function() {
         $(document).ready(function() {
         	app = new App();
@@ -241,9 +239,9 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
             
                 document.addEventListener("touchstart", function() {},false);
                 
-                $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
-                $('#resize-check').bind("webkitTransitionEnd", app.resizeUi.bind(app));
-                $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
+                $('#resize-check').bind("transitionend", app.scheduleResize.bind(app));
+                $('#resize-check').bind("webkitTransitionEnd", app.scheduleResize.bind(app));
+                $('#resize-check').bind("oTransitionEnd", app.scheduleResize.bind(app));
 
                 document.addEventListener("visibilitychange", () => {
                     if (document.visibilityState === 'hidden') {
@@ -293,11 +291,13 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 app.clientUpdates = app.clientUpdates || new ClientUpdates(app);
                 app.clientUpdates.start(game.client.connection);
                 app.initEquipmentIcons();
-                keyboardHandler = new KeyBoardHandler(game, app);
-                game.keyboardHandler = keyboardHandler;
-                game.touchListener = new TouchListener(game);
-                game.gamepadListener = new GamePadListener(game);
-                if (new URLSearchParams(window.location.search).get('profileKills') === '1') {
+                app.scheduleResize();
+                if (!game.keyboardHandler) {
+                    game.keyboardHandler = new KeyBoardHandler(game, app);
+                    game.touchListener = new TouchListener(game);
+                    game.gamepadListener = new GamePadListener(game);
+                }
+                if (new URLSearchParams(window.location.search).get('profileKills') === '1' && !window.__killAudioProbe) {
                     require(['kill-audio-probe'], function (probe) {
                         window.__killAudioProbe = probe.install(game);
                     });
@@ -385,16 +385,12 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 game.interact();
             });
 
-            // Zoom game area to fill 95% of window size.
-            window.onresize = () => {
-                if (!app.settings.getFullscreen()) {
-                    return;
-                }
-                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')');
-            }
-            if (app.settings.getFullscreen()) {
-                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')')
-            }
+            const resize = app.scheduleResize.bind(app);
+            window.addEventListener('resize', resize);
+            window.addEventListener('orientationchange', resize);
+            window.visualViewport?.addEventListener('resize', resize);
+            window.visualViewport?.addEventListener('scroll', resize);
+            app.resizeUi();
 
             $('body').unbind('click');
             $('body').click(function(event) {

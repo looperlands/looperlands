@@ -22,6 +22,8 @@ function createPathfinder() {
             this.postedGrids.push(data.grid);
             this.requests.push(JSON.parse(JSON.stringify(data)));
         }
+
+        terminate = jest.fn();
     }
 
     const Pathfinder = vm.runInNewContext(`${pathfinderSource}\nPathfinder;`, { Worker });
@@ -211,6 +213,30 @@ test('a failed worker post releases its pending resolver and a later request sti
     const next = pathfinder.findPath(grid, entity(7, 0, 0), 3, 0);
     await workers[1].complete();
     expect((await next).at(-1)).toEqual([3, 0]);
+});
+
+test('destroying the old map settles every pending path and terminates the worker pool once', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = [[0, 0, 0, 0], [0, 0, 0, 0]], player = entity(7, 0, 0);
+    const first = pathfinder.findPath(grid, player, 3, 0);
+    const second = pathfinder.findPath(grid, player, 3, 1);
+    const lateReply = workers[0].onmessage;
+    const requestId = workers[0].requests[0].requestId;
+    pathfinder.ignoreEntity(player);
+
+    pathfinder.destroy();
+    pathfinder.destroy();
+    expect(await first).toEqual([]);
+    expect(await second).toEqual([]);
+    expect(await pathfinder.findPath(grid, player, 1, 0)).toEqual([]);
+    expect(pathfinder.pendingRequests).toEqual({});
+    expect(pathfinder.ignored).toEqual([]);
+    expect(pathfinder.workers).toEqual([]);
+    for (const worker of workers) {
+        expect(worker.onmessage).toBeNull();
+        expect(worker.terminate).toHaveBeenCalledTimes(1);
+    }
+    expect(() => lateReply({data: {requestId, path: [[0, 0], [3, 0]]}})).not.toThrow();
 });
 
 test('nearby paths match diagonal A* distance for all 512 collision layouts of a 3x3 grid', async () => {

@@ -28,6 +28,21 @@ jobs:
       run: npm run coverage
     - name: Build production image
       run: docker build -f Dockerfile.prod --build-arg GAME_RELEASE_ID=${{ github.sha }} -t looperlands-node-validation .
+    - name: Build local toolbox image
+      run: docker build -t looperlands-local-validation .
+    - name: Check local toolbox runtime
+      run: |
+        docker run --rm --network none --env LOOPERLANDS_LOCAL_PLAYTEST=1 --entrypoint node looperlands-local-validation -e '
+          const assert = require("node:assert/strict");
+          const fs = require("node:fs");
+          const {execFileSync} = require("node:child_process");
+          assert.equal(process.version, "v" + fs.readFileSync(".nvmrc", "utf8").trim());
+          execFileSync("python3", ["-c", "from lxml import etree"]);
+          execFileSync("git", ["--version"]);
+          const {LooperLandsPlatformClient} = require("./server/js/looperlandsplatformclient");
+          assert.equal(new LooperLandsPlatformClient().localPlaytest, true);
+          console.log("Local toolbox runtime:", process.version, process.arch);
+        '
     - name: Check production runtime
       run: |
         docker run --rm --network none --entrypoint node looperlands-node-validation -e '

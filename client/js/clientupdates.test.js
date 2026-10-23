@@ -44,6 +44,82 @@ test('server-only releases keep the client and socket alive while advancing the 
     expect(f.location.replace).not.toHaveBeenCalled();
 });
 
+test('map switches move update listeners to the new socket without duplicating the polling loop', async () => {
+    const f = fixture();
+    f.socket.off = jest.fn();
+    f.updater.started = false;
+    f.updater.start(f.socket);
+    await turn();
+    const originalHandlers = {...f.handlers};
+    expect(jest.getTimerCount()).toBe(1);
+    const nextHandlers = {}, nextSocket = {on: jest.fn((event, fn) => {nextHandlers[event] = fn;})};
+    const requests = f.apiFetch.mock.calls.length;
+
+    f.updater.start(nextSocket);
+    f.updater.start(nextSocket);
+    expect(f.socket.off).toHaveBeenCalledTimes(3);
+    for (const [event, handler] of Object.entries(originalHandlers)) {
+        expect(f.socket.off).toHaveBeenCalledWith(event, handler);
+    }
+    expect(nextSocket.on).toHaveBeenCalledTimes(3);
+    expect(f.updater.socket).toBe(nextSocket);
+    expect(jest.getTimerCount()).toBe(1);
+    expect(f.apiFetch).toHaveBeenCalledTimes(requests);
+    nextHandlers['client-update']();
+    await turn();
+    expect(f.apiFetch).toHaveBeenCalledTimes(requests + 1);
+    expect(jest.getTimerCount()).toBe(1);
+});
+
+test('release checks pause during map travel and retain the retry loop', async () => {
+    const f = fixture();
+    f.app.game.mapTransition = {active: true};
+    await f.updater.check();
+    expect(f.apiFetch).not.toHaveBeenCalled();
+    expect(f.location.replace).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(1);
+    f.app.game.mapTransition.active = false;
+    jest.advanceTimersByTime(5000);
+    await turn();
+    expect(f.apiFetch).toHaveBeenCalledTimes(1);
+    expect(jest.getTimerCount()).toBe(1);
+});
+
+test.each([false, true])('a warmed release cannot reload a map switch in progress (reboot=%s)', async reboot => {
+    const f = fixture();
+    f.reply({revision: NEW, mode: 'reload', ready: true, serverRevision: NEW});
+    if (reboot) f.updater.waiting = {sessionId: TICKET, revision: NEW};
+    let completeWarm;
+    f.updater.warmAssets = jest.fn(() => new Promise(resolve => {completeWarm = resolve;}));
+    const check = f.updater.check();
+    await turn();
+    expect(f.updater.warmAssets).toHaveBeenCalledTimes(1);
+    f.app.game.mapTransition = {active: true};
+    f.app.game.started = false;
+    completeWarm();
+    await check;
+    expect(f.apiFetch).toHaveBeenCalledTimes(1);
+    expect(f.location.replace).not.toHaveBeenCalled();
+    expect(f.socket.disconnect).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(1);
+});
+
+test('a reload ticket issued for the previous map session cannot navigate after travel', async () => {
+    const f = fixture();
+    f.updater.warmAssets = jest.fn().mockResolvedValue();
+    let completeTicket;
+    f.apiFetch.mockImplementationOnce(async () => ({ok: true, json: async () => ({revision: NEW, mode: 'reload', ready: true})}));
+    f.apiFetch.mockImplementationOnce(() => new Promise(resolve => {completeTicket = resolve;}));
+    const check = f.updater.check();
+    await turn();
+    expect(f.apiFetch).toHaveBeenCalledTimes(2);
+    f.app.sessionId = 'next-map-session';
+    completeTicket({ok: true, json: async () => ({sessionId: TICKET, revision: NEW})});
+    await check;
+    expect(f.location.replace).not.toHaveBeenCalled();
+    expect(f.socket.disconnect).not.toHaveBeenCalled();
+});
+
 test('CSS replacements preserve order and become visible together only after every sheet loads', async () => {
     const f = fixture(); f.links.push(f.link('https://game.test/_client/' + OLD + '/css/hud.css'));
     const originals = f.links.slice();
