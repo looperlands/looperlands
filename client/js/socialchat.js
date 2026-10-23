@@ -28,6 +28,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             this.giftRetries = new Map();
             this.transferableItems = [];
             this.unread = new Map();
+            this.publicUnread = new Map();
             this.pending = new Map();
             this.avatarSources = new Map();
             this.connected = false;
@@ -111,7 +112,14 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             });
             list.scrollTop = atBottom ? list.scrollHeight : scrollTop;
         }
-        markRead() { if (this.isReading(this.channelKey()) && this.target) this.unread.delete(this.target); }
+        markRead() {
+            if (!this.isReading(this.channelKey())) return;
+            if (this.tab === 'direct') this.unread.delete(this.target);
+            else if (this.tab === 'world') this.publicUnread.clear();
+            else if (this.tab === 'map') {
+                for (const [id, mapId] of this.publicUnread) if (mapId === this.me?.mapId) this.publicUnread.delete(id);
+            }
+        }
 
         disconnect() {
             this.connected = false;
@@ -125,6 +133,9 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         receive(type, data) {
             if (type === Types.Messages.CHAT_STATE) {
+                if (this.me && key(this.me.id) !== key(data.me.id)) {
+                    this.unread.clear(); this.publicUnread.clear();
+                }
                 this.connected = true; this.me = data.me;
                 this.setRoster(data.players);
                 this.histories.set('world', data.world);
@@ -136,7 +147,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             } else if (type === Types.Messages.CHAT_PLAYERS) {
                 this.setRoster(data); this.renderRoster(); this.renderHeader(); this.renderComposerState();
             } else if (type === Types.Messages.CHAT_MESSAGE) {
-                const channel = this.storeMessage(data);
+                const {channel, added} = this.storeMessage(data);
                 this.recordOverlayMessage(data);
                 const retry = [...this.giftRetries.entries()].find(([channel, request]) => request.requestId === data.requestId);
                 if (data.requestId && (this.pending.has(data.requestId) || retry)) {
@@ -147,9 +158,13 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                     if (this.drafts.get(request.channel) === request.text) this.drafts.set(request.channel, '');
                     if (request.channel === this.channelKey()) this.node('chatinput').value = this.drafts.get(request.channel) || '';
                 }
-                if (data.channel === 'direct' && key(data.sender.id) !== key(this.me.id) && !this.isReading(channel)) {
-                    const other = key(data.sender.id); this.unread.set(other, (this.unread.get(other) || 0) + 1);
-                    this.app.game.audioManager?.playSound('chat');
+                if (added && key(data.sender.id) !== key(this.me.id)) {
+                    if (data.channel === 'direct' && !this.isReading(channel)) {
+                        const other = key(data.sender.id); this.unread.set(other, (this.unread.get(other) || 0) + 1);
+                        this.app.game.audioManager?.playSound('chat');
+                    } else if (data.channel !== 'direct' && !this.isReading('world') && !(this.isReading('map') && data.mapId === this.me.mapId)) {
+                        this.publicUnread.set(data.id, data.mapId);
+                    }
                 }
                 this.clearError(); this.renderMessages(); this.renderBadges(); this.renderComposerState();
             } else if (type === Types.Messages.CHAT_INVENTORY) {
@@ -189,9 +204,10 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 ? 'direct:' + (key(message.sender.id) === key(this.me.id) ? key(message.recipient.id) : key(message.sender.id))
                 : 'world';
             const history = this.histories.get(channel) || [];
-            if (!history.some(item => item.id === message.id)) this.histories.set(channel, [...history, message].slice(-100));
+            const added = !history.some(item => item.id === message.id);
+            if (added) this.histories.set(channel, [...history, message].slice(-100));
             if (channel === 'world') this.histories.set('map', this.histories.get('world').filter(item => item.mapId === this.me.mapId));
-            return channel;
+            return {channel, added};
         }
 
         send() {
@@ -359,10 +375,15 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         renderBadges() {
             this.renderHud();
             this.markRead();
-            const count = [...this.unread.values()].reduce((a, b) => a + b, 0);
-            const badge = this.node('chat-unread'); badge.hidden = !count; badge.textContent = count;
-            document.getElementById('chatbutton').classList.toggle('sc-unread', count > 0);
-            document.getElementById('chatbutton').setAttribute('title', count ? 'Chat · ' + count + ' unread direct message' + (count === 1 ? '' : 's') : 'Chat');
+            const directCount = [...this.unread.values()].reduce((a, b) => a + b, 0);
+            const badge = this.node('chat-unread'); badge.hidden = !directCount; badge.textContent = directCount;
+            const count = directCount + this.publicUnread.size;
+            const button = this.node('chatbutton');
+            const label = count ? 'Chat · ' + count + ' unread message' + (count === 1 ? '' : 's') : 'Chat';
+            button.classList.toggle('sc-unread', count > 0);
+            button.setAttribute('data-unread-count', count > 99 ? '99+' : String(count));
+            button.setAttribute('title', label);
+            button.setAttribute('aria-label', label);
         }
 
         identity(player, inline = false) {
