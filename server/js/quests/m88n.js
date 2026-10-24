@@ -975,7 +975,7 @@ const quests = [
         npc: Types.Entities.NEXAN16,
         target: Types.Entities.M88NFISHINGPOLE,
         amount: 1,
-        level: 10,
+        level: 1,
         xp: 1000,
         medal: Types.Medals.SKULL,
         rental: "0xb5ed38ed7bd87b69887f974d89dd91e336cba129575fd799f0e72a9e65896dcc"
@@ -997,7 +997,7 @@ const quests = [
         target: Types.Entities.M88NWORM,
         amount: 20,
         requiredQuest: "FISHERMAN_QUEST_1",
-        level: 10,
+        level: 1,
         xp: 50000,
         medal: Types.Medals.SKULL,
         needToReturn: true,
