@@ -10,3 +10,36 @@ test('saves placements and stage sequences with revision protection and immutabl
 test('rejects unreachable/broken stages, collisions, overlapping placements and invalid quantities',()=>{const map=B.readMap(root,'one');for(const change of [d=>d.actions.repair.stages.push(stage('lost')),d=>d.actions.repair.stages[0].next='missing',d=>{d.placements[0].x=2;d.placements[0].y=2;},d=>d.placements.push({...d.placements[0]}),d=>d.actions.repair.stages[0].successChance=2]){const d=doc();change(d);expect(()=>B.validate(d,map)).toThrow();}});
 test('source paths reject unknown maps and symbolic links',()=>{expect(()=>B.document(root,'../one')).toThrow();fs.mkdirSync(path.join(root,'tools/tiles'),{recursive:true});fs.symlinkSync(path.join(root,'server/config.json'),path.join(root,'tools/tiles/one.json'));expect(()=>B.document(root,'one')).toThrow('symbolic');});
 test('all bundled farming definitions retain valid stage groups and registered yield items',()=>{const project=path.resolve(__dirname,'../..');expect(()=>B.validate({version:1,actions:B.base(project,'duckville'),placements:[]},B.readMap(project,'duckville'))).not.toThrow();});
+
+test('the HTTP editor loads catalog metadata, saves item costs and rejects stale or build-time writes', async () => {
+    const express = require('express'), app = express();
+    app.use(express.json());
+    const toolbox = {root};
+    B.install(app, toolbox);
+    write('client/maps/world_client_one.json', {width:10,height:10,data:Array(100).fill(1),collisions:[],
+        stagedTiles:{10:{groupName:'test-crop',stages:2}},actionTiles:{1:{action:'repair'}}});
+    const server = await new Promise(resolve => {
+        const listening = app.listen(0,'127.0.0.1',()=>resolve(listening));
+    });
+    const url = 'http://127.0.0.1:'+server.address().port+'/local/api/tile-authoring';
+    const post = body => fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    try {
+        expect(await (await fetch(url)).json()).toEqual({maps:['one']});
+        const loaded = await (await fetch(url+'?mapId=one')).json();
+        expect(loaded.catalog.groups).toContainEqual({tile:10,groupName:'test-crop',stages:2});
+        expect(loaded.existing).toEqual([{tile:1,action:'repair'}]);
+        const document = doc();
+        document.actions.repair.stages[0].costs = [{item:'35',amount:2}];
+        const payload = {mapId:'one',revision:loaded.revision,document};
+        const saved = await post(payload);
+        expect(saved.status).toBe(200);
+        expect((await saved.json()).document).toEqual(document);
+        expect(JSON.parse(fs.readFileSync(path.join(root,'tools/tiles/one.json')))).toEqual(document);
+        expect((await post(payload)).status).toBe(409);
+        toolbox.job = {status:'running'};
+        expect((await post(payload)).status).toBe(409);
+        expect((await fetch(url+'?mapId=unknown')).status).toBe(400);
+    } finally {
+        await new Promise(resolve=>server.close(resolve));
+    }
+});
