@@ -28,7 +28,7 @@ def scan(filename):
         nonlocal current, prop
         if tag == 'map':
             dimensions.update({key: int(attributes.get(key, '16')) for key in ['width', 'height', 'tilewidth', 'tileheight']})
-        if tag == 'object' and stack and stack[-1] == ('objectgroup', 'doors'):
+        if tag == 'object' and len(stack) == 2 and stack[-1] == ('objectgroup', 'doors'):
             current = {'id': attributes.get('id'), 'name': attributes.get('name', ''),
                        'type': attributes.get('type', attributes.get('class', 'door')) or 'door',
                        'x': float(attributes.get('x', 0)), 'y': float(attributes.get('y', 0)),

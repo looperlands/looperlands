@@ -13,6 +13,8 @@
   <script src="./dropeditor.js" defer></script>
   <script src="./assetbuilder.js" defer></script>
   <script src="./doorbuilder.js" defer></script>
+  <script src="./npcbuilder.js" defer></script>
+  <script src="./assetlookup.js" defer></script>
 </head>
 <body>
   <main class="launcher">
@@ -29,8 +31,10 @@
       <button id="tab-playtest" type="button" role="tab" aria-selected="true" aria-controls="playtest-pane" data-pane="playtest">Playtest</button>
       <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
       <button id="tab-quests" type="button" role="tab" aria-selected="false" aria-controls="quests-pane" data-pane="quests" tabindex="-1">Quest builder</button>
-      <button id="tab-mobs" type="button" role="tab" aria-selected="false" aria-controls="mobs-pane" data-pane="mobs" tabindex="-1">Mobs & NPCs</button>
+      <button id="tab-mobs" type="button" role="tab" aria-selected="false" aria-controls="mobs-pane" data-pane="mobs" tabindex="-1">Mobs</button>
+      <button id="tab-npcs" type="button" role="tab" aria-selected="false" aria-controls="npcs-pane" data-pane="npcs" tabindex="-1">NPCs</button>
       <button id="tab-items" type="button" role="tab" aria-selected="false" aria-controls="items-pane" data-pane="items" tabindex="-1">Items</button>
+      <button id="tab-live-assets" type="button" role="tab" aria-selected="false" aria-controls="live-assets-pane" data-pane="live-assets" tabindex="-1">Live assets</button>
       <button id="tab-doors" type="button" role="tab" aria-selected="false" aria-controls="doors-pane" data-pane="doors" tabindex="-1">Doors &amp; portals</button>
       <button id="tab-troubleshoot" type="button" role="tab" aria-selected="false" aria-controls="troubleshoot-pane" data-pane="troubleshoot" tabindex="-1">Troubleshoot</button>
       <button id="tab-documentation" type="button" role="tab" aria-selected="false" aria-controls="documentation-pane" data-pane="documentation" tabindex="-1">Documentation</button>
@@ -302,7 +306,13 @@ You only have {{remaining}} blue monsters left to slay!</pre>
     </section>
 
     <section id="mobs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-mobs" hidden></section>
+    <section id="npcs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-npcs" hidden>
+      <nav class="npc-subnav" aria-label="NPC editor screens"><a href="#npcs">Sprites &amp; dialogue</a><a href="#npcs/behaviour">Behaviour &amp; schedule</a></nav>
+      <div id="npc-assets"></div>
+      <div id="npc-behaviour" hidden></div>
+    </section>
     <section id="items-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-items" hidden></section>
+    <section id="live-assets-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-live-assets" hidden></section>
     <section id="doors-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-doors" hidden></section>
     <section id="documentation-pane" class="tool-pane documentation-pane" role="tabpanel" aria-labelledby="tab-documentation" hidden>
       <header class="pane-heading"><h2>Documentation</h2><p>From your first local session to a playable quest.</p></header>
@@ -312,8 +322,10 @@ You only have {{remaining}} blue monsters left to slay!</pre>
           <a href="#documentation/mapmaker-sessions">Starting game sessions</a>
           <a href="#documentation/mapmaker-building">Building maps</a>
           <a href="#documentation/mapmaker-quest-builder">Quest builder</a>
-          <a href="#documentation/mapmaker-mobs">Mobs & NPCs</a>
+          <a href="#documentation/mapmaker-mobs">Mobs</a>
+          <a href="#documentation/mapmaker-npcs">NPCs &amp; routines</a>
           <a href="#documentation/mapmaker-items">Items</a>
+          <a href="#documentation/mapmaker-live-assets">Live asset lookup</a>
           <a href="#documentation/mapmaker-doors">Doors &amp; portals</a>
         </nav>
         <article id="guide-content" class="guide-content" aria-live="polite"><p>Select a guide to start reading.</p></article>

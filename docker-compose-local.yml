@@ -5,6 +5,8 @@ services:
     command: ["node", "bin/local-mapmaker.js"]
     environment:
       NODE_ENV: development
+      LOOPERLANDS_ASSET_API_BASE_URL: ${LOOPERLANDS_ASSET_API_BASE_URL:-}
+      LOOPERLANDS_ASSET_API_KEY: ${LOOPERLANDS_ASSET_API_KEY:-}
       LOOPERLANDS_LOCAL_PLAYTEST: "1"
       LOOPERLANDS_LOCAL_DATA_DIR: /opt/app/data/local-playtest
       MAPMAKER_CHECKOUT_DIR: /workspace
@@ -32,6 +34,7 @@ services:
       - ./docs:/opt/app/docs:ro
       - ./tools/maps:/opt/app/tools/maps
       - ./tools/quests:/opt/app/tools/quests
+      - ./tools/npcs:/opt/app/tools/npcs
     depends_on:
       - jsonserver
     develop:

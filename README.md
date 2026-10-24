@@ -206,4 +206,8 @@ node --prof-process isolate.log > isolate.out
 ```
 7) Read your version of `isolate.out`
 
-The local Mapmaker Toolbox also includes a [Mob & NPC editor](docs/mapmaker-mobs.md) and [Item editor](docs/mapmaker-items.md), with PNG upload, animation previews, prepared image scales and automatic client/server registration.
+The local Mapmaker Toolbox also includes separate [Mob](docs/mapmaker-mobs.md), [NPC](docs/mapmaker-npcs.md) and [Item](docs/mapmaker-items.md) editors, with PNG upload, animation previews, prepared image scales and automatic client/server registration. The NPC page also edits map-specific behaviour and daily schedules loaded from `tools/npcs/<map>.json` when the game starts.
+
+Use the local [Doors & portals editor](docs/mapmaker-doors.md) to inspect map entrances and edit their conditions, opening hours and failure messages, then build the map normally.
+
+Use [Live assets](docs/mapmaker-live-assets.md) to search the Platform catalog and copy asset, NFT and collection identifiers. Configure a server-side API key with `asset_read` access.

@@ -158,7 +158,8 @@ function saveAsset(root, input) {
         if (!existing || !existing.builtin) gameplay.collectable=true;
     }
     const dialogue=type==='npc' ? input.dialogue : undefined;
-    if (type==='npc' && (!Array.isArray(dialogue) || !dialogue.length || dialogue.length>50 || dialogue.some(line=>typeof line!=='string'||line.length>2000||/[<>]/.test(line)))) fail('Add 1–50 plain-text dialogue lines, up to 2000 characters each. Use the Quest builder for styled quest dialogue.');
+    const unchangedDialogue=type==='npc' && existing && JSON.stringify(dialogue)===JSON.stringify(readAsset(root,id).dialogue);
+    if (type==='npc' && !unchangedDialogue && (!Array.isArray(dialogue) || !dialogue.length || dialogue.length>50 || dialogue.some(line=>typeof line!=='string'||line.length>2000||/[<>]/.test(line)))) fail('Add 1–50 plain-text dialogue lines, up to 2000 characters each. Use the Quest builder for styled quest dialogue.');
     const entry={id,kind,type,name,builtin:existing?.builtin===true,sprite,gameplay,client,...(dialogue?{dialogue}:{})};
     if (index>=0) manifest[index]=entry; else manifest.push(entry);
     const updates=[];

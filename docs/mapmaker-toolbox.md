@@ -16,8 +16,12 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 - **Playtest:** choose a map, spawn point, avatar and equipment, then start a game. See [Starting game sessions](mapmaker-sessions.md).
 - **Build tools:** export a saved Tiled map, rebuild the game client and restart the local game. See [Building maps](mapmaker-building.md).
 - **Quest builder:** create custom quests or edit a bundled quest through a local override. See [Quest builder](mapmaker-quest-builder.md).
+- **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
+- **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md).
+- **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).
+- **Items:** create collectibles and prepare sprites. See [Items](mapmaker-items.md).
 - **Troubleshoot:** run environment checks and read suggested fixes. **Check main updates** reports repository updates and suggests Git commands; it does not update your files.
-- **Documentation:** read these four guides inside the toolbox.
+- **Documentation:** read the toolbox guides inside the toolbox.
 
 ## A typical editing loop
 
@@ -52,4 +56,6 @@ Continue with [Starting game sessions](mapmaker-sessions.md), [Building maps](ma
 
 ## Characters and items
 
-The [Mob & NPC editor](mapmaker-mobs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then place it in Tiled and rebuild your map.
+The [Mob editor](mapmaker-mobs.md), [NPC editor](mapmaker-npcs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then place it in Tiled and rebuild your map.
+
+Use [Doors & portals](mapmaker-doors.md) to find entrances and edit their access rules, opening hours and player messages directly in the Tiled source.

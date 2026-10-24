@@ -45,3 +45,7 @@ Continue with [Starting game sessions](mapmaker-sessions.md) or [Quest builder](
 ## Place Toolbox characters and items
 
 Use an object layer named `mapmaker-entities` for assets created in the [Mob & NPC editor](mapmaker-mobs.md) or [Item editor](mapmaker-items.md). Add a point object and give it the exact asset ID as its Name. Place it inside the map, after the first column, with one entity per cell. The exporter adds these points to the existing static entity registry. Build the map after saving the TMX and after changing an asset definition.
+
+## Edit door and portal conditions
+
+The [Doors & portals editor](mapmaker-doors.md) writes access conditions and messages to the selected object in your TMX source. Save the entrance, build that map, then test both allowed and denied entry in a fresh game session. Placement and destination changes still happen in Tiled.

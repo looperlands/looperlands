@@ -269,7 +269,7 @@ module.exports = function processMap(json, options) {
         let newDoor = {
             x: door.x / map.tilesize,
             y: door.y / map.tilesize,
-            p: (door.type === 'portal') ? 1 : 0,
+            p: ((door.type || door.class) === 'portal') ? 1 : 0,
             map: door.map
         }
         var rawDoorProps = door.properties?.property;

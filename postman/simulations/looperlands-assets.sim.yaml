@@ -1,0 +1,5 @@
+simulation: looperlands-assets
+routing: path
+mocks:
+  - routeKey: platform
+    path: ../mocks/looperlands-assets/config.yaml

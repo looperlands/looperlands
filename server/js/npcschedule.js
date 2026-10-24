@@ -24,7 +24,9 @@ function validateSchedule(definition) {
             !area || !['work', 'free-time', 'home', 'sleep'].includes(phase.key) || !plain(phase.activity) ||
             !plain(phase.label) || !plain(phase.explanation) || !plain(phase.travelling) ||
             !Array.isArray(phase.route) || !phase.route.length || phase.route.some(p => !point(p) || !inside(p, area) ||
-                !Number.isFinite(p.waitSeconds) || p.waitSeconds < 1)) throw new Error('Invalid NPC schedule phase: ' + definition.key);
+                !Number.isFinite(p.waitSeconds) || p.waitSeconds < 1 ||
+                (p.line && !plain(p.line)) || (p.activity && !plain(p.activity)) ||
+                (p.sound && !['watersplash', 'honk', 'npc'].includes(p.sound)))) throw new Error('Invalid NPC schedule phase: ' + definition.key);
     }
 }
 
@@ -45,7 +47,7 @@ class NpcSchedule {
         this.override = null;
         this.buildings = new Map(this.definition.buildings.map(building => [building.key, building]));
         const doors = Object.values(behavior.world.map.doors || {});
-        const publicDoor = door => door && !['tmap', 'tnft', 'ttid', 'tcollection', 'tevent', 'thttp_redirect'].some(key => door[key] !== undefined);
+        const publicDoor = door => door && !['tmap', 'tnft', 'titem', 'tquest', 'tlevel', 'tweapon_level', 'ttime_range', 'ttid', 'tcollection', 'tevent', 'thttp_redirect'].some(key => door[key] !== undefined);
         for (const building of this.buildings.values()) {
             const entrance = doors.find(d => same(d, building.entrance));
             const exit = doors.find(d => same(d, building.exit));

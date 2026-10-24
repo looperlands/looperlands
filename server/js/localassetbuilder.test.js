@@ -69,3 +69,10 @@ test('HTTP asset saves share the local origin guard and build lock',async()=>{
         expect((await fetch(base+'/local/api/git')).status).toBe(404);
     }finally{await new Promise(resolve=>server.close(resolve));}
 });
+test('NPC sprite edits preserve unchanged built-in dialogue links while edited or new HTML is rejected',()=>{
+    for(const file of ['client/sprites/villager.json', ...[1,2,3].map(scale=>'client/img/'+scale+'/villager.png')])write(file,fs.readFileSync(path.join(source,file)));
+    const asset=readAsset(root,'villager');expect(asset.dialogue.some(line=>line.includes('<a '))).toBe(true);
+    const saved=saveAsset(root,{...asset,originalId:asset.id,images:undefined}); expect(saved.dialogue).toEqual(asset.dialogue);
+    expect(()=>saveAsset(root,{...saved,originalId:asset.id,dialogue:['<a href="https://example.com">Changed</a>']})).toThrow('plain-text');
+    expect(()=>saveAsset(root,{...fixture('npc','new_speaker'),dialogue:asset.dialogue})).toThrow('plain-text');
+});

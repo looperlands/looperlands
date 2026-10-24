@@ -7,6 +7,7 @@ const messages = ['message', 'nft_message', 'item_message', 'quest_message', 'co
 const editable = [...gates, ...messages, 'tid', 'time_range'];
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 function mapFile(root, mapId) {
+    root = path.resolve(root);
     const maps = JSON.parse(fs.readFileSync(path.join(root, 'server/config.json'), 'utf8')).maps;
     if (typeof mapId !== 'string' || !/^[A-Za-z0-9_-]+$/.test(mapId) || !maps.includes(mapId)) fail('Choose a configured map.');
     const file = path.join(root, 'tools/maps/tmx', mapId + '.tmx');

@@ -1,13 +1,13 @@
-# Mobs and NPCs
+# Mobs and combat
 
-Use **Mobs & NPCs** in the Mapmaker Toolbox to edit built-in characters or create a new gameplay type. Mobs fight; NPCs talk and can give quests.
+Use **Mobs** in the Mapmaker Toolbox to create combat characters and tune their combat, aggression and loot. For dialogue characters and routines, use the separate [NPC editor](mapmaker-npcs.md).
 
 ## Start from an existing character
 
-1. Choose a mob or NPC from the asset list. The editor loads its sprite, animation rows and editable gameplay settings.
+1. Choose a mob from the asset list. The editor loads its sprite, animation rows and editable gameplay settings.
 2. To change that character, edit it directly. Built-in IDs and types stay fixed.
-3. To create a new character, click **New mob / NPC**. Enter a unique ID of 2–48 characters, starting with a lowercase letter and using only lowercase letters, numbers and underscores, and a display name. For example, `forest_beetle`.
-4. Choose **Mob** or **NPC**. Use a template of the same type so it already has the required animations.
+3. To create a new character, click **New mob**. Enter a unique ID of 2–48 characters, starting with a lowercase letter and using only lowercase letters, numbers and underscores, and a display name. For example, `forest_beetle`.
+4. Use a mob template so the copy already has the required combat animations.
 
 Saving a built-in character creates a shared override. Its numeric kind, scripted abilities and other existing behavior stay in place. The editor changes its sprite and the gameplay settings shown in the form. Existing drop tables are loaded and can be edited.
 
@@ -19,7 +19,7 @@ Frames run left to right, starting at column 0. Each animation selects a row and
 
 Select an animation in **Live preview**, then use **Pause**, **Next frame** and zoom to check it. The sheet view shows the frame grid. The tile guide marks the 16 × 16 game tile and its origin. Horizontal and vertical offsets move the frame relative to that origin; negative offsets are common for artwork larger than a tile. The preview respects reduced-motion preferences and starts paused when requested by your system.
 
-New mobs need `idle_down`, `idle_up`, `idle_right`, `walk_down`, `walk_up`, `walk_right`, `atk_down`, `atk_up`, `atk_right` and `death`. Left-facing animations mirror the right-facing frames. NPCs need `idle_down`; older front-facing NPC sheets can reuse it for other directions and walking.
+New mobs need `idle_down`, `idle_up`, `idle_right`, `walk_down`, `walk_up`, `walk_right`, `atk_down`, `atk_up`, `atk_right` and `death`. Left-facing animations mirror the right-facing frames. NPC sprite requirements are covered in the [NPC guide](mapmaker-npcs.md).
 
 Animation duration is milliseconds per frame. A blank value uses the character's gameplay timing. Existing arrays of per-frame durations are preserved when their duration field stays blank. Changing preview zoom or the tile guide does not change your asset.
 
@@ -31,7 +31,7 @@ Use **Add drop** to add a loot row. Search for an item in the item picker, then 
 
 The summary shows the combined item-drop chance and the chance of dropping nothing. Chances must total no more than 100. For example, wood at 20% and ore at 10% leave a 70% chance of no drop. You can use an item created in the Item editor after saving it.
 
-NPCs have one plain-text dialogue message per line. Use the [Quest builder](mapmaker-quest-builder.md) for objectives, rewards and styled quest dialogue.
+Combat and loot appear before sprite preparation so you can tune gameplay first. Use the [Quest builder](mapmaker-quest-builder.md) for objectives and rewards.
 
 ## Save and place in a map
 
