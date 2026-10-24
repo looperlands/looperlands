@@ -14,7 +14,7 @@ http.createServer(async (req,res) => {
         if(!Number.isInteger(body.offset)||body.offset<0||!Number.isInteger(body.limit)||body.limit<1||body.limit>250)return reply(400,{error:'invalid filter'});
         if(body.keyword==='upstream_error')return reply(503,{error:'fixture failure'});
         const selected=rows.filter(row=>(!body.keyword||[row.name,row.collection,row.token.tokenHash].join(' ').toLowerCase().includes(body.keyword.toLowerCase()))&&(!body.assetType?.length||body.assetType.includes(row.assetType)));
-        return reply(200,selected.slice(body.offset,body.offset+body.limit));
+        return reply(200,{total:selected.length,assets:selected.slice(body.offset,body.offset+body.limit)});
     }
     if(req.method==='GET'&&/^\/api\/asset\/(nft\/)?[^/]+$/.test(req.url)) {const id=decodeURIComponent(req.url.split('/').pop());const row=rows.find(row=>row.id===id||row.nftId===id);return reply(row?200:404,row||{error:'not found'});}
     reply(501,{error:'Endpoint not modeled by this contract fixture'});
