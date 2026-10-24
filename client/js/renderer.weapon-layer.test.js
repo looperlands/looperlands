@@ -1,6 +1,8 @@
 const fs = require('fs');
 const vm = require('vm');
-const typeContext = {};
+const typeContext = {
+    define: (dependencies, factory) => factory(require('../../shared/js/mapmakerentities.json')),
+};
 vm.runInNewContext(fs.readFileSync(require.resolve('../../shared/js/gametypes'), 'utf8'), typeContext);
 const GameTypes = typeContext.Types;
 

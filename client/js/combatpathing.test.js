@@ -2,7 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const _ = require('underscore');
-const typesSandbox = {_, console};
+const typesSandbox = {
+    _, console,
+    define: (dependencies, factory) => factory(require('../../shared/js/mapmakerentities.json')),
+};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../shared/js/gametypes.js'), 'utf8'), typesSandbox);
 const Types = typesSandbox.Types;
 

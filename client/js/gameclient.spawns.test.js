@@ -11,7 +11,12 @@ function setup() {
     const sandbox = {
         _, console: {log() {}, error: errors},
         loadDynamicNFTByKind: jest.fn((kind, session, done) => loads.push({kind, done})),
-        define: (dependencies, factory) => { GameClient = factory(Player, {createEntity}); },
+        define: (dependencies, factory) => {
+            if (dependencies[0] === 'mapmakerentities') {
+                return factory(require('../../shared/js/mapmakerentities.json'));
+            }
+            GameClient = factory(Player, {createEntity});
+        },
     };
     vm.createContext(sandbox);
     for (const file of ['./lib/class', '../../shared/js/gametypes', './gameclient']) {
