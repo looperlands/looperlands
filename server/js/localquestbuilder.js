@@ -77,6 +77,8 @@ function bundledDefinitions() {
 function buildCatalog(root, mapId, registry = bundledDefinitions()) {
     mapAt(root, mapId);
     const Types = require('../../shared/js/gametypes');
+    const authored = path.join(root, 'shared/js/mapmakerentities.json');
+    if (fs.existsSync(authored)) Types.registerMapmakerEntities(JSON.parse(fs.readFileSync(authored, 'utf8')));
     const names = require('../../shared/js/altnames');
     const properties = require('./properties');
     const file = path.join(root, 'server/maps/world_server_' + mapId + '.json');

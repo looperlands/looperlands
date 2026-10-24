@@ -122,6 +122,7 @@ class MapmakerToolbox {
     startBuild(mapId) {
         if (this.closed) throw Object.assign(new Error('The toolbox is shutting down.'), {status: 503});
         if (this.job?.status === 'running') throw Object.assign(new Error('A build is already running.'), {status: 409});
+        if (this.doorSaveCount) throw Object.assign(new Error('Wait for the entrance save to finish before building.'), {status: 409});
         validateMap(this.root, mapId);
         this.job = {id: require('crypto').randomUUID(), status: 'running', step: 'Stop game', logs: []};
         this.buildAbort = new AbortController();
@@ -248,7 +249,12 @@ function createToolboxApp(toolbox) {
         res.setHeader('Cache-Control', 'no-store');
         next();
     });
+    app.use('/local/api/assets', express.json({limit: '18mb'}));
     app.use(express.json({limit: '256kb'}));
+    require('../server/js/localassetapi').install(app, toolbox);
+    require('../server/js/localassetlookup').install(app, toolbox);
+    require('../server/js/localdoorbuilder').install(app, toolbox);
+    require('../server/js/localnpcbuilder').install(app, toolbox);
     app.get('/local/api/quests', (req, res) => {
         try {res.json(require('../server/js/localquestbuilder').readQuests(toolbox.root, req.query.mapId));}
         catch (error) {res.status(error.status || 500).json({error: error.message});}
@@ -260,7 +266,7 @@ function createToolboxApp(toolbox) {
             res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
-    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder']);
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-items', 'mapmaker-doors']);
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));
@@ -306,7 +312,7 @@ function createToolboxApp(toolbox) {
     app.use('/local', express.static(path.join(toolbox.root, 'server/local-launcher')));
     app.get('/', (req, res) => res.redirect('/local/'));
     app.use((error, req, res, next) => res.status(error.status || 500).json({error: error.type === 'entity.too.large' ?
-        'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.' : 'The toolbox could not read the request.'}));
+        (req.path.startsWith('/local/api/assets') ? 'These spritesheets exceed the 18 MB request limit. Use a smaller sheet.' : 'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.') : 'The toolbox could not read the request.'}));
     return app;
 }
 

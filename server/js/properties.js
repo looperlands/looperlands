@@ -5243,6 +5243,9 @@ Properties.getHitPoints = function(kind, levelOffset) {
     }
 };
 
+// Preserve built-in scripted behavior while applying data authored in the Toolbox.
+for (const entry of Types.mapmakerEntities) Properties[entry.id] = {...Properties[entry.id], ...entry.gameplay};
+
 Properties.getLevel = function(kind) {
     let retLevel = Properties[Types.getKindAsString(kind)].level;
     return retLevel !== undefined ? retLevel : 1;

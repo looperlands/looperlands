@@ -68,6 +68,24 @@ function checkStartupSprites() {
                 sprites.set(data.id, data);
             }
         }
+        if (node.type === 'CallExpression' && node.callee.name === 'define' &&
+            node.arguments[0]?.value === 'text!../../shared/js/mapmakerentities.json') {
+            const factory = node.arguments[node.arguments.length - 1];
+            const returned = factory.body?.body?.find(statement => statement.type === 'ReturnStatement')?.argument;
+            if (returned?.type === 'Literal') for (const entry of JSON.parse(returned.value)) {
+                names.add(entry.sprite.id); sprites.set(entry.sprite.id, entry.sprite);
+            }
+        }
+        if (node.type === 'CallExpression' && node.callee.name === 'define' && node.arguments[0]?.value === 'mapmakerentities') {
+            const factory = node.arguments[node.arguments.length - 1];
+            const returned = factory.body?.body?.find(statement => statement.type === 'ReturnStatement')?.argument;
+            for (const entry of returned?.elements || []) {
+                const sprite = entry.properties?.find(property => property.key.name === 'sprite' || property.key.value === 'sprite')?.value;
+                const id = sprite?.properties?.find(property => property.key.name === 'id' || property.key.value === 'id')?.value?.value;
+                if (typeof id !== 'string') throw new Error('Invalid Toolbox sprite registration in client build.');
+                names.add(id); sprites.set(id, {id});
+            }
+        }
         for (const value of Object.values(node)) {
             if (Array.isArray(value)) {
                 for (const child of value) if (child?.type) nodes.push(child);

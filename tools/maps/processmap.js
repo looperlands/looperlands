@@ -269,10 +269,11 @@ module.exports = function processMap(json, options) {
         let newDoor = {
             x: door.x / map.tilesize,
             y: door.y / map.tilesize,
-            p: (door.type === 'portal') ? 1 : 0,
+            p: ((door.type || door.class) === 'portal') ? 1 : 0,
             map: door.map
         }
-        var doorProps = door.properties.property;
+        var rawDoorProps = door.properties?.property;
+        var doorProps = rawDoorProps ? (Array.isArray(rawDoorProps) ? rawDoorProps : [rawDoorProps]) : [];
         for (var k = 0; k < doorProps.length; k += 1) {
             newDoor['t' + doorProps[k].name] = doorProps[k].value;
         }
@@ -571,6 +572,16 @@ module.exports = function processMap(json, options) {
         }
     }
 
+    if (mode === 'server') processGroup('mapmaker-entities', function (object) {
+        const kind = Types.getKindFromString(object.name);
+        const x = Math.floor(object.x / map.tilesize), y = Math.floor(object.y / map.tilesize);
+        if (!kind || !(Types.isMob(kind) || Types.isNpc(kind) || Types.isItem(kind))) throw new Error('Unknown mapmaker entity: ' + object.name);
+        if (object.gid) throw new Error('Use point objects for mapmaker entities, not tile objects.');
+        if (x < 1 || y < 0 || x >= map.width || y >= map.height) throw new Error('Mapmaker entity must be inside the map, after the first column: ' + object.name);
+        const position = y * map.width + x;
+        if (map.staticEntities[position]) throw new Error('Two entities occupy the same map cell: ' + object.name);
+        map.staticEntities[position] = object.name;
+    });
     return map;
 };
 

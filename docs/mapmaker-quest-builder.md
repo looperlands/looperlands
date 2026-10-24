@@ -135,3 +135,5 @@ If a map edit removes a quest target, **Reload quests** shows the validation err
 Custom quests and bundled quest overrides load only in local playtest mode. Including their file in a production checkout does not apply the changes on the live server. Moving a finished change into the normal world definitions remains a separate development step.
 
 Continue with [Building maps](mapmaker-building.md), [Starting game sessions](mapmaker-sessions.md) or the [Mapmaker Toolbox overview](mapmaker-toolbox.md).
+
+Use **Search bundled quests** to filter the bundled list by name or quest ID. Search ignores letter case. The result count shows how many quests match; clear the search to return to the full list.

@@ -1,5 +1,5 @@
 
-define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mobs, Items, NPCs, Warrior, Chest, Fieldeffects) {
+define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects', 'mob', 'npc', 'item', '../../shared/js/gametypes'], function(Mobs, Items, NPCs, Warrior, Chest, Fieldeffects, Mob, Npc, Item) {
 
     var EntityFactory = {};
 
@@ -1895,5 +1895,19 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Fieldeffects.Cobfallingrock(id);
     };  
     
+    Types.mapmakerEntities.forEach(function (entry) {
+        const original = EntityFactory.builders[entry.kind];
+        EntityFactory.builders[entry.kind] = function (id) {
+            const entity = original ? original(id) : entry.type === 'mob' ? new Mob(id, entry.kind) :
+                entry.type === 'npc' ? new Npc(id, entry.kind) : new Item(id, entry.kind, 'resource');
+            if (entry.type === 'mob') {
+                Object.assign(entity, entry.client);
+                if (!original) entity.deathAnimated = !!entry.sprite.animations.death;
+            }
+            entity.name = entry.name;
+            if (entry.type === 'item') entity.lootMessage = 'You pick up ' + entry.name;
+            return entity;
+        };
+    });
     return EntityFactory;
 });
