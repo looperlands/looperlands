@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2072">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2079">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_m88n2.png" width="2208" height="2512"/>
   <tile id="0">
@@ -1079911,7 +1079911,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2886"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1080083,7 +1080083,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="3025"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1080255,7 +1080255,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="3161"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272534,9 +7272534,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21789"/>
    <tile/>
-   <tile gid="21798"/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272705,33 +7272705,33 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7272874,38 +7272874,38 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21805"/>
-   <tile gid="21771"/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21771"/>
-   <tile gid="21746"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273046,14 +7273046,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21755"/>
-   <tile/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273069,15 +7273061,23 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
-   <tile gid="21791"/>
-   <tile gid="21755"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273218,38 +7273218,38 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21755"/>
-   <tile gid="21791"/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
-   <tile/>
-   <tile gid="21770"/>
    <tile/>
    <tile/>
-   <tile gid="21755"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273393,35 +7273393,35 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21770"/>
    <tile/>
-   <tile gid="21827"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273564,17 +7273564,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21867"/>
-   <tile/>
-   <tile gid="21867"/>
-   <tile/>
-   <tile gid="21867"/>
-   <tile/>
-   <tile gid="21867"/>
-   <tile/>
-   <tile gid="21804"/>
-   <tile/>
-   <tile gid="21783"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7273587,9 +7273576,20 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="21796"/>
    <tile/>
-   <tile gid="21795"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7341014,70 +7341014,7 @@
     <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
    </properties>
   </object>
-  <object id="1937" name="Treasure Chest" x="160" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1939" name="Treasure Chest" x="192" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1940" name="Treasure Chest" x="224" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1941" name="Treasure Chest" x="256" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1942" name="Treasure Chest" x="288" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1943" name="Treasure Chest" x="320" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
   <object id="1944" name="Treasure Chest" x="368" y="1792" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1945" name="Treasure Chest" x="304" y="1792" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1946" name="Treasure Chest" x="256" y="1792" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
-   </properties>
-  </object>
-  <object id="1947" name="Treasure Chest" x="480" y="1792" width="16" height="16">
    <properties>
     <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
     <property name="delay" value="8000"/>
@@ -7341152,13 +7341089,6 @@
     <property name="chances" value="GOLD3:50,GOLD4:10,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nbrewski:1,m88npie:1,m88nhardhat:1,m88nblueprint:1,m88nworkgloves:1"/>
     <property name="delay" value="8000"/>
     <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nbrewski,m88npie,m88nhardhat,m88nblueprint,m88nworkgloves"/>
-   </properties>
-  </object>
-  <object id="2070" name="Treasure Chest" x="352" y="1744" width="16" height="16">
-   <properties>
-    <property name="chances" value="GOLD3:50,GOLD4:1,GOLD5:1,m88nmap:1,movieglasses:1,battery:1,gameboy:1,hardwallet:1,m88npeel:1,m88ndungbeetle:1,m88nfly:1,m88njunebug:1,m88nbutterfly:1,m88nstickbug:1,m88nmail:1,m88npackage:1,m88nsteak:1,m88npotato:1,m88nsalad:1,m88nbrewski:1,m88npie:1,m88nseeds:1,m88nwatercan:1,m88nsack:1,m88nshovel:1,m88nworm:1,m88nhardhat:1,m88nblueprint:1,m88nrose:1,m88nworkgloves:1, m88ncleanundies:1"/>
-    <property name="delay" value="8000"/>
-    <property name="items" value="GOLD3,GOLD4,GOLD5,m88nmap,movieglasses,battery,gameboy,hardwallet,m88npeel,m88ndungbeetle,m88nfly,m88njunebug,m88nbutterfly,m88nstickbug,m88nmail,m88npackage,m88nsteak,m88npotato,m88nsalad,m88nbrewski,m88npie,m88nseeds,m88nwatercan,m88nsack,m88nshovel,m88nworm,m88nhardhat,m88nblueprint,m88nrose,m88nworkgloves,m88ncleanundies"/>
    </properties>
   </object>
  </objectgroup>
@@ -7342770,15 +7342700,6 @@
     <property name="o" value="d"/>
     <property name="x" value="120"/>
     <property name="y" value="229"/>
-   </properties>
-  </object>
-  <object id="1857" name="Club House" x="224" y="1696" width="16" height="16">
-   <properties>
-    <property name="collection" value="The Nexus Home Owners Club"/>
-    <property name="collection_message" value="Nexus Home Owners Club House"/>
-    <property name="o" value="d"/>
-    <property name="x" value="147"/>
-    <property name="y" value="131"/>
    </properties>
   </object>
   <object id="1867" name="Cell" x="1664" y="5664" width="16" height="16">
@@ -7345079,6 +7345000,41 @@
   <object id="2040" type="m88nflybutterfly" x="368" y="7424" width="112" height="240">
    <properties>
     <property name="nb" value="4"/>
+   </properties>
+  </object>
+  <object id="2072" name="Leo" type="m88namoebit" x="16" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2073" name="Leo" type="m88nxemoebit" x="80" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2074" name="Leo" type="m88nnemoebit" x="144" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2075" name="Leo" type="m88npyromoebit" x="464" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2076" name="Leo" type="m88nplasmoebit" x="400" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2077" name="Leo" type="m88nflagellabit" x="336" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="2078" name="Leo" type="m88nskorch" x="272" y="1696" width="64" height="112">
+   <properties>
+    <property name="nb" value="1"/>
    </properties>
   </object>
  </objectgroup>
@@ -7535166,7 +7535122,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="1"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
