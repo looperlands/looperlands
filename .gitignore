@@ -24,3 +24,6 @@ data/chat/
 data/npcs/
 data/field-guide/
 data/local-playtest/
+
+# Generated client bridge for shared Toolbox entity definitions.
+/client/js/mapmakerentities.js

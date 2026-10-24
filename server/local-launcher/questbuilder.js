@@ -76,6 +76,7 @@
             li.append(button); list.append(li);
         });
         $('quest-empty').hidden = data.quests.length > 0;
+        renderBundled();
     }
     function renderPreview() {
         if (!quest()) return;
@@ -240,16 +241,25 @@
         renderObjectives(); changed();
         $(`objective-${to}-id`).focus();
     }
+    function renderBundled() {
+        if (!data) return;
+        const query = $('quest-bundled-search').value.trim().toLocaleLowerCase();
+        const matches = data.existingQuests.filter(item => [item.effective?.name, item.name, item.id].some(value => String(value || '').toLocaleLowerCase().includes(query)));
+        $('quest-bundled-count').textContent = `(${data.existingQuests.length})`;
+        $('quest-bundled-list').replaceChildren(...matches.map(item => {
+            const entry = node('li', item.effective?.name || item.name || item.id); entry.append(node('div', item.id));
+            const edit = node('button', item.editMapId && item.editMapId !== mapId ? 'Edit in ' + item.editMapId : 'Edit quest', 'text-button');
+            edit.type = 'button'; edit.disabled = saving;
+            if (item.id === bundledId) edit.setAttribute('aria-current', 'true'); edit.addEventListener('click', () => editBundled(item)); entry.append(edit); return entry;
+        }));
+        $('quest-bundled-results').textContent = !matches.length ? (query ? 'No quests match. Try another name or ID.' : 'No bundled quests for this map.') :
+            query ? `${matches.length} of ${data.existingQuests.length} quests match` : `${matches.length} quests`;
+    }
+    $('quest-bundled-search').addEventListener('input', renderBundled);
     function renderData() {
         $('quest-workspace').hidden = false;
         error(data.validationError || '');
         renderList(); renderEditor();
-        $('quest-bundled-count').textContent = `(${data.existingQuests.length})`;
-        $('quest-bundled-list').replaceChildren(...data.existingQuests.map(item => {
-            const entry = node('li', item.effective?.name || item.name || item.id); entry.append(node('div', item.id));
-            const edit = node('button', item.editMapId && item.editMapId !== mapId ? 'Edit in ' + item.editMapId : 'Edit quest', 'text-button');
-            edit.type = 'button'; edit.addEventListener('click', () => editBundled(item)); entry.append(edit); return entry;
-        }));
         updateStatus();
     }
     async function loadMap(id, reload = false) {

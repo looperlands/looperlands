@@ -1,6 +1,6 @@
 (() => {
     'use strict';
-    const guides = ['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder'];
+    const guides = ['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-items', 'mapmaker-doors'];
     const content = document.getElementById('guide-content');
     let active, loadingSlug, sequence = 0;
     function inline(parent, text) {

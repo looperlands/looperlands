@@ -12625,3 +12625,20 @@ Types.emotions = {
     'corn': "🌽",
     'beer': "🍺",
 };
+
+// Mapmaker definitions use the same IDs and classifications on the server and client.
+(function (install) {
+    if (typeof module === 'object' && module.exports) install(require('./mapmakerentities.json'));
+    else define(['mapmakerentities'], function (entries) {install(entries); return Types;});
+})(function (entries) {
+    Types.registerMapmakerEntities = function (entries) {
+    Types.mapmakerEntities = entries;
+    entries.forEach(function (entry) {
+        if (!entry.builtin) {
+            Types.Entities[entry.id.toUpperCase()] = entry.kind;
+            kinds[entry.id] = [entry.kind, entry.type === 'item' ? 'resource' : entry.type];
+        }
+    });
+    };
+    Types.registerMapmakerEntities(entries);
+});

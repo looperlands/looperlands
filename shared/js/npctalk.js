@@ -1,9 +1,9 @@
 // Shared dialogue commands keep map shop membership aligned with the client.
 (function (factory) {
-    if (typeof module === 'object' && module.exports) module.exports = factory();
-    else define([], factory);
-})(function () {
-    return {
+    if (typeof module === 'object' && module.exports) module.exports = factory(require('./mapmakerentities.json'));
+    else define(['mapmakerentities'], factory);
+})(function (entries) {
+    var talk = {
         // "example_dialogue_npc": [
         //     "You can put anything here, it won't be used, but there needs to be at least one line for the npc to show up"
         // ],
@@ -1345,4 +1345,6 @@
         ],
         // @nextNPCLine@
     };
+    entries.forEach(function (entry) {if (entry.type === 'npc') talk[entry.id] = entry.dialogue;});
+    return talk;
 });

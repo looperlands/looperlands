@@ -25,6 +25,7 @@ services:
       - local-chat-history:/opt/app/data/chat
       - local-game-data:/opt/app/data/local-playtest
       - ./:/workspace:ro
+      - ./shared:/opt/app/shared
       - ./client:/opt/app/client
       - ./server/maps:/opt/app/server/maps
       - ./server/local-launcher:/opt/app/server/local-launcher:ro

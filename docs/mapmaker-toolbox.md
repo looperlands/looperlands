@@ -49,3 +49,7 @@ docker compose -f docker-compose-local.yml stop
 If startup or a build fails, read the visible error and **Build tools** output. Run **Troubleshoot → Run checks** to check the runtime, map sources, output folders and game server. Restart the desktop launcher after fixing startup problems. Keep ports 8000 and 8010 available.
 
 Continue with [Starting game sessions](mapmaker-sessions.md), [Building maps](mapmaker-building.md) or [Quest builder](mapmaker-quest-builder.md).
+
+## Characters and items
+
+The [Mob & NPC editor](mapmaker-mobs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then place it in Tiled and rebuild your map.

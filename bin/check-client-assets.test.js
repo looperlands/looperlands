@@ -107,3 +107,11 @@ test('rejects startup sprites absent from the embedded metadata', () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('missing startup sprite metadata: custom-garden-creature');
 });
+
+test('validates automatically registered Toolbox sprites embedded in the bundle', () => {
+    startupSprites([], []);
+    fs.appendFileSync(path.join(fixture,'js/game.js'), `\ndefine('mapmakerentities', function () {return ${JSON.stringify([{sprite:{id:'item-moon_shard'}}])};});`);
+    expect(check().stderr).toContain('img/1/item-moon_shard.png');
+    write('img/1/item-moon_shard.png');
+    expect(check().status).toBe(0);
+});

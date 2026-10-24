@@ -205,3 +205,5 @@ CMD node --prof server/js/main.js
 node --prof-process isolate.log > isolate.out
 ```
 7) Read your version of `isolate.out`
+
+The local Mapmaker Toolbox also includes a [Mob & NPC editor](docs/mapmaker-mobs.md) and [Item editor](docs/mapmaker-items.md), with PNG upload, animation previews, prepared image scales and automatic client/server registration.

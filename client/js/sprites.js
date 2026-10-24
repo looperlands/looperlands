@@ -1,5 +1,5 @@
 
-define(['text!../sprites/agent.json',
+define(['mapmakerentities','text!../sprites/agent.json',
         'text!../sprites/arrow.json',
         'text!../sprites/axe.json',
         'text!../sprites/bat.json',
@@ -6592,15 +6592,16 @@ define(['text!../sprites/agent.json',
         'text!../sprites/tool-shovel.json',
         'text!../sprites/tool-watering-can.json',
         // @nextSpriteImport@
-    ], function() {
+    ], function(customSource) {
     
     var sprites = {};
     
-    _.each(arguments, function(spriteJson) {
+    _.each(Array.prototype.slice.call(arguments, 1), function(spriteJson) {
         var sprite = JSON.parse(spriteJson);
         
         sprites[sprite.id] = sprite;
     });
     
+    customSource.forEach(function (entry) {sprites[entry.sprite.id] = entry.sprite;});
     return sprites;
 });

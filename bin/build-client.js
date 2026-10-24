@@ -5,6 +5,9 @@ const babel = require('@babel/core');
 const requirejs = require('./r');
 
 const root = path.resolve(__dirname, '..');
+const authoredEntities = JSON.parse(fs.readFileSync(path.join(root, 'shared/js/mapmakerentities.json'), 'utf8'));
+fs.writeFileSync(path.join(root, 'client/js/mapmakerentities.js'), '// Generated from shared/js/mapmakerentities.json. Do not edit.\n' +
+    'define(function () { return ' + JSON.stringify(authoredEntities) + '; });\n');
 const config = vm.runInNewContext(fs.readFileSync(path.join(root, 'client/js/build.js'), 'utf8'));
 config.appDir = path.join(root, 'client');
 config.baseUrl = 'js';

@@ -561,6 +561,8 @@ const AltNames = {
 };
 
 AltNames.getAltNameFromKind = function(kind){
+    const authored = typeof Types !== 'undefined' && Types.mapmakerEntities?.find(entry => entry.id === kind);
+    if (authored) return authored.name;
     if(kind in AltNames) {
         return AltNames[kind];
     }

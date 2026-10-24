@@ -6676,6 +6676,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.spritesets[0] = {};
                 this.spritesets[1] = {};
                 this.spritesets[2] = {};
+                for (const entry of Types.mapmakerEntities) if (!this.spriteNames.includes(entry.sprite.id)) this.spriteNames.push(entry.sprite.id);
                 _.map(this.spriteNames, (name) => {
                     this.loadSprite(name);
                 }, this);
