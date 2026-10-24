@@ -95,7 +95,7 @@ test('local development serves a browser launcher and a catalog without exposing
     expect(JSON.stringify(json)).not.toContain(apiKey);
     for (const match of html.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css))(?:["'])/g)) {
         const asset = await fetch(new URL(match[1], baseUrl + '/local/'));
-        expect(asset.status).toBe(200);
+        expect({url: match[1], status: asset.status}).toEqual({url: match[1], status: 200});
         expect(await asset.text()).not.toContain(apiKey);
     }
 });

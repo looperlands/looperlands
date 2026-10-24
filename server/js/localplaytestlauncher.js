@@ -112,6 +112,7 @@ function installLocalLauncher(app, options) {
             .filter(quest => !quest.dialogueOnly).map(quest => ({id: quest.id, name: quest.name || quest.title || quest.id, mapId: quest.mapId}))};
     };
     const express = require('express');
+    require('./localtoolboxassets').install(app, path.resolve(__dirname, '../..'));
     app.get(/^\/local$/, (req, res) => res.redirect('/local/'));
     app.use('/local', express.static(path.resolve(__dirname, '../local-launcher'), {index: 'index.html', maxAge: 0}));
     app.get('/local/api/catalog', (req, res) => {

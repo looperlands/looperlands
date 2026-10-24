@@ -27,6 +27,5 @@ function canvas(root,id) {const map=readMap(root,id);return {mapId:id,width:map.
 function install(app,toolbox) {
     app.get('/local/api/world-connections',async(req,res)=>{try{res.json(await readConnections(toolbox.root));}catch(e){res.status(e.status||500).json({error:e.message});}});
     app.get('/local/api/map-canvas',(req,res)=>{try{res.json(canvas(toolbox.root,req.query.mapId));}catch(e){res.status(e.status||400).json({error:e.message});}});
-    app.get('/local/mapmaker-path.js',(req,res)=>res.sendFile(path.resolve(toolbox.root,'shared/js/mapmakerpath.js')));
 }
 module.exports={readConnections,canvas,install};

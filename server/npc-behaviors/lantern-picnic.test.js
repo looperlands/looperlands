@@ -22,8 +22,9 @@ function setup(saved) {
         gameData: {quests: {}, choices: [], mobKills: {}, items: {}}}]]);
     const cache = {get: key => records.get(key), set: (key, data) => records.set(key, data)};
     const dialogue = new DialogueController(cache, {});
-    const talk = npc => dialogue.processDialogueTree('main', npc, cache, 'one');
-    const choose = (npc, node) => { dialogue.goto('main', npc, node, cache, 'one'); return talk(npc); };
+    const routineKey=npc=>picnic.dialogues.find(tree=>Number(tree.npc)===npc)?.key;
+    const talk=npc=>dialogue.processDialogueTree('main',npc,cache,'one',routineKey(npc));
+    const choose=(npc,node)=>{dialogue.goto('main',npc,node,cache,'one',routineKey(npc));return talk(npc);};
     const data = records.get('one');
     return {data, cache, talk, choose};
 }
@@ -98,6 +99,7 @@ test('quest completion is idempotent and finished quests do not get offered agai
 test('other guards do not inherit the placed watch dialogue', () => {
     const controller = new DialogueController(new Map(), {});
     expect(controller.findDialogueTree('main', Types.Entities.GUARD, 'placed:other')).toBeNull();
+    expect(controller.findDialogueTree('main', Types.Entities.GUARD)).toBeNull();
     expect(controller.findDialogueTree('main', Types.Entities.GUARD, 'town-watch').key).toBe('town-watch');
 });
 

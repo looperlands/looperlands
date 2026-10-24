@@ -180,9 +180,6 @@ function installRuntime(app,root) {
 function install(app,toolbox) {
     app.get('/local/api/world-authoring',async(req,res)=>{try{res.json(req.query.mapId===undefined?{maps:maps(toolbox.root)}:await readTool(toolbox.root,req.query.mapId,req.query.tool));}catch(error){res.status(error.status||500).json({error:error.message});}});
     app.post('/local/api/world-authoring',async(req,res)=>{try{if(toolbox.closed)fail('The toolbox is shutting down.',503);if(toolbox.job?.status==='running')fail('Wait for the build to finish before saving.',409);res.json(await saveTool(toolbox.root,req.body,()=>{if(toolbox.closed)fail('The toolbox is shutting down.',503);if(toolbox.job?.status==='running')fail('Wait for the build to finish before saving.',409);}));}catch(error){res.status(error.status||500).json({error:error.message});}});
-    app.get('/local/authoring-contract.js',(req,res)=>res.sendFile(path.resolve(toolbox.root,'shared/js/mapmakerauthoring.js')));
-    const vendor={'worldtime.js':'worldtime-worker.js','particles.js':'worldparticles-worker.js','worldfxconfig.js':'worldfxconfig.js'};
-    app.get('/local/vendor/:name',(req,res)=>vendor[req.params.name]?res.sendFile(path.resolve(toolbox.root,'client/js',vendor[req.params.name])):res.sendStatus(404));
     app.use('/audio',require('express').static(path.join(toolbox.root,'client/audio')));
 }
 module.exports={readDocument,readTool,saveTool,catalog,validateRules,validateDialogues,validateAtmosphere,loadFlows,registerDialogues,applyAtmosphere,installRuntime,install};

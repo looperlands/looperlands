@@ -251,6 +251,7 @@ function createToolboxApp(toolbox) {
     });
     app.use('/local/api/assets', express.json({limit: '18mb'}));
     app.use(express.json({limit: '256kb'}));
+    require('../server/js/localtoolboxassets').install(app, toolbox.root);
     require('../server/js/localassetapi').install(app, toolbox);
     require('../server/js/localassetlookup').install(app, toolbox);
     require('../server/js/localdoorbuilder').install(app, toolbox);
