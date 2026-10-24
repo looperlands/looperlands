@@ -24,6 +24,6 @@ Each identifier has its own **Copy** button. If clipboard access is unavailable,
 
 ## API contract and local verification
 
-Keyword browsing calls `POST /api/asset/search` with `offset`, `limit`, an optional nonempty `keyword` and an optional `assetType` array. It requests 26 rows to display 25 and detect another page because the API returns an array without a total count. Exact Platform UUIDs use `GET /api/asset/<id>`; NFT IDs use `GET /api/asset/nft/<nftId>`.
+Keyword browsing calls `POST /api/asset/search` with `offset`, `limit`, an optional nonempty `keyword` and an optional `assetType` array. The live API returns `{total, assets}`. The lookup displays 25 results per page and uses the total to detect another page. It also accepts the older array response, requesting one extra row to detect another page. Exact Platform UUIDs use `GET /api/asset/<id>`; NFT IDs use `GET /api/asset/nft/<nftId>`.
 
 A synthetic contract fixture lives in `postman/mocks/looperlands-assets`. Run `postman simulation run postman/simulations/looperlands-assets.sim.yaml --port 4900 --output ndjson` and use the localhost settings in its README. The fixture follows the owning Platform's handlers and serializer. It proves the caller's HTTP request, response handling and pagination; a live key is still needed to verify the live catalog.

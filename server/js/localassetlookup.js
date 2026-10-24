@@ -50,10 +50,12 @@ async function searchAssets(input, options = {}) {
         if (response.status === 429) fail('The Platform is rate limiting searches. Wait a moment and try again.', 503);
         if (exact && response.status === 404) return {assets: [], offset: 0, hasMore: false};
         if (!response.ok) fail('The Platform could not complete this search. Try again shortly.', 502);
-        const payload = await readJson(response), rows = exact ? (payload ? [payload] : []) : payload;
+        const payload = await readJson(response);
+        const envelope = !exact && payload && !Array.isArray(payload) && Array.isArray(payload.assets) && Number.isSafeInteger(payload.total) && payload.total >= 0;
+        const rows = exact ? (payload ? [payload] : []) : envelope ? payload.assets : payload;
         if (!Array.isArray(rows)) fail('The Platform returned an unexpected asset response.', 502);
         const entries = rows.map(asset).filter(row => !query.type || row.assetType === query.type);
-        return {assets: entries.slice(0,pageSize), offset: exact ? 0 : query.offset, hasMore: !exact && entries.length > pageSize};
+        return {assets: entries.slice(0,pageSize), offset: exact ? 0 : query.offset, hasMore: !exact && (envelope ? query.offset + pageSize < payload.total : entries.length > pageSize)};
     } catch (error) {
         if (error.status) throw error;
         fail('The live Platform search is unavailable or timed out. Check the connection and try again.', 502);

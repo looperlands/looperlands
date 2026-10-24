@@ -20,3 +20,10 @@ test('empty search browses all types; unknown direct NFT returns an empty result
 test.each([[401,'denied'],[403,'denied'],[429,'rate limiting'],[503,'could not complete']])('safe upstream error at %s',async(status,message)=>{response={status,body:{error:'secret internal trace'}};await expect(searchAssets({}, {env})).rejects.toThrow(message);});
 test('rejects malformed replies and returns a bounded timeout instead of a hanging request',async()=>{response.body='<html>proxy failure</html>';await expect(searchAssets({}, {env})).rejects.toThrow('unavailable');response.body={assets:[]};await expect(searchAssets({}, {env})).rejects.toThrow('unexpected');response.hang=true;await expect(searchAssets({}, {env,timeout:30})).rejects.toThrow('timed out');});
 test('missing keys and invalid filters never contact the Platform',async()=>{await expect(searchAssets({}, {env:{}})).rejects.toThrow('Configure');for(const input of [{offset:-1},{offset:1},{assetType:'npc'},{keyword:'a'.repeat(256)}])expect(()=>validate(input)).toThrow();expect(requests).toEqual([]);});
+
+test('live paginated envelope exposes assets and uses the total for subsequent pages',async()=>{
+    response.body={total:51,assets:Array.from({length:26},(_,i)=>row(i+1))};
+    const first=await searchAssets({}, {env});expect(first.assets).toHaveLength(25);expect(first.hasMore).toBe(true);
+    response.body={total:51,assets:[row(51)]};const last=await searchAssets({offset:50},{env});expect(last).toMatchObject({offset:50,hasMore:false});expect(last.assets).toHaveLength(1);
+    response.body={total:0,assets:[]};expect((await searchAssets({}, {env})).assets).toEqual([]);
+});
