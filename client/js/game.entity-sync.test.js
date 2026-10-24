@@ -3,7 +3,7 @@ const vm = require('vm');
 const _ = require('underscore');
 
 function setup() {
-    const modules = {}, callbacks = {};
+    const modules = {mapmakerentities: require('../../shared/js/mapmakerentities.json')}, callbacks = {};
     const sandbox = {
         _, console: {log() {}, debug() {}, error: jest.fn()}, setTimeout, clearTimeout,
         AltNames: {getAltNameFromKind() {}},

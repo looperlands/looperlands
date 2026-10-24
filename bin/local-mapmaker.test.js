@@ -231,6 +231,8 @@ test('spawn errors settle only after close and do not start subsequent build ste
     await rejected; expect(settled).toBe(true);
 });
 
+// The first quest request loads the bundled quest registry and catalog under coverage.
+// Allow for cold module instrumentation on shared CI runners.
 test('quest API persists a validated map file, enforces origin and revision checks, and blocks writes during builds', async () => {
     const Types = require('../shared/js/gametypes');
     write('server/maps/world_server_testmap.json', JSON.stringify({...output, staticEntities: {1: 'guard', 2: 'rat'}}));
@@ -250,7 +252,7 @@ test('quest API persists a validated map file, enforces origin and revision chec
     expect((await fetch(base + '/local/api/quests', {method: 'POST', headers, body})).status).toBe(409);
     toolbox.job = {status: 'running'};
     expect((await fetch(base + '/local/api/quests', {method: 'POST', headers, body})).status).toBe(409);
-});
+}, 30000);
 
 test('only the four mapmaker documentation sources can be opened through the toolbox', async () => {
     write('docs/mapmaker-toolbox.md', '# Mapmaker Toolbox\n');

@@ -338,7 +338,7 @@ const Lakes = {
         level: 3,
         fish: {
             m88ngmeshare: "common",
-            m88nwhiskey: "uncommon",
+            m88nfreewhiskey: "uncommon",
             m88ndiamondhand: "rare",
             m88ngoldenbanana: "epic",
             m88nshorts: "legendary",

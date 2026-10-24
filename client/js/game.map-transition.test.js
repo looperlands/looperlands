@@ -4,7 +4,7 @@ beforeEach(() => jest.useFakeTimers());
 afterEach(() => {jest.clearAllTimers(); jest.useRealTimers();});
 
 function setup() {
-    const modules = {}, workers = [], elements = new Map();
+    const modules = {mapmakerentities: require('../../shared/js/mapmakerentities.json')}, workers = [], elements = new Map();
     function $(selector) {
         if (!elements.has(selector)) {
             const element = {classes: new Set(), focused: false};
