@@ -2,7 +2,7 @@
     'use strict';
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
-    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item'};
+    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use tile action'};
     const drafts = new Map();
     let maps = [], data, selected = -1, bundledId, mapId, loading = false, saving = false, requestId = 0;
     const fieldNames = {'quest-id': 'id', 'quest-name': 'name', 'quest-npc': 'npc', 'quest-level': 'level', 'quest-required-level': 'requiredLevel',
@@ -166,7 +166,7 @@
         populate(element, entries, value, empty); return element;
     }
     function targetEntries(type) {
-        return data.catalog[type === 'NPC_TALKED' ? 'npcs' : type === 'KILL_MOB' ? 'mobs' : type === 'AREA_ENTERED' ? 'areas' : 'items'];
+        return data.catalog[type === 'TILE_ACTION' ? 'tileActions' : type === 'NPC_TALKED' ? 'npcs' : type === 'KILL_MOB' ? 'mobs' : type === 'AREA_ENTERED' ? 'areas' : 'items'];
     }
     function firstTarget(type) {return targetEntries(type)[0]?.id;}
     function objectiveDefault() {
@@ -200,15 +200,20 @@
             const type = node('select'); type.id = prefix + '-type';
             type.replaceChildren(...Object.entries(eventNames).map(([id, name]) => option(id, name))); type.value = objective.eventType;
             type.addEventListener('change', () => {
-                objective.eventType = type.value; objective.target = firstTarget(type.value); delete objective.npcKey; delete objective.recipient;
+                objective.eventType = type.value; objective.target = firstTarget(type.value); delete objective.npcKey; delete objective.recipient; delete objective.stage; delete objective.countBy;
                 if (type.value === 'DELIVER_ITEM') objective.recipient = {npc: data.catalog.npcs[0]?.id};
                 renderObjectives(); changed(); $(prefix + '-type').focus();
             });
             const target = select(prefix + '-target', targetEntries(objective.eventType), objective.target);
-            target.addEventListener('change', () => {objective.target = objective.eventType === 'AREA_ENTERED' ? target.value : target.value === '' ? undefined : Number(target.value); changed();});
+            target.addEventListener('change', () => {objective.target = ['AREA_ENTERED','TILE_ACTION'].includes(objective.eventType) ? target.value : target.value === '' ? undefined : Number(target.value); changed();});
             const amount = input(prefix + '-amount', objective.amount || 1, {type: 'number', min: '1', max: '100000', required: true});
             amount.addEventListener('input', () => {objective.amount = Number(amount.value); changed();});
             grid.append(field('Objective ID', identifier), field('Player-facing label', label), field('Action', type), field('Target', target), field('Amount', amount));
+            if(objective.eventType==='TILE_ACTION') {
+                const stage=input(prefix+'-stage',objective.stage||'',{placeholder:'Any successful stage'});stage.oninput=()=>{if(stage.value)objective.stage=stage.value;else delete objective.stage;changed();};
+                const count=select(prefix+'-count',[{id:'actions',name:'Completed actions'},{id:'quantity',name:'Harvest / output quantity'}],objective.countBy||'actions');count.onchange=()=>{objective.countBy=count.value;changed();};
+                grid.append(field('Stage ID (optional)',stage),field('Count progress by',count));
+            }
             if (objective.eventType === 'NPC_TALKED') {
                 const key = input(prefix + '-key', objective.npcKey, {maxLength: 100, placeholder: 'Any NPC of this kind'});
                 key.addEventListener('input', () => {if (key.value.trim()) objective.npcKey = key.value.trim(); else delete objective.npcKey; changed();});
@@ -298,14 +303,16 @@
         if (!entry?.effective || mapId !== owner) return;
         bundledId = item.id; selected = -1; renderList(); renderEditor(); updateStatus(); $('quest-name').focus();
     }
-    async function boot() {
+    let bootPromise;
+    function boot() {if(bootPromise)return bootPromise;bootPromise=bootData().finally(()=>{bootPromise=undefined;});return bootPromise;}
+    async function bootData() {
         if (loading || data) return;
         loading = true; updateStatus('Loading maps…');
         try {
             const catalog = await request('/local/api/catalog'); maps = catalog.maps || [];
             $('quest-map').replaceChildren(...maps.map(map => option(map.id, map.name || map.id)));
             if (!maps.length) throw new Error('No maps are ready. Check Troubleshoot, then reload quests.');
-            const initial = maps.find(map => map.id === $('map').value) || maps[0]; $('quest-map').value = initial.id;
+            const initial = maps.find(map => map.id === window.ToolboxNavigation?.params().get('map')) || maps.find(map => map.id === $('map').value) || maps[0]; $('quest-map').value = initial.id;
             loading = false; await loadMap(initial.id);
         } catch (failure) {loading = false; error(failure.message); updateStatus('Quest builder is unavailable. Reload quests to try again.');}
     }
@@ -401,5 +408,6 @@
     window.addEventListener('beforeunload', event => {
         if (dirty() || [...drafts.values()].some(draft => snapshot(draft.data) !== draft.data.saved)) {event.preventDefault(); event.returnValue = '';}
     });
+    window.ToolboxNavigation?.route('quests',async params=>{if(!params.has('map'))return;await boot();if(!maps.some(m=>m.id===params.get('map')))return;await loadMap(params.get('map'));const id=params.get('quest');if(!id)return;const index=data?.quests.findIndex(q=>q.id===id);if(index>=0){selected=index;bundledId=undefined;renderList();renderEditor();updateStatus();}else{const entry=data?.existingQuests.find(q=>q.id===id);if(entry)await editBundled(entry);else error('This quest could not be found. Refresh the validator.');}});
     if (location.hash.split('/')[0] === '#quests') boot();
 })();

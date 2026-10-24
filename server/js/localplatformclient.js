@@ -13,6 +13,7 @@ const put = (table, key, value) => Object.defineProperty(table, key, {value, wri
 class LocalPlatformClient {
     constructor(options = {}) {
         this.localPlaytest = true;
+        this.root = options.root || path.resolve(__dirname, '../..');
         this.platformDefined = false;
         this.file = path.join(options.dataDir || process.env.LOOPERLANDS_LOCAL_DATA_DIR || path.join(process.cwd(), 'data/local-playtest'), 'state.json');
         this.state = {version: 1, assets: {}, wallets: {}, farms: {}, receipts: {}, activities: {}, partnerTasks: {}};
@@ -69,13 +70,22 @@ class LocalPlatformClient {
             if (body.checkpointId !== undefined) asset.checkpoint = body.checkpointId;
             if (body.trait !== undefined) asset.trait = body.trait;
             if (body.weapon !== undefined) asset.weapon = body.weapon;
+            for (const row of body.startingInventory || []) {
+                if (!/^\d+$/.test(row.item) || !Number.isSafeInteger(row.amount) || row.amount < 1 || row.amount > 1000000) throw failure('invalid_starting_inventory');
+                asset.items[row.item] = row.amount;
+            }
+            for (const questKey of body.finishedQuests || []) {
+                if (typeof questKey !== 'string' || !questKey || questKey.length > 256) throw failure('invalid_finished_quest');
+                asset.quests = asset.quests.filter(quest => quest.questKey !== questKey);
+                asset.quests.push({questKey, status: 'FINISHED'});
+            }
         });
     }
 
     async createOrUpdateGameServer() {}
     async takeGameServerOffline() {}
-    async checkOwnership() {return true;}
-    async checkOwnershipOfCollection() {return true;}
+    async checkOwnership(nft, wallet, session) {return require('./localdooraccess').checkOwnership('nft', nft, wallet, session);}
+    async checkOwnershipOfCollection(collection, wallet, session) {return require('./localdooraccess').checkOwnership('collection', collection, wallet, session);}
 
     async getNFT(nftId) {
         const name = nftId.replace(/^0x/, 'NFT_');
@@ -289,13 +299,34 @@ class LocalPlatformClient {
             return {success: true};
         });
     }
+    async getTileSequenceState(mapId,x,y,signature) {
+        return clone(this.state.tileSequences?.[JSON.stringify([mapId,x,y,signature])] || {revision:0});
+    }
+    async commitTileSequence(transaction) {
+        return this.change(state => {
+            const t=transaction, receiptKey='tile:'+t.requestId;
+            if(own(state.receipts,receiptKey)) return {...state.receipts[receiptKey].receipt,replayed:true};
+            state.tileSequences ||= {};
+            const key=JSON.stringify([t.mapId,t.x,t.y,t.signature]),current=state.tileSequences[key]||{revision:0};
+            if(current.revision!==t.expectedRevision) throw failure('tile_changed');
+            if(!t.requestId||!Number.isSafeInteger(t.xp)||t.xp<0||!Array.isArray(t.items)||!Number.isFinite(t.readyAt))throw failure('invalid_tile_transaction');
+            const asset=this.asset(state,t.nftId);
+            for(const row of t.requiredItems||[])if((asset.items[row.item]||0)<row.quantity)throw failure('insufficient_items');
+            this.applyItems(asset,t.items);asset.xp+=t.xp;
+            if(!Number.isSafeInteger(asset.xp))throw failure('invalid_experience');
+            const tileState={revision:current.revision+1,stage:t.stage,readyAt:t.readyAt,tile:t.tile};
+            put(state.tileSequences,key,tileState);
+            const receipt={state:tileState,xp:asset.xp,success:t.success,quantities:Object.fromEntries(t.items.map(r=>[r.item,asset.items[r.item]]))};
+            put(state.receipts,receiptKey,{receipt});return receipt;
+        });
+    }
     async getEventBoard() {return {events: []};}
     async getEventEquipment() {return {grants: []};}
     async registerEvent() {throw failure('local_events_unavailable');}
     async getFreeRental() {return {success: false, error: 'local_rentals_unavailable'};}
     async getShopInventory() {return [];}
     async getCompanions() {return [];}
-    async loadMapFlow() {return [];}
+    async loadMapFlow(mapId) {return require('./localworldauthoring').loadFlows(this.root,mapId);}
     async loadMusic() {return [];}
     async getSpinIndex() {
         const {spinSet} = require('../apps/luckyfunkz/data/spinSet');

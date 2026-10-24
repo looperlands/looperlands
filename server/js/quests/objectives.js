@@ -1,7 +1,7 @@
 // Declarative objective evaluation inside the existing quest/event consumer.
 // Durable facts use the existing choice store; item ownership uses normal balances.
 const dao = require('../dao');
-const types = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM'];
+const types = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM', 'TILE_ACTION'];
 const flag = (q, o, count) => 'quest-progress:' + encodeURIComponent(q.id) + ':' + encodeURIComponent(o.id) + ':' + count;
 const amount = o => o.amount ?? 1;
 function validate(quest) {
@@ -38,6 +38,7 @@ function matches(o, event) {
     switch (o.eventType) {
         case 'NPC_TALKED': return Number(event.data.npc) === Number(o.target) && (!o.npcKey || event.data.npcKey === o.npcKey);
         case 'AREA_ENTERED': return String(event.data.area?.name || event.data.area?.id) === String(o.target);
+        case 'TILE_ACTION': return !event.data.activity?.failed && event.data.activity?.action === String(o.target) && (!o.stage || o.stage === event.data.activity.stage);
         case 'LOOT_ITEM': return (event.data.amount ?? 1) > 0 && Number(event.data.kind ?? event.data.item?.kind) === Number(o.target);
         case 'KILL_MOB': {
             const mob = event.data.mob;
@@ -52,7 +53,7 @@ async function consume(quest, event) {
         if (o.done) continue;
         if (event.data.allowedObjectives && !event.data.allowedObjectives[quest.id]?.includes(o.id)) continue;
         if (matches(o, event)) {
-            const increment = o.eventType === 'LOOT_ITEM' ? (event.data.amount || 1) : o.eventType === 'DELIVER_ITEM' ? amount(o) : 1;
+            const increment = o.eventType === 'TILE_ACTION' ? (o.countBy === 'quantity' ? event.data.activity.quantity || 1 : 1) : o.eventType === 'LOOT_ITEM' ? (event.data.amount || 1) : o.eventType === 'DELIVER_ITEM' ? amount(o) : 1;
             const next = Math.min(amount(o), o.count + increment), key = flag(quest, o, next);
             const response = await dao.registerChoice(event.playerCache.nftId, key);
             if (response === undefined || response === false || response?.status === false) throw new Error('Could not save quest progress. Please try again.');

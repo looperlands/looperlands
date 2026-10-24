@@ -14,10 +14,17 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 ## Choose a tool
 
 - **Playtest:** choose a map, spawn point, avatar and equipment, then start a game. See [Starting game sessions](mapmaker-sessions.md).
+- **Map validator:** find blocked placements, invalid references and entrance problems, then jump to their editors. See [Map validator](mapmaker-validator.md).
+- **Map inspector:** explore a built map with searchable object layers and editor links. See [Interactive map inspector](mapmaker-inspector.md).
 - **Build tools:** export a saved Tiled map, rebuild the game client and restart the local game. See [Building maps](mapmaker-building.md).
 - **Quest builder:** create custom quests or edit a bundled quest through a local override. See [Quest builder](mapmaker-quest-builder.md).
+- **Tile actions & stages:** place interactions, edit farming and build stage sequences. See [Tile actions & stages](mapmaker-tile-actions.md).
+- **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
+- **Triggers & events:** configure event, condition and action rules with a simulation. See [Trigger & event builder](mapmaker-events.md).
+- **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).
+- **Atmosphere:** edit scene lighting, music and particles with a game-time preview. See [Atmosphere](mapmaker-atmosphere.md).
 - **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
-- **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md).
+- **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md) and [NPC route painter](mapmaker-routes.md).
 - **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).
 - **Items:** create collectibles and prepare sprites. See [Items](mapmaker-items.md).
 - **Troubleshoot:** run environment checks and read suggested fixes. **Check main updates** reports repository updates and suggests Git commands; it does not update your files.
@@ -59,3 +66,11 @@ Continue with [Starting game sessions](mapmaker-sessions.md), [Building maps](ma
 The [Mob editor](mapmaker-mobs.md), [NPC editor](mapmaker-npcs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then place it in Tiled and rebuild your map.
 
 Use [Doors & portals](mapmaker-doors.md) to find entrances and edit their access rules, opening hours and player messages directly in the Tiled source.
+
+## Preview a coordinate
+
+Hover a map coordinate to see a **13 × 13 tile preview**, with that exact tile outlined in blue at the center. The same preview is available by focusing a coordinate with the keyboard or tapping it. Use **Escape** or **Close** to dismiss it. The pointer can move onto the preview without closing it.
+
+Previews are shared across Playtest checkpoint and spawn settings, Doors & portals, NPC placements and behaviour fields, Map validator and Map inspector. Entrance destinations use their destination map. Coordinate fields preview the current pair of values as you edit, without saving changes.
+
+Previews show the last built map artwork. Build after changing Tiled layouts. Locations near an edge stay centered, with gray cells beyond the map boundary. Missing builds or artwork show a readable message rather than an unrelated location.

@@ -129,3 +129,16 @@ test('a cloned cache keeps quests, choices, inventory and dialogue changed durin
     expect(saved.currentNode).toBe('new-dialogue'); expect(saved.gameData.items[5]).toBe(9); expect(saved.gameData.choices).toContain('friendship-choice');
     expect(saved.gameData.quests.IN_PROGRESS).toContainEqual({questKey: 'another-quest'}); expect(objective.progress(saved.gameData, quests.questsByID.meeting)[0].done).toBe(true);
 });
+
+test('tile-stage objectives match action/stage and count successful output without crediting failures',async()=>{
+    const q={id:'tile-test',objectives:[{id:'harvest',eventType:'TILE_ACTION',target:'farm',stage:'harvest',amount:5,countBy:'quantity'}]};
+    const playerCache={nftId:'tile-author',gameData:{choices:[],items:{}}};
+    const event=activity=>({eventType:'TILE_ACTION',playerCache,data:{activity}});
+    await objective.consume(q,event({action:'farm',stage:'water',quantity:9}));
+    await objective.consume(q,event({action:'farm',stage:'harvest',quantity:9,failed:true}));
+    expect(objective.progress(playerCache.gameData,q)[0].count).toBe(0);
+    await objective.consume(q,event({action:'farm',stage:'harvest',quantity:3}));
+    expect(objective.progress(playerCache.gameData,q)[0].count).toBe(3);
+    expect(await objective.consume(q,event({action:'farm',stage:'harvest',quantity:3}))).toBe(true);
+    expect(objective.progress(playerCache.gameData,q)[0].count).toBe(5);
+});

@@ -11,6 +11,7 @@ let loadedFlow = {};
 let loadedBlocks = {};
 
 const events = {
+    'tile.action': require('./when/tile.action.js'),
     'player.killed_mob': require('./when/player.killed_mob.js'),
     'player.looted_item': require('./when/player.looted_item.js'),
     'player.spawned': require('./when/player.spawned.js'),
@@ -88,7 +89,7 @@ async function loadFlowDefinition(mapId) {
 
 async function loadFlow(mapId, eventBroker, worldserver) {
     if (loadedFlow[eventBroker.player.nftId] != null) {
-        unloadFlow(eventBroker, mapId)
+        unloadFlow(eventBroker, loadedFlow[eventBroker.player.nftId])
     }
 
     flows[mapId] = await loadFlowDefinition(mapId);
@@ -103,7 +104,7 @@ async function loadFlow(mapId, eventBroker, worldserver) {
 
 function unloadFlow(eventBroker, mapId) {
     playerEventConsumer.clearListeners(eventBroker.player.nftId);
-    worldEventConsumer.clearListeners(mapId.startsWith('world_') ? mapId : 'world_' + mapId);
+    worldEventConsumer.clearListeners(mapId.startsWith('world_') ? mapId : 'world_' + mapId, eventBroker.player.nftId);
     loadedBlocks[eventBroker.player.nftId] = {};
 }
 
@@ -128,8 +129,9 @@ function assignEventHandlers(flow, eventBroker, worldserver) {
         })
 
         worldEventConsumer.addListener(worldserver.id, eventClass.eventType, (event) => {
-            handleEvent(handler, eventClass, event, worldserver, eventBroker);
-        })
+            const data={...event.data,player:eventBroker.player,playerData:eventBroker.cache?.get(eventBroker.player.sessionId),cache:eventBroker.cache};
+            handleEvent(handler, eventClass, {...event,data}, worldserver, eventBroker);
+        }, eventBroker.player.nftId)
     }
 }
 

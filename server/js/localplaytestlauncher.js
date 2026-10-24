@@ -16,11 +16,14 @@ function buildCatalog(worlds) {
     const names = require('../../shared/js/altnames');
     const Properties = require('./properties');
     const client = path.resolve(__dirname, '../../client');
-    const avatars = [], weapons = [], seen = new Set();
+    const avatars = [], weapons = [], items = [], seen = new Set();
     for (const kind of Object.values(Types.Entities)) {
         const id = Types.getKindAsString(kind);
         if (!id || seen.has(id)) continue;
         seen.add(id);
+        if (Types.isItem(kind) && !id.startsWith('NFT_') && !Types.isProjectile(kind)) {
+            items.push({id: String(kind), name: names.getName(id), key: id});
+        }
         const avatar = id.startsWith('NFT_') && Types.isArmor(kind);
         if (!avatar && !Types.isWeapon(kind)) continue;
         const metadata = path.join(client, 'sprites', id + '.json');
@@ -37,7 +40,8 @@ function buildCatalog(worlds) {
     avatars.sort((a, b) => a.name.localeCompare(b.name));
     weapons.sort((a, b) => a.name.localeCompare(b.name));
     const maps = buildMapCatalog(worlds);
-    return {maps, avatars, weapons, traits, maxLevel, defaults: {
+    items.sort((a, b) => a.name.localeCompare(b.name));
+    return {maps, avatars, weapons, items, traits, maxLevel, defaults: {
         mapId: maps.some(map => map.id === 'm88n2') ? 'm88n2' : maps[0]?.id,
         checkpointId: 1, walletId: '0x1e8ab2cc09be581530bb9f3ac94353f6f7412239',
         nftId: avatars.some(avatar => avatar.nftId === defaultAvatar) ? defaultAvatar : avatars[0]?.nftId,
@@ -62,6 +66,15 @@ function sameOrigin(req, appUrl) {
 function sessionSettings(input, catalog, worlds) {
     const invalid = message => {throw new Error(message);};
     if (!input || typeof input !== 'object' || Array.isArray(input)) invalid('Choose your playtest settings.');
+    const localDoorAccess = input.localDoorAccess ?? 'local';
+    if (!['local', 'live', 'allow-all'].includes(localDoorAccess)) invalid('Choose a door access mode.');
+    if (localDoorAccess === 'live' && !require('./localdooraccess').configuration()) invalid('Real ownership checks are not configured on this local server.');
+    const startingInventory = input.startingInventory ?? [], finishedQuests = input.finishedQuests ?? [];
+    if (!Array.isArray(startingInventory) || startingInventory.length > 100 || startingInventory.some(row =>
+        !row || !(catalog.items || []).some(item => item.id === row.item) || !Number.isSafeInteger(row.amount) || row.amount < 1 || row.amount > 1000000) ||
+        new Set(startingInventory.map(row => row.item)).size !== startingInventory.length) invalid('Choose unique inventory items with amounts between 1 and 1000000.');
+    if (!Array.isArray(finishedQuests) || finishedQuests.length > 200 || finishedQuests.some(id =>
+        !(catalog.quests || []).some(quest => quest.id === id)) || new Set(finishedQuests).size !== finishedQuests.length) invalid('Choose unique quests from the finished quests list.');
     const map = catalog.maps.find(row => row.id === input.mapId);
     if (!map) invalid('Choose a loaded map.');
     const checkpoint = map.checkpoints.find(row => String(row.id) === String(input.checkpointId));
@@ -77,7 +90,8 @@ function sessionSettings(input, catalog, worlds) {
     if (!catalog.traits.includes(input.trait)) invalid('Choose a character class.');
     if (typeof input.title !== 'string' || !input.title.trim() || input.title.trim().length > 24 || /[\u0000-\u001f<>]/.test(input.title)) invalid('Use a display name of 1–24 characters.');
     const body = {walletId: input.walletId, nftId: avatar.nftId, mapId: map.id, checkpointId: String(checkpoint.id),
-        xp, weapon: weapon.nftId || weapon.id, trait: input.trait, title: input.title.trim(), f2p: false};
+        xp, weapon: weapon.nftId || weapon.id, trait: input.trait, title: input.title.trim(), f2p: false, localDoorAccess,
+        startingInventory: startingInventory.map(({item, amount}) => ({item, amount})), finishedQuests};
     const hasX = input.x !== undefined && input.x !== null && input.x !== '';
     const hasY = input.y !== undefined && input.y !== null && input.y !== '';
     if (hasX || hasY) {
@@ -94,7 +108,8 @@ function installLocalLauncher(app, options) {
     const getCatalog = () => {
         if (options.catalog) return options.catalog;
         catalog ||= buildCatalog(options.worlds);
-        return {...catalog, maps: buildMapCatalog(options.worlds)};
+        return {...catalog, maps: buildMapCatalog(options.worlds), quests: require('./worlddefinitions').definitions.quests
+            .filter(quest => !quest.dialogueOnly).map(quest => ({id: quest.id, name: quest.name || quest.title || quest.id, mapId: quest.mapId}))};
     };
     const express = require('express');
     app.get(/^\/local$/, (req, res) => res.redirect('/local/'));
@@ -102,7 +117,7 @@ function installLocalLauncher(app, options) {
     app.get('/local/api/catalog', (req, res) => {
         const data = getCatalog();
         if (!data.maps.length) {catalog = null; return res.status(503).json({error: 'Maps are still loading. Try again shortly.'});}
-        res.set('Cache-Control', 'no-store').json(data);
+        res.set('Cache-Control', 'no-store').json({...data, liveOwnershipAvailable: Boolean(require('./localdooraccess').configuration())});
     });
     app.post('/local/api/session', async (req, res) => {
         res.set('Cache-Control', 'no-store');

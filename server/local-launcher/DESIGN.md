@@ -99,7 +99,7 @@ The workspace fills the viewport width. At desktop sizes, a full-width sticky he
 
 Quest builder uses a quest list beside its editor. Documentation has a guide list beside reading content, with the article limited to 78ch. These local columns sit inside the shared Toolbox shell.
 
-At 1100px and below, the main sidebar narrows to 190px and internal spacing tightens. At 820px and below, the header and tool navigation return to normal flow; tool navigation wraps horizontally, documentation becomes one column, and quest fields stack. At 540px and below, the quest list moves above the editor, form sections stack and primary actions expand for the available width. Support a minimum viewport width of 320px.
+At 1100px and below, the main sidebar narrows to 190px and internal spacing tightens. At 820px and below, the header and tool navigation return to normal flow; tool navigation becomes a labelled native select with the current tool selected, documentation becomes one column, and quest fields stack. At 540px and below, the quest list moves above the editor, form sections stack and primary actions expand for the available width. Support a minimum viewport width of 320px.
 
 ## Elevation & Depth
 
@@ -127,3 +127,9 @@ Controls and grouped surfaces use small corners through the control radius. Inpu
 - Don't apply this surface's styles to the game or rewrite the existing game design system to match it.
 - Don't extend the pixel font beyond the wordmark and rendered dialogue preview to editable fields, controls, navigation or documentation.
 - Don't extend the dialogue preview's dark game palette to the surrounding workspace or add decorative game panels to routine Toolbox tasks without a new user direction.
+
+## Authoring workspaces
+
+Tile actions keep identity fields above Stages/Farming, Map placement and Preview tabs. Use the standard selected blue surface and underline for the active tab, with keyboard arrow navigation. Costs, rewards and care boosts use native details to disclose optional settings. Chance inputs show percentages while source files retain fractional values. Desktop tile and NPC editors keep their save toolbar visible during scrolling.
+
+NPC waypoint rows use native details: their summaries show the waypoint number, coordinates and wait; opening a row selects that point on the route. World connections puts labelled search/direction filters before the results, preserves filters across map selection and paginates 12 entrances at a time. Its graph and source coverage expand on demand. These controls retain the existing flat surfaces and small control radius.

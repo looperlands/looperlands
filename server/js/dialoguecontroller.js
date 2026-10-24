@@ -22,7 +22,7 @@ class DialogueController {
 
             for (let i = 0; i < dialogues.length; i++) {
                 const dialogue = dialogues[i];
-                if (parseInt(dialogue.npc) === parseInt(npcId) && (!npcKey || !dialogue.key || dialogue.key === npcKey)) {
+                if (parseInt(dialogue.npc) === parseInt(npcId) && (!dialogue.key || dialogue.key === npcKey)) {
                     return dialogue;
                 }
             }
@@ -55,6 +55,14 @@ class DialogueController {
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];
             node = _.clone(node);
+            // Authoring forms keep empty lists; the game distinguishes an end/Continue node by their absence.
+            if (dialogue.localBuilder) {
+                if (node.options?.length === 0) delete node.options;
+                if (node.goto && !node.options) {
+                    node.options = [{text: 'Continue', goto: node.goto}];
+                    delete node.goto;
+                }
+            }
             if (node.legacyQuests) {
                 sessionData.currentNode = null;
                 sessionData.dialogueTransitions = [];
@@ -184,7 +192,7 @@ class DialogueController {
         }
 
         const sessionData = cache.get(sessionId) || {};
-        if (dialogue.key && (sessionData.dialogueNpcKey !== npcKey ||
+        if ((dialogue.key || dialogue.localBuilder) && (sessionData.dialogueNpcKey !== npcKey ||
             !sessionData.dialogueTransitions?.includes(nodeKey))) return false;
         sessionData.currentNode = nodeKey;
         sessionData.dialogueTransitions = [];

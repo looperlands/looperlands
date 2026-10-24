@@ -255,6 +255,11 @@ function createToolboxApp(toolbox) {
     require('../server/js/localassetlookup').install(app, toolbox);
     require('../server/js/localdoorbuilder').install(app, toolbox);
     require('../server/js/localnpcbuilder').install(app, toolbox);
+    require('../server/js/localmapanalysis').install(app, toolbox);
+    require('../server/js/localmappreview').install(app, toolbox);
+    require('../server/js/localworldauthoring').install(app, toolbox);
+    require('../server/js/localtilebuilder').install(app, toolbox);
+    require('../server/js/localworldconnections').install(app, toolbox);
     app.get('/local/api/quests', (req, res) => {
         try {res.json(require('../server/js/localquestbuilder').readQuests(toolbox.root, req.query.mapId));}
         catch (error) {res.status(error.status || 500).json({error: error.message});}
@@ -266,7 +271,7 @@ function createToolboxApp(toolbox) {
             res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
-    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-items', 'mapmaker-doors']);
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-items', 'mapmaker-doors']);
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));

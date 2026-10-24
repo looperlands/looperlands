@@ -161,7 +161,7 @@
     function checkpointHint() {
         const map = catalog.maps.find(item => item.id === byId('map').value);
         const point = map?.checkpoints.find(item => String(item.id) === byId('checkpoint').value);
-        byId('checkpoint-hint').textContent = point ? `Map position: ${point.x}, ${point.y}` : 'Choose a map with a checkpoint.';
+        byId('checkpoint-hint').replaceChildren(...(point ? ['Map position: ', window.MapLocation.coordinate(map.id, point.x, point.y)] : ['Choose a map with a checkpoint.']));
     }
     function safeLevel(value, fallback) {
         const number = Number(value);
@@ -179,8 +179,46 @@
         input.value = configurable ? safeLevel(preferred ?? input.value, 1) : fixedWeaponLevel(item);
         byId('weapon-level-hint').textContent = configurable ? 'Set the level for this NFT weapon.' : item ? 'Built-in weapons keep their game default. Only NFT weapons have a configurable level.' : 'Choose an NFT weapon to set its level.';
     }
+    function progressRow(kind, saved) {
+        const inventory = kind === 'item';
+        const container = byId(inventory ? 'starting-inventory' : 'finished-quests');
+        const row = document.createElement('div');
+        row.className = 'inline-controls';
+        const input = document.createElement('input');
+        input.type = 'text'; input.required = true;
+        input.setAttribute('list', inventory ? 'starting-item-options' : 'finished-quest-options');
+        input.setAttribute('aria-label', inventory ? 'Inventory item' : 'Finished quest');
+        input.placeholder = inventory ? 'Search item name or key' : 'Search quest name or ID';
+        input.value = inventory ? catalog.items?.find(item => item.id === saved?.item)?.key || '' : saved || '';
+        row.append(input);
+        if (inventory) {
+            const amount = document.createElement('input');
+            amount.type = 'number'; amount.min = '1'; amount.max = '1000000'; amount.step = '1'; amount.required = true;
+            amount.value = saved?.amount ?? 1; amount.setAttribute('aria-label', 'Item amount');
+            row.append(amount);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.className = 'text-button'; remove.textContent = 'Remove';
+        remove.setAttribute('aria-label', inventory ? 'Remove inventory item' : 'Remove finished quest');
+        remove.addEventListener('click', () => {row.remove(); form.dispatchEvent(new Event('change', {bubbles: true}));});
+        row.append(remove); container.append(row);
+        return input;
+    }
+    function doorAccessHint() {
+        const mode = byId('door-access').value;
+        byId('door-access-hint').textContent = mode === 'allow-all'
+            ? 'Enter any door or portal, ignoring ownership, items, quests, levels, time windows and triggers.'
+            : mode === 'live'
+                ? (catalog.liveOwnershipAvailable ? 'Check NFT and collection access using this wallet and the real API. Other requirements use local progress.' : 'Real ownership checks need to be configured on this local server before you can start in this mode.')
+                : 'NFT and collection access always passes. Items, quests, levels, time windows and triggers still apply.';
+    }
     function apply(settings) {
         const value = {...catalog.defaults, ...settings};
+        byId('door-access').value = ['local', 'live', 'allow-all'].includes(value.localDoorAccess) ? value.localDoorAccess : 'local';
+        doorAccessHint();
+        byId('starting-inventory').replaceChildren(); byId('finished-quests').replaceChildren();
+        for (const row of Array.isArray(value.startingInventory) ? value.startingInventory : []) progressRow('item', row);
+        for (const id of Array.isArray(value.finishedQuests) ? value.finishedQuests : []) progressRow('quest', id);
         byId('map').value = catalog.maps.some(map => map.id === value.mapId) ? value.mapId : catalog.defaults.mapId;
         checkpoints(value.checkpointId);
         const avatar = catalog.avatars.find(item => item.nftId?.toLowerCase() === String(value.nftId).toLowerCase()) || catalog.avatars.find(item => item.nftId === catalog.defaults.nftId) || catalog.avatars[0];
@@ -197,6 +235,19 @@
         byId('advanced-spawn').open = byId('spawn-x').value !== '' || byId('spawn-y').value !== '';
     }
     function settings() {
+        const startingInventory = [], finishedQuests = [];
+        for (const row of byId('starting-inventory').children) {
+            const input = row.querySelector('input');
+            const item = catalog.items?.find(item => item.key === input.value);
+            input.setCustomValidity(item ? '' : 'Choose an item from the list.');
+            if (item) startingInventory.push({item: item.id, amount: Number(row.querySelector('input[type=number]').value)});
+        }
+        for (const row of byId('finished-quests').children) {
+            const input = row.querySelector('input');
+            const quest = catalog.quests?.find(quest => quest.id === input.value);
+            input.setCustomValidity(quest ? '' : 'Choose a quest from the list.');
+            if (quest) finishedQuests.push(quest.id);
+        }
         avatarPicker.input.setCustomValidity(avatarPicker.selected ? '' : 'Choose an avatar from the results, or paste its NFT ID below.');
         weaponPicker.input.setCustomValidity(weaponPicker.selected ? '' : 'Choose a weapon from the results.');
         const x = byId('spawn-x'), y = byId('spawn-y');
@@ -207,7 +258,7 @@
             byId('advanced-spawn').open = true;
         }
         if (!form.reportValidity()) return null;
-        const data = {mapId: byId('map').value, checkpointId: byId('checkpoint').value,
+        const data = {startingInventory, finishedQuests, localDoorAccess: byId('door-access').value, mapId: byId('map').value, checkpointId: byId('checkpoint').value,
             walletId: byId('wallet').value.trim(), nftId: avatarPicker.selected.nftId,
             level: Number(byId('avatar-level').value), weaponId: weaponPicker.selected.id,
             weaponLevel: weaponPicker.selected.nftId ? Number(byId('weapon-level').value) : fixedWeaponLevel(weaponPicker.selected), trait: byId('trait').value,
@@ -264,6 +315,8 @@
         byId('catalog-status').textContent = 'Loading maps and avatars…';
         try {
             catalog = await request('/local/api/catalog');
+            byId('starting-item-options').replaceChildren(...(catalog.items || []).map(item => option(item.key, item.name + ' · ' + item.key)));
+            byId('finished-quest-options').replaceChildren(...(catalog.quests || []).map(quest => option(quest.id, quest.name + ' · ' + quest.id)));
             if (!catalog.maps?.length || !catalog.avatars?.length || !catalog.weapons?.length || !catalog.defaults) throw new Error('The local catalog is incomplete. Restart the server and try again.');
             byId('map').replaceChildren(...catalog.maps.map(map => option(map.id, map.name || map.id)));
             buildMaps();
@@ -305,6 +358,9 @@
 
     byId('map').addEventListener('change', () => {checkpoints(); byId('spawn-x').value = ''; byId('spawn-y').value = '';});
     byId('checkpoint').addEventListener('change', checkpointHint);
+    byId('door-access').addEventListener('change', doorAccessHint);
+    byId('add-starting-item').addEventListener('click', () => progressRow('item').focus());
+    byId('add-finished-quest').addEventListener('click', () => progressRow('quest').focus());
     byId('clear-spawn').addEventListener('click', () => {byId('spawn-x').value = ''; byId('spawn-y').value = ''; byId('spawn-x').setCustomValidity(''); byId('spawn-y').setCustomValidity(''); byId('advanced-spawn').open = false; form.dispatchEvent(new Event('change', {bubbles: true}));});
     byId('preset-select').addEventListener('change', () => {
         const selected = presets.find(preset => preset.id === byId('preset-select').value);
@@ -348,6 +404,7 @@
         if (byId('spawn-y').value !== '') data.y = Number(byId('spawn-y').value);
         writeStorage(lastKey, data);
     });
+    window.MapLocation.fields(byId('spawn-x'), byId('spawn-y'), () => byId('map').value);
     ['spawn-x', 'spawn-y'].forEach(id => byId(id).addEventListener('input', () => {byId('spawn-x').setCustomValidity(''); byId('spawn-y').setCustomValidity('');}));
     byId('retry').addEventListener('click', boot);
     window.addEventListener('pageshow', event => {
@@ -355,7 +412,8 @@
     });
     function buildMaps() {
         const select = byId('build-map');
-        const previous = select.value;
+        const linkedMap = window.ToolboxNavigation?.screen()==='build' ? window.ToolboxNavigation.params().get('map') : undefined;
+        const previous = linkedMap || select.value;
         select.replaceChildren(...catalog.maps.map(map => option(map.id, map.name || map.id)));
         select.value = catalog.maps.some(map => map.id === previous) ? previous : catalog.defaults.mapId;
     }
@@ -514,9 +572,12 @@
             byId('updates-commands').focus();
         }
     });
-    const tabs = [...document.querySelectorAll('.tool-tabs [role=tab]')];
+    const tabs=[...document.querySelectorAll('.tool-tabs [role=tab]')],mobileTool=byId('mobile-tool');
+    for(const tab of tabs){const option=document.createElement('option');option.value=tab.dataset.pane;option.textContent=tab.textContent;mobileTool.append(option);}
+    mobileTool.onchange=()=>{location.hash=mobileTool.value;};
     let activePane;
     function openPane(tab) {
+        mobileTool.value=tab.dataset.pane;
         for (const item of tabs) {
             const selected = item === tab;
             item.setAttribute('aria-selected', String(selected)); item.tabIndex = selected ? 0 : -1;
@@ -549,6 +610,7 @@
     sidebarLayout.addEventListener('change', tabOrientation);
     tabOrientation();
     routePane();
+    window.ToolboxNavigation?.route('build',params=>{if(params.has('map')&&catalog?.maps.some(m=>m.id===params.get('map')))byId('build-map').value=params.get('map');});
     boot();
     loadBuild();
 })();

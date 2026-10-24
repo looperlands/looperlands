@@ -13,10 +13,10 @@ function route(path, data) {
     const ens = {getEnsName: jest.fn().mockResolvedValue('name.eth'), getEns: jest.fn().mockResolvedValue('Player')};
     vm.runInNewContext(source.slice(offset, end), {
         app: {get: (url, fn) => {handler = fn;}}, cache, dao, ens,
-        Types: {getKindFromString: () => 5}
+        Types: {getKindFromString: () => 5}, require
     });
     const res = {status: jest.fn().mockReturnThis(), json: jest.fn()};
-    return {cache, dao, res, run: () => handler({params: {sessionId: 'session', itemId: 'gold'}}, res)};
+    return {cache, dao, res, run: () => handler({params: {sessionId: 'session', itemId: 'gold', questId: 'test-quest'}}, res)};
 }
 
 test.each(['reject', 'undefined'])('failed session loading remains retryable: %s', async failure => {
@@ -51,10 +51,24 @@ test.each([
     [{}, 503, undefined],
     [{gameData: {}}, 200, false],
     [{gameData: {items: {5: 7}}}, 200, true],
+    [{gameData: {items: {5: 0}}}, 200, false],
     [{gameData: {items: {}}}, 200, false]
 ])('ownsItem handles session state %j', async (data, status, owns) => {
     const r = route('/session/:sessionId/ownsItem/:itemId', data);
     await r.run();
     expect(r.res.status).toHaveBeenCalledWith(status);
     if (owns !== undefined) expect(r.res.json).toHaveBeenCalledWith(owns);
+});
+
+test.each(['COMPLETED', 'FINISHED'])('quest doors accept %s quests from session data', async status => {
+    const r = route('/session/:sessionId/completedQuest/:questId', {gameData: {quests: {[status]: [{questKey: 'test-quest'}]}}});
+    await r.run();
+    expect(r.res.json).toHaveBeenCalledWith(true);
+});
+
+test('missing quest progress denies access with a single response', async () => {
+    const r = route('/session/:sessionId/completedQuest/:questId', {gameData: {}});
+    await r.run();
+    expect(r.res.json).toHaveBeenCalledTimes(1);
+    expect(r.res.json).toHaveBeenCalledWith(false);
 });

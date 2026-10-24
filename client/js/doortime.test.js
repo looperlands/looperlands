@@ -140,3 +140,13 @@ test('opening hours do not bypass a failed level gate', () => {
     expect(axios.post).not.toHaveBeenCalled();
     expect(game.showNotification).toHaveBeenCalledWith('You need to be level 10 to enter.');
 });
+
+test.each([{nft: 'token'}, {collection: 'collection'}, {item: 'wood'}, {quest: 'intro'}, {level: 9999}, {weaponLevel: 9999}])('allow-all bypasses door requirements %j, time and triggers', gate => {
+    const destination = {...gate, map: 'main', timeRange: '22:00-06:00', triggerId: 'switch'};
+    const {game, axios, stop} = entrance(destination);
+    game.storage = {data: {localAllowAllDoors: true}};
+    stop();
+    expect(game.travelToMap).toHaveBeenCalledWith(destination);
+    expect(axios.get).not.toHaveBeenCalled();
+    expect(game.showNotification).not.toHaveBeenCalled();
+});

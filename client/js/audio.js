@@ -279,6 +279,11 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                     return area.contains(entity);
                 });
 
+            const scene = this.game.map?.getCurrentScene?.(entity);
+            // Scripted world music retains priority; scene authoring replaces only map music.
+            if (!(this.game.worldMusicAreas || []).includes(area) && scene?.authoringMusic !== undefined && scene.authoringMusic !== null) {
+                return this.getMusic(scene.authoringMusic);
+            }
             if (area) {
                 music = this.getMusic(area.musicName);
             }

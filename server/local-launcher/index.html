@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Mapmaker Toolbox · LooperLands</title>
-  <link rel="stylesheet" href="./launcher.css">
+  <link rel="stylesheet" href="./launcher.css?v=map-tools-3">
+  <script src="./toolboxnavigation.js" defer></script>
+  <script src="./mappreview.js" defer></script>
   <script src="./launcher.js" defer></script>
   <script src="./questbuilder.js" defer></script>
   <script src="./dialogueeditor.js" defer></script>
@@ -13,8 +15,18 @@
   <script src="./dropeditor.js" defer></script>
   <script src="./assetbuilder.js" defer></script>
   <script src="./doorbuilder.js" defer></script>
+  <script src="./mapmaker-path.js" defer></script>
+  <script src="./mapcanvas.js" defer></script>
   <script src="./npcbuilder.js" defer></script>
   <script src="./assetlookup.js" defer></script>
+  <script src="./mapanalysis.js" defer></script>
+  <script src="./authoring-contract.js" defer></script>
+  <script src="./vendor/worldtime.js" defer></script>
+  <script src="./vendor/particles.js" defer></script>
+  <script src="./vendor/worldfxconfig.js" defer></script>
+  <script src="./worldbuilders.js" defer></script>
+  <script src="./tilebuilder.js" defer></script>
+  <script src="./worldconnections.js" defer></script>
 </head>
 <body>
   <main class="launcher">
@@ -29,6 +41,13 @@
 
     <nav class="tool-tabs" role="tablist" aria-label="Mapmaker tools">
       <button id="tab-playtest" type="button" role="tab" aria-selected="true" aria-controls="playtest-pane" data-pane="playtest">Playtest</button>
+      <button id="tab-validator" type="button" role="tab" aria-selected="false" aria-controls="validator-pane" data-pane="validator" tabindex="-1">Map validator</button>
+      <button id="tab-inspector" type="button" role="tab" aria-selected="false" aria-controls="inspector-pane" data-pane="inspector" tabindex="-1">Map inspector</button>
+      <button id="tab-tiles" type="button" role="tab" aria-selected="false" aria-controls="tiles-pane" data-pane="tiles" tabindex="-1">Tile actions &amp; stages</button>
+      <button id="tab-connections" type="button" role="tab" aria-selected="false" aria-controls="connections-pane" data-pane="connections" tabindex="-1">World connections</button>
+      <button id="tab-events" type="button" role="tab" aria-selected="false" aria-controls="events-pane" data-pane="events" tabindex="-1">Triggers &amp; events</button>
+      <button id="tab-dialogues" type="button" role="tab" aria-selected="false" aria-controls="dialogues-pane" data-pane="dialogues" tabindex="-1">Dialogue trees</button>
+      <button id="tab-atmosphere" type="button" role="tab" aria-selected="false" aria-controls="atmosphere-pane" data-pane="atmosphere" tabindex="-1">Atmosphere</button>
       <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
       <button id="tab-quests" type="button" role="tab" aria-selected="false" aria-controls="quests-pane" data-pane="quests" tabindex="-1">Quest builder</button>
       <button id="tab-mobs" type="button" role="tab" aria-selected="false" aria-controls="mobs-pane" data-pane="mobs" tabindex="-1">Mobs</button>
@@ -39,6 +58,7 @@
       <button id="tab-troubleshoot" type="button" role="tab" aria-selected="false" aria-controls="troubleshoot-pane" data-pane="troubleshoot" tabindex="-1">Troubleshoot</button>
       <button id="tab-documentation" type="button" role="tab" aria-selected="false" aria-controls="documentation-pane" data-pane="documentation" tabindex="-1">Documentation</button>
     </nav>
+    <div class="mobile-tool-switcher"><label for="mobile-tool">Tool</label><select id="mobile-tool" aria-label="Mapmaker tool"></select></div>
     <section id="playtest-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-playtest">
     <p id="notice" class="notice" role="alert" tabindex="-1" hidden></p>
     <div class="initial-status">
@@ -115,6 +135,42 @@
               <label for="wallet">Wallet address</label>
               <input id="wallet" name="walletId" class="address" type="text" required spellcheck="false" autocomplete="off" placeholder="0x…" aria-describedby="wallet-hint">
               <span id="wallet-hint" class="field-hint">Any wallet can play locally. No connection or signature needed.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="door-access-heading">
+          <div class="section-heading"><h2 id="door-access-heading">Door access</h2><p>Choose what to test.</p></div>
+          <div class="section-fields">
+            <div class="field">
+              <label for="door-access">Access mode</label>
+              <select id="door-access" name="localDoorAccess" aria-describedby="door-access-hint">
+                <option value="local">Local progress</option>
+                <option value="live">Real ownership checks</option>
+                <option value="allow-all">Allow all doors</option>
+              </select>
+              <span id="door-access-hint" class="field-hint"></span>
+              <span class="field-hint">Player progress stays on this computer in every mode.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="progress-heading">
+          <div class="section-heading"><h2 id="progress-heading">Starting progress</h2><p>Prepare a test scenario.</p></div>
+          <div class="section-fields">
+            <div class="field">
+              <span>Inventory items</span>
+              <div id="starting-inventory"></div>
+              <datalist id="starting-item-options"></datalist>
+              <button id="add-starting-item" type="button" class="secondary">Add item</button>
+              <span class="field-hint">Set amounts for selected items. Other saved inventory stays as it is.</span>
+            </div>
+            <div class="field">
+              <span>Finished quests</span>
+              <div id="finished-quests"></div>
+              <datalist id="finished-quest-options"></datalist>
+              <button id="add-finished-quest" type="button" class="secondary">Add finished quest</button>
+              <span class="field-hint">Mark selected quests as finished without granting rewards. Other quest progress is kept.</span>
             </div>
           </div>
         </section>
@@ -305,6 +361,13 @@ You only have {{remaining}} blue monsters left to slay!</pre>
       </div>
     </section>
 
+    <section id="tiles-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-tiles" hidden></section>
+    <section id="connections-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-connections" hidden></section>
+    <section id="events-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-events" hidden></section>
+    <section id="dialogues-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-dialogues" hidden></section>
+    <section id="atmosphere-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-atmosphere" hidden></section>
+    <section id="validator-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-validator" hidden></section>
+    <section id="inspector-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-inspector" hidden></section>
     <section id="mobs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-mobs" hidden></section>
     <section id="npcs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-npcs" hidden>
       <nav class="npc-subnav" aria-label="NPC editor screens"><a href="#npcs">Sprites &amp; dialogue</a><a href="#npcs/behaviour">Behaviour &amp; schedule</a></nav>
@@ -320,6 +383,14 @@ You only have {{remaining}} blue monsters left to slay!</pre>
         <nav class="guide-nav" aria-label="Mapmaker guides">
           <a href="#documentation/mapmaker-toolbox">Mapmaker Toolbox</a>
           <a href="#documentation/mapmaker-sessions">Starting game sessions</a>
+          <a href="#documentation/mapmaker-tile-actions">Tile actions &amp; stages</a>
+          <a href="#documentation/mapmaker-routes">NPC route painter</a>
+          <a href="#documentation/mapmaker-connections">World connections</a>
+          <a href="#documentation/mapmaker-events">Triggers &amp; events</a>
+          <a href="#documentation/mapmaker-dialogues">Dialogue trees</a>
+          <a href="#documentation/mapmaker-atmosphere">Atmosphere</a>
+          <a href="#documentation/mapmaker-validator">Map validator</a>
+          <a href="#documentation/mapmaker-inspector">Map inspector</a>
           <a href="#documentation/mapmaker-building">Building maps</a>
           <a href="#documentation/mapmaker-quest-builder">Quest builder</a>
           <a href="#documentation/mapmaker-mobs">Mobs</a>

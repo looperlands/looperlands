@@ -11,7 +11,21 @@ Use **Playtest** in the [Mapmaker Toolbox](mapmaker-toolbox.md) whenever you nee
 5. Choose a **Weapon** and **Player class**. NFT weapons allow a custom **Weapon level**. Built-in weapons keep their normal fixed level.
 6. Click **Start game**. The game opens in the current tab.
 
-The server converts your chosen levels to XP and prepares the selected loadout. Ownership checks pass locally, while item, quest and level gates keep their normal behavior.
+The server converts your chosen levels to XP and prepares the selected loadout.
+
+## Door access and starting progress
+
+Choose **Access mode** before starting:
+
+- **Local progress** allows NFT and collection gates, while item, quest, level, time and trigger requirements still apply.
+- **Real ownership checks** reads NFT and collection ownership from the configured API for the entered wallet. Other requirements use local progress. An unavailable API denies access and lets you retry.
+- **Allow all doors** bypasses all door requirements, including items, quests, levels, time windows and triggers. It applies only to this local session and carries across map changes.
+
+Real ownership checks require `LOOPERLANDS_OWNERSHIP_BASE_URL` (the Platform origin, without `/api`) and `LOOPERLANDS_OWNERSHIP_API_KEY` in the local server environment. Docker Compose passes these through from the shell or an untracked `.env` file. Restart the local services after changing them. Credentials stay on the server; this mode only sends ownership GET requests and keeps player progress local.
+
+Under **Starting progress**, click **Add item**, choose an item by name or key, and enter its amount (1–1000000). Each selected amount replaces that item's saved local quantity; unselected items are kept. Click **Add finished quest** to choose quests by name or ID. These are marked finished without granting rewards, while other quest progress is kept. Remove a row to leave that item or quest unchanged when starting the next session.
+
+Access mode, starting inventory and finished quests are included in saved setups and the browser's remembered last settings.
 
 ## Start at an exact tile
 

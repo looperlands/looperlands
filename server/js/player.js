@@ -566,13 +566,15 @@ module.exports = Player = Character.extend({
                 }
             }
 
+            const playerSession = self.server.server.cache.get(self.sessionId);
+            const allowAllDoors = require('./localdooraccess').allowAll(playerSession);
             let triggerActive = true;
-            if (requiredTrigger !== undefined) {
+            if (requiredTrigger !== undefined && !allowAllDoors) {
                 triggerActive = self.server.checkTriggerActive(requiredTrigger);
             }
-            if (requiredNft !== undefined) {
+            if (requiredNft !== undefined && !allowAllDoors) {
                 let playerCache = self.server.server.cache.get(self.sessionId);
-                platformClient.checkOwnership(requiredNft, playerCache.walletId)
+                platformClient.checkOwnership(requiredNft, playerCache.walletId, playerCache)
                     .then(function (ownsNFT) {
                         if (ownsNFT === true) {
                             if (triggerActive) {

@@ -14,25 +14,26 @@ class WorldMapFlowEventConsumer {
         }
         if(this.listeners[mapId][event.eventType] !== undefined) {
             this.listeners[mapId][event.eventType].forEach(callback => {
-                callback(event);
+                (typeof callback === 'function' ? callback : callback.callback)(event);
             });
         }
 
         return {};
     }
 
-    addListener(mapId, eventType, callback) {
+    addListener(mapId, eventType, callback, owner) {
         if(!this.listeners[mapId]) {
             this.listeners[mapId] = {};
         }
         if(this.listeners[mapId][eventType] === undefined) {
             this.listeners[mapId][eventType] = [];
         }
-        this.listeners[mapId][eventType].push(callback);
+        this.listeners[mapId][eventType].push(owner === undefined ? callback : {owner,callback});
     }
 
-    clearListeners(mapId) {
-        this.listeners[mapId] = {};
+    clearListeners(mapId, owner) {
+        if (owner === undefined) this.listeners[mapId] = {};
+        else for (const type of Object.keys(this.listeners[mapId] || {})) this.listeners[mapId][type] = this.listeners[mapId][type].filter(entry => entry.owner !== owner);
     }
 }
 

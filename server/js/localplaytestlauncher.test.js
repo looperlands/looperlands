@@ -12,6 +12,8 @@ const weapon = '0x82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c7
 const apiKey = 'test-private-local-key';
 const sessionId = 'c'.repeat(40);
 const catalog = {
+    items: [{id: '100', key: 'wood', name: 'Wood'}],
+    quests: [{id: 'test-quest', name: 'Test quest'}],
     maps: [{id: 'm88n2', name: 'M88N2', checkpoints: [{id: 1, x: 2, y: 3, starting: true}]}],
     avatars: [{id: avatar, nftId: avatar, name: 'Test avatar', sprite: 'NFT_test-avatar'}],
     weapons: [
@@ -24,7 +26,7 @@ const catalog = {
 };
 const validSettings = {mapId: 'm88n2', checkpointId: 1, walletId: wallet, nftId: avatar,
     level: 12, weaponId: weapon, weaponLevel: 7, trait: 'ranger', title: 'Mapmaker'};
-const environmentKeys = ['NODE_ENV', 'LOOPERLANDS_LOCAL_PLAYTEST'];
+const environmentKeys = ['NODE_ENV', 'LOOPERLANDS_LOCAL_PLAYTEST', 'LOOPERLANDS_OWNERSHIP_BASE_URL', 'LOOPERLANDS_OWNERSHIP_API_KEY'];
 let environment, server, baseUrl, platform, createSession, world;
 
 beforeEach(() => {
@@ -123,7 +125,37 @@ test('a basic sword can start a session without creating an NFT weapon', async (
     expect(platform.prepareSession.mock.calls.some(([settings]) => settings.nftId === 'sword1')).toBe(false);
 });
 
+test.each(['local', 'allow-all', 'live'])('door mode %s and selected starting progress reach the new session', async localDoorAccess => {
+    process.env.LOOPERLANDS_OWNERSHIP_BASE_URL = 'https://example.invalid';
+    process.env.LOOPERLANDS_OWNERSHIP_API_KEY = 'server-secret';
+    await start();
+    const response = await post({...validSettings, localDoorAccess,
+        startingInventory: [{item: '100', amount: 12}], finishedQuests: ['test-quest']});
+    expect(response.status).toBe(200);
+    expect(createSession.mock.calls[0][0].body).toMatchObject({localDoorAccess,
+        startingInventory: [{item: '100', amount: 12}], finishedQuests: ['test-quest']});
+    const json = await (await fetch(baseUrl + '/local/api/catalog')).json();
+    expect(json.liveOwnershipAvailable).toBe(true);
+    expect(JSON.stringify(json)).not.toContain('server-secret');
+});
+
+test('live checks without server configuration are rejected before modifying progress', async () => {
+    delete process.env.LOOPERLANDS_OWNERSHIP_BASE_URL;
+    delete process.env.LOOPERLANDS_OWNERSHIP_API_KEY;
+    await start();
+    expect((await post({...validSettings, localDoorAccess: 'live'})).status).toBe(400);
+    expect(platform.prepareSession).not.toHaveBeenCalled();
+    expect(createSession).not.toHaveBeenCalled();
+});
+
 test.each([
+    ['invalid access mode', {localDoorAccess: 'anything'}],
+    ['unknown starting item', {startingInventory: [{item: '99999', amount: 1}]}],
+    ['negative item amount', {startingInventory: [{item: '100', amount: -1}]}],
+    ['fractional item amount', {startingInventory: [{item: '100', amount: 1.5}]}],
+    ['duplicate items', {startingInventory: [{item: '100', amount: 1}, {item: '100', amount: 2}]}],
+    ['unknown finished quest', {finishedQuests: ['missing']}],
+    ['duplicate quests', {finishedQuests: ['test-quest', 'test-quest']}],
     ['unknown map', {mapId: 'not-a-map'}],
     ['unknown checkpoint', {checkpointId: 99}],
     ['unknown avatar', {nftId: '0x' + 'f'.repeat(64)}],

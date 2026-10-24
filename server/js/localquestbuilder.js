@@ -5,7 +5,7 @@ const {WorldDefinitions} = require('./worlddefinitions');
 const {ownerMap, lockedObjective, applyChanges, validateOverrides, validatePrerequisites} = require('./localquestoverrides');
 const {counters, validateDialogue} = require('./localquestdialogue');
 
-const objectiveTypes = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM'];
+const objectiveTypes = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM', 'TILE_ACTION'];
 const idPattern = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 const sourceFailure = (mapId, message) => {throw Object.assign(new Error('Repair tools/quests/' + mapId + '.json: ' + message + ' Edit the JSON file, then reload the Quest builder.'), {status: 400, sourceError: true});};
@@ -117,7 +117,8 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
         const id = String(area.name || area.id);
         if (id !== 'undefined') areas.set(id, {id, name: area.name || 'Area ' + area.id});
     }
-    return {npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name))};
+    const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id}));
+    return {tileActions,npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name))};
 }
 function validateQuests(quests, catalog, availableIds = new Set(), reservedIds = new Set()) {
     if (!Array.isArray(quests) || quests.length > 50) fail('A map may have at most 50 builder quests.');
@@ -143,7 +144,7 @@ function validateQuests(quests, catalog, availableIds = new Set(), reservedIds =
         if (!Array.isArray(quest.objectives) || !quest.objectives.length || quest.objectives.length > 20) fail('Each quest needs between 1 and 20 objectives.');
         const objectiveIds = new Set();
         for (const [index, objective] of quest.objectives.entries()) {
-            fields(objective, ['id', 'label', 'eventType', 'target', 'amount', 'npcKey', 'recipient'], 'Objective');
+            fields(objective, ['id', 'label', 'eventType', 'target', 'amount', 'npcKey', 'recipient', 'stage', 'countBy'], 'Objective');
             identifier(objective.id, 'Objective ID');
             if (objectiveIds.has(objective.id)) fail('Objective IDs must be unique within a quest.');
             objectiveIds.add(objective.id);
@@ -153,6 +154,8 @@ function validateQuests(quests, catalog, availableIds = new Set(), reservedIds =
             if (objective.eventType === 'NPC_TALKED') has('npcs', objective.target, 'a target NPC');
             if (objective.eventType === 'NPC_TALKED') npcKey(objective.npcKey);
             else if (objective.npcKey !== undefined) fail('Only NPC talk objectives may have an NPC key.');
+            if(objective.eventType==='TILE_ACTION'){has('tileActions',objective.target,'a tile action');if(objective.stage!==undefined&&(!/^[a-z][a-z0-9_-]{0,79}$/.test(objective.stage)))fail('Use a stage ID.');if(objective.countBy!==undefined&&!['actions','quantity'].includes(objective.countBy))fail('Choose actions or quantity.');}
+            else if(objective.stage!==undefined||objective.countBy!==undefined)fail('Only tile actions have stage and count settings.');
             if (objective.eventType === 'KILL_MOB') has('mobs', objective.target, 'a target mob');
             if (objective.eventType === 'AREA_ENTERED') has('areas', objective.target, 'a target area');
             if (['LOOT_ITEM', 'DELIVER_ITEM'].includes(objective.eventType)) has('items', objective.target, 'a target item');

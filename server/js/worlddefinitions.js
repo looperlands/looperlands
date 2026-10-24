@@ -25,7 +25,7 @@ class WorldDefinitions {
             ...(entry.quests ? {quests: entry.quests.map(quest => quest.id === id ? definition : quest)} : {})})));
         for (const listener of this.listeners) listener();
     }
-    dialogues(map) {return (this.maps.get(map) || []).flatMap(entry => entry.dialogues || []);}
+    dialogues(map) {const all=(this.maps.get(map)||[]).flatMap(entry=>entry.dialogues||[]);return [...all.filter(d=>d.localBuilder).sort((a,b)=>Number(!!b.key)-Number(!!a.key)),...all.filter(d=>!d.localBuilder)];}
     behavior(map) {
         const sources = (this.maps.get(map) || []).map(entry => entry.npcBehavior).filter(Boolean);
         if (!sources.length) return null;

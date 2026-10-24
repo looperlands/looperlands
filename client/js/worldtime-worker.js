@@ -27,5 +27,9 @@
         // Equal endpoints mean all day. Overnight windows wrap through midnight.
         return start === end || (start < end ? minute >= start && minute < end : minute >= start || minute < end);
     }
-    return {duration, mainDaylight, previewTime, isInRange};
+    function atmosphereDarkness(config, time) {
+        const daylight = config.cycle ? mainDaylight(time) : 1;
+        return config.nightDarkness + daylight * (config.dayDarkness - config.nightDarkness);
+    }
+    return {duration, mainDaylight, previewTime, isInRange, atmosphereDarkness};
 });

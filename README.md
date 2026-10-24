@@ -32,6 +32,14 @@ The toolbox's **Documentation** tab includes these guides:
 
 - [Mapmaker Toolbox](docs/mapmaker-toolbox.md): setup, tools and the local editing loop.
 - [Starting game sessions](docs/mapmaker-sessions.md): maps, avatars, equipment, saved setups and player progress.
+- [Map validator](docs/mapmaker-validator.md): check map placements, references and entrance destinations.
+- [Interactive map inspector](docs/mapmaker-inspector.md): explore map objects and jump to their editors.
+- [Tile actions & stages](docs/mapmaker-tile-actions.md): place interactions, edit farming and connect reusable stages.
+- [NPC route painter](docs/mapmaker-routes.md): draw routes, check paths and preview movement.
+- [World connections](docs/mapmaker-connections.md): map links, destination checks and return routes.
+- [Trigger & event builder](docs/mapmaker-events.md): configure and simulate game rules.
+- [Dialogue trees](docs/mapmaker-dialogues.md): branching NPC conversations and player previews.
+- [Atmosphere](docs/mapmaker-atmosphere.md): scene lighting, music, particles and game-time previews.
 - [Building maps](docs/mapmaker-building.md): Tiled sources, exports, rebuilds and recovery.
 - [Quest builder](docs/mapmaker-quest-builder.md): custom local quests, objectives, rewards and playtesting.
 
@@ -73,9 +81,11 @@ new session URL. Sessions are kept in server memory; create a fresh session if
 an old URL is rejected after a restart.
 
 Local Docker playtests accept any wallet with any avatar whose artwork is included
-in the client. NFT and collection ownership checks always pass locally; quest,
-item and level requirements still apply. No Platform account or credentials are
-needed. Player progress stays in the `local-game-data` Docker volume and is never
+in the client. By default NFT and collection ownership checks pass locally, while
+quest, item and level requirements apply. The [session setup](docs/mapmaker-sessions.md)
+also offers real ownership checks, an allow-all door mode, starting inventory and
+finished quests. Default local play needs no Platform account or credentials.
+Player progress stays in the `local-game-data` Docker volume and is never
 sent to the live Platform. Map flows, shop stock, events and companions from the
 live Platform are not loaded by this local provider.
 

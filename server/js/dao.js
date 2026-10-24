@@ -653,6 +653,20 @@ const commitFarmTransaction = async function (transaction) {
   return inventoryWritePromise;
 };
 
+const commitTileSequence = async function(transaction) {
+  while(processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if(await processLootEventQueue()===false)throw new Error('inventory_unavailable');
+  }
+  processingQueue=true;
+  inventoryWritePromise=(async()=>{
+    const receipt=await platformClient.commitTileSequence(transaction);
+    const quantities=Object.fromEntries(Object.entries(receipt.quantities).map(([item,quantity])=>[item,
+      quantity+pendingQueue.filter(e=>e.nftId===transaction.nftId&&e.item===item).reduce((sum,e)=>sum+e.amount,0)]));
+    return {...receipt,quantities};
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
 const loadFarmPlots = async function (mapId) {
   try {
     const plots = await platformClient.getFarmPlots(mapId);
@@ -786,6 +800,7 @@ module.exports = {
   getInventory,
   loadFarmState,
   commitFarmTransaction,
+  commitTileSequence,
   loadFarmPlots,
   loadFarmPlot,
   saveFarmPlot,

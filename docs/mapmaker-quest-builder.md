@@ -137,3 +137,7 @@ Custom quests and bundled quest overrides load only in local playtest mode. Incl
 Continue with [Building maps](mapmaker-building.md), [Starting game sessions](mapmaker-sessions.md) or the [Mapmaker Toolbox overview](mapmaker-toolbox.md).
 
 Use **Search bundled quests** to filter the bundled list by name or quest ID. Search ignores letter case. The result count shows how many quests match; clear the search to return to the full list.
+
+## Tile action objectives
+
+Choose **Use tile action** to count successful stages from a saved map action. Pick the action, optionally enter a stage ID (for example `harvest` or `work`), and choose whether progress counts completed actions or output quantity. Failed sequence attempts do not count. Reload Quest builder after creating tile definitions in [Tile actions & stages](mapmaker-tile-actions.md).

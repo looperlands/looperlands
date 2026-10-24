@@ -7,6 +7,7 @@ const Messages = require("../message");
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
+        TILE_ACTION: 'TILE_ACTION',
         LOOT_ITEM: 'LOOT_ITEM',
         SPAWNED: 'SPAWNED',
         DIED: 'DIED',
@@ -151,6 +152,10 @@ class PlayerEventBroker {
       let playerCache = this.cache.get(sessionId);
       PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });
       this.player.server.npcBehavior?.react('quest', this.player, {quest});
+    }
+
+    async tileAction(activity) {
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.TILE_ACTION,this.player.sessionId,this.player,this.cache.get(this.player.sessionId),{activity});
     }
 
     async spawnEvent(self, checkpointId) {

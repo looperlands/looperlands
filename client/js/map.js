@@ -190,6 +190,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.animated = map.animated;
             this.stagedTiles = map.stagedTiles || {};
             this.actionTiles = map.actionTiles || {};
+            this.authoringActions = map.authoringActions || {};
             this.eventBoards = map.eventBoards || [];
             this.tilesetColumns = map.tilesetColumns;
             this.hiddenLayers = map.hiddenLayers || {};
@@ -263,6 +264,8 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                 area.dn_cycle = scene.dn_cycle;
                 area.darkness = scene.darkness;
                 area.ambience = scene.ambience;
+                area.authoringAtmosphere = scene.authoringAtmosphere;
+                area.authoringMusic = scene.authoringMusic;
                 area.fx = scene.fx;
                 scenes[scene.id] = area;
             });
@@ -594,6 +597,12 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                 for (let j = y - r, max_j = y + r; j <= max_j; j += 1) {
                     if (!this.isOutOfBounds(i, j)) {
                         let self = this;
+                        const placed = this.authoringActions?.[i+'.'+j];
+                        if (placed) {
+                            const distance=Math.abs(i-x)+Math.abs(j-y);
+                            if(distance<nearestDistance){nearestAction={...placed,name:placed.action,gridX:i,gridY:j,x:i*this.tilesize,y:j*this.tilesize};nearestDistance=distance;}
+                            continue;
+                        }
                         _.each(this.data[(j * this.width) + i], function (tileId) {
                             const tile = {
                                 id: tileId,

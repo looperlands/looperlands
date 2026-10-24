@@ -1002,3 +1002,29 @@ describe('DialogueController - hasDialogueTree Error Handling', () => {
         expect(result).toBe(false);  // Ensure the method returns false
     });
 });
+
+test('authored conversations advance through choices and Continue nodes without empty choice menus', () => {
+    const cache = new Map([['qa', {nftId:'qa', gameData:{choices:[]}}]]);
+    const controller = new DialogueController(cache, {});
+    controller.dialogueTrees.main = [{npc:40, localBuilder:true, start:'welcome', nodes:{
+        welcome:{text:'Welcome', options:[{text:'Learn more',goto:'about'}]},
+        about:{text:'About this place',goto:'bye',options:[]},
+        bye:{text:'Goodbye',options:[]}
+    }}];
+    expect(controller.processDialogueTree('main',40,cache,'qa').options).toHaveLength(1);
+    expect(controller.goto('main',40,'bye',cache,'qa')).toBe(false);
+    expect(controller.goto('main',40,'about',cache,'qa')).toBe(true);
+    expect(controller.processDialogueTree('main',40,cache,'qa')).toEqual({text:'About this place',options:[{text:'Continue',goto:'bye'}]});
+    expect(controller.goto('main',40,'bye',cache,'qa')).toBe(true);
+    expect(controller.processDialogueTree('main',40,cache,'qa')).toEqual({text:'Goodbye'});
+    expect(cache.get('qa').currentNode).toBeNull();
+});
+
+test('a routine-scoped conversation never captures an NPC without that routine key', () => {
+    const controller = new DialogueController(new Map(), {});
+    const specific = {npc:40,key:'night_guard'}, general = {npc:40};
+    controller.dialogueTrees.main = [specific, general];
+    expect(controller.findDialogueTree('main',40)).toBe(general);
+    expect(controller.findDialogueTree('main',40,'other_guard')).toBe(general);
+    expect(controller.findDialogueTree('main',40,'night_guard')).toBe(specific);
+});

@@ -113,5 +113,6 @@
         input.addEventListener('input', () => {if (!applying) history.length = 0; refresh();});
         editors.push(refresh); refresh();
     }
+    window.ToolboxDialoguePreview = {append: appendPreview};
     document.addEventListener('toolbox:dialogue', () => editors.forEach(refresh => refresh(true)));
 })();

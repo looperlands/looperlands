@@ -44,6 +44,17 @@ test('progress, inventory, quests, choices and equipment survive an adapter rest
     await expect(independent.getGameData(avatar)).resolves.toEqual({kills: {}, items: [], quests: [], choices: []});
 });
 
+test('starting progress sets selected amounts and finished quests without erasing other progress or granting rewards', async () => {
+    await client.storeInventoryTransaction([{nftId: avatar, item: '100', amount: 5}, {nftId: avatar, item: '101', amount: 7}]);
+    await client.setQuestsStatus(avatar, 'other-quest', 'IN_PROGRESS');
+    const settings = {walletId: wallet, nftId: avatar, startingInventory: [{item: '100', amount: 12}], finishedQuests: ['test-quest']};
+    client.prepareSession(settings); client.prepareSession(settings);
+    const restarted = new LocalPlatformClient({dataDir});
+    expect(await restarted.getGameData(avatar)).toMatchObject({items: [{item: '100', quantity: 12}, {item: '101', quantity: 7}],
+        quests: [{questKey: 'other-quest', status: 'IN_PROGRESS'}, {questKey: 'test-quest', status: 'FINISHED'}]});
+    expect(restarted.readAsset(avatar).xp).toBe(1000000);
+});
+
 test('ownership bypass leaves item quantities and normal quest state intact', async () => {
     await client.storeInventoryTransaction([{nftId: avatar, item: '100', amount: 2}]);
     await expect(client.storeInventoryTransaction([{nftId: avatar, item: '100', amount: 1},

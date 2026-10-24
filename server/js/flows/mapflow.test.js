@@ -14,7 +14,7 @@ function deferred() {
     return {promise, resolve, reject};
 }
 
-function createFlows() {
+function createFlows(realAuthoring = false) {
     const dao = {loadMapFlow: jest.fn()};
     const playerBroker = {playerEventConsumers: []};
     const worldBroker = {worldEventConsumers: []};
@@ -22,7 +22,7 @@ function createFlows() {
     const inheritance = {exports: {}};
     vm.runInNewContext(read('../lib/class.js'), inheritance);
     const legacyBlock = filename => {
-        const context = {module: {exports: {}}, require: name => name === '../../lib/class' ? inheritance.exports : {}};
+        const context = {module: {exports: {}}, require: name => name === '../../lib/class' ? inheritance.exports : name === '../../quests/playereventbroker' ? {PlayerEventBroker:{Events:{KILL_MOB:'KILL_MOB',TILE_ACTION:'TILE_ACTION'}}} : {}};
         vm.runInNewContext(read(filename), context);
         return context.module.exports;
     };
@@ -42,6 +42,7 @@ function createFlows() {
             if (name === './worldeventbroker.js') return {WorldEventBroker: worldBroker};
             if (name === './special/all.js') return all;
             if (name === './then/send_notification.js') return notify;
+            if (realAuthoring && ['./when/tile.action.js','./when/player.killed_mob.js','./and/has.level.js','./then/trigger.activate.js'].includes(name)) return legacyBlock(name.slice(2));
             if (name.startsWith('./when/')) {
                 return class {
                     constructor(options) {
@@ -57,7 +58,7 @@ function createFlows() {
     });
     const player = id => ({player: {nftId: id}});
     const world = map => ({id: 'world_' + map, sendNotifications: jest.fn()});
-    const emit = (broker, eventType) => playerBroker.playerEventConsumers[0].consume({eventType, data: {player: broker.player}});
+    const emit = (broker, eventType, data = {}) => playerBroker.playerEventConsumers[0].consume({eventType, data: {...data, player: broker.player}});
     return {...exports, dao, player, world, emit, eventInstances};
 }
 
@@ -167,4 +168,42 @@ test('keeps real all-block execution state separate between players sharing a fe
     system.emit(bob, 'player.spawned');
     expect(world.sendNotifications).toHaveBeenCalledTimes(2);
     expect(world.sendNotifications).toHaveBeenLastCalledWith(bob.player, 'both', false);
+});
+
+test('authored boss rule executes real event, level and trigger blocks in order', async () => {
+    const system = createFlows(true), player = system.player('author'), world = system.world('main');
+    let level = 2;
+    player.player.getLevel = () => level;
+    const active = new Set();
+    world.checkTriggerActive = id => active.has(id);
+    world.activateTrigger = jest.fn(id => active.add(id));
+    system.dao.loadMapFlow.mockResolvedValue(require('../../../shared/js/mapmakerauthoring').compile([{
+        id:'boss_gate',enabled:true,when:{type:'player.killed_mob',options:{mob:13}},
+        conditions:[{type:'has.level',options:{level:3}}],
+        actions:[{type:'trigger.activate',options:{trigger:'boss-clear'}},{type:'send_notification',options:{message:'The gate is open.'}}]
+    }]));
+    await system.loadFlow('main',player,world);
+    system.emit(player,'KILL_MOB',{mob:{kind:13}});
+    expect(world.activateTrigger).not.toHaveBeenCalled();
+    level = 3;
+    system.emit(player,'KILL_MOB',{mob:{kind:2}});
+    expect(world.activateTrigger).not.toHaveBeenCalled();
+    system.emit(player,'KILL_MOB',{mob:{kind:13}});
+    expect(world.activateTrigger).toHaveBeenCalledWith('boss-clear');
+    expect(world.sendNotifications).toHaveBeenCalledWith(player.player,'The gate is open.',false);
+    system.emit(player,'KILL_MOB',{mob:{kind:13}});
+    expect(world.sendNotifications).toHaveBeenCalledTimes(1);
+});
+
+test('completed tile stages drive authored flows only for their matching action and stage',async()=>{
+    const system=createFlows(true),player=system.player('tile-author'),world=system.world('main');
+    system.dao.loadMapFlow.mockResolvedValue(require('../../../shared/js/mapmakerauthoring').compile([{
+        id:'repair_gate',enabled:true,when:{type:'tile.action',options:{action:'repair',stage:'work'}},conditions:[],
+        actions:[{type:'send_notification',options:{message:'Repair event received'}}]
+    }]));
+    await system.loadFlow('main',player,world);
+    for(const activity of [{action:'repair',stage:'finish'},{action:'repair',stage:'work',failed:true},{action:'farm',stage:'work'}])system.emit(player,'TILE_ACTION',{activity});
+    expect(world.sendNotifications).not.toHaveBeenCalled();
+    system.emit(player,'TILE_ACTION',{activity:{action:'repair',stage:'work'}});
+    expect(world.sendNotifications).toHaveBeenCalledWith(player.player,'Repair event received',false);
 });

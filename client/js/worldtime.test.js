@@ -75,3 +75,11 @@ test('Town and Forest use identical renderer lighting at dusk and night, while i
     api.renderLightOverlay([], 0, 0, 1, 0, scenes.find(scene => scene.name === 'Windmill'), [], {}, 'main', 50 * minute);
     expect(api.intensity()).toBe(0.5);
 });
+
+test('authored atmosphere blends exact day and night endpoints, including fixed interiors', () => {
+    const config = {cycle: true, dayDarkness: .1, nightDarkness: .9};
+    expect(WorldTime.atmosphereDarkness(config, 20 * minute)).toBeCloseTo(.1);
+    expect(WorldTime.atmosphereDarkness(config, 42.5 * minute)).toBeCloseTo(.5);
+    expect(WorldTime.atmosphereDarkness(config, 50 * minute)).toBeCloseTo(.9);
+    expect(WorldTime.atmosphereDarkness({...config, cycle: false}, 50 * minute)).toBeCloseTo(.1);
+});

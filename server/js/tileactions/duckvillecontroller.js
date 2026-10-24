@@ -36,9 +36,14 @@ class DuckvilleTileActionsController {
 
     loadStageDefinitions() {
         const directory = path.resolve(__dirname, "../../../client/tileActions");
-        return Object.fromEntries(fs.readdirSync(directory)
+        const result = Object.fromEntries(fs.readdirSync(directory)
             .filter((file) => file.endsWith(".json"))
             .map((file) => [path.basename(file, ".json"), JSON.parse(fs.readFileSync(path.join(directory, file), "utf8"))]));
+        if (require('../localplaytest').isLocalPlaytest()) {
+            const builder=require('../localtilebuilder'),root=path.resolve(__dirname,'../../..');
+            for(const id of builder.maps(root)) result[id]=Object.fromEntries(Object.entries(builder.definitions(root,id)).filter(([,a])=>a.type!=='sequence'));
+        }
+        return result;
     }
 
     getMapActionGrid(map) {
@@ -56,6 +61,10 @@ class DuckvilleTileActionsController {
                     grid[(index % mapData.width) + "." + Math.floor(index / mapData.width)] = mapData.actionTiles[tile];
                 }
             });
+        }
+        if (require('../localplaytest').isLocalPlaytest()) {
+            const builder=require('../localtilebuilder'),doc=builder.document(path.resolve(__dirname,'../../..'),map);
+            Object.assign(grid,builder.applyMap({},doc).authoringActions);
         }
         this.mapActionGrids[map] = grid;
         return grid;

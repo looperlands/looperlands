@@ -6592,6 +6592,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             canEnterDoorByTime: function (dest) {
+                if (this.storage?.data?.localAllowAllDoors === true) return true;
                 if (WorldTime.isInRange(this.getWorldTime(), dest.timeRange)) return true;
                 this.showNotification(dest.time_message || dest.message || "This entrance is closed at this time of day.");
                 return false;
@@ -7672,7 +7673,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 }
                             }
 
-                            if (!_self.canEnterDoorByTime(dest)) {
+                            if (self.storage?.data?.localAllowAllDoors === true) {
+                                if (dest.http_redirect !== undefined) window.open(dest.http_redirect, '_blank');
+                                else {goInside(); _self.updatePos(self.player);}
+                            } else if (!_self.canEnterDoorByTime(dest)) {
                                 _self.doorCheck = false;
                             } else if (dest.nft !== undefined) {
                                 var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
@@ -7685,6 +7689,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking ownership of token gate.");
+                                    _self.showNotification('Ownership could not be checked. Please try again.');
                                 }).finally(function (e) {
                                     _self.doorCheck = false;
                                 });
@@ -7731,6 +7736,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                         _self.showNotification(dest.collection_message ? dest.collection_message : (dest.message ? dest.message : "You don't own the required NFT to enter."));
                                     }
                                 }).catch(function (error) {
+                                    _self.showNotification('Ownership could not be checked. Please try again.');
                                     console.error("Error while checking ownership of token gate.");
                                 }).finally(function (e) {
                                     _self.doorCheck = false;

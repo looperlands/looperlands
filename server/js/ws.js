@@ -241,6 +241,7 @@ WS.socketIOServer = Server.extend({
         if (require('./localplaytest').isLocalPlaytest()) {
             app.get('/', (req, res, next) => req.query.sessionId ? next() : res.redirect(process.env.LOOPERLANDS_TOOLBOX_URL || '/local/'));
         }
+        if (require('./localplaytest').isLocalPlaytest()) require('./localworldauthoring').installRuntime(app, path.resolve(__dirname,'../..'));
         app.use("/", express.static(__dirname + "/../../client-build"));
 
         let httpInclude = require('http');
@@ -411,6 +412,7 @@ WS.socketIOServer = Server.extend({
             body.title = sessionData.title;
             body.f2p = sessionData.f2p;
             body.trait = sessionData.trait;
+            body.localDoorAccess = sessionData.localDoorAccess;
             delete body.map;
 
             let responseJson = await newSession(body, true);
@@ -507,6 +509,7 @@ WS.socketIOServer = Server.extend({
             parsedSaveData.walletId = walletId;
             parsedSaveData.mapId = sessionData.mapId;
             parsedSaveData.f2p = sessionData.f2p;
+            parsedSaveData.localAllowAllDoors = require('./localdooraccess').allowAll(sessionData);
 
             res.status(200).json(parsedSaveData);
         });
@@ -766,9 +769,10 @@ WS.socketIOServer = Server.extend({
 
             } else {
                 const walletId = sessionData.walletId;
-                const result = await platformClient.checkOwnership(nftId, walletId)
-
-                res.status(200).json(result);
+                try {
+                    const result = await platformClient.checkOwnership(nftId, walletId, sessionData);
+                    res.status(200).json(result);
+                } catch {res.status(503).json({error: 'Ownership could not be checked. Please try again.'});}
             }
 
         });
@@ -791,7 +795,7 @@ WS.socketIOServer = Server.extend({
                 if (!sessionData.gameData) {
                     return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
                 }
-                let owns = sessionData.gameData.items?.[entityItemId] !== undefined;
+                let owns = Number(sessionData.gameData.items?.[entityItemId]) > 0;
                 res.status(200).json(owns);
                 return;
             }
@@ -810,12 +814,7 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let questStatus = sessionData?.gameData?.quests;
-                if (questStatus === undefined || !questStatus) {
-                    res.status(200).json(false);
-                }
-
-                let completed = (_.findIndex(questStatus.COMPLETED, {questKey: questId}) !== -1);
+                let completed = require('./quests/queststate').completed(sessionData.gameData, questId);
                 res.status(200).json(completed);
 
                 return;
@@ -835,9 +834,10 @@ WS.socketIOServer = Server.extend({
                 });
             } else {
                 const walletId = sessionData.walletId;
-                const result = await platformClient.checkOwnershipOfCollection(collectionName, walletId)
-
-                res.status(200).json(result);
+                try {
+                    const result = await platformClient.checkOwnershipOfCollection(collectionName, walletId, sessionData);
+                    res.status(200).json(result);
+                } catch {res.status(503).json({error: 'Ownership could not be checked. Please try again.'});}
             }
         });
 
@@ -1048,7 +1048,7 @@ WS.socketIOServer = Server.extend({
             try {await player.playerEventBroker.npcTalked(npcId, '', npcKey);}
             catch (error) {return res.status(409).json({error: error.message});}
 
-            const builderQuest = quests.handleMapmakerNPCClick(cache, sessionId, parseInt(npcId));
+            const builderQuest = !dialogueController.findDialogueTree(sessionData.mapId,npcId,npcKey)?.localBuilder && quests.handleMapmakerNPCClick(cache, sessionId, parseInt(npcId));
             if (builderQuest) return res.status(202).json(builderQuest);
 
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {

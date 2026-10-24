@@ -47,3 +47,5 @@ After saving, build the selected map to restart the local game, then start a fre
 Saves reject stale revisions and are blocked during map builds. If another tab or external edit changed the source, copy any draft values you need, click **Reload routines**, then reapply them. Switching maps or routines with unsaved changes offers **Discard changes** and **Keep editing**. Moving between toolbox screens retains drafts; reloading the page does not.
 
 Type definitions, dialogue and sprite data still live in `shared/js/mapmakerentities.json`, `client/sprites/<id>.json` and `client/img/1`, `client/img/2`, `client/img/3`. Save the type before placing it, build the placement before adding its routine, then save the routine and restart through Build tools.
+
+Use the [NPC route painter](mapmaker-routes.md) inside each normal route or schedule phase to place waypoints on the map and preview movement.

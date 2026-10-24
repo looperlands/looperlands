@@ -765,7 +765,10 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
     OPTION_DYNAMIC_LIGHTS = options?.dynamicLights ?? true;
 
-    if(scene.dn_cycle && scene.dn_cycle !== "false") {
+    if (scene.authoringAtmosphere) {
+        if (!worldClock) {importScripts('worldtime-worker.js');worldClock = self.WorldTime;}
+        GLOBAL_LIGHT_INTENSITY = 1 - worldClock.atmosphereDarkness(scene.authoringAtmosphere, worldTime ?? serverTime + performance.now());
+    } else if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((worldTime ?? serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
         if (mapId === 'main') {
             const cycleIntensity = getMainMapCycleIntensity(cycleProgress);
@@ -785,7 +788,9 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Add global light
-    ctx.fillStyle = `rgba(0, 0, 0, ${1 - GLOBAL_LIGHT_INTENSITY})`;
+    const tint = scene.authoringAtmosphere?.color || '#000000';
+    const rgb = [1,3,5].map(i => parseInt(tint.slice(i,i+2),16));
+    ctx.fillStyle = `rgba(${rgb.join(',')}, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const time = performance.now()

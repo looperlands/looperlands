@@ -16,6 +16,7 @@ function setup(trait) {
             if (name === './properties') return {rat:{friendly:false}};
             if (name === './utils') return {distanceTo:()=>1};
             if (name === './format') return {check: () => true};
+            if (name === './localdooraccess') return require('./localdooraccess');
             if (name === './formulas') return {dmg: () => 10, getSpeedTraitBonus: () => 100};
             if (name === './quests/playereventbroker.js') return {PlayerEventBroker: function () {}};
             if (name === './looperlandsplatformclient.js') return {LooperLandsPlatformClient: function () {}};
@@ -25,7 +26,7 @@ function setup(trait) {
     const player = Object.assign(new PlayerClass(), methods);
     const connection = {id: 1, listen: jest.fn(), onClose: jest.fn(), close: jest.fn(), sendUTF8: jest.fn()};
     const mob = {id: 7, armorLevel: 1, receiveDamage: jest.fn()};
-    const world = {getEntityById: () => mob, handleMobHate: jest.fn(), handleHurtEntity: jest.fn()};
+    const world = {server: {cache: {get: () => undefined}}, getEntityById: () => mob, handleMobHate: jest.fn(), handleHurtEntity: jest.fn()};
     player._super = () => {};
     player.init(connection, world);
     Object.assign(player, {id: connection.id, hasEnteredGame: true, resetTimeout: jest.fn(), getNFTWeapon: () => undefined,
@@ -90,4 +91,24 @@ test.each([true,false])('live door travel rebases combat only after destination 
     receive([Types.Messages.TELEPORT,150,50]);
     expect([player.x,player.y]).toEqual(allowed?[150,50]:[10,10]);
     expect(world.combat.teleport).toHaveBeenCalledTimes(allowed?1:0);
+});
+
+test('allow-all local sessions pass server-side NFT and trigger gates', async () => {
+    const environment = {NODE_ENV: process.env.NODE_ENV, LOOPERLANDS_LOCAL_PLAYTEST: process.env.LOOPERLANDS_LOCAL_PLAYTEST};
+    Object.assign(process.env, {NODE_ENV: 'development', LOOPERLANDS_LOCAL_PLAYTEST: '1'});
+    try {
+        const {player, world, receive} = setup();
+        world.server.cache.get = () => ({localDoorAccess: 'allow-all'});
+        Object.assign(world, {map: {getRequiredNFT: () => 'required-nft', getDoorTrigger: () => 'locked'},
+            checkTriggerActive: jest.fn(() => false), isValidPosition: () => true,
+            combat: {teleport: jest.fn()}, handlePlayerVanish: jest.fn(), pushRelevantEntityListTo: jest.fn()});
+        Object.assign(player, {setPosition: jest.fn(), clearTarget: jest.fn(), broadcast: jest.fn()});
+        await receive([Types.Messages.TELEPORT, 150, 50]);
+        expect(player.setPosition).toHaveBeenCalledWith(150, 50);
+        expect(world.checkTriggerActive).not.toHaveBeenCalled();
+    } finally {
+        for (const [key, value] of Object.entries(environment)) {
+            if (value === undefined) delete process.env[key]; else process.env[key] = value;
+        }
+    }
 });

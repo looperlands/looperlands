@@ -7,6 +7,7 @@ class TileActionsController {
     constructor(cache, platformClient, options = {}) {
         const duckvilleController = options.duckvilleController || new DuckvilleTileActionsController(cache, platformClient, options);
 
+        if(platformClient?.localPlaytest && platformClient.getTileSequenceState) this.localSequences=new (require('./localtilesequences'))(cache,platformClient,options);
         this.activeAnimations = new WeakMap();
         this.controllers = {};
         this.stageDefinitions = {};
@@ -19,6 +20,7 @@ class TileActionsController {
         Object.entries(options.controllers || {}).forEach(([map, controller]) => {
             this.registerMapController(map, controller);
         });
+        for(const [map,definitions]of Object.entries(this.localSequences?.stageDefinitions||{}))this.stageDefinitions[map]={...this.stageDefinitions[map],...definitions};
     }
 
     registerMapController(map, controller) {
@@ -29,12 +31,13 @@ class TileActionsController {
         }
     }
 
-    getController(map) {
+    getController(map,tile) {
+        if(tile && this.localSequences?.handles(map,tile))return this.localSequences;
         return this.controllers[map] || null;
     }
 
     async findCurrentStage(nftId, map, tileAction, world) {
-        const controller = this.getController(map);
+        const controller = this.getController(map,tileAction);
         if (!controller?.findCurrentStage) {
             return null;
         }
@@ -85,7 +88,7 @@ class TileActionsController {
     }
 
     async executeStage(nftId, map, tileAction, item, world, expectedStage, expectedRevision) {
-        const controller = this.getController(map);
+        const controller = this.getController(map,tileAction);
         if (!controller?.executeStage) {
             return { success: false };
         }
@@ -106,10 +109,15 @@ class TileActionsController {
                 }
             } catch (error) { console.warn('Tile-stage particles skipped:', error.message); }
         }
+        if(result?.success && result.activity && !result.activity.failed) {
+            const player=Object.values(world.players||{}).find(p=>p.nftId===nftId);
+            try {await player?.playerEventBroker?.tileAction(result.activity);} catch(error) {console.error('Tile action quest event failed:',error.message);}
+        }
         return result;
     }
 
     async loadPersistedPlots(map, world) {
+        await this.localSequences?.loadPersistedPlots(map,world);
         const controller = this.getController(map);
         if (!controller?.loadPersistedPlots) {
             return;

@@ -337,3 +337,21 @@ test('empty stream polls cannot restart a track deliberately faded out for death
     expect(sound.paused).toBe(true);
     expect(sound.play).toHaveBeenCalledTimes(1);
 });
+
+test('scene music overrides ordinary areas, supports silence/inheritance and preserves scripted priority', () => {
+    const {manager} = setup();
+    const entity = {gridX: 2, gridY: 2};
+    const ordinary = {contains: () => true, musicName: 'ordinary'};
+    manager.areas = [ordinary];
+    manager.getMusic = jest.fn(name => name ? {name} : null);
+    let scene = {authoringMusic: 'forest'};
+    manager.game.map = {getCurrentScene: () => scene};
+    expect(manager.getSurroundingMusic(entity)).toEqual({name: 'forest'});
+    scene.authoringMusic = '';
+    expect(manager.getSurroundingMusic(entity)).toBeNull();
+    scene.authoringMusic = null;
+    expect(manager.getSurroundingMusic(entity)).toEqual({name: 'ordinary'});
+    scene.authoringMusic = 'forest';
+    manager.game.worldMusicAreas = [ordinary];
+    expect(manager.getSurroundingMusic(entity)).toEqual({name: 'ordinary'});
+});
