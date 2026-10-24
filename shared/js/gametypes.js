@@ -507,6 +507,13 @@ Types = {
         M88NPOISONFROG4: 78000142,
         M88NPOISONFROG5: 78000143,
         M88NZOMBIEBOO: 78000144,
+        M88NAMOEBIT: 78000152,
+        M88NFLAGELLABIT: 78000153,
+        M88NNEMOEBIT: 78000154,
+        M88NPLASMOEBIT: 78000155,
+        M88NPYROMOEBIT: 78000156,
+        M88NXEMOEBIT: 78000157,
+        M88NSKORCH: 78000158,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6450,6 +6457,13 @@ var kinds = {
     m88npoisonfrog4: [Types.Entities.M88NPOISONFROG4, "mob"],
     m88npoisonfrog5: [Types.Entities.M88NPOISONFROG5, "mob"],
     m88nzombieboo: [Types.Entities.M88NZOMBIEBOO, "mob"],
+    m88namoebit: [Types.Entities.M88NAMOEBIT, "mob"],
+    m88nflagellabit: [Types.Entities.M88NFLAGELLABIT, "mob"],
+    m88nnemoebit: [Types.Entities.M88NNEMOEBIT, "mob"],
+    m88nplasmoebit: [Types.Entities.M88NPLASMOEBIT, "mob"],
+    m88npyromoebit: [Types.Entities.M88NPYROMOEBIT, "mob"],
+    m88nxemoebit: [Types.Entities.M88NXEMOEBIT, "mob"],
+    m88nskorch: [Types.Entities.M88NSKORCH, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],

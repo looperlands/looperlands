@@ -344,6 +344,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     "m88npoisonfrog4",
                     "m88npoisonfrog5",
                     "m88nzombieboo",
+                    "m88namoebit",
+                    "m88nflagellabit",
+                    "m88nnemoebit",
+                    "m88nplasmoebit",
+                    "m88npyromoebit",
+                    "m88nxemoebit",
+                    "m88nskorch",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",

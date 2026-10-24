@@ -287,6 +287,13 @@ const AltNames = {
     m88npoisonfrog4: "Poisonous Frog",
     m88npoisonfrog5: "Poisonous Frog",
     m88nzombieboo: "Zombie Blob",
+    m88namoebit: "Amoebit",
+    m88nflagellabit: "Flagellabit",
+    m88nnemoebit: "Nemoebit",
+    m88nplasmoebit: "Plasmoebit",
+    m88npyromoebit: "Pyromoebit",
+    m88nxemoebit: "Xemoebit",
+    m88nskorch: "Skorch",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",

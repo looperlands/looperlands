@@ -7,7 +7,10 @@ function setup() {
     const errors = jest.fn();
     const sandbox = {
         _, console: {log() {}, error: errors},
-        define: (_, factory) => {
+        define: (dependencies, factory) => {
+            if (dependencies[0] === 'mapmakerentities') {
+                return factory(require('../../shared/js/mapmakerentities.json'));
+            }
             GameClient = factory(null, {createEntity: (kind, id) => ({kind, id})});
         },
     };
