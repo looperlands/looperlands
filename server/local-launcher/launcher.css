@@ -695,21 +695,21 @@ input[readonly] { background: #f7f8fa; color: var(--muted); }
 .encounter-map-column,.encounter-inspector {min-width:0;}
 .encounter-toolbar {flex-wrap:wrap;align-items:end;}
 .encounter-tools {flex-wrap:wrap;}
-.encounter-tools button[aria-pressed="true"] {border-color:var(--accent,#1764c0);background:#eaf2fc;color:#134c8e;}
+.encounter-tools button[aria-pressed="true"] {border-color:var(--accent);background:var(--selected,#e7eef9);color:var(--selected-text,#1e4f9d);}
 .encounter-map-column .map-canvas-shell {margin-top:12px;}
 .encounter-inspector h3 {margin:0 0 8px;}
 .encounter-editor form {display:grid;gap:14px;}
 .encounter-editor .field {margin:0;min-width:0;}
-.encounter-loot {border-top:1px solid #d6dce4;padding-top:16px;}
+.encounter-loot {border-top:1px solid var(--line);padding-top:16px;}
 .encounter-loot-row {display:grid;grid-template-columns:minmax(0,1fr) 76px 48px;gap:8px;align-items:end;margin:12px 0;}
 .encounter-loot-row input {width:100%;min-width:0;}
 .encounter-loot-row button {grid-column:1/-1;justify-self:start;}
 .encounter-chance {padding-bottom:10px;font-variant-numeric:tabular-nums;}
-.encounter-browser {margin-top:24px;border-top:1px solid #d6dce4;padding-top:16px;}
+.encounter-browser {margin-top:24px;border-top:1px solid var(--line);padding-top:16px;}
 .encounter-browser summary {font-weight:600;margin-bottom:12px;cursor:pointer;}
 .encounter-list button {white-space:normal;text-align:left;overflow-wrap:anywhere;}
-.encounter-list button[aria-pressed="true"] {border-color:#1764c0;background:#eaf2fc;}
+.encounter-list button[aria-pressed="true"] {border-color:var(--accent);background:var(--selected,#e7eef9);}
 .encounter-object-actions {flex-wrap:wrap;align-items:start;}
 .encounter-status {overflow-wrap:anywhere;}
 @media(max-width:1100px) {.encounter-workspace {grid-template-columns:minmax(0,1fr);}.encounter-inspector {max-width:680px;}}
-@media(max-width:540px) {.encounter-toolbar>*,.encounter-tools button {width:100%;}.encounter-loot-row {grid-template-columns:minmax(0,1fr) 70px 44px;}.encounter-editor .asset-field-grid {grid-template-columns:1fr 1fr;}}
+@media(max-width:540px) {.encounter-toolbar {display:grid;grid-template-columns:1fr 1fr;gap:8px;}.encounter-toolbar>.field {grid-column:1/-1;}.encounter-toolbar>* {width:100%;}.encounter-tools {display:grid;grid-template-columns:1fr 1fr;gap:8px;}.encounter-tools button {white-space:normal;}.encounter-tools button:last-child {grid-column:1/-1;}.encounter-loot-row {grid-template-columns:minmax(0,1fr) 70px 44px;}.encounter-editor .asset-field-grid {grid-template-columns:1fr 1fr;}}
