@@ -237,15 +237,6 @@ module.exports = World = cls.Class.extend({
 
             self.map.generateCollisionGrid();
 
-            // Populate all mob "roaming" areas
-            _.each(self.map.mobAreas, function (a) {
-                var area = new MobArea(a.id, a.nb, a.type, a.x, a.y, a.width, a.height, self);
-                area.spawnMobs();
-                area.onEmpty(self.handleEmptyMobArea.bind(self, area));
-
-                self.mobAreas.push(area);
-            });
-
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
@@ -254,6 +245,14 @@ module.exports = World = cls.Class.extend({
                 }
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
+            });
+
+            // Reward regions must exist before any roaming mob is registered.
+            _.each(self.map.mobAreas, function (a) {
+                var area = new MobArea(a.id, a.nb, a.type, a.x, a.y, a.width, a.height, self);
+                area.spawnMobs();
+                area.onEmpty(self.handleEmptyMobArea.bind(self, area));
+                self.mobAreas.push(area);
             });
 
             // Create all trigger areas
@@ -583,6 +582,7 @@ module.exports = World = cls.Class.extend({
     },
 
     addMob: function (mob) {
+        this.tryAddingMobToChestArea(mob);
         this.addEntity(mob);
         this.mobs[mob.id] = mob;
     },
@@ -933,9 +933,6 @@ module.exports = World = cls.Class.extend({
                     mob.generateLevel();
                     mob.recalculateStats();
                     self.addMob(mob);
-                    if (mob.area && mob.area instanceof ChestArea) {
-                        mob.area.addToArea(mob);
-                    }
 
                     if (kind === Types.Entities.SEACREATURE) {
                         self.handleSeaCreatureSpawn(mob);
@@ -944,7 +941,6 @@ module.exports = World = cls.Class.extend({
                 mob.onMove(self.onMobMoveCallback.bind(self));
                 mob.onExitCombat(self.onMobExitCombatCallback.bind(self));
                 self.addMob(mob);
-                self.tryAddingMobToChestArea(mob);
 
                 if (kind === Types.Entities.SEACREATURE) {
                     self.handleSeaCreatureSpawn(mob);
@@ -1246,11 +1242,10 @@ module.exports = World = cls.Class.extend({
     },
 
     tryAddingMobToChestArea: function (mob) {
-        _.each(this.chestAreas, function (area) {
-            if (area.contains(mob)) {
-                area.addToArea(mob);
-            }
-        });
+        // Keep the original encounter membership while mobs pursue players.
+        if (mob.chestAreas) {for (const area of mob.chestAreas) area.addToArea(mob);return;}
+        mob.chestAreas = new Set();
+        for (const area of this.chestAreas || []) if (area.contains(mob)) area.addToArea(mob);
     },
 
     updatePopulation: function () {

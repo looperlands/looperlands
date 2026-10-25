@@ -2,8 +2,8 @@
     'use strict';
     const el = (tag, text = '', attrs = {}) => Object.assign(document.createElement(tag), {textContent: text, ...attrs});
     const href = (screen, values = {}) => '#' + screen + '/?' + new URLSearchParams(values);
-    const colors = {door:'#7c3b92',npc:'#185c9b',mob:'#a52828',item:'#376239',spawn:'#9b4824',checkpoint:'#145f52',trigger:'#6c5416',scene:'#596575',routine:'#185c9b',quest:'#633b88',entity:'#202936'};
-    const labels = {door:'Doors / portals',npc:'NPCs',mob:'Mobs',item:'Items',spawn:'Spawn areas',checkpoint:'Checkpoints',trigger:'Triggers',scene:'Scenes',routine:'NPC routines',quest:'Quests',entity:'Other entities'};
+    const colors = {chest:'#9b5b14',reward:'#145f52',door:'#7c3b92',npc:'#185c9b',mob:'#a52828',item:'#376239',spawn:'#9b4824',checkpoint:'#145f52',trigger:'#6c5416',scene:'#596575',routine:'#185c9b',quest:'#633b88',entity:'#202936'};
+    const labels = {chest:'Chests',reward:'Clear-area rewards',door:'Doors / portals',npc:'NPCs',mob:'Mobs',item:'Items',spawn:'Spawn areas',checkpoint:'Checkpoints',trigger:'Triggers',scene:'Scenes',routine:'NPC routines',quest:'Quests',entity:'Other entities'};
     let libraryPromise;
     const images = new Map();
     async function request(url, body) {

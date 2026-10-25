@@ -21,8 +21,8 @@ module.exports = Area = cls.Class.extend({
             valid = false;
 
         while(!valid) {
-            pos.x = this.x + Utils.random(this.width + 1);
-            pos.y = this.y + Utils.random(this.height + 1);
+            pos.x = this.x + Utils.random(Math.max(1, this.width));
+            pos.y = this.y + Utils.random(Math.max(1, this.height));
             valid = this.world.isValidPosition(pos.x, pos.y);
         }
         return pos;

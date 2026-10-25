@@ -282,18 +282,18 @@ module.exports = function processMap(json, options) {
     }
 
     var processRoamingArea = function (area, idx) {
-        var nb = null;
-        if (area.properties) {
-            nb = area.properties.property.value;
-        }
+        const props = [].concat(area.properties || []).flatMap(group => [].concat(group.property || []));
+        const nb = Number(props.find(p => p.name === 'nb')?.value ?? props[0]?.value ?? 0);
 
         map.roamingAreas.push({
             id: idx,
-            x: area.x / 16,
-            y: area.y / 16,
-            width: area.width / 16,
-            height: area.height / 16,
-            type: area.type,
+            objectId: area.id,
+            name: area.name,
+            x: area.x / map.tilesize,
+            y: area.y / map.tilesize,
+            width: area.width / map.tilesize,
+            height: area.height / map.tilesize,
+            type: area.type || area.class,
             nb: nb
         });
     }
@@ -426,65 +426,58 @@ module.exports = function processMap(json, options) {
 
     var processChestArea = function (area) {
         var chestArea = {
+            id: area.id,
+            objectId: area.id,
+            name: area.name,
             x: area.x / map.tilesize,
             y: area.y / map.tilesize,
             w: area.width / map.tilesize,
             h: area.height / map.tilesize
         };
-        _.each(area.properties.property, function (prop) {
+        _.each([].concat(area.properties || []).flatMap(group => [].concat(group.property || [])), function (prop) {
             if (prop.name === 'items') {
                 chestArea['i'] = _.map(prop.value.split(','), function (name) {
-                    return Types.getKindFromString(name);
+                    return Types.getKindFromString(name.trim());
                 });
             } else if (prop.name === 'chances') {
                 chestArea['c'] = {};
                 let changes = prop.value.split(',');
                 for (let i = 0; i < changes.length; i += 1) {
                     let chance = changes[i].split(':');
-                    chestArea['c'][Types.getKindFromString(chance[0])] = parseFloat(chance[1]);
+                    chestArea['c'][Types.getKindFromString(chance[0].trim())] = parseFloat(chance[1]);
                 }
             } else {
-                chestArea['t' + prop.name] = prop.value;
+                chestArea['t' + prop.name] = ['x','y'].includes(prop.name) ? Number(prop.value) : prop.value;
             }
         });
         map.chestAreas.push(chestArea);
     }
 
     var processChest = function (chest) {
-        if (chest.properties.property.value) {
-            var items = chest.properties.property.value;
             var newChest = {
-                y: chest.y / map.tilesize,
-                x: chest.x / map.tilesize,
-                i: _.map(items.split(','), function (name) {
-                    return Types.getKindFromString(name);
-                })
-            };
-        } else {
-            var newChest = {
+                objectId: chest.id,
+                name: chest.name,
                 y: chest.y / map.tilesize,
                 x: chest.x / map.tilesize
             }
-            _.each(chest.properties.property, function (prop) {
+            _.each([].concat(chest.properties || []).flatMap(group => [].concat(group.property || [])), function (prop) {
                 if (prop.name === 'items') {
                     newChest['i'] = _.map(prop.value.split(','), function (name) {
-                        return Types.getKindFromString(name);
+                        return Types.getKindFromString(name.trim());
                     });
                 } else if (prop.name === 'chances') {
                     newChest['c'] = {};
                     let changes = prop.value.split(',');
                     for (let i = 0; i < changes.length; i += 1) {
                         let chance = changes[i].split(':');
-                        newChest['c'][Types.getKindFromString(chance[0])] = parseFloat(chance[1]);
+                        newChest['c'][Types.getKindFromString(chance[0].trim())] = parseFloat(chance[1]);
                     }
                 } else if (prop.name === 'delay') {
-                    newChest['d'] = parseInt(prop.value) * 1000;
+                    newChest['d'] = Number(prop.value) * 1000;
                 } else {
                     newChest['t' + prop.name] = prop.value;
                 }
             });
-        }
-
         map.staticChests.push(newChest);
     }
 

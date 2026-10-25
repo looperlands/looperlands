@@ -24,6 +24,7 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 - **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).
 - **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
 - **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
+- **Chests & encounters:** place chests, draw mob areas and add clear-area reward chests. See [Chests & encounters](mapmaker-encounters.md).
 - **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
 - **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md) and [NPC route painter](mapmaker-routes.md).
 - **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).

@@ -23,6 +23,7 @@
   <script src="./mapmaker-path.js" defer></script>
   <script src="./mapcanvas.js" defer></script>
   <script src="./regiongeometry.js" defer></script>
+  <script src="./encounterbuilder.js" defer></script>
   <script src="./regioneditor.js" defer></script>
   <script src="./npcbuilder.js" defer></script>
   <script src="./assetlookup.js" defer></script>
@@ -58,6 +59,7 @@
       <button id="tab-events" type="button" role="tab" aria-selected="false" aria-controls="events-pane" data-pane="events" tabindex="-1">Triggers &amp; events</button>
       <button id="tab-dialogues" type="button" role="tab" aria-selected="false" aria-controls="dialogues-pane" data-pane="dialogues" tabindex="-1">Dialogue trees</button>
       <button id="tab-scenes" type="button" role="tab" aria-selected="false" aria-controls="scenes-pane" data-pane="scenes" tabindex="-1">Scene manager</button>
+      <button id="tab-encounters" type="button" role="tab" aria-selected="false" aria-controls="encounters-pane" data-pane="encounters" tabindex="-1">Chests &amp; encounters</button>
       <button id="tab-lighting" type="button" role="tab" aria-selected="false" aria-controls="lighting-pane" data-pane="lighting" tabindex="-1">Lights &amp; shadows</button>
       <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
       <button id="tab-quests" type="button" role="tab" aria-selected="false" aria-controls="quests-pane" data-pane="quests" tabindex="-1">Quest builder</button>
@@ -377,6 +379,7 @@ You only have {{remaining}} blue monsters left to slay!</pre>
     <section id="events-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-events" hidden></section>
     <section id="dialogues-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-dialogues" hidden></section>
     <section id="scenes-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-scenes" hidden></section>
+    <section id="encounters-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-encounters" hidden></section>
     <section id="lighting-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-lighting" hidden></section>
     <section id="validator-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-validator" hidden></section>
     <section id="inspector-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-inspector" hidden></section>
@@ -401,6 +404,7 @@ You only have {{remaining}} blue monsters left to slay!</pre>
           <a href="#documentation/mapmaker-events">Triggers &amp; events</a>
           <a href="#documentation/mapmaker-dialogues">Dialogue trees</a>
           <a href="#documentation/mapmaker-atmosphere">Scene manager</a>
+          <a href="#documentation/mapmaker-encounters">Chests &amp; encounters</a>
           <a href="#documentation/mapmaker-lighting">Lights &amp; shadows</a>
           <a href="#documentation/mapmaker-validator">Map validator</a>
           <a href="#documentation/mapmaker-inspector">Map inspector</a>
