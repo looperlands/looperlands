@@ -25,11 +25,18 @@ test('add, reload, move and remove preserve other TMX bytes and allocate unique 
     const removed=await savePlacement(root,{mapId:'one',revision:moved.revision,operation:'remove',id:'10'});
     expect(removed.placements).toEqual([]);expect((await add('guard')).placements[0].id).toBe('11');
 });
-test('rejects collisions, legacy entities, duplicate points, invalid kinds and out of bounds without writing',async()=>{
+test.each([
+    ['rat',{x:3,y:3}],['rat',{x:1,y:1}],['missing',{x:2,y:2}],
+    ['rat',{x:0,y:2}],['rat',{x:2,y:0}],['rat',{x:8,y:2}]
+])('rejects invalid placement %s at %p without writing',async(kind,position)=>{
     const before=fs.readFileSync(path.join(root,'tools/maps/tmx/one.tmx'));
-    for(const [kind,p]of [['rat',{x:3,y:3}],['rat',{x:1,y:1}],['missing',{x:2,y:2}],['rat',{x:0,y:2}],['rat',{x:2,y:0}],['rat',{x:8,y:2}]])await expect(add(kind,p)).rejects.toThrow();
+    await expect(add(kind,position)).rejects.toThrow();
     expect(fs.readFileSync(path.join(root,'tools/maps/tmx/one.tmx'))).toEqual(before);
-    await add();await expect(add('guard')).rejects.toThrow('already contains');
+});
+test('rejects a duplicate entity point without writing',async()=>{
+    await add();const before=fs.readFileSync(path.join(root,'tools/maps/tmx/one.tmx'));
+    await expect(add('guard')).rejects.toThrow('already contains');
+    expect(fs.readFileSync(path.join(root,'tools/maps/tmx/one.tmx'))).toEqual(before);
 });
 test('concurrent saves accept only one request with the same revision and stale revisions stay rejected',async()=>{
     const {revision}=await readPlacements(root,'one');const input={mapId:'one',revision,operation:'add',kind:'rat',position:{x:2,y:3}};
