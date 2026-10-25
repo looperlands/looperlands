@@ -151,3 +151,10 @@ test('the offline adapter implements every platform client operation', () => {
     const methods = Object.getOwnPropertyNames(LooperLandsPlatformClient.prototype).filter(name => name !== 'constructor');
     for (const method of methods) expect(typeof client[method]).toBe('function');
 });
+
+test('registered fish string IDs persist alongside normal numeric inventory items',async()=>{
+    await client.storeInventoryTransaction([{nftId:avatar,item:'cobguppy',amount:1},{nftId:avatar,item:'100',amount:2}]);
+    const restarted=new LocalPlatformClient({dataDir});await expect(restarted.getInventoryItem(avatar,'cobguppy')).resolves.toEqual({amount:1});
+    await restarted.storeInventoryTransaction([{nftId:avatar,item:'cobguppy',amount:-1}]);await expect(restarted.getInventoryItem(avatar,'cobguppy')).resolves.toEqual({amount:0});
+    for(const item of ['unknown-fish','__proto__','constructor'])await expect(client.storeInventoryTransaction([{nftId:avatar,item,amount:1}])).rejects.toMatchObject({code:'invalid_inventory_transaction'});
+});

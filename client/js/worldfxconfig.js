@@ -17,7 +17,10 @@
     const ambience = {forest: [{type: 'leaves', count: 9}, {type: 'pollen', count: 4}], meadow: [{type: 'pollen', count: 12}],
         fireflies: [{type: 'fireflies', count: 14}], beach: [{type: 'sand', count: 8}, {type: 'spray', count: 4}],
         cave: [{type: 'dust', count: 8}, {type: 'mist', count: 3}], campfire: [{type: 'embers', count: 10}], none: []};
-    const types = ['fireflies', 'leaves', 'pollen', 'dust', 'gusts', 'spray', 'sand', 'embers', 'ash', 'mist'];
+    const types = ['fireflies', 'leaves', 'pollen', 'dust', 'gusts', 'spray', 'sand', 'embers', 'ash', 'mist', 'custom'];
+    const shapes = ['pixel', 'spark', 'star', 'soft'];
+    const customDefaults = {colors: ['#b7dfff', '#ffffff'], shape: 'pixel', size: 2, opacity: 0.8,
+        velocityX: 3, velocityY: 8, sway: 6, pulse: 0.2, glow: 0, spin: 0};
     function number(value, fallback, min, max, key, integer = false) {
         if (value === undefined) return fallback;
         if (!Number.isFinite(value) || value < min || value > max || (integer && !Number.isInteger(value))) throw new Error('Invalid particle ' + key);
@@ -35,13 +38,14 @@
         if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Particles need a preset, object, or false');
         const preset = value.preset || 'soil', base = presets[preset];
         if (!base) throw new Error('Unknown particle preset: ' + preset);
-        for (const key of Object.keys(value)) if (!['preset', 'colors', 'count', 'speed', 'gravity', 'lifetimeMs', 'spread', 'size'].includes(key)) throw new Error('Unknown particle setting: ' + key);
-        const colors = value.colors ?? base.colors;
+        for (const key of Object.keys(value)) if (!['preset', 'colors', 'count', 'speed', 'gravity', 'lifetimeMs', 'spread', 'size', 'design'].includes(key)) throw new Error('Unknown particle setting: ' + key);
+        const design = value.design === undefined ? null : custom(value.design);
+        const colors = design ? design.colors : value.colors ?? base.colors;
         if (!Array.isArray(colors) || !colors.length || colors.length > 6 || colors.some(color => typeof color !== 'string' || !/^#[0-9a-f]{6}$/i.test(color))) throw new Error('Particles need 1–6 hex colors');
         return {preset, colors: colors.slice(), count: number(value.count, base.count, 0, 48, 'count', true),
             speed: number(value.speed, base.speed, 0, 100, 'speed'), gravity: number(value.gravity, base.gravity, -100, 250, 'gravity'),
             lifetimeMs: number(value.lifetimeMs, base.lifetimeMs, 100, 2000, 'lifetimeMs'), spread: number(value.spread, base.spread, 0, 40, 'spread'),
-            size: number(value.size, base.size, 1, 4, 'size', true)};
+            size: design ? design.size : number(value.size, base.size, 1, 4, 'size', true), ...(design ? {design} : {})};
     }
     function ambient(value) {
         value = parse(value);
@@ -52,7 +56,21 @@
         }
         if (!Array.isArray(value) || value.length > 3 || value.some(effect => !effect || !types.includes(effect.type) ||
             !Number.isInteger(effect.count) || effect.count < 1 || effect.count > 24) || value.reduce((sum, e) => sum + e.count, 0) > 24) throw new Error('Ambience needs up to 3 effects and 24 particles per patch');
-        return value.map(({type, count}) => ({type, count}));
+        return value.map(effect => ({type: effect.type, count: effect.count,
+            ...(effect.type === 'custom' ? {design: custom(effect.design)} : {})}));
+    }
+    function custom(value = {}) {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Custom particle design must be an object');
+        for (const key of Object.keys(value)) if (!Object.hasOwn(customDefaults, key)) throw new Error('Unknown custom particle setting: ' + key);
+        const colors = value.colors ?? customDefaults.colors, shape = value.shape ?? customDefaults.shape;
+        if (!Array.isArray(colors) || !colors.length || colors.length > 6 || colors.some(color => typeof color !== 'string' || !/^#[0-9a-f]{6}$/i.test(color))) throw new Error('Custom particles need 1–6 hex colors');
+        if (!shapes.includes(shape)) throw new Error('Choose a supported custom particle shape');
+        const result = {colors: colors.slice(), shape};
+        for (const [key, min, max, integer] of [['size',1,8,true],['opacity',0,1],['velocityX',-80,80],
+            ['velocityY',-80,80],['sway',0,32],['pulse',0,1],['glow',0,24],['spin',-6,6]]) {
+            result[key] = number(value[key], customDefaults[key], min, max, key, integer);
+        }
+        return result;
     }
     function stageBurst(config, stage) {
         config = parse(config);
@@ -79,5 +97,5 @@
             Object.entries(value).some(([key, enabled]) => !(key in names) || typeof enabled !== 'boolean')) throw new Error('FX enabled values must be named boolean toggles');
         return {...value};
     }
-    return {names, defaults, presets, ambience, types, number, parse, burst, ambient, stageBurst, scenery, toggles};
+    return {names, defaults, presets, ambience, types, shapes, customDefaults, custom, number, parse, burst, ambient, stageBurst, scenery, toggles};
 });

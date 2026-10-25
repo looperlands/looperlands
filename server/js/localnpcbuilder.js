@@ -16,7 +16,7 @@ function bundled(mapId) {
 function readMap(root, mapId) {
     const file = path.join(root, 'server/maps/world_server_' + mapId + '.json');
     if (!fs.existsSync(file)) fail('Build this map first to load its NPC placements and collision data.', 404);
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
+    return require('./localmapfiles').readJson(file);
 }
 function placements(map) {
     return Object.entries(map.staticEntities || {}).flatMap(([index, value]) => {

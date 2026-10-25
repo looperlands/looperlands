@@ -1,5 +1,6 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const pane = document.getElementById('lighting-pane'), L = window.MapmakerLighting;
     if (!pane || !L) return;
     const el = (tag, text = '', attrs = {}) => Object.assign(document.createElement(tag), {textContent: text, ...attrs});
@@ -11,17 +12,19 @@
         <div class="asset-discard lighting-discard" hidden><p>Discard the unsaved changes to continue?</p><button type="button" class="lighting-discard-yes">Discard changes</button><button type="button" class="lighting-discard-no">Keep editing</button></div>
         <div class="lighting-workspace" hidden><div class="lighting-map-column"><div class="lighting-tools" role="group" aria-label="Map tools"></div><p class="lighting-mode-hint field-hint" role="status" aria-live="polite"></p><div class="lighting-map-host"></div><div class="lighting-view-controls"></div><p class="lighting-preview-status field-hint" role="status"></p></div><aside class="lighting-inspector"><div class="world-content"></div><details class="lighting-object-browser"><summary>Map objects <span class="lighting-count"></span></summary><label for="lighting-search">Search objects</label><input type="search" id="lighting-search"><label for="lighting-filter">Show</label><select id="lighting-filter"><option value="">Lights and shadows</option><option value="light">Light sources</option><option value="shadow">Shadow blockers</option></select><div class="world-list" aria-label="Lighting objects"></div></details></aside></div>`;
     const $ = selector => pane.querySelector(selector);
-    let data, draft, original = '', selected = null, busy = false, loaded = false, booting, pending, fieldId = 0;
+    let data, draft, selected = null, busy = false, loaded = false, booting, pending, fieldId = 0;
     let mapView, mapId, startPoint, creation = null, ghost = null, gesture, snap = true, previewEnabled = true, darkness = .65;
     let inspectorFields = [], cleanupPreview = () => {}, refreshPreview = () => {}, renderedView;
     let previewBitmap, previewKey, previewObjects = 0;
     const modeButtons = new Map();
-    const dirty = () => !!draft && (draft.id === null || JSON.stringify(draft) !== original);
+    let collection;
+    const dirty = () => !!collection?.count;
     const position = row => L.position(row, data.dimensions);
     const editable = row => row && !row.rotation && row.shape !== 'unsupported' && !(row.kind === 'shadow' && row.shape === 'ellipse') && !(row.kind === 'light' && row.shape === 'polygon');
     function status(message, error = false) {$('.lighting-status').textContent = message;$('.lighting-status').classList.toggle('error', error);}
     function button(parent, label, run, attrs = {}) {const b = el('button', label, {type: 'button', ...attrs});b.onclick = run;parent.append(b);return b;}
     function controls() {
+        $('.lighting-save').textContent='Save all changes'+(collection?.count?' ('+collection.count+')':'');
         $('.lighting-save').disabled = busy || !dirty();$('.lighting-reload').disabled = busy;$('#lighting-map').disabled = busy;
         $('.lighting-workspace').inert = busy;pane.setAttribute('aria-busy', String(busy));
     }
@@ -33,9 +36,9 @@
     $('.lighting-discard-yes').onclick = () => {const action = pending;pending = null;$('.lighting-discard').hidden = true;action?.();};
     $('.lighting-discard-no').onclick = () => {pending = null;$('.lighting-discard').hidden = true;};
     function rows() {return data ? data.objects.filter(row => row.id !== selected).concat(draft ? [draft] : []) : [];}
-    function title(row) {return (row.name || (row.kind === 'light' ? row.shape === 'ellipse' ? 'Round light' : 'Area light' : row.shape === 'polygon' ? 'Polygon shadow' : 'Rectangle shadow')) + (row.id ? ' · #' + row.id : ' · unsaved');}
-    function touch() {
-        controls();status('Unsaved ' + (draft.kind === 'light' ? 'light' : 'shadow') + ' · click Save changes to keep it.');
+    function title(row) {return (row.name || (row.kind === 'light' ? row.shape === 'ellipse' ? 'Round light' : 'Area light' : row.shape === 'polygon' ? 'Polygon shadow' : 'Rectangle shadow')) + (collection?.isNew(row.id) ? ' · unsaved' : ' · #' + row.id);}
+    function touch() {if(draft)collection.set(draft);renderList();
+        controls();status(collection.count+' unsaved changes · keep editing, then save them together.');
         inspectorFields.forEach(sync => sync());invalidatePreview();
     }
     function invalidatePreview() {previewObjects++;mapView?.draw();}
@@ -45,9 +48,10 @@
         $('.lighting-mode-hint').textContent = creation ? 'Click the map to place ' + label.toLowerCase() + '. Shift-drag pans. Escape cancels.' : 'Drag markers to move; drag the round handle to resize. Shift-drag pans; scroll zooms.';
         invalidatePreview();
     }
-    function arm(type) {guard(() => setMode(L.preset(type, 0, 0, data.dimensions.tilewidth), presets.find(p => p[0] === type)[1]));}
+    function arm(type) {setMode(L.preset(type, 0, 0, data.dimensions.tilewidth), presets.find(p => p[0] === type)[1]);}
     function select(row, focus = false) {
-        selected = row?.id ?? null;draft = row ? clone(row) : null;original = JSON.stringify(draft);
+        if(row&&!row.id)row=collection.add(row);
+        selected = row?.id ?? null;draft = row || null;
         setMode();renderList();renderInspector();controls();
         status('Loaded ' + data.source + ' · ' + data.objects.length + ' lighting objects.');
         if (focus && row) focusObject();
@@ -58,15 +62,15 @@
         mapView?.fit({x: p.x - radius - 2, y: p.y - radius - 2, width: radius * 2 + 4, height: radius * 2 + 4});
     }
     async function request(body, id) {
-        const response = await fetch('./api/lighting' + (id ? '?mapId=' + encodeURIComponent(id) : ''), {
+        const response = await fetchData('./api/lighting' + (id ? '?mapId=' + encodeURIComponent(id) : ''), {
             signal: AbortSignal.timeout(45000), ...(body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {})});
         const value = await response.json();if (!response.ok) throw new Error(value.error || 'Lighting could not load. Try again.');return value;
     }
     async function load(id) {
         busy = true;controls();status('Loading lights and shadows…');
         try {
-            const [result, catalog] = await Promise.all([request(null, id), fetch('./api/catalog').then(r => r.ok ? r.json() : null).catch(() => null)]);
-            const changedMap = mapId !== id;data = result;$('#lighting-map').value = id;$('.lighting-workspace').hidden = false;
+            const [result, catalog] = await Promise.all([request(null, id), fetchData('./api/catalog').then(r => r.ok ? r.json() : null).catch(() => null)]);
+            const changedMap = mapId !== id;data = result;collection = new window.MapmakerObjectDrafts(data.objects);data.objects = collection.rows;$('#lighting-map').value = id;$('.lighting-workspace').hidden = false;
             $('.lighting-build').href = '#build/?map=' + encodeURIComponent(id);$('.lighting-atmosphere').href = '#scenes/?map=' + encodeURIComponent(id);
             const checkpoint = catalog?.maps?.find(map => map.id === id)?.checkpoints?.find(p => p.starting);
             startPoint = checkpoint || {x: data.dimensions.width / 2, y: data.dimensions.height / 2};
@@ -83,29 +87,31 @@
             booting = request().then(catalog => {$('#lighting-map').replaceChildren(...catalog.maps.map(id => el('option', id, {value: id})));loaded = true;}).catch(error => status(error.message, true)).finally(() => {booting = null;});
             await booting;if (!loaded) return;
         }
-        const id = params.get('map') || data?.mapId || $('#lighting-map').value;
+        const id = params.get('map') || window.ToolboxMapData?.preferred(data?.mapId || $('#lighting-map').value) || data?.mapId || $('#lighting-map').value;
         if (data?.mapId !== id) return guard(() => load(id));
         const objectId = params.get('object');
-        if (objectId && objectId !== selected) guard(() => select(data.objects.find(row => row.id === objectId), true));
+        if (objectId && objectId !== selected) select(data.objects.find(row => row.id === objectId), true);
         else refreshPreview();
     }
-    async function save(operation = draft?.id ? 'update' : 'add') {
-        if (!draft || busy || (operation !== 'remove' && !$('.lighting-form').reportValidity())) return;
-        busy = true;controls();status('Saving ' + data.source + '…');
-        try {
-            const before = new Set(data.objects.map(row => row.id)), id = draft.id;
-            data = await request({mapId: data.mapId, revision: data.revision, operation, objectId: id, object: draft});
-            select(operation === 'remove' ? undefined : data.objects.find(row => row.id === id) || data.objects.find(row => !before.has(row.id)));
-            status('Saved. Build ' + data.mapId + ' and start a fresh game to load the changes.');
-        } catch (error) {status(error.message, true);}
-        finally {busy = false;controls();}
+    async function save(operation) {
+        if(busy||!collection)return;
+        if(operation==='remove'){collection.remove(draft.id);select(undefined);renderList();mapView?.draw();status(collection.count+' unsaved changes · removal is in the draft.');return;}
+        if(!dirty()||($('.lighting-form')&&!$('.lighting-form').reportValidity()))return;
+        const operations=collection.changes(), selectedBefore=draft?clone(draft):null;
+        busy=true;controls();status('Saving '+operations.length+' map changes together…');
+        try{
+            data=await request({mapId:data.mapId,revision:data.revision,operations});
+            collection=new window.MapmakerObjectDrafts(data.objects);data.objects=collection.rows;
+            select(data.objects.find(row=>row.id===selectedBefore?.id)||data.objects.find(row=>row.kind===selectedBefore?.kind&&row.x===selectedBefore?.x&&row.y===selectedBefore?.y));
+            status('Saved '+operations.length+' changes to Tiled. Build '+data.mapId+' to update the game.');
+        }catch(error){status(error.message,true);}finally{busy=false;controls();mapView?.draw();}
     }
     function renderList() {
         const list = $('.world-list'), query = $('#lighting-search').value.toLowerCase(), kind = $('#lighting-filter').value;
         list.replaceChildren();$('.lighting-count').textContent = '(' + (data?.objects.length || 0) + ')';
         for (const row of data?.objects || []) {
             if ((kind && row.kind !== kind) || ![title(row), row.kind].join(' ').toLowerCase().includes(query)) continue;
-            button(list, title(row), () => guard(() => select(row, true)), {ariaPressed: String(selected === row.id)});
+            button(list, title(row), () => select(row, true), {ariaPressed: String(selected === row.id)});
         }
         if (!list.childElementCount) list.append(el('p', data?.objects.length ? 'No matching objects.' : 'No objects yet. Choose Torch or Lamp, then click the map.', {className: 'field-hint'}));
     }
@@ -164,16 +170,16 @@
         if (draft.kind === 'light' && draft.shape === 'ellipse') button(precise, 'Use shape radius', () => {draft.properties.radius = null;touch();});
         const actions = el('div', '', {className: 'lighting-object-actions'});form.append(actions);
         button(actions, 'Focus on map', focusObject);
-        button(actions, 'Duplicate', () => guard(() => {
+        button(actions, 'Duplicate', () => {
             const copy = clone(draft);copy.id = null;copy.name = (copy.name || 'Light').slice(0, 114) + ' copy';
             copy.properties = Object.fromEntries(Object.entries(copy.properties).filter(([key]) => [...L.propertyNames, 'light'].includes(key)));
             setMode(copy, 'Copy');
-        }));
-        if (!draft.id) button(actions, 'Discard', () => select(data.objects.find(row => row.id === selected)));
+        });
+        if (collection.isNew(draft.id)) button(actions, 'Discard this addition', () => {collection.remove(draft.id);select(undefined);invalidatePreview();});
         else {
-            const remove = details(form, 'Remove object');remove.append(el('p', 'This removes the saved object from the map.'));
+            const remove = details(form, 'Remove object');remove.append(el('p', 'This stages a removal. Save all changes to update the map.'));
             const confirm = el('div', '', {className: 'lighting-delete-confirm', hidden: true});
-            button(remove, 'Delete object', () => {confirm.hidden = false;});
+            button(remove, 'Delete object', () => {confirm.hidden = false;}, {className: 'destructive'});
             button(confirm, 'Confirm deletion', () => save('remove'));button(confirm, 'Cancel', () => {confirm.hidden = true;});remove.append(confirm);
         }
     }
@@ -192,7 +198,6 @@
                 const target = L.hit(rows().filter(editable), draft, context, data.dimensions);
                 if (!target) return false;
                 if (target.row !== draft) {
-                    if (dirty()) {guard(() => select(data.objects.find(row => row.id === target.row.id)));return true;}
                     select(data.objects.find(row => row.id === target.row.id));
                 }
                 gesture = {kind: target.kind, start: context.tile, screen: context.screen, object: clone(draft), wasDirty: dirty()};return true;
@@ -211,8 +216,8 @@
             end(context, cancelled) {
                 const g = gesture;if (!g) return;
                 if (cancelled) {
-                    if (g.object) {draft = g.object;inspectorFields.forEach(sync => sync());controls();invalidatePreview();status(dirty() ? 'Unsaved changes.' : 'Move cancelled.');}
-                } else if (g.kind === 'place' && creation) {const row = place(creation.template, context.tile);select(row);touch();}
+                    if (g.object) {draft = g.object;collection.set(draft);inspectorFields.forEach(sync => sync());controls();invalidatePreview();status(dirty() ? 'Unsaved changes.' : 'Move cancelled.');}
+                } else if (g.kind === 'place' && creation) {const preset=creation;const row = place(preset.template, context.tile);select(row);setMode(preset.template,preset.label);touch();}
                 else interaction.move(context);
                 gesture = null;
             },
@@ -226,7 +231,7 @@
             },
             draw: drawMapOverlay,
             keydown(event) {
-                if (event.key === 'Escape') {if (gesture?.object) {draft = gesture.object;inspectorFields.forEach(sync => sync());controls();status(dirty() ? 'Unsaved changes.' : 'Move cancelled.');}gesture = null;setMode();return true;}
+                if (event.key === 'Escape') {if (gesture?.object) {draft = gesture.object;collection.set(draft);inspectorFields.forEach(sync => sync());controls();status(dirty() ? 'Unsaved changes.' : 'Move cancelled.');}gesture = null;setMode();return true;}
                 if (!draft || !editable(draft) || creation) return false;
                 const delta = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1]}[event.key];
                 if (!delta) return false;

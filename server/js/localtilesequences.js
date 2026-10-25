@@ -135,13 +135,16 @@ class LocalTileSequences {
 
     publish(world, r, state) {
         const tile = state.tile ?? r.action.initialTile ?? 0;
+        // The artwork picker stores Tiled IDs (1-based); the game renderer uses 0-based IDs.
+        // Keep legacy sequences in their existing renderer convention.
+        const renderTile = r.action.interaction ? tile - 1 : tile;
         if (r.action.scope === 'player') {
             const player = this.player(world, r.owner);
             if (player) {
                 const Messages = require('./message');
-                world.pushToPlayer(player, new Messages.TileStage({x: r.x, y: r.y, ...(tile ? {tile, stage: 0} : {clear: true})}));
+                world.pushToPlayer(player, new Messages.TileStage({x: r.x, y: r.y, ...(tile ? {tile: renderTile, stage: 0} : {clear: true})}));
             }
-        } else if (tile) world.placeStagedTile(r.x, r.y, tile, 0);
+        } else if (tile) world.placeStagedTile(r.x, r.y, renderTile, 0);
         else world.clearStagedTile(r.x, r.y);
     }
 

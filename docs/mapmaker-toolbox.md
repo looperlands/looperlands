@@ -13,24 +13,47 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 
 ## Choose a tool
 
-- **Playtest:** choose a map, spawn point, avatar and equipment, then start a game. See [Starting game sessions](mapmaker-sessions.md).
-- **Map validator:** find blocked placements, invalid references and entrance problems, then jump to their editors. See [Map validator](mapmaker-validator.md).
+**Playtest** stays at the top of the menu: choose a map, spawn point, avatar and equipment, then start a game. See [Starting game sessions](mapmaker-sessions.md).
+
+Expand a group to find its tools. **Map & world** starts open; opening a tool from an inspector link or bookmark also expands its group. On smaller screens, the **Tool** selector contains the same groups.
+
+### Map & world
+
 - **Map inspector:** place items, mobs and NPCs with sprite previews; explore searchable object layers and open their editors. See [Interactive map inspector](mapmaker-inspector.md).
-- **Build tools:** export a saved Tiled map, rebuild the game client and restart the local game. See [Building maps](mapmaker-building.md).
-- **Quest builder:** create custom quests or edit a bundled quest through a saved override. See [Quest builder](mapmaker-quest-builder.md).
-- **Interactions:** create reusable resource deposits, chests, repairs and switches; choose rewards, artwork and repeat behavior, then place them on any map. Existing farming stays available in its compatibility editor. See [Interactions](mapmaker-tile-actions.md).
+- **Doors & portals:** find entrances and edit access rules, opening hours and player messages. See [Doors & portals](mapmaker-doors.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
-- **Triggers & events:** configure event, condition and action rules with a simulation. See [Trigger & event builder](mapmaker-events.md).
-- **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).
 - **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
 - **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
+
+### Gameplay
+
+- **Quest builder:** create custom quests or edit a bundled quest through a saved override. See [Quest builder](mapmaker-quest-builder.md).
+- **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).
+- **Interactions:** create reusable resource deposits, chests, repairs and switches; choose rewards, artwork and repeat behavior, then place them on any map. Existing farming stays available in its compatibility editor. See [Interactions](mapmaker-tile-actions.md).
+- **Sequences & cutscenes:** build ordered NPC movement, dialogue, camera, audio and gate actions. See [Scripted sequences & cutscenes](mapmaker-sequences.md).
 - **Chests & encounters:** place chests, draw mob areas and add clear-area reward chests. See [Chests & encounters](mapmaker-encounters.md).
-- **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
+- **Triggers & events:** configure event, condition and action rules with a simulation. See [Trigger & event builder](mapmaker-events.md).
+
+### Characters & items
+
 - **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md) and [NPC route painter](mapmaker-routes.md).
-- **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).
+- **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
 - **Items:** create collectibles and prepare sprites. See [Items](mapmaker-items.md).
+- **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).
+
+### Build & test
+
+- **Map validator:** find blocked placements, invalid references and entrance problems, then jump to their editors. See [Map validator](mapmaker-validator.md).
+- **Build tools:** export a saved Tiled map, update the game client and restart the local game. Unchanged client bundles are reused. See [Building maps](mapmaker-building.md).
 - **Troubleshoot:** run environment checks and read suggested fixes. **Check main updates** reports repository updates and suggests Git commands; it does not update your files.
-- **Documentation:** read the toolbox guides inside the toolbox.
+
+**Documentation** is available below the groups and opens these guides inside the toolbox.
+
+## Choose items, mobs and NPCs
+
+Entity fields share one picker across asset editors, quests, interactions, encounters, drops, item effects, NPC placement, playtest inventory and the map inspector. Click the selected entity or **Choose…** to browse sprite previews. Search by display name, string ID or numeric kind ID. The picker shows the choices allowed by that field; quest targets remain limited to the selected map.
+
+Use **Arrow down** from search to focus a result, arrow keys to move between results and **Enter** to choose it. **Escape**, **Close** or a click outside the panel closes the picker without changing the field. The Close button stays visible while the results scroll. Optional fields include their existing **None**, **No reward** or **All mobs** choice. Missing artwork falls back to a text label, so the entity remains selectable. Door item requirements also accept an exact custom ID through **Use this ID**.
 
 ## A typical editing loop
 
@@ -40,6 +63,14 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 4. Test the changed route or quest, then return to the toolbox for another edit.
 
 Keep the toolbox address bookmarked. Starting a game opens the game in the current browser tab; return to the toolbox address to start another session.
+
+## Shared map loading
+
+Choosing a map loads one shared workspace for its tools. The loading bar above the editor shows the map, the section being loaded and how many parts are ready. This includes built geometry and artwork, Tiled objects and placements, entrances, lights, chests, encounters, NPC routines, quests, interactions, events, dialogue, scenes and validation results. Coordinate previews use the loaded geometry.
+
+Switching tools keeps the selected map and reuses this data. The two most recently loaded maps are kept in memory, so switching back usually needs no map-data download. Unloaded destination maps can still show lightweight coordinate previews.
+
+Saving refreshes the shared workspace; building refreshes it when the game is ready again. The toolbox also checks for file changes from Tiled or another tab. Opening an affected tool refreshes its saved data through its existing unsaved-change checks. Unsaved quest drafts stay available when switching maps. **Reload map data** refreshes the workspace manually; failed loads offer **Retry loading**, and an unavailable section does not hide the other tools.
 
 ## Local data and sessions
 
@@ -92,3 +123,11 @@ Hover a map coordinate to see a **13 × 13 tile preview**, with that exact tile 
 Previews are shared across Playtest checkpoint and spawn settings, Doors & portals, NPC placements and behaviour fields, Map validator and Map inspector. Entrance destinations use their destination map. Coordinate fields preview the current pair of values as you edit, without saving changes.
 
 Previews show the last built map artwork. Build after changing Tiled layouts. Locations near an edge stay centered, with gray cells beyond the map boundary. Missing builds or artwork show a readable message rather than an unrelated location.
+
+## Fishing
+
+Use **Gameplay → Fishing** to draw fishing areas, override existing lakes, set rod levels and edit catches with actual normal/lucky chances. Save to Tiled, build the map and start a fresh playtest. See the [Fishing guide](mapmaker-fishing.md).
+
+## Checkpoints and gameplay zones
+
+Use **Gameplay → Checkpoints & zones** to edit spawn and revival areas, trigger zones, PvP, positional music and event-board proximity. Saves retain checkpoint IDs. See the [guide](mapmaker-zones.md).

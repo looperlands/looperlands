@@ -160,7 +160,7 @@ class KeyBoardHandler {
 
     movementIsBlocked() {
         return !this.game.started || this.game.player.isDead || this.game.player.isRooted
-            || this.game.combatPrototype?.locked()
+            || this.game.combatPrototype?.locked() || this.game.scriptedSequence?.locked
             || this.inputHasFocus() || this.hasOpenPanel()
             || $('#dialogue-popup').hasClass('active')
             || this.game.minigameLoaded || this.game.hoveringMinigamePrompt || this.game.doorCheck

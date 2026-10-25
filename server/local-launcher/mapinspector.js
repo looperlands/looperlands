@@ -1,13 +1,14 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const el = (tag, text = '', attrs = {}) => Object.assign(document.createElement(tag), {textContent: text, ...attrs});
     const href = (screen, values = {}) => '#' + screen + '/?' + new URLSearchParams(values);
-    const colors = {chest:'#9b5b14',reward:'#145f52',door:'#7c3b92',npc:'#185c9b',mob:'#a52828',item:'#376239',spawn:'#9b4824',checkpoint:'#145f52',trigger:'#6c5416',scene:'#596575',routine:'#185c9b',quest:'#633b88',entity:'#202936'};
-    const labels = {chest:'Chests',reward:'Clear-area rewards',door:'Doors / portals',npc:'NPCs',mob:'Mobs',item:'Items',spawn:'Spawn areas',checkpoint:'Checkpoints',trigger:'Triggers',scene:'Scenes',routine:'NPC routines',quest:'Quests',entity:'Other entities'};
+    const colors = {pvp:'#2563eb',music:'#596575',eventboard:'#145f52',sequence:'#633b88',chest:'#9b5b14',reward:'#145f52',door:'#7c3b92',npc:'#185c9b',mob:'#a52828',item:'#376239',spawn:'#9b4824',checkpoint:'#145f52',trigger:'#6c5416',scene:'#596575',routine:'#185c9b',quest:'#633b88',entity:'#202936'};
+    const labels = {pvp:'PvP areas',music:'Music areas',eventboard:'Event-board areas',sequence:'Scripted sequences',chest:'Chests',reward:'Clear-area rewards',door:'Doors / portals',npc:'NPCs',mob:'Mobs',item:'Items',spawn:'Spawn areas',checkpoint:'Checkpoints',trigger:'Triggers',scene:'Scenes',routine:'NPC routines',quest:'Quests',entity:'Other entities'};
     let libraryPromise;
     const images = new Map();
     async function request(url, body) {
-        const response = await fetch(url, {signal: AbortSignal.timeout(45000), ...(body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {})});
+        const response = await fetchData(url, {signal: AbortSignal.timeout(45000), ...(body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {})});
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'The map request failed. Try again.');
         return data;
@@ -17,6 +18,7 @@
         return libraryPromise;
     }
     document.addEventListener('toolbox:assets-saved', () => {libraryPromise = null; images.clear();});
+    document.addEventListener('toolbox:map-data-changed', () => {libraryPromise = null; images.clear();});
     function imageFor(entry, ready) {
         if (!entry?.preview) return null;
         let img = images.get(entry.id);
@@ -43,9 +45,14 @@
             assetId = restored.assetId || '', draft = null, moving = null, lastTile = null, hover = null, drag = null,
             disposed = false, busy = false, entries = [], query = restored.query || '', page = 0;
         const blocked = new Set(data.collisions), entryById = new Map();
+        let collection = new window.MapmakerObjectDrafts(data.placements?.placements || []);
+        const sourceRows = data.placements?.placements || [], baseObjects = data.objects.filter(row => !row.placementId), baseFindings = data.findings.slice();
+        const savedObjects = new Map(data.objects.filter(row => row.placementId).map(row => [row.placementId, row]));
         const workspace = el('div','',{className:'inspector-workspace'}), main = el('div','',{className:'inspector-map'}), sidebar = el('aside','',{className:'inspector-sidebar'});
         const toolbar = el('div','',{className:'inspector-modebar'}), inspectButton = button('Inspect',()=>setMode('inspect')), placeButton = button('Place entities',()=>setMode('place'));
-        toolbar.append(inspectButton, placeButton);
+        const saveAll = button('Save all changes', saveChanges), discardAll = button('Discard changes', () => {if(collection.count&&!window.confirm('Discard all unsaved map changes?'))return;collection=new window.MapmakerObjectDrafts(sourceRows);draft=null;moving=null;changed();});
+        saveAll.className='primary';toolbar.append(inspectButton, placeButton);
+        const editActions=el('div','',{className:'analysis-actions inspector-draft-actions'});editActions.append(saveAll,discardAll);main.append(editActions);
         const layers = el('details','',{className:'inspector-layers'});layers.append(el('summary','Layers & display'));
         const layerOptions = el('div','',{className:'analysis-layers'});
         for (const [type,label] of Object.entries(labels)) {
@@ -59,7 +66,7 @@
         parent.append(toolbar);
         const notice = el('p','',{className:'inspector-notice field-hint',role:'status',ariaLive:'polite'});main.append(notice);
         if (data.sources.stale) notice.append('Source changes are visible here. Build the map to update the game. ',el('a','Build this map',{href:href('build',{map:data.mapId})}));
-        else notice.textContent='Saved placements appear immediately. Build the map before playtesting.';
+        else notice.textContent='Place several entities, move or remove them, then save all changes together.';
         workspace.append(main,sidebar);parent.append(workspace);
         const controls = el('div','',{className:'map-controls'});
         controls.append(button('Zoom in',()=>zoom(1.5)),button('Zoom out',()=>zoom(1/1.5)),button('Fit map',()=>fit()));
@@ -78,17 +85,16 @@
         const issues = checkbox('Objects with findings',!!restored.issues), count = el('p','',{className:'inspector-count field-hint',role:'status'}), list = el('div','',{className:'inspector-list',role:'list',ariaLabel:'Map objects'}), pages = el('div','',{className:'inspector-pagination'});
         inspectPanel.append(el('h3','Map objects'),el('label','Search objects',{htmlFor:search.id}),search,typeSelect,issues.wrap,count,list,pages);
         search.oninput=()=>{query=search.value;lastTile=null;page=0;renderList();draw();};typeSelect.onchange=()=>{page=0;lastTile=null;renderList();};issues.input.onchange=()=>{page=0;renderList();};
-        const placePanel = el('div','',{className:'inspector-place-panel'}), paletteSearch = el('input','',{type:'search',placeholder:'Search entities',ariaLabel:'Search entities'}), paletteType = el('select','',{ariaLabel:'Entity category'});
-        for(const [value,label] of [['','All entities'],['item','Items'],['mob','Mobs'],['npc','NPCs']])paletteType.append(el('option',label,{value}));
-        paletteSearch.value=restored.paletteQuery||'';paletteType.value=restored.paletteType||'';
+        const placePanel = el('div','',{className:'inspector-place-panel'});
         const paletteCount = el('p','Loading entity library…',{className:'field-hint',role:'status'}), palette = el('div','',{className:'entity-palette',ariaLabel:'Entity library'}), placement = el('form','',{className:'entity-placement'});
-        placePanel.append(placement,el('h3','Choose an entity'),paletteSearch,paletteType,paletteCount,palette);
+        const paletteSelect=el('select','',{ariaLabel:'Entity to place'});paletteSelect.append(el('option','Choose an entity',{value:''}));palette.append(paletteSelect);
+        placePanel.append(placement,el('h3','Choose an entity'),paletteCount,palette);
+        paletteSelect.onchange=()=>{assetId=paletteSelect.value;moving=null;draft=null;renderPalette();renderPlacement();draw();};
         const create = el('details','',{className:'entity-create'});create.append(el('summary','Create a new entity'));
         const createLinks=el('div','',{className:'analysis-actions'});
         for(const [screen,label]of [['items','New item'],['mobs','New mob'],['npcs','New NPC']])createLinks.append(el('a',label,{href:href(screen,{map:data.mapId,create:'1'}),className:'analysis-link'}));
         create.append(el('p','Start from an existing entity in its editor. Save the new definition, then choose Place on map.'),createLinks);placePanel.append(create);
         sidebar.append(inspectPanel,placePanel);
-        paletteSearch.oninput=renderPalette;paletteType.onchange=renderPalette;
         let artwork = null, firstResize = true;
         const resize = new ResizeObserver(()=>{
             if(!canvas.isConnected){resize.disconnect();return;}
@@ -97,7 +103,7 @@
             if(firstResize&&!restored.view)fit();else{view.x+=(canvas.width-oldW)/2;view.y+=(canvas.height-oldH)/2;draw();}
             firstResize=false;
         });resize.observe(canvas);
-        const image = new Image();image.onload=()=>{if(disposed)return;artwork=image;draw();};image.onerror=()=>{hint.textContent='Artwork unavailable. Geometry and entity previews remain visible.';};image.src=data.tileset;
+        if(window.ToolboxMapData){window.ToolboxMapData.image(data.tileset,data.artworkRevision||data.revision).then(image=>{if(!disposed){artwork=image;draw();}}).catch(()=>{hint.textContent='Artwork unavailable. Geometry and entity previews remain visible.';});}else{const image = new Image();image.onload=()=>{if(disposed)return;artwork=image;draw();};image.onerror=()=>{hint.textContent='Artwork unavailable. Geometry and entity previews remain visible.';};image.src=data.tileset;}
         canvas.onwheel=event=>{event.preventDefault();zoom(event.deltaY<0?1.2:1/1.2,event.offsetX,event.offsetY);};
         canvas.onpointerdown=event=>{if(event.button!==0)return;drag={x:event.offsetX,y:event.offsetY,vx:view.x,vy:view.y};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});};
         canvas.onpointermove=event=>{hover=point(event.offsetX,event.offsetY);coords.textContent='Tile '+hover.x+', '+hover.y;if(drag){view.x=drag.vx+event.offsetX-drag.x;view.y=drag.vy+event.offsetY-drag.y;}draw();};
@@ -113,10 +119,10 @@
         document.addEventListener('toolbox:assets-saved',refreshLibrary);refreshLibrary();
         if(data.placementError){placeButton.disabled=true;notice.textContent='Placement unavailable: '+data.placementError;}
         if(window.ToolboxNavigation.params().has('place')){assetId=window.ToolboxNavigation.params().get('place');mode='place';}
-        setMode(mode);renderDetail();renderList();
+        setMode(mode);renderDetail();renderList();saveAll.disabled=true;discardAll.disabled=true;
         if(restored.expanded)expand.click();
 
-        function button(label,run){const b=el('button',label,{type:'button'});b.onclick=run;return b;}
+        function button(label,run,attrs={}){const b=el('button',label,{type:'button',...attrs});b.onclick=run;return b;}
         function checkbox(label,checked){const wrap=el('label','',{className:'asset-check'}),input=el('input','',{type:'checkbox',checked});wrap.append(input,document.createTextNode(label));input.onchange=draw;return{wrap,input};}
         function numberInput(label,id,min,max,value=''){const wrap=el('div','',{className:'field'}),input=el('input','',{id,type:'number',min:String(min),max:String(max),step:'1',required:true,value:String(value)});wrap.append(el('label',label,{htmlFor:id}),input);return{wrap,input};}
         function message(text,error=false){notice.textContent=text;notice.classList.toggle('error',error);}
@@ -126,11 +132,11 @@
         function contains(o,p){return p.x>=o.x&&p.y>=o.y&&p.x<o.x+o.width&&p.y<o.y+o.height;}
         function hits(o,p){const f=entryById.get(o.kind)?.preview;if(contains(o,p))return true;if(!f||!sprites.input.checked||view.scale<3)return false;return p.x+.5>=o.x+f.offsetX/data.tilesize&&p.x+.5<o.x+(f.offsetX+f.width)/data.tilesize&&p.y+.5>=o.y+f.offsetY/data.tilesize&&p.y+.5<o.y+(f.offsetY+f.height)/data.tilesize;}
         function visible(){return data.objects.filter(o=>enabled.has(o.type));}
-        function validation(p){if(!inside(p))return'Choose a tile inside the playable map.';if(blocked.has(p.y*data.width+p.x))return'This tile is blocked. Choose a walkable tile.';if(data.objects.some(o=>['npc','mob','item','entity'].includes(o.type)&&o.placementId!==moving&&contains(o,p)))return'This tile already contains an entity.';return'';}
+        function validation(p){if(!inside(p))return'Choose a tile inside the playable map.';if(blocked.has(p.y*data.width+p.x))return'This tile is blocked. Choose a walkable tile.';if(data.objects.some(o=>['npc','mob','item','entity'].includes(o.type)&&(!moving||o.placementId!==moving)&&contains(o,p)))return'This tile already contains an entity.';return'';}
         function pick(p){
             if(busy||!inside(p))return;
             jumpX.input.value=p.x;jumpY.input.value=p.y;
-            if(mode==='place'){draft=p;renderPlacement();draw();return;}
+            if(mode==='place'){queue(moving?{operation:'move',id:moving,position:p}:{operation:'add',kind:assetId,position:p});return;}
             const matches=visible().filter(o=>hits(o,p));lastTile=p;page=0;
             if(matches.length)select(matches.sort((a,b)=>Number(contains(b,p))-Number(contains(a,p))||a.width*a.height-b.width*b.height)[0].id,false,true);
             else{selected=null;renderDetail();renderList();draw();}
@@ -139,13 +145,10 @@
         function fit(){view.scale=Math.min(canvas.width/data.width,canvas.height/data.height)*.95;view.x=(canvas.width-data.width*view.scale)/2;view.y=(canvas.height-data.height*view.scale)/2;draw();}
         function zoom(factor,x=canvas.width/2,y=canvas.height/2){const old=view.scale;view.scale=Math.max(.15,Math.min(64,old*factor));view.x=x-(x-view.x)*view.scale/old;view.y=y-(y-view.y)*view.scale/old;draw();}
         function renderPalette(){
-            const text=paletteSearch.value.toLowerCase(),rows=entries.filter(e=>(!paletteType.value||e.type===paletteType.value)&&[e.id,e.name,e.type].join(' ').toLowerCase().includes(text));
-            paletteCount.textContent=rows.length+(rows.length===1?' entity':' entities')+(rows.length>60?' · showing 60; search to narrow the list':'');palette.replaceChildren();
-            for(const entry of rows.slice(0,60)){
-                const b=button('',()=>{assetId=entry.id;moving=null;draft=null;renderPalette();renderPlacement();draw();});b.className='entity-option';b.setAttribute('aria-pressed',String(entry.id===assetId));
-                const copy=el('span');copy.append(el('strong',entry.name||entry.id),el('small',entry.type.toUpperCase()+' · '+entry.id));b.append(thumbnail(entry),copy);palette.append(b);
-            }
-            if(!rows.length)palette.append(el('p','No entities match. Try another search or create a new definition below.'));
+            paletteCount.textContent=entries.length+' available entities';
+            paletteSelect.replaceChildren(el('option','Choose an entity',{value:''}),...entries.map(entry=>el('option',entry.name||entry.id,{value:entry.id})));
+            paletteSelect.value=assetId||'';
+            window.ToolboxEntityPicker.attach(paletteSelect,{label:'Entity to place',entries:[{id:'',name:'Choose an entity'},...entries]});
         }
         function renderPlacement(){
             placement.replaceChildren();
@@ -155,18 +158,50 @@
             if(!entry&&entries.length){placement.append(el('p','This entity is unavailable. Choose a saved definition.'));return;}
             const coordinates=el('div','',{className:'entity-coordinates'}),x=numberInput('Tile X','entity-tile-x',1,data.width-1,draft?.x??''),y=numberInput('Tile Y','entity-tile-y',1,data.height-1,draft?.y??'');coordinates.append(x.wrap,y.wrap);placement.append(coordinates);
             const problem=draft?validation(draft):'Click the map or enter tile coordinates to preview.';
-            placement.append(el('p',problem||'Walkable, empty tile. Ready to save.',{className:'field-hint'+(draft&&problem?' error':'')}));
-            const save=el('button',moving?'Save new position':'Save placement',{type:'submit',className:'primary',disabled:busy||!draft||!!problem||!entry});
+            placement.append(el('p',problem||'Walkable, empty tile. Ready to add to the draft.',{className:'field-hint'+(draft&&problem?' error':'')}));
+            const save=el('button',moving?'Apply move to draft':'Add to draft',{type:'submit',className:'primary',disabled:busy||!draft||!!problem||!entry});
             const actions=el('div','',{className:'analysis-actions'});actions.append(save,button('Cancel',()=>setMode('inspect')));placement.append(actions);
             if(entry)placement.append(el('a','Edit '+entry.type+' definition',{href:href(entry.type==='npc'?'npcs':entry.type==='mob'?'mobs':'items',{asset:assetId,map:data.mapId}),className:'analysis-link'}));
-            const update=()=>{draft={x:Number(x.input.value),y:Number(y.input.value)};const complete=x.input.value!==''&&y.input.value!=='',problem=complete?validation(draft):'',hint=placement.querySelector('.field-hint');save.disabled=busy||!complete||!!problem||!entry;hint.textContent=complete?(problem||'Walkable, empty tile. Ready to save.'):'Enter both X and Y to preview the placement.';hint.classList.toggle('error',complete&&!!problem);draw();};x.input.oninput=update;y.input.oninput=update;
-            placement.onsubmit=event=>{event.preventDefault();if(!save.disabled)persist(moving?{operation:'move',id:moving,position:draft}:{operation:'add',kind:assetId,position:draft});};
+            const update=()=>{draft={x:Number(x.input.value),y:Number(y.input.value)};const complete=x.input.value!==''&&y.input.value!=='',problem=complete?validation(draft):'',hint=placement.querySelector('.field-hint');save.disabled=busy||!complete||!!problem||!entry;hint.textContent=complete?(problem||'Walkable, empty tile. Ready to add to the draft.'):'Enter both X and Y to preview the placement.';hint.classList.toggle('error',complete&&!!problem);draw();};x.input.oninput=update;y.input.oninput=update;
+            placement.onsubmit=event=>{event.preventDefault();if(!save.disabled)queue(moving?{operation:'move',id:moving,position:draft}:{operation:'add',kind:assetId,position:draft});};
         }
-        async function persist(change){
-            if(busy)return;busy=true;sidebar.inert=true;parent.setAttribute('aria-busy','true');inspectButton.disabled=true;placeButton.disabled=true;message('Saving placement to Tiled source…');
-            try{await request('./api/entity-placements',{mapId:data.mapId,revision:data.placements.revision,...change});draft=null;moving=null;selected=null;message('Saved. Refreshing the source placements…');await options.refresh();}
+        function changed(){
+            data.objects=baseObjects.concat(collection.rows.map(row=>{
+                const previous=savedObjects.get(row.id),entry=entryById.get(row.kind);
+                return {...previous,id:'placement:'+row.id,type:entry?.type||previous?.type||'entity',kind:row.kind,name:entry?.name||previous?.name||row.kind,
+                    x:row.x,y:row.y,width:1,height:1,placementId:row.id,tiledLayer:'mapmaker-entities',pending:collection.pending.has(row.id),
+                    editor:previous?.editor||href(entry?.type==='npc'?'npcs':entry?.type==='mob'?'mobs':'items',{asset:row.kind,map:data.mapId})};
+            }));
+            const pending=new Set([...collection.pending.keys()].map(id=>'placement:'+id));data.findings=baseFindings.filter(row=>!pending.has(row.objectId));
+            saveAll.disabled=busy||!collection.count;discardAll.disabled=busy||!collection.count;
+            saveAll.textContent='Save all changes'+(collection.count?' ('+collection.count+')':'');
+            message(collection.count?collection.count+' unsaved map changes · keep placing and editing, then save them together.':'Map draft is clear. Build after saving to update the game.');
+            renderPlacement();renderDetail();renderList();draw();
+        }
+        function queue(change){
+            if(busy)return;
+            if(change.operation!=='remove'){
+                const problem=validation(change.position);
+                if(problem){message(problem,true);return;}
+                if(change.operation==='add'&&!entryById.has(change.kind)){message('Choose an entity from the library first.',true);return;}
+            }
+            if(change.operation==='add')collection.add({kind:change.kind,...change.position});
+            else if(change.operation==='remove')collection.remove(change.id);
+            else{const row=collection.rows.find(row=>row.id===change.id);if(!row)return;collection.set({...row,...change.position});}
+            const wasMoving=!!moving;draft=null;moving=null;selected=null;
+            if(wasMoving)setMode('inspect');changed();
+        }
+        async function saveChanges(){
+            if(busy||!collection.count)return;
+            const operations=collection.changes().map(change=>change.operation==='add'?{operation:'add',kind:change.object.kind,position:{x:change.object.x,y:change.object.y}}:
+                change.operation==='remove'?{operation:'remove',id:change.objectId}:{operation:'move',id:change.objectId,position:{x:change.object.x,y:change.object.y}});
+            busy=true;sidebar.inert=true;parent.setAttribute('aria-busy','true');inspectButton.disabled=true;placeButton.disabled=true;saveAll.disabled=true;discardAll.disabled=true;
+            message('Saving '+operations.length+' map changes together…');
+            try{await request('./api/entity-placements',{mapId:data.mapId,revision:data.placements.revision,operations});
+                collection=new window.MapmakerObjectDrafts(collection.rows);draft=null;moving=null;selected=null;
+                message('Saved. Refreshing the map once…');await options.refresh();}
             catch(error){message(error.message,true);}
-            finally{busy=false;sidebar.inert=false;parent.setAttribute('aria-busy','false');inspectButton.disabled=false;placeButton.disabled=!data.placements;}
+            finally{busy=false;sidebar.inert=false;parent.setAttribute('aria-busy','false');inspectButton.disabled=false;placeButton.disabled=!data.placements;saveAll.disabled=!collection.count;discardAll.disabled=!collection.count;}
         }
         function renderDetail(){
             detail.replaceChildren();const o=data.objects.find(o=>o.id===selected);
@@ -176,7 +211,7 @@
             const actions=el('div','',{className:'analysis-actions'});
             if(o.editor)actions.append(el('a','Edit definition',{href:o.editor,className:'analysis-link'}));
             actions.append(button('Center on map',()=>center(o)));
-            if(o.placementId){actions.append(button('Move',()=>{assetId=o.kind;setMode('place');moving=o.placementId;draft={x:o.x,y:o.y};renderPalette();renderPlacement();center(o);}),button('Remove placement',()=>persist({operation:'remove',id:o.placementId})));}
+            if(o.placementId){actions.append(button('Move',()=>{assetId=o.kind;setMode('place');moving=o.placementId;draft={x:o.x,y:o.y};renderPalette();renderPlacement();center(o);}),button('Remove placement',()=>queue({operation:'remove',id:o.placementId}), {className: 'destructive'}));}
             if(o.type==='npc')actions.append(el('a','Behaviour / schedule',{href:href('npcs/behaviour',{map:data.mapId,kind:o.kind,x:o.x,y:o.y}),className:'analysis-link'}));
             detail.append(actions);
             if(o.placementId&&o.type==='npc')detail.append(el('p','NPC routines use the exact spawn tile. Update Behaviour / schedule after moving or removing this NPC.',{className:'field-hint'}));
@@ -232,7 +267,7 @@
             ctx.restore();coords.textContent=(hover?'Tile '+hover.x+', '+hover.y+' · ':'')+Math.round(s/data.tilesize*100)+'%';
         }
         function paintSprite(ctx,entry,img,p){const f=entry.preview;ctx.drawImage(img,0,f.row*f.height,f.width,f.height,p.x+f.offsetX/data.tilesize,p.y+f.offsetY/data.tilesize,f.width/data.tilesize,f.height/data.tilesize);}
-        return {draw,select,place(id){assetId=id;setMode('place');renderPalette();},destroy(){disposed=true;resize.disconnect();document.removeEventListener('toolbox:assets-saved',refreshLibrary);},snapshot(){return{mapId:data.mapId,view:{...view},canvasWidth:canvas.width,canvasHeight:canvas.height,expanded:workspace.classList.contains('inspector-expanded'),enabled:[...enabled],mode,assetId,selected,query,paletteQuery:paletteSearch.value,paletteType:paletteType.value,type:typeSelect.value,issues:issues.input.checked,sprites:sprites.input.checked,collisions:collisions.input.checked,grid:grid.input.checked};}};
+        return {draw,select,hasDraft(){return !!collection.count||!!draft||!!moving;},place(id){assetId=id;setMode('place');renderPalette();},destroy(){disposed=true;resize.disconnect();document.removeEventListener('toolbox:assets-saved',refreshLibrary);},snapshot(){return{mapId:data.mapId,view:{...view},canvasWidth:canvas.width,canvasHeight:canvas.height,expanded:workspace.classList.contains('inspector-expanded'),enabled:[...enabled],mode,assetId,selected,query,type:typeSelect.value,issues:issues.input.checked,sprites:sprites.input.checked,collisions:collisions.input.checked,grid:grid.input.checked};}};
     }
     window.MapInspector={mount};
 })();

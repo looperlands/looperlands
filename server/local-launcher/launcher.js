@@ -1,5 +1,6 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const byId = id => document.getElementById(id);
     const lastKey = 'looperlands.localLauncher.last.v1';
     const presetsKey = 'looperlands.localLauncher.presets.v1';
@@ -175,9 +176,10 @@
         const configurable = Boolean(item?.nftId);
         input.disabled = !configurable;
         input.min = configurable ? 1 : 0;
+        input.max = item?.maxLevel || catalog.maxLevel;
         input.setCustomValidity('');
-        input.value = configurable ? safeLevel(preferred ?? input.value, 1) : fixedWeaponLevel(item);
-        byId('weapon-level-hint').textContent = configurable ? 'Set the level for this NFT weapon.' : item ? 'Built-in weapons keep their game default. Only NFT weapons have a configurable level.' : 'Choose an NFT weapon to set its level.';
+        input.value = configurable ? Math.min(Number(input.max), safeLevel(preferred ?? input.value, 1)) : fixedWeaponLevel(item);
+        byId('weapon-level-hint').textContent = item?.fishingRod ? 'Fishing rod level, 1–45. Uses the tool XP curve and the Upper hand trait.' : configurable ? 'Set the level for this NFT weapon.' : item ? 'Built-in weapons keep their game default. Only NFT weapons have a configurable level.' : 'Choose an NFT weapon to set its level.';
     }
     function progressRow(kind, saved) {
         const inventory = kind === 'item';
@@ -191,6 +193,7 @@
         input.placeholder = inventory ? 'Search item name or key' : 'Search quest name or ID';
         input.value = inventory ? catalog.items?.find(item => item.id === saved?.item)?.key || '' : saved || '';
         row.append(input);
+        if (inventory) window.ToolboxEntityPicker.attach(input,{type:'item',label:'Inventory item',entries:catalog.items.map(item=>({id:item.key,name:item.name}))});
         if (inventory) {
             const amount = document.createElement('input');
             amount.type = 'number'; amount.min = '1'; amount.max = '1000000'; amount.step = '1'; amount.required = true;
@@ -198,7 +201,7 @@
             row.append(amount);
         }
         const remove = document.createElement('button');
-        remove.type = 'button'; remove.className = 'text-button'; remove.textContent = 'Remove';
+        remove.type = 'button'; remove.className = 'text-button destructive'; remove.textContent = 'Remove';
         remove.setAttribute('aria-label', inventory ? 'Remove inventory item' : 'Remove finished quest');
         remove.addEventListener('click', () => {row.remove(); form.dispatchEvent(new Event('change', {bubbles: true}));});
         row.append(remove); container.append(row);
@@ -214,6 +217,7 @@
     }
     function apply(settings) {
         const value = {...catalog.defaults, ...settings};
+        byId('time-of-day').value = typeof value.timeOfDay === 'string' ? value.timeOfDay : '';
         byId('door-access').value = ['local', 'live', 'allow-all'].includes(value.localDoorAccess) ? value.localDoorAccess : 'local';
         doorAccessHint();
         byId('starting-inventory').replaceChildren(); byId('finished-quests').replaceChildren();
@@ -258,7 +262,7 @@
             byId('advanced-spawn').open = true;
         }
         if (!form.reportValidity()) return null;
-        const data = {startingInventory, finishedQuests, localDoorAccess: byId('door-access').value, mapId: byId('map').value, checkpointId: byId('checkpoint').value,
+        const data = {startingInventory, finishedQuests, timeOfDay: byId('time-of-day').value, localDoorAccess: byId('door-access').value, mapId: byId('map').value, checkpointId: byId('checkpoint').value,
             walletId: byId('wallet').value.trim(), nftId: avatarPicker.selected.nftId,
             level: Number(byId('avatar-level').value), weaponId: weaponPicker.selected.id,
             weaponLevel: weaponPicker.selected.nftId ? Number(byId('weapon-level').value) : fixedWeaponLevel(weaponPicker.selected), trait: byId('trait').value,
@@ -278,7 +282,7 @@
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 30000);
         try {
-            const response = await fetch(url, {...options, signal: controller.signal});
+            const response = await fetchData(url, {...options, signal: controller.signal});
             const body = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(body.error || `The local server returned HTTP ${response.status}.`);
             return body;
@@ -286,28 +290,39 @@
     }
     async function start(event) {
         event.preventDefault(); clearError();
+        if (fields.disabled) return;
         if (buildJob?.status === 'running') {showError('A map is building. Wait for it to finish before starting a game.', true); return;}
         const value = settings();
         if (!value) return;
+        // Open synchronously with the click so browsers allow the new tab.
+        const gameTab = window.open('about:blank', '_blank');
+        if (!gameTab) {showError('Allow pop-ups for this local Toolbox, then click Start game again. Your editor stays open.', true); return;}
         writeStorage(lastKey, value);
         fields.disabled = true;
         form.setAttribute('aria-busy', 'true');
         byId('start-game').textContent = 'Starting game…';
         status.textContent = 'Preparing your local session…';
         try {
+            gameTab.opener = null;
+            gameTab.document.title = 'Starting LooperLands…';
+            gameTab.document.body.textContent = 'Preparing your local game. Your editor stays open in the Toolbox tab.';
             const result = await request('/local/api/session', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(value)});
             if (typeof result.url !== 'string') throw new Error('The server did not return a game URL. Try again.');
             const destination = new URL(result.url, window.location.origin);
             const localHosts = ['127.0.0.1', 'localhost', '[::1]'];
             const localDestination = localHosts.includes(destination.hostname) && localHosts.includes(window.location.hostname);
             if (!['http:', 'https:'].includes(destination.protocol) || (destination.hostname !== window.location.hostname && !localDestination)) throw new Error('The server returned a game URL outside this local server.');
-            window.location.assign(destination.href);
+            if (gameTab.closed) throw new Error('The game tab was closed. Click Start game to open another one.');
+            gameTab.location.replace(destination.href);
+            status.textContent = 'Game opened in a new tab. Your editor stays open here.';
         } catch (error) {
+            if (!gameTab.closed) gameTab.close();
             showError(error.name === 'AbortError' ? 'The server took too long to respond. Check that it is running, then try again.' : error.message, true);
+            status.textContent = 'Your settings are ready. Try starting again.';
+        } finally {
             fields.disabled = false;
             form.setAttribute('aria-busy', 'false');
             byId('start-game').textContent = 'Start game';
-            status.textContent = 'Your settings are ready. Try starting again.';
         }
     }
     async function boot() {
@@ -339,6 +354,7 @@
                 byId('avatar-nft').setCustomValidity(item ? '' : 'Use the NFT ID of an avatar included in the game.');
             });
             apply(readStorage(lastKey, {}));
+            window.ToolboxMapData?.select(window.ToolboxNavigation?.params().get('map') || window.ToolboxMapData.preferred(byId('map').value)).catch(() => {});
             presets = readStorage(presetsKey, []);
             if (!Array.isArray(presets)) presets = [];
             presets = presets.filter(preset => preset && typeof preset.id === 'string' && typeof preset.name === 'string' && preset.settings && typeof preset.settings === 'object');
@@ -356,7 +372,7 @@
         }
     }
 
-    byId('map').addEventListener('change', () => {checkpoints(); byId('spawn-x').value = ''; byId('spawn-y').value = '';});
+    byId('map').addEventListener('change', () => {checkpoints(); byId('spawn-x').value = ''; byId('spawn-y').value = ''; window.ToolboxMapData?.select(byId('map').value).catch(() => {});});
     byId('checkpoint').addEventListener('change', checkpointHint);
     byId('door-access').addEventListener('change', doorAccessHint);
     byId('add-starting-item').addEventListener('click', () => progressRow('item').focus());
@@ -397,7 +413,7 @@
     form.addEventListener('submit', start);
     form.addEventListener('change', event => {
         if (!catalog || event.target.closest('.presets') || !avatarPicker.selected || !weaponPicker.selected) return;
-        const data = {mapId: byId('map').value, checkpointId: byId('checkpoint').value, walletId: byId('wallet').value,
+        const data = {timeOfDay: byId('time-of-day').value, mapId: byId('map').value, checkpointId: byId('checkpoint').value, walletId: byId('wallet').value,
             nftId: avatarPicker.selected.nftId, level: Number(byId('avatar-level').value), weaponId: weaponPicker.selected.id,
             weaponLevel: weaponPicker.selected.nftId ? Number(byId('weapon-level').value) : fixedWeaponLevel(weaponPicker.selected), trait: byId('trait').value, title: byId('display-name').value};
         if (byId('spawn-x').value !== '') data.x = Number(byId('spawn-x').value);
@@ -410,6 +426,7 @@
     window.addEventListener('pageshow', event => {
         if (event.persisted && catalog) {fields.disabled = false; form.setAttribute('aria-busy', 'false'); byId('start-game').textContent = 'Start game'; status.textContent = storageUnavailable ? 'This browser cannot save setups.' : 'Ready for another local game.';}
     });
+    byId('build-map').addEventListener('change', () => window.ToolboxMapData?.select(byId('build-map').value).catch(() => {}));
     function buildMaps() {
         const select = byId('build-map');
         const linkedMap = window.ToolboxNavigation?.screen()==='build' ? window.ToolboxNavigation.params().get('map') : undefined;
@@ -572,44 +589,40 @@
             byId('updates-commands').focus();
         }
     });
-    const tabs=[...document.querySelectorAll('.tool-tabs [role=tab]')],mobileTool=byId('mobile-tool');
-    for(const tab of tabs){const option=document.createElement('option');option.value=tab.dataset.pane;option.textContent=tab.textContent;mobileTool.append(option);}
-    mobileTool.onchange=()=>{location.hash=mobileTool.value;};
+    const tools = [...document.querySelectorAll('.tool-tabs [data-pane]')];
+    const mobileTool = byId('mobile-tool');
+    for (const entry of document.querySelector('.tool-tabs').children) {
+        if (entry.matches('.tool-group')) {
+            const group = document.createElement('optgroup');
+            group.label = entry.querySelector('summary').textContent;
+            for (const tool of entry.querySelectorAll('[data-pane]')) group.append(option(tool.dataset.pane, tool.textContent));
+            mobileTool.append(group);
+        } else if (entry.matches('[data-pane]')) mobileTool.append(option(entry.dataset.pane, entry.textContent));
+    }
+    mobileTool.onchange = () => {location.hash = mobileTool.value;};
     let activePane;
-    function openPane(tab) {
-        mobileTool.value=tab.dataset.pane;
-        for (const item of tabs) {
-            const selected = item === tab;
-            item.setAttribute('aria-selected', String(selected)); item.tabIndex = selected ? 0 : -1;
+    function openPane(tool) {
+        mobileTool.value = tool.dataset.pane;
+        for (const item of tools) {
+            const selected = item === tool;
+            if (selected) item.setAttribute('aria-current', 'page');
+            else item.removeAttribute('aria-current');
             byId(item.getAttribute('aria-controls')).hidden = !selected;
         }
-        if (activePane !== tab.dataset.pane) window.scrollTo(0, 0);
-        activePane = tab.dataset.pane;
-        if (tab.dataset.pane === 'build' && !buildLoaded) loadBuild();
-        document.dispatchEvent(new CustomEvent('toolbox:pane', {detail: tab.dataset.pane}));
+        const group = tool.closest('.tool-group');
+        if (group) group.open = true;
+        if (activePane !== tool.dataset.pane) window.scrollTo(0, 0);
+        if (window.matchMedia('(min-width: 821px)').matches) tool.scrollIntoView({block: 'nearest'});
+        activePane = tool.dataset.pane;
+        if (tool.dataset.pane === 'build' && !buildLoaded) loadBuild();
+        document.dispatchEvent(new CustomEvent('toolbox:pane', {detail: tool.dataset.pane}));
     }
-    tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => {location.hash = tab.dataset.pane;});
-        tab.addEventListener('keydown', event => {
-            let next;
-            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
-            else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + tabs.length) % tabs.length;
-            else if (event.key === 'Home') next = 0;
-            else if (event.key === 'End') next = tabs.length - 1;
-            else return;
-            event.preventDefault(); tabs[next].focus(); location.hash = tabs[next].dataset.pane;
-        });
-    });
     function routePane() {
         const pane = location.hash.slice(1).split('/')[0].split('?')[0] || 'playtest';
         if(pane==='atmosphere'){location.replace(location.hash.replace('#atmosphere','#scenes'));return;}
-        openPane(tabs.find(tab => tab.dataset.pane === pane) || tabs[0]);
+        openPane(tools.find(tool => tool.dataset.pane === pane) || tools[0]);
     }
     window.addEventListener('hashchange', routePane);
-    const sidebarLayout = window.matchMedia('(min-width: 821px)');
-    function tabOrientation() {document.querySelector('.tool-tabs').setAttribute('aria-orientation', sidebarLayout.matches ? 'vertical' : 'horizontal');}
-    sidebarLayout.addEventListener('change', tabOrientation);
-    tabOrientation();
     routePane();
     window.ToolboxNavigation?.route('build',params=>{if(params.has('map')&&catalog?.maps.some(m=>m.id===params.get('map')))byId('build-map').value=params.get('map');});
     boot();

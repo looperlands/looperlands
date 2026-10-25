@@ -205,6 +205,7 @@ WS.socketIOServer = Server.extend({
         const port = urlDetails.port;
         const host = self.host;
 
+        require('./fishingareas').installDefinitions(path.resolve(__dirname, '../..'), Lakes);
         this.cache = cache;
         this.activity = new ActivityTracker(platformClient);
         this.fieldGuide = new FieldGuide(cache, () => this.worldsMap || {}, platformClient);
@@ -1158,62 +1159,9 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const lakeName = req.params.lakeName;
-            const fx = req.params.x;
-            const fy = req.params.y;
-            const sessionData = cache.get(sessionId);
-
-            if (sessionData === undefined) {
-                res.status(404).json({
-                    status: false,
-                    "error": "session not found",
-                    user: null
-                });
-            } else {
-                let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-                let lakeLvl = Lakes.getLakeLevel(lakeName);
-                if (player.getNFTWeapon().getLevel() < lakeLvl) {
-                    let response = {allowed: false, reqLevel: lakeLvl};
-                    res.status(200).send(response);
-                    return;
-                } else {
-                    let activeTrait = player.getNFTSpecialItemActiveTrait();
-                    let fish = Lakes.getRandomFish(lakeName, (activeTrait === "lucky"));
-                    if (fish === undefined) {
-                        res.status(400).json({
-                            status: false,
-                            error: "Could not get fish",
-                            user: null
-                        });
-                        return;
-                    }
-                    let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch"), lakeLvl, lakeName};
-                    let normalDifficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
-                    let speed = Lakes.getFishSpeed(fish, lakeName);
-
-                    let difficulty = normalDifficulty?.difficulty
-
-                    if (player.playerClassModifiers.isModiferActive('fishing')) {
-                        difficulty = player.playerClassModifiers.fishing
-                    }
-
-                    //console.log("diff", difficulty?.difficulty, difficultyAdjusted)
-
-                    let response = {
-                        allowed: true,
-                        fish: fish,
-                        difficulty: difficulty,
-                        speed: speed,
-                        bullseyeSize: normalDifficulty?.bullseye,
-                        trait: activeTrait
-                    };
-                    self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
-                    res.status(200).send(response);
-                }
-            }
+        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", (req, res) => {
+            const result = require('./fishingrequest').requestFish(cache.get(req.params.sessionId), self.worldsMap, req.params);
+            res.status(result.status).send(result.body);
         });
 
         app.post("/session/:sessionId/newBot", async (req, res) => {

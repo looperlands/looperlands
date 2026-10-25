@@ -122,3 +122,14 @@ test('the escape timer starts at the bite and reports the fish escaping after se
     expect(game.floats[1]).toBeUndefined();
     expect(jest.getTimerCount()).toBe(0);
 });
+
+test('saved-water cast rejections show the server explanation',async()=>{
+    const {game,axios}=setup();axios.get.mockResolvedValue({data:{allowed:false,error:'Equip a fishing rod before casting.'}});game.startFishing(2,3);await settle();expect(game.showNotification).toHaveBeenCalledWith('Equip a fishing rod before casting.');expect(game.player.isFishing).toBe(false);
+});
+
+test('fishing XP refreshes stats without treating a fish as a mob kill',()=>{
+    let handler;const source=fs.readFileSync(require.resolve('./game'),'utf8');const start=source.indexOf('                    self.client.onPlayerKillMob(function');const end=source.indexOf('                    self.client.onPlayerChangeHealth',start);
+    const game={renderStatistics:jest.fn(),showNotification:jest.fn(),storage:{incrementTotalKills:jest.fn(),incrementRatCount:jest.fn(),incrementSkeletonCount:jest.fn()},client:{onPlayerKillMob(fn){handler=fn;}}};
+    vm.runInNewContext(source.slice(start,end),{self:game,Types:{isMob:kind=>typeof kind==='number',getKindAsString:()=> 'rat',Entities:{RAT:2}},AltNames:{getName:()=> 'rat'},_:{include:(items,value)=>items.includes(value)}});
+    expect(()=>handler('cobguppy',13)).not.toThrow();expect(game.renderStatistics).toHaveBeenCalledTimes(1);expect(game.storage.incrementTotalKills).not.toHaveBeenCalled();handler(2,10);expect(game.storage.incrementTotalKills).toHaveBeenCalledTimes(1);
+});

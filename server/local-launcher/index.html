@@ -6,9 +6,12 @@
   <meta name="color-scheme" content="light">
   <title>Mapmaker Toolbox · LooperLands</title>
   <link rel="stylesheet" href="./dialogue-presentation.css?v=dialogue-preview-1">
-  <link rel="stylesheet" href="./launcher.css?v=map-tools-3">
+  <link rel="stylesheet" href="./launcher.css?v=grouped-navigation-1">
   <script src="./toolboxnavigation.js" defer></script>
+  <script src="./mapdata.js" defer></script>
+  <script src="./objectdrafts.js" defer></script>
   <script src="./mappreview.js" defer></script>
+  <script src="./entitypicker.js" defer></script>
   <script src="./launcher.js" defer></script>
   <script src="./dialogue-format.js" defer></script>
   <script src="./dialogue-text.js?v=dialogue-preview-1" defer></script>
@@ -24,6 +27,10 @@
   <script src="./mapcanvas.js" defer></script>
   <script src="./regiongeometry.js" defer></script>
   <script src="./encounterbuilder.js" defer></script>
+  <script src="./fishing-contract.js" defer></script>
+  <script src="./fishingbuilder.js" defer></script>
+  <script src="./zones-contract.js" defer></script>
+  <script src="./zonebuilder.js" defer></script>
   <script src="./regioneditor.js" defer></script>
   <script src="./npcbuilder.js" defer></script>
   <script src="./assetlookup.js" defer></script>
@@ -33,10 +40,14 @@
   <script src="./vendor/worldtime.js" defer></script>
   <script src="./vendor/particles.js" defer></script>
   <script src="./vendor/worldfxconfig.js" defer></script>
+  <script src="./particleeditor.js" defer></script>
   <script src="./worldbuilders.js" defer></script>
+  <script src="./sequence-contract.js" defer></script>
+  <script src="./sequencebuilder.js" defer></script>
   <script src="./lighting-contract.js" defer></script>
   <script src="./lightingbuilder.js" defer></script>
   <script src="./interaction-templates.js" defer></script>
+  <script src="./interactionartwork.js" defer></script>
   <script src="./interactioneditor.js" defer></script>
   <script src="./tilebuilder.js" defer></script>
   <script src="./worldconnections.js" defer></script>
@@ -52,29 +63,57 @@
       <span class="local-label">Local playtest</span>
     </header>
 
-    <nav class="tool-tabs" role="tablist" aria-label="Mapmaker tools">
-      <button id="tab-playtest" type="button" role="tab" aria-selected="true" aria-controls="playtest-pane" data-pane="playtest">Playtest</button>
-      <button id="tab-validator" type="button" role="tab" aria-selected="false" aria-controls="validator-pane" data-pane="validator" tabindex="-1">Map validator</button>
-      <button id="tab-inspector" type="button" role="tab" aria-selected="false" aria-controls="inspector-pane" data-pane="inspector" tabindex="-1">Map inspector</button>
-      <button id="tab-tiles" type="button" role="tab" aria-selected="false" aria-controls="tiles-pane" data-pane="tiles" tabindex="-1">Interactions</button>
-      <button id="tab-connections" type="button" role="tab" aria-selected="false" aria-controls="connections-pane" data-pane="connections" tabindex="-1">World connections</button>
-      <button id="tab-events" type="button" role="tab" aria-selected="false" aria-controls="events-pane" data-pane="events" tabindex="-1">Triggers &amp; events</button>
-      <button id="tab-dialogues" type="button" role="tab" aria-selected="false" aria-controls="dialogues-pane" data-pane="dialogues" tabindex="-1">Dialogue trees</button>
-      <button id="tab-scenes" type="button" role="tab" aria-selected="false" aria-controls="scenes-pane" data-pane="scenes" tabindex="-1">Scene manager</button>
-      <button id="tab-encounters" type="button" role="tab" aria-selected="false" aria-controls="encounters-pane" data-pane="encounters" tabindex="-1">Chests &amp; encounters</button>
-      <button id="tab-lighting" type="button" role="tab" aria-selected="false" aria-controls="lighting-pane" data-pane="lighting" tabindex="-1">Lights &amp; shadows</button>
-      <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
-      <button id="tab-quests" type="button" role="tab" aria-selected="false" aria-controls="quests-pane" data-pane="quests" tabindex="-1">Quest builder</button>
-      <button id="tab-mobs" type="button" role="tab" aria-selected="false" aria-controls="mobs-pane" data-pane="mobs" tabindex="-1">Mobs</button>
-      <button id="tab-npcs" type="button" role="tab" aria-selected="false" aria-controls="npcs-pane" data-pane="npcs" tabindex="-1">NPCs</button>
-      <button id="tab-items" type="button" role="tab" aria-selected="false" aria-controls="items-pane" data-pane="items" tabindex="-1">Items</button>
-      <button id="tab-live-assets" type="button" role="tab" aria-selected="false" aria-controls="live-assets-pane" data-pane="live-assets" tabindex="-1">Live assets</button>
-      <button id="tab-doors" type="button" role="tab" aria-selected="false" aria-controls="doors-pane" data-pane="doors" tabindex="-1">Doors &amp; portals</button>
-      <button id="tab-troubleshoot" type="button" role="tab" aria-selected="false" aria-controls="troubleshoot-pane" data-pane="troubleshoot" tabindex="-1">Troubleshoot</button>
-      <button id="tab-documentation" type="button" role="tab" aria-selected="false" aria-controls="documentation-pane" data-pane="documentation" tabindex="-1">Documentation</button>
+    <nav class="tool-tabs" aria-label="Mapmaker tools">
+      <a id="tab-playtest" href="#playtest" aria-current="page" aria-controls="playtest-pane" data-pane="playtest">Playtest</a>
+      <details class="tool-group" open>
+        <summary>Map &amp; world</summary>
+        <div class="tool-group-links">
+          <a id="tab-inspector" href="#inspector" aria-controls="inspector-pane" data-pane="inspector">Map inspector</a>
+          <a id="tab-doors" href="#doors" aria-controls="doors-pane" data-pane="doors">Doors &amp; portals</a>
+          <a id="tab-connections" href="#connections" aria-controls="connections-pane" data-pane="connections">World connections</a>
+          <a id="tab-scenes" href="#scenes" aria-controls="scenes-pane" data-pane="scenes">Scene manager</a>
+          <a id="tab-lighting" href="#lighting" aria-controls="lighting-pane" data-pane="lighting">Lights &amp; shadows</a>
+        </div>
+      </details>
+      <details class="tool-group">
+        <summary>Gameplay</summary>
+        <div class="tool-group-links">
+          <a id="tab-quests" href="#quests" aria-controls="quests-pane" data-pane="quests">Quest builder</a>
+          <a id="tab-dialogues" href="#dialogues" aria-controls="dialogues-pane" data-pane="dialogues">Dialogue trees</a>
+          <a id="tab-tiles" href="#tiles" aria-controls="tiles-pane" data-pane="tiles">Interactions</a>
+          <a id="tab-zones" href="#zones" aria-controls="zones-pane" data-pane="zones">Checkpoints &amp; zones</a>
+          <a id="tab-fishing" href="#fishing" aria-controls="fishing-pane" data-pane="fishing">Fishing</a>
+          <a id="tab-encounters" href="#encounters" aria-controls="encounters-pane" data-pane="encounters">Chests &amp; encounters</a>
+          <a id="tab-sequences" href="#sequences" aria-controls="sequences-pane" data-pane="sequences">Sequences &amp; cutscenes</a>
+          <a id="tab-events" href="#events" aria-controls="events-pane" data-pane="events">Triggers &amp; events</a>
+        </div>
+      </details>
+      <details class="tool-group">
+        <summary>Characters &amp; items</summary>
+        <div class="tool-group-links">
+          <a id="tab-npcs" href="#npcs" aria-controls="npcs-pane" data-pane="npcs">NPCs</a>
+          <a id="tab-mobs" href="#mobs" aria-controls="mobs-pane" data-pane="mobs">Mobs</a>
+          <a id="tab-items" href="#items" aria-controls="items-pane" data-pane="items">Items</a>
+          <a id="tab-live-assets" href="#live-assets" aria-controls="live-assets-pane" data-pane="live-assets">Live assets</a>
+        </div>
+      </details>
+      <details class="tool-group">
+        <summary>Build &amp; test</summary>
+        <div class="tool-group-links">
+          <a id="tab-validator" href="#validator" aria-controls="validator-pane" data-pane="validator">Map validator</a>
+          <a id="tab-build" href="#build" aria-controls="build-pane" data-pane="build">Build tools</a>
+          <a id="tab-troubleshoot" href="#troubleshoot" aria-controls="troubleshoot-pane" data-pane="troubleshoot">Troubleshoot</a>
+        </div>
+      </details>
+      <a id="tab-documentation" class="tool-help" href="#documentation" aria-controls="documentation-pane" data-pane="documentation">Documentation</a>
     </nav>
     <div class="mobile-tool-switcher"><label for="mobile-tool">Tool</label><select id="mobile-tool" aria-label="Mapmaker tool"></select></div>
-    <section id="playtest-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-playtest">
+    <section id="map-data-status" class="map-data-status" aria-label="Shared map data" aria-busy="false" hidden>
+      <div class="map-data-copy"><strong id="map-data-title">Loading map data</strong><span id="map-data-detail" role="status" aria-live="polite"></span></div>
+      <progress id="map-data-progress" max="100" value="0" aria-label="Map data loading progress" aria-describedby="map-data-detail"></progress>
+      <button id="map-data-reload" type="button" class="secondary">Reload map data</button>
+    </section>
+    <section id="playtest-pane" class="tool-pane" role="region" aria-labelledby="tab-playtest">
     <p id="notice" class="notice" role="alert" tabindex="-1" hidden></p>
     <div class="initial-status">
       <p id="catalog-status" role="status">Loading maps and avatars…</p>
@@ -89,7 +128,7 @@
             <div class="inline-controls">
               <select id="preset-select"><option value="">Choose a setup</option></select>
               <button id="preset-load" type="button" class="secondary" disabled>Load</button>
-              <button id="preset-delete" type="button" class="text-button" disabled>Delete</button>
+              <button id="preset-delete" type="button" class="text-button destructive" disabled>Delete</button>
             </div>
           </div>
           <div class="preset-group">
@@ -112,6 +151,11 @@
               <label for="checkpoint">Checkpoint</label>
               <select id="checkpoint" name="checkpointId" required aria-describedby="checkpoint-hint"></select>
               <span id="checkpoint-hint" class="field-hint"></span>
+            </div>
+            <div class="field">
+              <label for="time-of-day">Time of day</label>
+              <input id="time-of-day" name="timeOfDay" type="time" step="60" aria-describedby="time-of-day-hint">
+              <span id="time-of-day-hint" class="field-hint">Optional game time. Leave blank to keep the current clock. Time keeps advancing and applies to all local players.</span>
             </div>
           </div>
         </section>
@@ -233,14 +277,14 @@
         </section>
 
         <footer class="form-footer">
-          <div><p id="form-status" role="status" aria-live="polite">Your progress stays on this computer.</p><p class="footer-hint">Your last settings are remembered automatically.</p></div>
+          <div><p id="form-status" role="status" aria-live="polite">Your progress stays on this computer.</p><p class="footer-hint">The game opens in a new tab. Your last settings are remembered automatically.</p></div>
           <button id="start-game" class="primary" type="submit">Start game</button>
         </footer>
       </fieldset>
     </form>
     </section>
 
-    <section id="build-pane" class="tool-pane build-pane" role="tabpanel" aria-labelledby="tab-build" hidden>
+    <section id="build-pane" class="tool-pane build-pane" role="region" aria-labelledby="tab-build" hidden>
       <header class="pane-heading"><h2>Build a map</h2><p>Export your map, rebuild the client, and restart the local game.</p></header>
       <p id="build-error" class="notice" role="alert" tabindex="-1" hidden></p>
       <form id="build-form">
@@ -259,7 +303,7 @@
       </section>
     </section>
 
-    <section id="troubleshoot-pane" class="tool-pane troubleshoot-pane" role="tabpanel" aria-labelledby="tab-troubleshoot" hidden>
+    <section id="troubleshoot-pane" class="tool-pane troubleshoot-pane" role="region" aria-labelledby="tab-troubleshoot" hidden>
       <header class="pane-heading checks-heading"><div><h2>Environment checks</h2><p>Check what the toolbox needs to build and run your maps.</p></div><button id="run-checks" type="button" class="secondary">Run checks</button></header>
       <p id="checks-error" class="notice" role="alert" tabindex="-1" hidden></p>
       <p id="checks-status" class="checks-status" role="status" aria-live="polite">Run the checks to see what is ready and what needs attention.</p>
@@ -279,7 +323,7 @@
       </section>
     </section>
 
-    <section id="quests-pane" class="tool-pane quests-pane" role="tabpanel" aria-labelledby="tab-quests" hidden>
+    <section id="quests-pane" class="tool-pane quests-pane" role="region" aria-labelledby="tab-quests" hidden>
       <header class="pane-heading"><h2>Quest builder</h2><p>Create quests for your map, then build and playtest them.</p></header>
       <p id="quest-error" class="notice" role="alert" tabindex="-1" hidden></p>
       <div class="quest-toolbar">
@@ -302,7 +346,7 @@
         <div class="quest-editor-area">
           <div id="quest-welcome" class="quest-welcome"><h3>Your map’s next adventure</h3><p>Give players a reason to explore. Start with a quest giver, add objectives, and write the story they will see.</p><button id="quest-first" type="button" class="secondary">Create a quest</button></div>
           <form id="quest-form" hidden>
-            <div class="quest-editor-heading"><h3 id="quest-editor-title">New quest</h3><button id="quest-delete" type="button" class="text-button">Remove quest</button></div>
+            <div class="quest-editor-heading"><h3 id="quest-editor-title">New quest</h3><button id="quest-delete" type="button" class="text-button destructive">Remove quest</button></div>
             <p id="quest-builtin-note" class="builtin-note" hidden>Saved override. The original quest ID and saved progress stay intact. Changes apply everywhere this quest is offered, including production after deployment.</p>
             <div class="quest-fields two-columns">
               <div class="field"><label for="quest-id">Quest ID</label><input id="quest-id" maxlength="64" pattern="[A-Za-z][A-Za-z0-9_-]*" required aria-describedby="quest-id-hint"><span id="quest-id-hint" class="field-hint">Keep this stable after playtesting. Progress uses this ID.</span></div>
@@ -376,25 +420,28 @@ You only have {{remaining}} blue monsters left to slay!</pre>
       </div>
     </section>
 
-    <section id="tiles-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-tiles" hidden></section>
-    <section id="connections-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-connections" hidden></section>
-    <section id="events-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-events" hidden></section>
-    <section id="dialogues-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-dialogues" hidden></section>
-    <section id="scenes-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-scenes" hidden></section>
-    <section id="encounters-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-encounters" hidden></section>
-    <section id="lighting-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-lighting" hidden></section>
-    <section id="validator-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-validator" hidden></section>
-    <section id="inspector-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-inspector" hidden></section>
-    <section id="mobs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-mobs" hidden></section>
-    <section id="npcs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-npcs" hidden>
+    <section id="tiles-pane" class="tool-pane" role="region" aria-labelledby="tab-tiles" hidden></section>
+    <section id="connections-pane" class="tool-pane" role="region" aria-labelledby="tab-connections" hidden></section>
+    <section id="events-pane" class="tool-pane" role="region" aria-labelledby="tab-events" hidden></section>
+    <section id="dialogues-pane" class="tool-pane" role="region" aria-labelledby="tab-dialogues" hidden></section>
+    <section id="sequences-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-sequences" hidden></section>
+    <section id="scenes-pane" class="tool-pane" role="region" aria-labelledby="tab-scenes" hidden></section>
+    <section id="zones-pane" class="tool-pane" role="region" aria-labelledby="tab-zones" hidden></section>
+    <section id="fishing-pane" class="tool-pane" role="region" aria-labelledby="tab-fishing" hidden></section>
+    <section id="encounters-pane" class="tool-pane" role="region" aria-labelledby="tab-encounters" hidden></section>
+    <section id="lighting-pane" class="tool-pane" role="region" aria-labelledby="tab-lighting" hidden></section>
+    <section id="validator-pane" class="tool-pane" role="region" aria-labelledby="tab-validator" hidden></section>
+    <section id="inspector-pane" class="tool-pane" role="region" aria-labelledby="tab-inspector" hidden></section>
+    <section id="mobs-pane" class="tool-pane" role="region" aria-labelledby="tab-mobs" hidden></section>
+    <section id="npcs-pane" class="tool-pane" role="region" aria-labelledby="tab-npcs" hidden>
       <nav class="npc-subnav" aria-label="NPC editor screens"><a href="#npcs">Sprites &amp; dialogue</a><a href="#npcs/behaviour">Behaviour &amp; schedule</a></nav>
       <div id="npc-assets"></div>
       <div id="npc-behaviour" hidden></div>
     </section>
-    <section id="items-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-items" hidden></section>
-    <section id="live-assets-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-live-assets" hidden></section>
-    <section id="doors-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-doors" hidden></section>
-    <section id="documentation-pane" class="tool-pane documentation-pane" role="tabpanel" aria-labelledby="tab-documentation" hidden>
+    <section id="items-pane" class="tool-pane" role="region" aria-labelledby="tab-items" hidden></section>
+    <section id="live-assets-pane" class="tool-pane" role="region" aria-labelledby="tab-live-assets" hidden></section>
+    <section id="doors-pane" class="tool-pane" role="region" aria-labelledby="tab-doors" hidden></section>
+    <section id="documentation-pane" class="tool-pane documentation-pane" role="region" aria-labelledby="tab-documentation" hidden>
       <header class="pane-heading"><h2>Documentation</h2><p>From your first local session to a playable quest.</p></header>
       <div class="documentation-layout">
         <nav class="guide-nav" aria-label="Mapmaker guides">
@@ -405,7 +452,10 @@ You only have {{remaining}} blue monsters left to slay!</pre>
           <a href="#documentation/mapmaker-connections">World connections</a>
           <a href="#documentation/mapmaker-events">Triggers &amp; events</a>
           <a href="#documentation/mapmaker-dialogues">Dialogue trees</a>
+          <a href="#documentation/mapmaker-sequences">Sequences &amp; cutscenes</a>
           <a href="#documentation/mapmaker-atmosphere">Scene manager</a>
+          <a href="#documentation/mapmaker-zones">Checkpoints &amp; gameplay zones</a>
+          <a href="#documentation/mapmaker-fishing">Fishing</a>
           <a href="#documentation/mapmaker-encounters">Chests &amp; encounters</a>
           <a href="#documentation/mapmaker-lighting">Lights &amp; shadows</a>
           <a href="#documentation/mapmaker-validator">Map validator</a>

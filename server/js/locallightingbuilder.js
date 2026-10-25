@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const {execFile} = require('child_process');
 const Lighting = require('../../shared/js/mapmakerlighting');
-const saves = new Map();
+const {saves} = require('./localobjectbatch');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 function maps(root) {return JSON.parse(fs.readFileSync(path.join(root, 'server/config.json'), 'utf8')).maps;}
 function source(root, mapId) {
@@ -17,7 +17,7 @@ function source(root, mapId) {
 }
 async function run(root, mapId, input = {}) {
     const filename = source(root, mapId);
-    return new Promise((resolve, reject) => {
+    const load = () => new Promise((resolve, reject) => {
         const child = execFile('python3', [path.resolve(__dirname, '../../tools/maps/editlighting.py'), filename],
             {timeout: 30000, maxBuffer: 8 * 1024 * 1024, encoding: 'utf8'}, (error, stdout) => {
                 let data;
@@ -28,6 +28,7 @@ async function run(root, mapId, input = {}) {
         child.stdin.on('error', () => {});
         child.stdin.end(JSON.stringify(input));
     });
+    return input.operation || input.operations ? load() : require('./localtmxcache').readTmx(filename, 'lighting', load);
 }
 function number(value, min, max, name, integer = false) {
     if (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max || (integer && !Number.isInteger(value))) fail(name + ' must be ' + (integer ? 'a whole number ' : '') + 'from ' + min + ' to ' + max + '.');
@@ -96,6 +97,18 @@ function validateObject(row, current, dimensions) {
 async function saveObject(root, input, beforeWrite = () => {}) {
     const file = source(root, input?.mapId);
     const work = (saves.get(file) || Promise.resolve()).catch(() => {}).then(async () => {
+        if (input.operations !== undefined) {
+            const changes = require('./localobjectbatch').operations(input);
+            const data = await run(root, input.mapId);
+            if (data.revision !== input.revision) fail('This map changed in Tiled or another tab. Keep the draft and reload before saving.', 409);
+            const operations = changes.map(change => {
+                const current = data.objects.find(row => row.id === String(change.objectId));
+                if (change.operation !== 'add' && !current) fail('A lighting object was removed. Keep the draft and reload.', 404);
+                return {...change, object: change.operation === 'remove' ? undefined : validateObject(change.object, change.operation === 'add' ? null : current, data.dimensions)};
+            });
+            beforeWrite();
+            return run(root, input.mapId, {revision: input.revision, operations});
+        }
         if (!['add', 'update', 'remove'].includes(input.operation) || typeof input.revision !== 'string') fail('Reload lighting and choose a save action.');
         const data = await run(root, input.mapId);
         if (data.revision !== input.revision) fail('This map changed in another tab or in Tiled. Reload lights before saving.', 409);

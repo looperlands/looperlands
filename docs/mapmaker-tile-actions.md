@@ -30,9 +30,27 @@ Progress is shared or personal according to the definition. The local provider c
 
 New interactions are shared definitions in `tools/interactions/library.json`. Select another map to place the same definition again. The editor shows the placement count and affected maps. Rule changes affect every placement; each placed tile keeps independent progress. A definition placed on another map cannot be deleted until those placements are removed.
 
-Artwork belongs to each map because tilesheets use different tile numbers. In **Appearance on [map]**, choose the initial artwork and the artwork shown after each action. Browse the tiles visually or use arrow keys and Enter. **Original map artwork** removes the interaction overlay.
+Artwork belongs to each map because tilesheets use different tile numbers. **Appearance on [map]** is optional: it draws one tile over each placed interaction. For example, show a closed chest before Open and an opened chest afterwards, or a full deposit before Gather and a depleted deposit during its cooldown.
+
+1. Select **Before the first action** or **After “[action]”** to preview that state. Every action has its own result artwork, including switches with Turn on and Turn off.
+2. Select **Choose tile** or **Change tile** to open the tile browser. It starts with tiles already used on this map. Choose **Entire tilesheet** to find unused artwork, or enter a known tile ID and select **Show tile**. Arrow keys move the selection; Enter chooses; Escape closes without changing anything.
+3. Check **Preview on the map**. The outlined tile shows the overlay at an actual placement, with the map underneath. Use **Preview placement** to inspect another region. If the interaction is not placed yet, add it in **Place on map** to preview its surroundings.
+4. In **Place on map**, use **Preview artwork** to show the initial or an action’s result artwork across all placed regions. Preview controls never change saved progress or mark the interaction as edited.
+5. Save, build the map and start a fresh playtest to load the new artwork in the game.
+
+**Original map artwork** removes only the interaction overlay and reveals the built map underneath. It does not make the underlying object disappear. Transparent pixels in a chosen tile also reveal the map. For an object that should disappear, keep the permanent terrain in Tiled and put the removable object in the interaction’s initial overlay. Larger objects and NPC sprites need their own authoring tools; this setting covers one tile per placement.
 
 Appearance changes do not change collisions. Use a linked door or portal for gates; a repair does not make an arbitrary blocked terrain tile walkable.
+
+Shared progress also shares the visible artwork. Personal progress shows each player their own artwork. The final action’s artwork remains for completed interactions and during cooldowns; a cooldown restores the initial artwork automatically. With immediate repetition, the final artwork stays while the first action becomes available again.
+
+## Particle bursts
+
+In **Setup**, select an action step and open its **Particle burst** controls. Choose Soil, Leaves, Water, Pollen or Sparks, **No particles**, or **Custom effect**. Custom effects share the color palette, Pixel/Streak/Star/Soft puff shapes, size, opacity, glow, pulse and spin controls from the [Scene manager](mapmaker-atmosphere.md).
+
+Burst motion uses **Speed**, **Gravity**, **Spread** and **Lifetime** instead of continuous ambience drift. Negative gravity lifts particles; positive gravity pulls them down. A burst supports up to 48 particles and a lifetime of 100–2000 milliseconds. The live preview repeats the effect so you can tune it; the game plays it once per successful action. Day/Night, Pause and Restart affect only the preview.
+
+Each action step keeps its own burst in the shared interaction definition. Save and build, then start a fresh playtest to load it. Changing only particle settings preserves interaction progress. Success emits particles even when artwork stays the same. Failed attempts, reloads and replayed transaction receipts emit none. Personal interactions show bursts only to that player; shared interactions broadcast them. Reduced motion and the game's tile-stage particle setting suppress them.
 
 ## Progress and repetition
 

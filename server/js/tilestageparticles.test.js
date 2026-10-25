@@ -36,3 +36,18 @@ test('invalid visual configuration never cancels a committed action', async () =
         expect(world.map.tileStages['1.2'].tile).toBe(42);
     } finally { warning.mockRestore(); }
 });
+
+test.each(['shared', 'player'])('custom bursts play for %s interactions without artwork changes', async scope => {
+    const design = require('../../client/js/worldfxconfig').custom({shape: 'star',colors: ['#abcdef'],glow: 8});
+    const {world,backend,execute}=setup({stages:{prepare:{preset:'sparks',design}}});
+    Object.assign(backend.stageDefinitions.test.farm,{type:'sequence',scope});
+    const player={nftId:'avatar'};world.players={player};world.pushToPlayer=jest.fn();
+    backend.executeStage.mockResolvedValueOnce({success:true,activity:{action:'farm',stage:'prepare',failed:false}})
+        .mockResolvedValueOnce({success:true}).mockResolvedValueOnce({success:true,activity:{action:'farm',stage:'prepare',failed:true}});
+    await execute();await execute();await execute();
+    const calls=scope==='player'?world.pushToPlayer.mock.calls:world.pushBroadcast.mock.calls;
+    expect(calls).toHaveLength(1);
+    expect(calls[0][scope==='player'?1:0].stage.particles.design).toEqual(design);
+    expect(scope==='player'?world.pushBroadcast:world.pushToPlayer).not.toHaveBeenCalled();
+    expect(world.map.tileStages).toEqual({});
+});

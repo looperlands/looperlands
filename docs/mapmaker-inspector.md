@@ -1,6 +1,6 @@
 # Interactive map inspector
 
-Use **Map inspector** to explore a built map, find an object and open the editor for its settings. Use **Inspect** to select objects and **Place entities** to add items, mobs and NPCs directly to the Tiled source. Clicking in Place mode previews a placement; **Save placement** writes it to disk.
+Use **Map inspector** to explore a built map, find an object and open the editor for its settings. Use **Inspect** to select objects and **Place entities** to add items, mobs and NPCs directly to the Tiled source. Clicking in Place mode adds placements to a shared draft; **Save all changes** writes the whole batch to disk.
 
 ## Explore a map
 
@@ -35,13 +35,13 @@ Definitions and placements are different: changing a mob definition affects that
 
 1. Choose your map and switch to **Place entities**.
 2. Search the visual library or filter it to Items, Mobs or NPCs. Select an entity to see its sprite preview.
-3. Click a walkable, empty tile. A translucent sprite previews its position. You can also enter **Tile X** and **Tile Y** with the keyboard.
-4. Click **Save placement**. Blocked tiles, occupied cells and map edges cannot be saved. Cancel or press Escape with the map focused to return to Inspect.
+3. Click several walkable, empty tiles to add entities to the draft. The selected entity stays active for repeated placement. You can also enter **Tile X** and **Tile Y**, then choose **Add to draft**.
+4. Move or remove placements as needed, switch entity types, then click **Save all changes** once. Its counter shows the pending changes. Blocked tiles, occupied cells and map edges cannot be saved. Escape returns to Inspect while keeping queued edits. **Discard changes** clears the whole draft.
 5. Build the selected map, then start a fresh playtest session. Saved source placements appear in the inspector before the game exports are rebuilt.
 
 To create a new entity, open **Create a new entity** and choose New item, New mob or New NPC. The matching editor starts a copy of an existing definition. Give it a unique ID, configure its settings and save it, then use **Place on map** to return to the inspector. Existing definitions also offer Place on map.
 
-Select a toolbox placement in Inspect mode to **Move** it or **Remove placement**. Moving previews the destination and requires **Save new position**. Removing immediately saves the source change; place the same entity again to restore it. NPC routines remain tied to their exact origin tile: after moving or removing an NPC, update its Behaviour / schedule too.
+Select a toolbox placement in Inspect mode to **Move** it or **Remove placement**. Click the destination or use **Apply move to draft**. Moves and removals join the same batch as additions; they reach the source only with **Save all changes**. Invalid or stale saves keep the entire draft for correction. NPC routines remain tied to their exact origin tile: after moving or removing an NPC, update its Behaviour / schedule too.
 
 Placements are point objects in the `mapmaker-entities` object layer of `tools/maps/tmx/<mapId>.tmx`. Their names are registered gameplay IDs. Other Tiled layers and entrance settings are preserved. Concurrent source changes are rejected; refresh the map before retrying. Builds wait for placement saves, and saves wait for builds to finish. Collision checks use the latest built geometry; rebuild after changing terrain or map dimensions in Tiled.
 
@@ -50,3 +50,7 @@ Placements are point objects in the `mapmaker-entities` object layer of `tools/m
 Save changes in their editor, build the map when required, then use **Refresh map**. The header identifies the geometry export and entrance source. A warning appears when the Tiled source is newer than the exports. If tile artwork cannot load, the inspector shows a collision geometry fallback and explains that state.
 
 The inspector reads tilesheet and entity artwork directly from local source files. Tile layout and collision geometry still come from the built map exports. The view combines that geometry with current entrance properties and authoring definitions. Unsaved drafts in other editors are not included. Entrances read from a built-map fallback have inspection-only IDs and no exact-source editor link. Dynamic layers, NPC movement, ownership checks and scripted runtime effects are not simulated here. Use [Playtest](mapmaker-sessions.md) to check the resulting game.
+
+Fishing area findings open the matching object in **Fishing**. Checks include catch IDs, common-rarity fallback, required rod levels, overlapping affected tiles and reachable casting positions. See [Fishing](mapmaker-fishing.md).
+
+Checkpoint, trigger, PvP, music and event-board objects open in [Checkpoints & zones](mapmaker-zones.md). Source checks include checkpoint IDs, spawn collisions, zone settings and overlap.

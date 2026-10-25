@@ -12,6 +12,18 @@ test('particles remain anchored to map pixels as the camera and scale change', (
     fx.draw(ctx, state, view); expect(ctx.fillRect).toHaveBeenLastCalledWith(48, 48, 6, 6);
     view.cameraX += 8; fx.draw(ctx, state, view); expect(ctx.fillRect).toHaveBeenLastCalledWith(24, 48, 6, 6);
 });
+
+test('custom bursts reach the shared renderer with camera-relative coordinates and fade', () => {
+    const {fx,ctx,state,view}=setup();
+    const design=require('./worldfxconfig').custom({shape:'star',colors:['#123456'],pulse:0,glow:0,spin:0});
+    state.particles=[{x:48,y:64,size:2,alpha:0.5,color:'#123456',design,elapsed:0.3,seed:1}];
+    ctx.translate=jest.fn();ctx.rotate=jest.fn();
+    fx.draw(ctx,state,view);
+    expect(ctx.translate).toHaveBeenCalledWith(48,48);
+    expect(ctx.fillStyle).toBe('rgba(18,52,86,0.8)');
+    expect(ctx.fillRect).toHaveBeenCalledTimes(2);
+    expect(ctx.globalAlpha).toBe(1);
+});
 test('heat follows existing fire lights while non-fire and offscreen lights are ignored', () => {
     const {fx, ctx, state, view} = setup();
     view.fireLights = [{x: 80, y: 100, animation: 'fire'}, {x: 9000, y: 9000, animation: 'fire'}, {x: 70, y: 80}];

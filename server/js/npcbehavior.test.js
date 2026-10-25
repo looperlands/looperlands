@@ -22,7 +22,8 @@ function setup(options = {}) {
         questIds: ['HELP'], lines: {greeting: ['Hello'], return: ['Welcome back'], talk: ['On patrol'],
             kill: ['Well fought'], quest: ['Thanks for helping']}}];
     const npcs = Object.fromEntries(definitions.map((definition, index) => [index + 100, {
-        id: index + 100, type: 'npc', kind: Types.getKindFromString(definition.kind), ...definition.origin, group: '0-0'
+        id: index + 100, type: 'npc', kind: Types.getKindFromString(definition.kind), ...definition.origin, group: '0-0',
+        getState() { return [this.id, this.kind, this.x, this.y, false, this.behaviorState]; }
     }]));
     const player = {id: 1, nftId: 'avatar-one', sessionId: 'session-one', x: 12, y: 12, hasEnteredGame: true,
         isBot: () => false};
@@ -56,6 +57,44 @@ test('one world controller moves one tile per interval with two connected player
     expect(world.moveNpc).toHaveBeenCalledTimes(1);
     advance(500);
     expect({x: npc.x, y: npc.y}).toEqual({x: 4, y: 2});
+});
+
+test('a cutscene actor keeps walking while its audience is outside the routine area', () => {
+    const {controller, world, player, advance} = setup();
+    player.x = 30; player.y = 30;
+    advance(2000);
+    expect(world.moveNpc).not.toHaveBeenCalled();
+    controller.routines.get('watch').sceneOwner = {player};
+    advance(500);
+    expect(world.moveNpc).toHaveBeenCalledTimes(1);
+});
+
+test('a cutscene follows a real NPC route and starts the next step after its final tile finishes', () => {
+    const {SequenceDirector} = require('./scriptedsequence');
+    const S = require('../../shared/js/scriptedsequences');
+    const h = setup(), packets = [];
+    h.world.npcBehavior = h.controller;
+    h.player.x = 30; h.player.y = 30;
+    h.player.connection = {_connection: {emit: (event, packet) => packets.push(packet), on() {}, off() {}}};
+    const definition = {...S.create('follow'), steps: [
+        {type: 'move', actor: 'watch', x: 4, y: 2, seconds: 5},
+        {type: 'caption', text: 'Arrived', seconds: 1}
+    ]};
+    const director = new SequenceDirector(h.world, [definition], h.controller.now);
+    director.tick();
+    expect(packets.at(-1).step).toMatchObject({type: 'move', actorId: h.npc.id});
+    const advance = milliseconds => {h.advance(milliseconds); director.tick();};
+    advance(200);
+    expect(packets.at(-1)).toMatchObject({type: 'actor_move', x: 3, y: 2});
+    advance(500);
+    expect(h.npc.x).toBe(4);
+    expect(packets.some(packet => packet.type === 'move_complete')).toBe(false);
+    advance(400);
+    expect(packets.some(packet => packet.step?.type === 'caption')).toBe(false);
+    advance(100);
+    expect(packets.at(-1)).toMatchObject({type: 'move_complete', x: 4, y: 2});
+    advance(200);
+    expect(packets.at(-1).step).toMatchObject({type: 'caption', text: 'Arrived'});
 });
 
 test('routes avoid walls, doors and occupied tiles', () => {

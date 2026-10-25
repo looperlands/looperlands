@@ -28,6 +28,19 @@ Music can inherit the map's existing music areas, use a registered track, or rem
 
 Add up to three particle effects with a combined maximum of 24 particles per override. The editor uses the same particle renderer and lighting curve as the game. Motion pauses in the preview when the browser requests reduced motion.
 
+### Design a custom particle effect
+
+In **Particles**, click **Design custom effect**, or change an existing effect's **Particle type** to **Custom effect**. Start from Snow, Rain, Magic motes or Smoke, then adjust:
+
+- **Shape**: Pixel, Streak, Star or Soft puff; **Size** uses map pixels.
+- **Colors**: one to six colors, sampled across the particles. **Opacity**, **Glow**, **Pulse strength** and **Spin** control their appearance.
+- **Horizontal drift** and **Vertical drift** use map pixels per second. Negative values move left or upward. **Sway** adds gentle wandering.
+- **Particle count** shares the existing 24-particle budget with the other effects in this atmosphere.
+
+The live preview shows a full world patch so sparse effects remain visible. Switch its background between Day and Night, pause it or restart its animation. These controls do not mark the scene dirty. Use the map preview below to see the design over terrain with the selected lighting. Save scenes to retain the complete design; duplicating a scene also copies its effects. To remove a design, remove that effect or choose a built-in type.
+
+Custom designs travel with the saved atmosphere through local sessions, map exports and production builds. The renderer uses map coordinates, so camera movement does not reset the effect. Reduced motion and the game's ambience setting continue to apply. See [Interactions](mapmaker-tile-actions.md) for custom bursts on successful player actions.
+
 ## Preview and playtest
 
 Choose a preview tile and move the game-time slider, or use Day, Dusk, Night and Dawn. The 13 × 13 tile view shows the last built map artwork with the current unsaved lighting and particles. Changing the preview tile or time does not change the saved configuration or game clock. The shared cycle has dusk from 16:00–18:00, night from 18:00–22:00 and dawn from 22:00–24:00. Preview audio plays only when you use its controls.

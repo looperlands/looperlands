@@ -5,7 +5,8 @@ const _ = require('underscore');
 function setup() {
     let GameClient;
     class Player { constructor(id) { this.id = id; } }
-    const createEntity = jest.fn((kind, id) => kind === Types.Entities.WARRIOR ? new Player(id) : {id, kind});
+    const createEntity = jest.fn((kind, id) => kind === Types.Entities.WARRIOR ? new Player(id)
+        : {id, kind, setShowIndicator: jest.fn(), applyBehaviorState: jest.fn()});
     const loads = [];
     const errors = jest.fn();
     const sandbox = {
@@ -46,6 +47,38 @@ test('existing entities refresh without constructing an entity or requesting NFT
     expect(s.createEntity).not.toHaveBeenCalled();
     expect(s.loads).toEqual([]);
     expect(s.spawned).not.toHaveBeenCalled();
+});
+
+test('cutscene actors survive normal visibility lists and destroys, then release without leaking pending sprites', () => {
+    const s = setup(), owned = new Set([42]), list = jest.fn(), destroyed = jest.fn();
+    s.client.sequencePlayer = {actorIds: () => [...owned], ownsActor: id => owned.has(id)};
+    s.client.onEntityList(list); s.client.onEntityDestroy(destroyed);
+    s.client.receiveSequenceActor(s.player().slice(1));
+    s.receive([s.M.LIST, 7]); s.receive([s.M.DESTROY, 42]);
+    expect(list).toHaveBeenCalledWith([7, 42]);
+    expect(destroyed).not.toHaveBeenCalled();
+    expect(s.client.pendingSpawns.has(42)).toBe(true);
+    owned.clear(); s.client.releaseSequenceActors([42]);
+    expect(destroyed).toHaveBeenCalledWith(42);
+    s.loads[0].done({nftId: '0xavatar'});
+    expect(s.spawned).not.toHaveBeenCalled();
+});
+
+test('releasing a cutscene actor keeps an entity that is still visible to the player', () => {
+    const s = setup(), destroyed = jest.fn();
+    s.client.onEntityDestroy(destroyed);
+    s.receive([s.M.LIST, 42]);
+    s.client.releaseSequenceActors([42]);
+    expect(destroyed).not.toHaveBeenCalled();
+});
+
+test('a distant NPC snapshot creates a renderable actor with its orientation and behavior', () => {
+    const s = setup(), behavior = {key: 'host', orientation: s.Types.Orientations.LEFT, moveSpeed: 400};
+    s.client.receiveSequenceActor([9, s.Types.Entities.VILLAGER, 80, 70, false, behavior]);
+    expect(s.spawned).toHaveBeenCalledWith(expect.objectContaining({id: 9}), 80, 70, behavior.orientation, undefined);
+    const entity = s.spawned.mock.calls[0][0];
+    expect(entity.applyBehaviorState).toHaveBeenCalledWith(behavior);
+    expect(s.client.visibleEntities.has(9)).toBe(false);
 });
 
 test('overlapping snapshots share one asset load and publish the newest position and target', () => {

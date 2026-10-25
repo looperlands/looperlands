@@ -96,6 +96,44 @@ test('failed client compilation restores the previous build and keeps the toolbo
     expect(toolbox.closed).toBe(false);
 });
 
+function certifyClient() {
+    for (const file of ['client-build/js/home.js', 'client-build/js/game.js', 'client-build/js/lib/require-jquery.js',
+        'bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json']) write(file, '// fixture');
+    write('shared/js/mapmakerentities.json', '[]');
+    const {clientFingerprint, recordClientBuild} = require('./mapmaker-client');
+    recordClientBuild(root, clientFingerprint(root));
+}
+test('map-only builds publish JSON and worker exports without compiling or copying the client tree', async () => {
+    certifyClient();
+    const copy = jest.spyOn(fs, 'cpSync');
+    try {
+        toolbox.startBuild('testmap'); await toolbox.buildPromise;
+        expect(toolbox.job.status).toBe('succeeded');
+        expect(toolbox.run).toHaveBeenCalledTimes(3);
+        expect(copy).not.toHaveBeenCalled();
+        expect(fs.readFileSync(path.join(root, 'client-build/index.html'), 'utf8')).toBe('old client');
+        for (const extension of ['js', 'json']) expect(fs.readFileSync(path.join(root, 'client-build/maps/world_client_testmap.' + extension)))
+            .toEqual(fs.readFileSync(path.join(root, 'client/maps/world_client_testmap.' + extension)));
+    } finally {copy.mockRestore();}
+});
+test('an interrupted map-only publication restores both built map files and source exports', async () => {
+    write('client-build/maps/world_client_testmap.json', 'previous JSON');
+    write('client-build/maps/world_client_testmap.js', 'previous worker');
+    certifyClient();
+    const copy = fs.copyFileSync;
+    const spy = jest.spyOn(fs, 'copyFileSync').mockImplementation((source, target) => {
+        if (source === path.join(root, 'client/maps/world_client_testmap.js') && target === path.join(root, 'client-build/maps/world_client_testmap.js')) throw new Error('disk full');
+        return copy(source, target);
+    });
+    try {
+        toolbox.startBuild('testmap'); await toolbox.buildPromise;
+        expect(toolbox.job).toMatchObject({status: 'failed', error: 'disk full'});
+        expect(fs.readFileSync(path.join(root, 'client-build/maps/world_client_testmap.json'), 'utf8')).toBe('previous JSON');
+        expect(fs.readFileSync(path.join(root, 'client-build/maps/world_client_testmap.js'), 'utf8')).toBe('previous worker');
+        expect(toolbox.startGame).toHaveBeenCalledTimes(1);
+    } finally {spy.mockRestore();}
+});
+
 test('game startup failure is reported and job logs have bounded size', async () => {
     toolbox.startGame.mockRejectedValue(new Error('game could not start'));
     toolbox.startBuild('testmap'); await toolbox.buildPromise;

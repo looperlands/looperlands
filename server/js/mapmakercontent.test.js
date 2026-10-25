@@ -46,3 +46,14 @@ test('repository event rules extend Platform flows without sharing block IDs or 
     write('tools/worlds/one.json', {version: 1, rules: [], dialogues: [], atmosphere: []});
     expect(Content.mergeFlow('one', remote, root)).toBe(remote);
 });
+
+test('invalid exported fishing tables fail production validation without world overlays',()=>{
+    const file=path.join(root,'server/maps/world_server_one.json'),map=JSON.parse(fs.readFileSync(file));
+    map.fishingAreas=[{id:'7',kind:'fishing',name:'Pond',x:2,y:2,width:2,height:2,scope:'area',sourceLake:'',level:2,fish:[{item:'cobguppy',rarity:'legendary'}]}];
+    fs.writeFileSync(file,JSON.stringify(map));const before=fs.readFileSync(file);
+    expect(()=>Content.build(root)).toThrow(/common catch/);expect(fs.readFileSync(file)).toEqual(before);
+});
+
+test('production validation rejects duplicate checkpoint IDs before writing exports',()=>{
+    const file=path.join(root,'server/maps/world_server_one.json'),map=JSON.parse(fs.readFileSync(file));map.checkpoints=[{id:3},{id:3}];fs.writeFileSync(file,JSON.stringify(map));const before=fs.readFileSync(file);expect(()=>Content.build(root)).toThrow(/Checkpoint IDs/);expect(fs.readFileSync(file)).toEqual(before);
+});

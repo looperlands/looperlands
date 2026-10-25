@@ -91,6 +91,22 @@ test('schedules read server uptime, forced day/night and custom local time throu
     expect(WorldTime.mainDaylight(behavior.worldTime())).toBeCloseTo(WorldTime.mainDaylight(16.5 / 24 * WorldTime.duration));
 });
 
+test('a playtest starting time takes priority over map preview phases for NPC schedules', () => {
+    const clock = require('./worldclock');
+    const active = jest.spyOn(clock, 'hasOverride').mockReturnValue(true);
+    try {
+        const {behavior, actor, tick} = setup(16.5, config => {
+            config.ambience.previewTimeMode = 'night';
+            config.ambience.previewHour = 6;
+        });
+        tick();
+        expect(actor('town-gardener').schedule.phase.key).toBe('free-time');
+        active.mockReturnValue(false);
+        tick();
+        expect(actor('town-gardener').schedule.phase.key).toBe('home');
+    } finally {active.mockRestore();}
+});
+
 test('night routes walk through public doors, stay on main and share one position for both players', () => {
     const {world, actor, tick, behavior} = setup(22);
     tick(1000);

@@ -46,6 +46,7 @@ class WorldScenes {
     constructor(entries) {this.entries = entries;}
     get(id) {return this.entries.find(entry => entry.id === id)?.scene;}
     tick() {for (const entry of this.entries) entry.scene.tick?.();}
+    event(player, type, data) {for (const entry of this.entries) entry.scene.event?.(player, type, data);}
     forget(player) {for (const entry of this.entries) entry.scene.forget?.(player);}
     packet(player) {
         const packet = {rendererExtensions: [], musicAreas: []};

@@ -50,7 +50,8 @@ define(['worldfxconfig'], function (Config) {
         }
 
         scene() {
-            const scene = this.game.player && this.game.map?.getCurrentScene?.(this.game.player);
+            const scene = this.game.getViewScene ? this.game.getViewScene()
+                : this.game.player && this.game.map?.getCurrentScene?.(this.game.player);
             const value = scene?.fx ?? this.packet?.worldFx?.scenery ?? null;
             if (this.sceneryKey !== value) {
                 this.sceneryKey = value;
@@ -68,7 +69,8 @@ define(['worldfxconfig'], function (Config) {
                 this.particles.push({x: x + (this.random() - 0.5) * spec.spread, y, startedAt: time,
                     vx: (this.random() * 2 - 1) * spec.speed, vy: -(0.5 + this.random()) * spec.speed,
                     gravity: spec.gravity, lifetimeMs: spec.lifetimeMs, size: 1 + Math.floor(this.random() * spec.size),
-                    color: spec.colors[Math.floor(this.random() * spec.colors.length)]});
+                    color: spec.colors[Math.floor(this.random() * spec.colors.length)],
+                    ...(spec.design ? {design: spec.design, seed: i * 1.618 + 0.5} : {})});
             }
             if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
         }
@@ -170,7 +172,8 @@ define(['worldfxconfig'], function (Config) {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
                 return {x: p.x + p.vx * seconds, y: p.y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
                     color: p.color, size: p.size, shape: p.shape, trailX: p.vx * 0.055,
-                    trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs};
+                    trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs,
+                    ...(p.design ? {design: {...p.design, colors: [p.color], size: p.size}, seed: p.seed, elapsed: seconds} : {})};
             });
             const data = {time, actor: this.actor, flags: Object.fromEntries(Object.keys(this.flags).map(id => [id, this.enabled(id)])),
                 scenery: this.scenery, particles, rings: this.rings};

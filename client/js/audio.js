@@ -291,6 +291,7 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
         },
 
         updateMusic: function () {
+            if (this.game.scriptedSequence?.music) {this.playMusicByName(this.game.scriptedSequence.music);return;}
             if (this.enabled && !this.streamMusic.active) {
                 var music = this.getSurroundingMusic(this.game.player);
 

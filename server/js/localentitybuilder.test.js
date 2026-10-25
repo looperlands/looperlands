@@ -77,3 +77,37 @@ test('API blocks a build, reports in-flight saves and rejects writes during shut
     toolbox.job=null;const {revision}=await readPlacements(root,'one');const work=handler({body:{mapId:'one',revision,operation:'add',kind:'rat',position:{x:2,y:3}}},res);
     expect(toolbox.entitySaveCount).toBe(1);await work;expect(toolbox.entitySaveCount).toBe(0);expect(res.json).toHaveBeenCalledWith(expect.objectContaining({placements:[expect.objectContaining({kind:'rat'})]}));
 });
+
+test('batch additions, swaps, removals and moves save together with unique IDs', async () => {
+    const initial = await readPlacements(root,'one');
+    const added = await savePlacement(root,{mapId:'one',revision:initial.revision,operations:[
+        {operation:'add',kind:'rat',position:{x:2,y:3}}, {operation:'add',kind:'guard',position:{x:4,y:4}}
+    ]});
+    expect(added.placements.map(row=>row.id)).toEqual(['10','11']);
+    const swapped = await savePlacement(root,{mapId:'one',revision:added.revision,operations:[
+        {operation:'move',id:'10',position:{x:4,y:4}}, {operation:'move',id:'11',position:{x:2,y:3}}
+    ]});
+    expect(swapped.placements).toEqual([{id:'10',kind:'rat',x:4,y:4},{id:'11',kind:'guard',x:2,y:3}]);
+    const final = await savePlacement(root,{mapId:'one',revision:swapped.revision,operations:[
+        {operation:'remove',id:'10'}, {operation:'move',id:'11',position:{x:5,y:4}}, {operation:'add',kind:'rat',position:{x:4,y:4}}
+    ]});
+    expect(final.placements.map(row=>row.id)).toEqual(['11','12']);
+    expect(fs.readFileSync(path.join(root,'tools/maps/tmx/one.tmx'),'utf8')).toContain('<!-- untouched artwork and doors -->');
+});
+test('one invalid batch placement or duplicate position writes nothing and stale batches stay rejected', async () => {
+    const data=await readPlacements(root,'one'),file=path.join(root,'tools/maps/tmx/one.tmx'),before=fs.readFileSync(file);
+    const operations=[{operation:'add',kind:'rat',position:{x:2,y:3}},{operation:'add',kind:'guard',position:{x:2,y:3}}];
+    await expect(savePlacement(root,{mapId:'one',revision:data.revision,operations})).rejects.toThrow('already contains');
+    expect(fs.readFileSync(file)).toEqual(before);
+    operations[1].position={x:5,y:4};await savePlacement(root,{mapId:'one',revision:data.revision,operations});
+    await expect(savePlacement(root,{mapId:'one',revision:data.revision,operations})).rejects.toThrow('changed');
+});
+test('different TMX editors serialize batches so a stale second save cannot overwrite the first', async () => {
+    const data=await readPlacements(root,'one'), lights=require('./locallightingbuilder');
+    const result=await Promise.allSettled([
+        savePlacement(root,{mapId:'one',revision:data.revision,operations:[{operation:'add',kind:'rat',position:{x:2,y:3}}]}),
+        lights.saveObject(root,{mapId:'one',revision:data.revision,operations:[{operation:'add',object:require('../../shared/js/mapmakerlighting').preset('lamp',4,4)}]})
+    ]);
+    expect(result.map(row=>row.status)).toEqual(['fulfilled','rejected']);expect(result[1].reason.status).toBe(409);
+    expect((await readPlacements(root,'one')).placements).toHaveLength(1);
+});

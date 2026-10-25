@@ -99,6 +99,7 @@ module.exports = Player = Character.extend({
         }
 
         self.resetTimeout();
+        if (self.sequenceLock && ![Types.Messages.CHAT,Types.Messages.WHO,Types.Messages.ZONE,Types.Messages.HURT].includes(action)) return;
 
         // A dead player keeps its authenticated socket and equipment. Revive does
         // not repeat async login work or register chat/activity a second time.
@@ -185,6 +186,7 @@ module.exports = Player = Character.extend({
             }
             self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, resumeState?.dead ? self.maxHitPoints : self.hitPoints, self.title, performance.now()]);
             self.hasEnteredGame = true;
+            require('./worldclock').syncPlayer(self);
             self.isDead = !!resumeState?.dead;
             if (self.isDead) {
                 self.server.handlePlayerVanish(self);
@@ -599,7 +601,7 @@ module.exports = Player = Character.extend({
         }
         else if (action === Types.Messages.CHECK) {
             var checkpoint = self.server.map.getCheckpoint(message[1]);
-            if (checkpoint) {
+            if (checkpoint && !self.isDead && checkpoint.contains(self.x,self.y)) {
                 dao.saveAvatarMapAndCheckpoint(self.nftId, self.mapId, checkpoint.id);
                 self.lastCheckpoint = checkpoint;
             }
@@ -778,6 +780,7 @@ module.exports = Player = Character.extend({
         this.updateHitPoints();
         this.server.addEntity(this);
         this.send([Types.Messages.WELCOME, this.id, this.name, this.x, this.y, this.hitPoints, this.title, performance.now()]);
+        require('./worldclock').syncPlayer(this);
         this.server.pushRelevantEntityListTo(this);
         this.server.pushToggledLayersTo(this);
         this.server.pushTileStagesTo(this);
@@ -973,6 +976,7 @@ module.exports = Player = Character.extend({
     },
 
     equipWeapon: function (kind) {
+        if (Types.isFishingRod(kind)) {this.equipSpecialItem(kind);return;}
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {

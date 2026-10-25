@@ -36,7 +36,10 @@ function decorate(data, mapId) {
         doors: data.doors.map(door => ({...door, tileX: door.x / data.dimensions.tilewidth, tileY: door.y / data.dimensions.tileheight,
             activeGates: gates.filter(key => Object.hasOwn(door.properties, key))}))};
 }
-async function readDoors(root, mapId) {return decorate(await run(root, mapFile(root, mapId), {action: 'read'}), mapId);}
+async function readDoors(root, mapId) {
+    const file = mapFile(root, mapId);
+    return decorate(await require('./localtmxcache').readTmx(file, 'doors', () => run(root, file, {action: 'read'})), mapId);
+}
 function validateChanges(changes, properties) {
     if (!changes || typeof changes !== 'object' || Array.isArray(changes) || Object.keys(changes).some(key => !editable.includes(key))) fail('Only supported entrance conditions and messages can be edited.');
     for (const [key, value] of Object.entries(changes)) {
@@ -60,7 +63,7 @@ function validateChanges(changes, properties) {
     return changes;
 }
 // A per-map queue prevents two simultaneous requests from accepting the same revision.
-const saves = new Map();
+const {saves} = require('./localobjectbatch');
 async function saveDoor(root, input) {
     const filename = mapFile(root, input?.mapId);
     if (!/^\d+$/.test(String(input.doorId)) || typeof input.revision !== 'string') fail('Choose an entrance and reload its source before saving.');
@@ -92,4 +95,4 @@ function install(app, toolbox) {
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
 }
-module.exports = {readDoors, saveDoor, validateChanges, install, gates, messages};
+module.exports = {readDoors, saveDoor, validateChanges, install, gates, messages, mapFile};

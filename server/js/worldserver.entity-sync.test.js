@@ -113,6 +113,7 @@ test('teleporting a player removes it from old observers and spawns it for new o
     add(Player, 2, 114, 14);
     const traveler = add(Player, 50, 30, 14);
     traveler.forEachAttacker = () => {};
+    traveler.forEachHater = () => {};
     traveler.x = 114;
     world.handlePlayerVanish(traveler);
     world.processGroups();
@@ -125,6 +126,7 @@ test('vanishing inside the same group preserves the existing death/teleport deli
     add(Player, 1, 30, 14);
     const traveler = add(Player, 50, 30, 14);
     traveler.forEachAttacker = () => {};
+    traveler.forEachHater = () => {};
     world.handlePlayerVanish(traveler);
     expect(world.outgoingQueues[1]).toEqual([]);
 });

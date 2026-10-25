@@ -13,6 +13,10 @@ test.each(['client', 'server'])('Tiled String properties export validated scene 
     const map = processMap(input({ambience: 'forest', fx: JSON.stringify(fx)}), {mode});
     expect(map.scenes[0]).toMatchObject({ambience: [{type: 'leaves', count: 9}, {type: 'pollen', count: 4}], fx});
 });
+test.each(['client','server'])('custom ambience survives %s map export',mode=>{
+    const effect={type:'custom',count:6,design:require('../../client/js/worldfxconfig').custom({shape:'star',glow:10})};
+    expect(processMap(input({ambience:JSON.stringify([effect])}),{mode}).scenes[0].ambience).toEqual([effect]);
+});
 test.each([{ambience: 'unknown'}, {ambience: '[{"type":"leaves","count":900}]'}, {fx: '{broken'}, {fx: '{"enabled":{"rain":true}}'}])('map export rejects invalid FX authoring data: %j', properties => {
     expect(() => processMap(input(properties), {mode: 'client'})).toThrow();
 });

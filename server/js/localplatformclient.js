@@ -139,7 +139,7 @@ class LocalPlatformClient {
 
     applyItems(asset, items) {
         for (const {item, amount} of items) {
-            if (!/^\d+$/.test(String(item)) || !Number.isSafeInteger(amount)) throw failure('invalid_inventory_transaction');
+            if ((!/^\d+$/.test(String(item)) && !(typeof item === 'string' && require('./lakes').isFish(item))) || !Number.isSafeInteger(amount)) throw failure('invalid_inventory_transaction');
             const quantity = (asset.items[item] || 0) + amount;
             if (!Number.isSafeInteger(quantity) || quantity < 0) throw failure('insufficient_items');
             asset.items[item] = quantity;

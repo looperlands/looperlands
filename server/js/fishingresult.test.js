@@ -50,3 +50,12 @@ test('fish outside the selected lake definition cannot earn a catch score',async
     expect(await completeFishingCatch(player,true,false,dependencies)).toBeNull();
     expect(player.server.server.activity.record).not.toHaveBeenCalled();
 });
+
+test.each(['expired','changed-map','dead'])('a %s attempt cannot award a catch',async state=>{
+    Object.assign(player.pendingFish,{expiresAt:Date.now()+60000,mapId:'world_one'});player.server.id='world_one';
+    if(state==='expired')player.pendingFish.expiresAt=Date.now()-1;
+    if(state==='changed-map')player.server.id='world_two';
+    if(state==='dead')player.isDead=true;
+    expect(await completeFishingCatch(player,true,false,dependencies)).toBeNull();
+    expect(player.playerEventBroker.lootEvent).not.toHaveBeenCalled();
+});

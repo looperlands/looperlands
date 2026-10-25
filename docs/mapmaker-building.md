@@ -16,7 +16,9 @@ The map must already be configured in `server/config.json` and have a matching T
 4. Watch the step indicator and **Build output**. Large maps can take several minutes.
 5. Wait for **Build complete**, then switch to **Playtest** and [start a new session](mapmaker-sessions.md).
 
-The build stops the local game, exports the server map, exports the client map, rebuilds the game client and starts the game again. The toolbox stays available throughout. Only one map build can run at a time, and new sessions wait until it finishes.
+The build stops the local game, exports the server map and client map, then starts the game again. When the game client inputs are unchanged, it updates just the built map JSON and worker file and skips client compilation. Changes to code, sprites, artwork or other client files automatically trigger a full client build. The first build after upgrading may also require a full client build. Build output reports export, compilation and restart times.
+
+The toolbox stays available throughout. Only one map build can run at a time, and new sessions wait until it finishes.
 
 Active local sessions end when the game restarts. Saved player progress remains in the local Docker volume.
 
@@ -28,7 +30,7 @@ For a map named `duckville`, the exports are:
 - `client/maps/world_client_duckville.json`
 - `client/maps/world_client_duckville.js`
 
-The client is rebuilt into `client-build` inside the running container. The TMX source and generated map files in the mounted repository remain available after stopping Docker. Review source and generated map changes together when sharing a map update.
+The client is updated in `client-build` inside the running container. The TMX source and generated map files in the mounted repository remain available after stopping Docker. Review source and generated map changes together when sharing a map update.
 
 Quest definitions saved with [Quest builder](mapmaker-quest-builder.md) are read when the game starts. Rebuilding the selected map also restarts the game so those saved definitions become active.
 
@@ -51,3 +53,9 @@ In Tiled, use an object layer named `mapmaker-entities` for assets created in th
 ## Edit door and portal conditions
 
 The [Doors & portals editor](mapmaker-doors.md) writes access conditions and messages to the selected object in your TMX source. Save the entrance, build that map, then test both allowed and denied entry in a fresh game session. Placement and destination changes still happen in Tiled.
+
+## Fishing areas
+
+The [Fishing editor](mapmaker-fishing.md) saves map-specific catch tables and rectangular fishing areas to the Tiled `fishing` layer. Build exports matching client and server fishing tiles. Review and commit the TMX plus all three generated map files, then deploy normally.
+
+The [Checkpoints & zones editor](mapmaker-zones.md) writes existing gameplay object layers in Tiled. Build and commit source plus generated exports together. Checkpoint IDs stay stable across deletions.

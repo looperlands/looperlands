@@ -83,11 +83,11 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
     const properties = require('./properties');
     const file = path.join(root, 'server/maps/world_server_' + mapId + '.json');
     let map;
-    try {map = JSON.parse(fs.readFileSync(file, 'utf8'));}
+    try {map = require('./localmapfiles').readJson(file);}
     catch (_) {fail('Build this map once before creating quests so its NPCs, mobs and areas are available.');}
     if (!map.scenes) {
         const clientFile = path.join(root, 'client/maps/world_client_' + mapId + '.json');
-        try {map.scenes = JSON.parse(fs.readFileSync(clientFile, 'utf8')).scenes || [];}
+        try {map.scenes = require('./localmapfiles').readJson(clientFile).scenes || [];}
         catch (_) {map.scenes = [];}
     }
     map = require('./localworldscenes').applyScenes(map, require('./localworldauthoring').readDocument(root, mapId).scenes);

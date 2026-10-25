@@ -35,7 +35,7 @@ define(function() {
 
         removeBoundingBox: function(entity) {
             this.bounds = null;
-            this.focusEntity(entity);
+            if (!this.boundsOverride) this.focusEntity(entity);
             this.checkBounds();
         },
 
@@ -62,31 +62,32 @@ define(function() {
         },
 
         checkBounds: function() {
-            if(this.bounds) {
-                if(Math.floor(this.x / 16) < this.bounds.x) {
-                    this.gridX = this.bounds.x;
+            var bounds = this.boundsOverride || this.bounds;
+            if(bounds) {
+                if(Math.floor(this.x / 16) < bounds.x) {
+                    this.gridX = bounds.x;
                     this.x = this.gridX * 16;
                 }
-                if(Math.floor(this.y / 16) < this.bounds.y) {
-                    this.gridY = this.bounds.y;
+                if(Math.floor(this.y / 16) < bounds.y) {
+                    this.gridY = bounds.y;
                     this.y = this.gridY * 16;
                 }
-                if(Math.ceil(this.x / 16) + this.gridW > this.bounds.x + this.bounds.w) {
-                    this.gridX = this.bounds.x + this.bounds.w - this.gridW;
+                if(Math.ceil(this.x / 16) + this.gridW > bounds.x + bounds.w) {
+                    this.gridX = bounds.x + bounds.w - this.gridW;
                     this.x = this.gridX * 16;
                 }
-                if(Math.ceil(this.y / 16) + this.gridH > this.bounds.y + this.bounds.h) {
-                    this.gridY = this.bounds.y + this.bounds.h - this.gridH;
+                if(Math.ceil(this.y / 16) + this.gridH > bounds.y + bounds.h) {
+                    this.gridY = bounds.y + bounds.h - this.gridH;
                     this.y = this.gridY * 16;
                 }
 
                 // Center camera on bounds if smaller than grid
-                if(this.gridW > this.bounds.w) {
-                    this.gridX = Math.floor(this.bounds.x + (this.bounds.w/2) - (this.gridW/2))
+                if(this.gridW > bounds.w) {
+                    this.gridX = Math.floor(bounds.x + (bounds.w/2) - (this.gridW/2))
                     this.x = this.gridX * 16;
                 }
-                if(this.gridH > this.bounds.h) {
-                    this.gridY = Math.floor(this.bounds.y + (this.bounds.h/2) - (this.gridH/2))
+                if(this.gridH > bounds.h) {
+                    this.gridY = Math.floor(bounds.y + (bounds.h/2) - (this.gridH/2))
                     this.y = this.gridY * 16;
                 }
             }

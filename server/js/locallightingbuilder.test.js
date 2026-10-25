@@ -32,6 +32,28 @@ async function add(type, mapId = 'one', data) {
     data ||= await readLighting(root, mapId);
     return saveObject(root, {mapId, operation: 'add', revision: data.revision, object: L.preset(type, 6, 6)});
 }
+test('batch lighting adds reuse self-closing layers, create missing layers once and allocate unique IDs', async () => {
+    const initial=await readLighting(root,'empty');
+    const saved=await saveObject(root,{mapId:'empty',revision:initial.revision,operations:[
+        {operation:'add',object:L.preset('lamp',6,6)}, {operation:'add',object:L.preset('torch',10,10)},
+        {operation:'add',object:L.preset('shadow-rect',12,12)}, {operation:'add',object:L.preset('shadow-rect',15,15)}
+    ]});
+    expect(saved.objects).toHaveLength(4);expect(new Set(saved.objects.map(row=>row.id)).size).toBe(4);
+    const source=fs.readFileSync(path.join(root,'tools/maps/tmx/empty.tmx'),'utf8');
+    expect(source.match(/name="shadows"/g)).toHaveLength(1);expect(source.match(/name="lights"/g)).toHaveLength(1);
+});
+test('batch updates preserve unknown fields, reject invalid rows atomically and keep stale-save protection', async () => {
+    const data=await readLighting(root,'one'),before=fs.readFileSync(file);
+    await expect(saveObject(root,{mapId:'one',revision:data.revision,operations:[
+        {operation:'add',object:L.preset('lamp',6,6)}, {operation:'add',object:{...L.preset('lamp',10,10),width:-1}}
+    ]})).rejects.toThrow();expect(fs.readFileSync(file)).toEqual(before);
+    const saved=await saveObject(root,{mapId:'one',revision:data.revision,operations:[
+        {operation:'update',objectId:'7',object:{...data.objects[0],name:'Changed lamp'}},
+        {operation:'add',object:L.preset('lamp',10,10)}
+    ]});
+    expect(saved.objects.find(row=>row.id==='7').properties.future).toBe('keep');
+    await expect(saveObject(root,{mapId:'one',revision:data.revision,operations:[{operation:'remove',objectId:'7'}]})).rejects.toThrow('changed');
+});
 test('reads existing lighting geometry and legacy custom properties without a map build', async () => {
     const data = await readLighting(root, 'one');
     expect(data.objects).toHaveLength(2);

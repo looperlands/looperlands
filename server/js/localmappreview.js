@@ -27,7 +27,7 @@ function readPreview(root, mapId, x, y) {
     let entry = cache.get(file);
     if (!entry || entry.signature !== signature) {
         let map;
-        try {map = JSON.parse(fs.readFileSync(file, 'utf8'));} catch (_) {fail('The built map could not be read. Rebuild ' + mapId + '.', 422);}
+        try {map = require('./localmapfiles').readJson(file);} catch (_) {fail('The built map could not be read. Rebuild ' + mapId + '.', 422);}
         if (!Number.isInteger(map.width) || !Number.isInteger(map.height) || map.width < 1 || map.height < 1 || map.width * map.height > 2000000 || !Array.isArray(map.data)) fail('The built map has invalid tile data. Rebuild ' + mapId + '.', 422);
         entry = {signature, map};
     }

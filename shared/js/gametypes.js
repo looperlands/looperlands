@@ -66,7 +66,8 @@ Types = {
         NPC_STATE: 63,
         WORLD_AMBIENCE: 64,
         TILE_ACTION: 65,
-        PLAYER_TITLE: 66
+        PLAYER_TITLE: 66,
+        WORLD_TIME: 67
     },
 
     Entities: {

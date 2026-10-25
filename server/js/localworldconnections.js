@@ -5,7 +5,7 @@ const link=(tool,args)=>'#'+tool+'/?'+new URLSearchParams(args);
 async function readConnections(root,options={}) {
     const ids=maps(root),nodes=[],edges=[],warnings=[],builtMaps=new Map();
     // Limit Python readers: large worlds need bounded memory and process counts.
-    let cursor=0;await Promise.all(Array.from({length:Math.min(4,ids.length)},async()=>{while(cursor<ids.length){const id=ids[cursor++];let map;try{map=JSON.parse(fs.readFileSync(safe(root,'server/maps/world_server_'+id+'.json')));}catch(e){warnings.push({mapId:id,message:'Built map unavailable. Build this map.',editor:link('build',{map:id})});}
+    let cursor=0;await Promise.all(Array.from({length:Math.min(4,ids.length)},async()=>{while(cursor<ids.length){const id=ids[cursor++];let map;try{map=require('./localmapfiles').readJson(safe(root,'server/maps/world_server_'+id+'.json'));}catch(e){warnings.push({mapId:id,message:'Built map unavailable. Build this map.',editor:link('build',{map:id})});}
         if(map)builtMaps.set(id,map);
         nodes.push({id,width:map?.width,height:map?.height,built:!!map});
         try{const source=await(options.readDoors||readDoors)(root,id);for(const d of source.doors){const p=d.properties,target=p.map||id;edges.push({id:id+':'+d.id,objectId:d.id,source:id,target,x:d.tileX,y:d.tileY,tx:Number(p.x),ty:Number(p.y),external:p.http_redirect||null,name:d.name||d.type+' #'+d.id,conditions:Object.fromEntries(Object.entries(p).filter(([k])=>['nft','item','quest','collection','level','weapon_level','tid','time_range'].includes(k))),editor:link('doors',{map:id,object:d.id}),inspector:link('inspector',{map:id,object:'door:'+d.id})});}}catch(e){warnings.push({mapId:id,message:e.message,editor:link('doors',{map:id})});}

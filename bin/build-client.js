@@ -3,11 +3,14 @@ const path = require('path');
 const vm = require('vm');
 const babel = require('@babel/core');
 const requirejs = require('./r');
+const {clientFingerprint, recordClientBuild} = require('./mapmaker-client');
 
 const root = path.resolve(__dirname, '..');
 const authoredEntities = JSON.parse(fs.readFileSync(path.join(root, 'shared/js/mapmakerentities.json'), 'utf8'));
-fs.writeFileSync(path.join(root, 'client/js/mapmakerentities.js'), '// Generated from shared/js/mapmakerentities.json. Do not edit.\n' +
-    'define(function () { return ' + JSON.stringify(authoredEntities) + '; });\n');
+const entitiesFile = path.join(root, 'client/js/mapmakerentities.js');
+const entitiesSource = '// Generated from shared/js/mapmakerentities.json. Do not edit.\n' +
+    'define(function () { return ' + JSON.stringify(authoredEntities) + '; });\n';
+if (!fs.existsSync(entitiesFile) || fs.readFileSync(entitiesFile, 'utf8') !== entitiesSource) fs.writeFileSync(entitiesFile, entitiesSource);
 const config = vm.runInNewContext(fs.readFileSync(path.join(root, 'client/js/build.js'), 'utf8'));
 config.appDir = path.join(root, 'client');
 config.baseUrl = 'js';
@@ -22,7 +25,12 @@ config.onBuildRead = (name, file, source) => babel.transformSync(source, {
     presets: [['@babel/preset-env', { targets: { ie: '11' }, modules: false }]]
 }).code;
 
-requirejs.optimize(config, () => console.log('Client build complete'), error => {
+let fingerprint;
+try {fingerprint = clientFingerprint(root);} catch (_) {} // Full builds also support legacy/symlinked checkouts.
+requirejs.optimize(config, () => {
+    try {recordClientBuild(root, fingerprint);} catch (_) {} // Cache metadata must never fail a production build.
+    console.log('Client build complete');
+}, error => {
     console.error(error.message);
     process.exitCode = 1;
 });

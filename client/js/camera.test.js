@@ -102,3 +102,19 @@ test('small scenes keep the camera centered within their bounds', () => {
     view.follow(target(32, 32), 16);
     expect([view.x, view.y]).toEqual(position);
 });
+
+test('a map bounds override preserves scene changes until normal following resumes', () => {
+    const view = camera();
+    view.setBoundingBox(0, 0, 40, 30);
+    view.boundsOverride = {x: 0, y: 0, w: 140, h: 120};
+    view.setGridPosition(75, 73);
+    expect([view.gridX, view.gridY]).toEqual([75, 73]);
+    view.setBoundingBox(0, 0, 50, 40);
+    expect([view.gridX, view.gridY]).toEqual([75, 73]);
+    view.removeBoundingBox({gridX: 15, gridY: 7});
+    expect([view.gridX, view.gridY]).toEqual([75, 73]);
+    view.setBoundingBox(0, 0, 50, 40);
+    view.boundsOverride = null;
+    view.checkBounds();
+    expect([view.gridX, view.gridY]).toEqual([20, 26]);
+});

@@ -33,6 +33,17 @@ test('title updates reach existing players without spawning them again', () => {
     expect(renamed).toHaveBeenCalledWith(42, 'New Looper', 'New Looper');
 });
 
+test('local clock updates are delivered after WELCOME on joining and reviving', () => {
+    const {client, receive, messages: M} = setup();
+    const order = [];
+    client.onWelcome(() => order.push('welcome'));
+    client.onWorldTime(time => order.push(time));
+    for (const time of [3000000, 3002500]) {
+        receive([[M.WELCOME, 42, 'Player', 1, 2, 100, '', 1234], [M.WORLD_TIME, time]]);
+    }
+    expect(order).toEqual(['welcome', 3000000, 'welcome', 3002500]);
+});
+
 test('a failed damage callback does not discard mob/chest despawns and the following drop', () => {
     const {client, receive, errors, messages: M} = setup();
     const failure = new Error('Damage feedback failed');

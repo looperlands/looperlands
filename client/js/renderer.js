@@ -1191,7 +1191,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 renderData.push(this.drawLights());
     
                 this.drawDebugInfo();
-                let scene = this.game.map.getCurrentScene(this.game.player);
+                let scene = this.game.getViewScene();
                 if(!scene) {
                     scene = {
                         dn_cycle: false,

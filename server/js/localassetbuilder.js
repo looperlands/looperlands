@@ -27,10 +27,11 @@ function safeFile(root, relative) {
 function spriteId(id, type) {return type === 'item' ? 'item-' + id : id;}
 function catalog(root) {
     const Types = baseTypes(root), custom = readManifest(root), entries = [];
+    const sprites = new Set(fs.readdirSync(path.join(root, 'client/sprites')));
     Types.forEachKind((kind, id) => {
         if (id.startsWith('NFT_')) return;
         const type = Types.isMob(kind) ? 'mob' : Types.isNpc(kind) ? 'npc' : Types.isItem(kind) ? 'item' : null;
-        if (!type || !fs.existsSync(path.join(root, 'client/sprites', spriteId(id, type) + '.json'))) return;
+        if (!type || !sprites.has(spriteId(id, type) + '.json')) return;
         entries.push({id, kind, type, builtin: true});
     });
     for (const entry of custom) {

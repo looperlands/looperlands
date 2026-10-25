@@ -1,5 +1,6 @@
 var _ = require('underscore'),
     Types = require("../../shared/js/gametypes");
+const Zones = require('../../shared/js/gameplayzones');
 const WorldFxConfig = require('../../client/js/worldfxconfig');
 
 var map,
@@ -15,6 +16,7 @@ module.exports = function processMap(json, options) {
         tileIndex = 0,
         tilesetFilepath = "";
 
+    lakes = {};
     map = {
         width: 0,
         height: 0,
@@ -24,7 +26,11 @@ module.exports = function processMap(json, options) {
         triggers: [],
         scenes: [],
         hiddenLayers: {},
-        collidingTiles: {}
+        collidingTiles: {},
+        baseFishingTiles: {},
+        fishingAreas: [],
+        musicAreas: [],
+        pvpZones: []
     };
     mode = options.mode;
 
@@ -39,8 +45,6 @@ module.exports = function processMap(json, options) {
         map.shadows = [];
         map.blocking = [];
         map.plateau = [];
-        map.musicAreas = [];
-        map.pvpZones = [];
         map.fishingTiles = {};
     }
     if (mode === "server") {
@@ -65,14 +69,12 @@ module.exports = function processMap(json, options) {
             map.collidingTiles[id] = true;
         }
 
+        if (property.name === "lake") lakes[id] = property.value;
         if (mode === "client") {
             if (property.name === "v") {
                 map.high.push(id);
             }
 
-            if (property.name === "lake") {
-                lakes[id] = property.value;
-            }
             const animProps = ["length", "frames", "delay", "direction", "slideAmount", "colorShift", "loopStyle", "startFrame", "bouncePause"];
             if (animProps.includes(property.name)) {
                 if (!map.animated[id]) {
@@ -158,8 +160,13 @@ module.exports = function processMap(json, options) {
     }
 
     var getObjectGroupByName = function (groupName) {
-        for (var i = 0; i < Tiled.objectgroup.length; i += 1) {
-            var group = Tiled.objectgroup[i];
+        const groups = Tiled.objectgroup ? (Array.isArray(Tiled.objectgroup) ? Tiled.objectgroup : [Tiled.objectgroup]) : [];
+        if (['fishing', 'checkpoints', 'triggers', 'pvpzones', 'music', 'eventBoards'].includes(groupName)) {
+            const found = groups.filter(group => group.name === groupName);
+            if (found.length > 1 || found.some(group => ['offsetx','offsety','x','y'].some(key => Number(group[key] || 0)))) throw new Error('Use one '+groupName+' object layer without offsets.');
+        }
+        for (var i = 0; i < groups.length; i += 1) {
+            var group = groups[i];
             if (group.name !== groupName) {
                 continue;
             }
@@ -224,7 +231,7 @@ module.exports = function processMap(json, options) {
         _.each(Tiled.tileset, function (tileset) {
             if (tileset.name === "tilesheet") {
                 console.log("Processing terrain properties...");
-                tileProperties = tileset.tile;
+                tileProperties = [].concat(tileset.tile || []);
                 for (var i = 0; i < tileProperties.length; i += 1) {
                     var property = tileProperties[i]?.properties?.property ?? {};
                     var tilePropertyId = tileProperties[i].id + 1;
@@ -307,17 +314,8 @@ module.exports = function processMap(json, options) {
             h: triggerArea.height / map.tilesize,
         };
 
-        if (triggerArea.properties) {
-            var triggerProps = triggerArea.properties.property;
-
-            if (triggerProps[0] === undefined) {
-                triggerProps = [triggerArea.properties.property];
-            }
-
-            for (var k = 0; k < triggerProps.length; k += 1) {
-                trigger[triggerProps[k].name] = triggerProps[k].value;
-            }
-        }
+        trigger.objectId = triggerArea.id;trigger.name = triggerArea.name || '';
+        for (const [key,value] of Object.entries(Zones.properties(triggerArea))) if (!['id','x','y','w','h','objectId','name'].includes(key)) trigger[key] = value;
 
         map.triggers.push(trigger);
     }
@@ -487,14 +485,16 @@ module.exports = function processMap(json, options) {
             y: music.y / map.tilesize,
             w: music.width / map.tilesize,
             h: music.height / map.tilesize,
-            id: music.properties.property.value
+            objectId:music.id,name:music.name||'',
+            id: Zones.properties(music).music ?? Object.values(Zones.properties(music))[0]
         };
         map.musicAreas.push(musicArea);
     }
 
     var processCheckpoint = function (checkpoint, idx) {
         var cp = {
-            id: idx + 1,
+            id: Zones.checkpointId(checkpoint,idx),
+            objectId:checkpoint.id, name:checkpoint.name||'',
             x: checkpoint.x / map.tilesize,
             y: checkpoint.y / map.tilesize,
             w: checkpoint.width / map.tilesize,
@@ -502,14 +502,16 @@ module.exports = function processMap(json, options) {
         };
 
         if (mode === "server") {
-            cp.s = checkpoint.type ? 1 : 0;
+            cp.s = Zones.starting(checkpoint) ? 1 : 0;
         }
 
+        if (!Number.isSafeInteger(cp.id) || cp.id < 1 || map.checkpoints.some(other=>other.id===cp.id)) throw new Error('Checkpoint IDs must be unique positive whole numbers.');
         map.checkpoints.push(cp);
     }
 
     var processPvpZone = function (pvp) {
         var pvpZone = {
+            objectId:pvp.id,name:pvp.name||'',
             x: pvp.x / map.tilesize,
             y: pvp.y / map.tilesize,
             w: pvp.width / map.tilesize,
@@ -518,13 +520,23 @@ module.exports = function processMap(json, options) {
         map.pvpZones.push(pvpZone);
     }
 
+    // Fishing rectangles are shared by client and authoritative server exports.
+    processGroup('fishing', object => {
+        if (object.rotation || object.gid || object.ellipse || object.polygon || object.point || object.polyline || object.text) throw new Error('Fishing areas must be unrotated rectangles.');
+        const list = object.properties?.property || object.properties || [];
+        const p = Object.fromEntries((Array.isArray(list) ? list : [list]).map(row => [row.name, row.value]));
+        map.fishingAreas.push({id: String(object.id), kind: 'fishing', name: object.name || '',
+            x: object.x / map.tilesize, y: object.y / map.tilesize, width: object.width / map.tilesize, height: object.height / map.tilesize,
+            scope: p.scope || 'area', sourceLake: p.sourceLake || '', level: Number(p.level || 1),
+            fish: String(p.fish || '').split(',').filter(Boolean).map(value => {const [item, rarity] = value.trim().split(':');return {item, rarity};})});
+    });
     // Object layers
     processGroup('doors', processDoor);
     processGroup('triggers', processTriggerArea);
     processGroup('scenes', processScene);
     map.eventBoards = [];
     processGroup('eventBoards', board => {
-        map.eventBoards.push({x: board.x / map.tilesize, y: board.y / map.tilesize, w: board.width / map.tilesize, h: board.height / map.tilesize});
+        map.eventBoards.push({objectId:board.id,name:board.name||'',x: board.x / map.tilesize, y: board.y / map.tilesize, w: board.width / map.tilesize, h: board.height / map.tilesize});
     });
 
     if (mode === 'server') {
@@ -533,9 +545,9 @@ module.exports = function processMap(json, options) {
         processGroup('chests', processChest);
     }
 
+    processGroup('music', processMusic);
+    processGroup('pvpzones', processPvpZone);
     if (mode === "client") {
-        processGroup('music', processMusic);
-        processGroup('pvpzones', processPvpZone);
         processGroup('lights', processLights);
         processGroup('shadows', processShadows);
     }
@@ -570,7 +582,11 @@ module.exports = function processMap(json, options) {
         if (map.staticEntities[position]) throw new Error('Two entities occupy the same map cell: ' + object.name);
         map.staticEntities[position] = object.name;
     });
-    return map;
+    const firstLayer = Array.isArray(Tiled.layer) ? Tiled.layer[0] : null;
+    if (firstLayer && firstLayer.visible !== 0 && !['entities','blocking','plateau'].includes(firstLayer.name)) [].concat(firstLayer.data?.tile || []).forEach((tile,index) => {if (tile.gid in lakes) map.baseFishingTiles[index] = lakes[tile.gid];});
+    const Fishing = require('../../server/js/fishingareas');
+    Fishing.validate(map.fishingAreas, map);
+    return Fishing.apply(map);
 };
 
 var processLayer = function processLayer(layer) {
@@ -635,6 +651,8 @@ var processLayer = function processLayer(layer) {
                     }
                 }
             }
+
+            if (gid > 0 && gid in lakes) map.baseFishingTiles[j] = lakes[gid];
 
             // Colliding tiles
             if (gid in map.collidingTiles) {

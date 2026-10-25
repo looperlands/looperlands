@@ -121,7 +121,7 @@
                     const choices = el('datalist','',{id});
                     choices.append(...this.catalog.filter(entry=>entry.type===entityType).map(entry=>el('option',entry.name||entry.id,{value:entry.id})));
                     input.oninput = () => {effect[key] = input.value.trim();};
-                    field(label,input,key);row.append(choices);
+                    field(label,input,key);row.append(choices);window.ToolboxEntityPicker.attach(input,{type:entityType,label,entries:[...(optional?[{id:'',name:'All mobs'}]:[]),...this.catalog.filter(entry=>entry.type===entityType)]});
                 };
                 if (effect.type === 'spawn') {
                     reference('Spawn ' + (effect.entityType === 'npc' ? 'NPC' : effect.entityType), 'entity', effect.entityType);
@@ -148,7 +148,7 @@
                     duration.oninput = () => {effect.duration = Math.round(Number(duration.value) * 1000);};
                     field(effect.type === 'spawn' ? 'Lifetime · seconds' : 'Duration · seconds', duration, 'duration');
                 }
-                const remove = el('button', 'Remove effect', {type: 'button', ariaLabel: 'Remove effect ' + (index + 1)});
+                const remove = el('button', 'Remove effect', {type: 'button', ariaLabel: 'Remove effect ' + (index + 1), className: 'destructive'});
                 remove.onclick = () => {this.effects.splice(index, 1); this.renderEffects(); this.parent.dispatchEvent(new Event('change', {bubbles: true}));};
                 row.append(remove); this.rows.append(row);
             });

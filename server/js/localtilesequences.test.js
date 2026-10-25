@@ -48,10 +48,10 @@ test('a resource restores automatically without a player action, advances its re
     expect(await controller.findCurrentStage('avatar','one',tile,world)).toMatchObject({key:'use',revision:0});
     const result=await controller.executeStage('avatar','one',tile,null,world,'use',0);
     expect(result.activity.quantity).toBe(2);
-    expect(world.map.tileStages['3.4'].tile).toBe(3);
+    expect(world.map.tileStages['3.4'].tile).toBe(2);
     expect(await controller.findCurrentStage('avatar','one',tile,world)).toMatchObject({waiting:true,revision:1});
     now+=5001;await controller.localSequences.tick(world);
-    expect(world.map.tileStages['3.4'].tile).toBe(2);
+    expect(world.map.tileStages['3.4'].tile).toBe(1);
     expect(await controller.findCurrentStage('avatar','one',tile,world)).toMatchObject({key:'use',revision:2});
     expect((await controller.executeStage('avatar','one',tile,null,world,'use',0)).success).toBe(false);
     expect(platform.readAsset('avatar').items[Types.Entities.FLASK]).toBe(2);
@@ -82,12 +82,45 @@ test('each player can open a chest once and receives only their own artwork',asy
     expect(await controller.findCurrentStage('avatar','one',tile,world)).toMatchObject({key:'done',waiting:true});
     expect(await controller.findCurrentStage('other','one',tile,world)).toMatchObject({key:'use',revision:0});
     expect(world.placeStagedTile).not.toHaveBeenCalled();expect(world.clearStagedTile).not.toHaveBeenCalled();
-    expect(world.pushToPlayer.mock.calls.filter(([p])=>p.nftId==='avatar').every(([,message])=>message.value.tile===2)).toBe(true);
-    expect(world.pushToPlayer.mock.calls.filter(([p])=>p.nftId==='other').every(([,message])=>message.value.tile===1)).toBe(true);
+    expect(world.pushToPlayer.mock.calls.filter(([p,message])=>p.nftId==='avatar'&&!message.value.particlesOnly).every(([,message])=>message.value.tile===1)).toBe(true);
+    expect(world.pushToPlayer.mock.calls.filter(([p,message])=>p.nftId==='other'&&!message.value.particlesOnly).every(([,message])=>message.value.tile===0)).toBe(true);
     await controller.executeStage('other','one',tile,null,world,'use',0);
     expect(platform.readAsset('avatar').items[Types.Entities.FLASK]).toBe(2);
     expect(platform.readAsset('other').items[Types.Entities.FLASK]).toBe(2);
     expect((await controller.executeStage('avatar','one',tile,null,world,'use',0)).success).toBe(false);
+});
+
+test.each(['shared', 'player'])('chosen artwork reaches the renderer without a tile shift for %s progress', async scope => {
+    const action = useTemplate(scope === 'player' ? 'chest' : 'repair');
+    action.appearances = {one: {initialTile: 1, stages: {use: 17}}};
+    world.pushToPlayer = jest.fn();
+    const published = () => scope === 'player' ? world.pushToPlayer.mock.calls.filter(([,message])=>!message.value.particlesOnly).at(-1)[1].value : world.map.tileStages['3.4'];
+    const runtime = controller.localSequences;
+    await runtime[scope === 'player' ? 'loadPlayerStates' : 'loadPersistedPlots']('one', world, 'avatar');
+    expect(published().tile).toBe(0); // The first tile is artwork, not the clear-overlay sentinel.
+    await controller.executeStage('avatar', 'one', tile, null, world, 'use', 0);
+    expect(published().tile).toBe(16);
+    expect(Object.values(platform.state.tileSequences)[0].tile).toBe(17);
+
+    // Exercise the real client renderer's source coordinates, rather than only the server's message shape.
+    let renderer;
+    require('vm').runInNewContext(fs.readFileSync(require.resolve('../../client/js/renderer'), 'utf8'), {
+        Class: {extend: methods => methods}, _: {forEach: (values, run) => values.forEach(run)},
+        define: (dependencies, factory) => {renderer = factory();}
+    });
+    const game = {tileStages: {sample: {...published(), x: 3, y: 4, stage: 0}},
+        map: {width: 10, GridPositionToTileIndex: (x, y) => y * 10 + x + 1, isHighTile: () => false, isAnimatedTile: () => false}};
+    const view = {game, tileset: {width: 256, height: 32}, tilesize: 16, drawScaledImage: jest.fn()};
+    const rendered = renderer.drawTileStages.call(view, [], false, false)[0];
+    renderer.drawTile.call(view, {}, rendered.tileid, view.tileset, 16, 2, 10, rendered.cellid, 1, 0, 0);
+    expect(view.drawScaledImage.mock.calls[0].slice(2, 6)).toEqual([0, 16, 16, 16]);
+
+    // Rejoining must not subtract again from persisted Tiled IDs.
+    await runtime[scope === 'player' ? 'loadPlayerStates' : 'loadPersistedPlots']('one', world, 'avatar');
+    expect(published().tile).toBe(16);
+    runtime.publish(world, runtime.resolve('one', tile, 'avatar'), {tile: 0});
+    if (scope === 'player') expect(published()).toMatchObject({clear: true});
+    else expect(published()).toBeUndefined();
 });
 
 test('a switch can turn a trigger on and off repeatedly and restores its last effect after hydration',async()=>{

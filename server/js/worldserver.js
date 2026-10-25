@@ -964,18 +964,28 @@ module.exports = World = cls.Class.extend({
 
     handlePlayerVanish: function (player) {
         var self = this,
-            previousAttackers = [];
+            affectedMobs = {};
 
-        // When a player dies or teleports, all of his attackers go and attack their second most hated player.
         player.forEachAttacker(function (mob) {
-            previousAttackers.push(mob);
-            self.chooseMobTarget(mob, 2);
+            affectedMobs[mob.id] = mob;
+        });
+        player.forEachHater(function (mob) {
+            affectedMobs[mob.id] = mob;
         });
 
-        _.each(previousAttackers, function (mob) {
+        _.each(affectedMobs, function (mob) {
+            var wasAttackingPlayer = mob.target === player.id;
             player.removeAttacker(mob);
-            mob.clearTarget();
+            player.removeHater(mob);
+            if (wasAttackingPlayer) {
+                mob.clearTarget();
+            }
+            // Remove the vanished player before retargeting: choosing a hate rank
+            // first can select them again and move the mob to their door destination.
             mob.forgetPlayer(player.id, 1000);
+            if (wasAttackingPlayer) {
+                self.chooseMobTarget(mob);
+            }
         });
 
         if (this.handleEntityGroupMembership(player)) {
@@ -1521,6 +1531,7 @@ module.exports = World = cls.Class.extend({
 
     activateTrigger: function (triggerId) {
         this.doorTriggers[triggerId] = true;
+        for (const player of Object.values(this.players)) this.scenes?.event?.(player,'TRIGGER_ACTIVATED',{trigger:triggerId});
         this.worldEventBroker.triggerActivated(this.id, triggerId);
     },
 

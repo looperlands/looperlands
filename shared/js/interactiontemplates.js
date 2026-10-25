@@ -36,6 +36,7 @@
             delete copy.interaction;
             delete copy.completedName;
             delete copy.appearances;
+            delete copy.stageParticles;
             for (const step of copy.stages) {delete step.name; delete step.message; delete step.failureMessage;}
         }
         return copy;

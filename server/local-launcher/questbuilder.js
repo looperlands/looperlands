@@ -1,9 +1,11 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
     const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use interaction'};
     const drafts = new Map();
+    let dataVersion = 0;
     let maps = [], data, selected = -1, bundledId, mapId, loading = false, saving = false, requestId = 0;
     const fieldNames = {'quest-id': 'id', 'quest-name': 'name', 'quest-npc': 'npc', 'quest-level': 'level', 'quest-required-level': 'requiredLevel',
         'quest-prerequisite': 'requiredQuest', 'quest-start': 'startText', 'quest-progress': 'inProgressText', 'quest-end': 'endText', 'quest-return': 'returnToNpc',
@@ -37,7 +39,7 @@
         $('quest-error').textContent = message; $('quest-error').hidden = !message;
     }
     async function request(url, options) {
-        const response = await fetch(url, {...options, signal: AbortSignal.timeout(20000)});
+        const response = await fetchData(url, {...options, signal: AbortSignal.timeout(window.ToolboxMapData ? 90000 : 20000)});
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'The quest builder could not complete the request. Try again.');
         return result;
@@ -64,6 +66,9 @@
         select.replaceChildren(...(empty ? [option('', empty)] : [option('', 'Choose a target')]), ...entries.map(item => option(item.id, `${item.name} · ${item.id}`)));
         if (value !== undefined && value !== '' && !entries.some(item => String(item.id) === String(value))) select.append(option(value, `${value} · unavailable in this map`));
         select.value = value === undefined ? '' : String(value);
+        const category = Object.entries(data.catalog).find(([, rows]) => rows === entries)?.[0];
+        const type = {npcs:'npc',mobs:'mob',items:'item'}[category];
+        if (select.isConnected && type) window.ToolboxEntityPicker.attach(select, {type});
     }
     function renderList() {
         const list = $('quest-list'); list.replaceChildren();
@@ -184,8 +189,8 @@
             const prefix = `objective-${index}`, group = node('fieldset', undefined, 'objective');
             group.append(node('legend', `Objective ${index + 1}`));
             const actions = node('div', undefined, 'objective-actions');
-            const action = (title, disabled, handler) => {
-                const button = node('button', title, 'text-button'); button.type = 'button'; button.disabled = disabled;
+            const action = (title, disabled, handler, className = '') => {
+                const button = node('button', title, 'text-button ' + className); button.type = 'button'; button.disabled = disabled;
                 button.setAttribute('aria-label', `${title} objective ${index + 1}`); button.addEventListener('click', handler); actions.append(button);
             };
             action('Move up', index === 0, () => move(index, index - 1));
@@ -193,7 +198,7 @@
             action('Remove', current.objectives.length === 1, () => {
                 current.objectives.splice(index, 1); renderObjectives(); changed();
                 $(`objective-${Math.min(index, current.objectives.length - 1)}-label`).focus();
-            });
+            }, 'destructive');
             group.append(actions);
             const grid = node('div', undefined, 'two-columns');
             const identifier = input(prefix + '-id', objective.id, {maxLength: 64, pattern: '[A-Za-z][A-Za-z0-9_-]*', required: true});
@@ -212,6 +217,8 @@
             const amount = input(prefix + '-amount', objective.amount || 1, {type: 'number', min: '1', max: '100000', required: true});
             amount.addEventListener('input', () => {objective.amount = Number(amount.value); changed();});
             grid.append(field('Objective ID', identifier), field('Player-facing label', label), field('Action', type), field('Target', target), field('Amount', amount));
+            const entityType = {NPC_TALKED:'npc',KILL_MOB:'mob',LOOT_ITEM:'item',DELIVER_ITEM:'item'}[objective.eventType];
+            if (entityType) window.ToolboxEntityPicker.attach(target, {type:entityType, label:'Target'});
             if(objective.eventType==='TILE_ACTION') {
                 const stages=data.catalog.tileActions.find(a=>a.id===objective.target)?.stages||[];
                 const stage=node('select');stage.id=prefix+'-stage';stage.replaceChildren(option('','Any successful action'),...stages.map(s=>option(s.id,s.name)));
@@ -236,6 +243,7 @@
                 const recipient = select(prefix + '-recipient', entries, objective.recipient?.[category]);
                 recipient.addEventListener('change', () => {objective.recipient = {[category]: category === 'npc' ? Number(recipient.value) : recipient.value}; changed();});
                 grid.append(field('Deliver to', recipientType), field('Recipient', recipient));
+                if (category === 'npc') window.ToolboxEntityPicker.attach(recipient, {type:'npc', label:'Recipient'});
                 if (category === 'npc') {
                     const key = input(prefix + '-recipient-key', objective.recipient?.npcKey, {maxLength: 100, placeholder: 'Any NPC of this kind'});
                     key.addEventListener('input', () => {if (key.value.trim()) objective.recipient.npcKey = key.value.trim(); else delete objective.recipient.npcKey; changed();});
@@ -275,20 +283,20 @@
     }
     async function loadMap(id, reload = false) {
         const token = ++requestId;
-        if (data) drafts.set(mapId, {data, selected, bundledId});
+        if (data) drafts.set(mapId, {data, selected, bundledId, version: dataVersion});
         mapId = id; error(''); loading = true; updateStatus('Loading quests…');
         $('quest-workspace').hidden = true;
         try {
             const cached = drafts.get(id);
-            if (cached && !reload) {data = cached.data; selected = cached.selected; bundledId = cached.bundledId;}
+            if (cached && !reload && (cached.version === (window.ToolboxMapData?.stamp(id) || 0) || snapshot(cached.data) !== cached.data.saved)) {data = cached.data; selected = cached.selected; bundledId = cached.bundledId; dataVersion = cached.version;}
             else {
                 const result = await request(`/local/api/quests?mapId=${encodeURIComponent(id)}`);
                 if (token !== requestId) return;
-                data = {...result, overrides: result.overrides || []}; data.saved = snapshot(data);
+                data = {...result, overrides: result.overrides || []}; data.saved = snapshot(data); dataVersion = window.ToolboxMapData?.stamp(mapId) || 0;
                 bundledId = undefined; selected = data.quests.length ? 0 : -1;
             }
             if (token !== requestId) return;
-            drafts.set(id, {data, selected, bundledId});
+            drafts.set(id, {data, selected, bundledId, version: dataVersion});
             loading = false; renderData();
         } catch (failure) {
             if (token !== requestId) return;
@@ -318,7 +326,7 @@
             const catalog = await request('/local/api/catalog'); maps = catalog.maps || [];
             $('quest-map').replaceChildren(...maps.map(map => option(map.id, map.name || map.id)));
             if (!maps.length) throw new Error('No maps are ready. Check Troubleshoot, then reload quests.');
-            const initial = maps.find(map => map.id === window.ToolboxNavigation?.params().get('map')) || maps.find(map => map.id === $('map').value) || maps[0]; $('quest-map').value = initial.id;
+            const initial = maps.find(map => map.id === window.ToolboxNavigation?.params().get('map')) || maps.find(map => map.id === window.ToolboxMapData?.preferred($('map').value)) || maps.find(map => map.id === $('map').value) || maps[0]; $('quest-map').value = initial.id;
             loading = false; await loadMap(initial.id);
         } catch (failure) {loading = false; error(failure.message); updateStatus('Quest builder is unavailable. Reload quests to try again.');}
     }
@@ -405,8 +413,8 @@
         saving = true; error(''); updateStatus('Saving quests…'); renderList();
         try {
             const result = await request('/local/api/quests', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
-            data = {...result, overrides: result.overrides || []}; data.saved = snapshot(data);
-            selected = Math.min(selected, data.quests.length - 1); drafts.set(mapId, {data, selected, bundledId});
+            data = {...result, overrides: result.overrides || []}; data.saved = snapshot(data); dataVersion = window.ToolboxMapData?.stamp(mapId) || 0;
+            selected = Math.min(selected, data.quests.length - 1); drafts.set(mapId, {data, selected, bundledId, version: dataVersion});
             saving = false; renderData(); updateStatus('Quests saved. Build this map in Build tools to load them into the game.');
         } catch (failure) {error(failure.message); saving = false; renderList(); updateStatus('Quests were not saved. Your draft is still here.');}
     });

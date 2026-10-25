@@ -50,7 +50,7 @@ function setup() {
     game.player = actor(42, modules.player, 2, 2);
     game.addEntity(game.player);
     game.client = {sendWho: jest.fn()};
-    for (const name of ['EntityState', 'EntityList', 'SpawnCharacter', 'EntityMove',
+    for (const name of ['EntityState', 'EntityList', 'WorldTime', 'SpawnCharacter', 'EntityMove',
         'EntityDestroy', 'PlayerMoveToItem', 'EntityAttack']) {
         game.client['on' + name] = fn => {callbacks[name] = fn;};
     }

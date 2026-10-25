@@ -1,6 +1,7 @@
 const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
 const WorldTime = require('../../client/js/worldtime-worker');
+const WorldClock = require('./worldclock');
 const {NpcSchedule} = require('./npcschedule');
 const {definitions} = require('./worlddefinitions');
 
@@ -27,7 +28,7 @@ function loadConfig(mapId, root = require('path').resolve(__dirname, '../..')) {
 }
 
 class NpcBehavior {
-    constructor(world, config, memory, now = Date.now, clock = () => performance.now()) {
+    constructor(world, config, memory, now = Date.now, clock = () => WorldClock.now()) {
         this.world = world;
         this.config = validateConfig(config);
         this.memory = memory;
@@ -203,12 +204,14 @@ class NpcBehavior {
         for (const routine of this.routines.values()) {
             if (this.world.entities[routine.npc.id] !== routine.npc) continue;
             if (time < routine.pauseUntil) continue;
-            if (!(routine.schedule ? players.length : players.some(player => inside(player, routine.definition.area))) || time < routine.nextStep) continue;
+            if (!routine.sceneOwner && !(routine.schedule ? players.length : players.some(player => inside(player, routine.definition.area)))) continue;
+            if (time < routine.nextStep) continue;
             this.advance(routine, time);
         }
     }
 
     worldTime() {
+        if (WorldClock.hasOverride()) return this.clock();
         return WorldTime.previewTime(this.config.ambience?.previewTimeMode, this.clock(), this.config.ambience?.previewHour);
     }
 
@@ -251,7 +254,7 @@ class NpcBehavior {
         state.ambience = active;
         state.ambienceKey = ambienceKey;
         for (const [key, routine] of this.routines) {
-            if (this.world.entities[routine.npc.id] !== routine.npc || routine.schedule?.sleeping()) continue;
+            if (routine.sceneOwner || this.world.entities[routine.npc.id] !== routine.npc || routine.schedule?.sleeping()) continue;
             if (distance(player, routine.npc) > 3) { state.near.delete(key); continue; }
             if (state.near.has(key)) continue;
             if (time < routine.speechUntil || time < routine.pauseUntil || !this.canSpeak(routine, time) ||
@@ -320,7 +323,7 @@ class NpcBehavior {
         const routine = [...this.routines.values()].find(entry => entry.npc.id === Number(entityId) &&
             this.world.entities[entry.npc.id] === entry.npc);
         if (!routine || this.world.players[player.id] !== player) return false;
-        if (active && (!player.hasEnteredGame || player.isDead || player.isBot() || distance(player, routine.npc) > 5)) return false;
+        if (active && (routine.sceneOwner || !player.hasEnteredGame || player.isDead || player.isBot() || distance(player, routine.npc) > 5)) return false;
         if (active) {
             routine.listeners.set(player.id, this.now() + 15000);
             this.face(routine, player);
@@ -403,7 +406,7 @@ class NpcBehavior {
             const conversation = this.conversation;
             if (time < conversation.nextLine) return;
             const actors = [...new Set(conversation.definition.steps.map(step => this.routines.get(step.npc)))];
-            if (actors.some(actor => !actor || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
+            if (actors.some(actor => !actor || actor.sceneOwner || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
                 (actor.npc.behaviorState.activity === 'talking' && time < actor.pauseUntil))) {
                 this.conversation = null;
                 for (const actor of actors) {
@@ -439,7 +442,7 @@ class NpcBehavior {
                 if (!(start < end ? hour >= start && hour < end : hour >= start || hour < end)) continue;
             }
             const actors = [...new Set(definition.steps.map(step => this.routines.get(step.npc)))];
-            if (actors.some(actor => !actor || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
+            if (actors.some(actor => !actor || actor.sceneOwner || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
                 time < actor.pauseUntil || !this.nearbyPlayers(actor.npc, 12).length) ||
                 actors.some(actor => distance(actor.npc, actors[0].npc) > 8) || !this.canSpeak(actors[0], time)) continue;
             this.conversation = {definition, index: 0, nextLine: time};

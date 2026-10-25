@@ -1156,14 +1156,14 @@ function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
         context.beginPath(); context.rect((x - view.cameraX) * view.scale, (y - view.cameraY) * view.scale, w * view.scale, h * view.scale); context.clip();
     }
     for (const effect of ambience.effects || [{type: ambience.particles, count: ambience.particleCount}]) {
-        for (const point of ambienceParticlePositions({particles: effect.type, particleCount: effect.count}, view, elapsed, width, height)) {
+        for (const point of ambienceParticlePositions({particles: effect.type, particleCount: effect.count, design: effect.design}, view, elapsed, width, height)) {
             const reacted = self.WorldParticles.react(point, effect.type, elapsed, view, ambience.fx);
-            self.WorldParticles.draw(context, reacted, effect.type, elapsed, daylight);
+            self.WorldParticles.draw(context, reacted, effect.type, elapsed, daylight, effect.design);
         }
     }
     context.restore();
 }
 function ambienceParticlePositions(config, view, elapsed, width, height) {
     return self.WorldParticles.positions(config.particles, config.particleCount, elapsed,
-        {x: view.cameraX, y: view.cameraY, scale: view.scale}, width, height);
+        {x: view.cameraX, y: view.cameraY, scale: view.scale}, width, height, config.design);
 }

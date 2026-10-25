@@ -85,6 +85,7 @@ function connectCompanion(cache, sessionId, eventEquipment) {
                 case './formulas': return {level: () => 1};
                 case './socialchat': return {gameplayNameFromSession: data => data.name};
                 case './dao.js': return {saveAvatarMapAndCheckpoint: jest.fn()};
+                case './worldclock': return {syncPlayer: jest.fn()};
                 case './looperlandsplatformclient.js': return {LooperLandsPlatformClient: function () {}};
                 case './playerclassmodifiers.js': return {PlayerClassModifiers: function () {}};
                 case './quests/playereventbroker.js': return {PlayerEventBroker: function () {

@@ -8,7 +8,7 @@ Open **Chests & encounters** in the Mapmaker Toolbox and choose a map. The canva
 2. Select a marker or an entry in **Map objects** to inspect it. Search by name, type, object ID or coordinates.
 3. Drag to move. Drag an area's edge or corner to resize. Arrow keys move the selected object; Shift and arrows resize an area. Shift-drag pans the canvas, and the mouse wheel zooms.
 4. Use the numeric tile coordinates for precise placement, including on a touchscreen. Escape cancels an active drag or placement mode.
-5. Click **Save changes**, then **Build this map**. Start a fresh game session after the build.
+5. Keep placing and editing other objects, then click **Save all changes** once. Its counter shows pending additions, edits and removals. Choose **Build this map** and start a fresh game session after the build.
 
 Changes remain drafts until saved. Reloading or switching maps asks before discarding a draft. A stale save is rejected if Tiled or another tab has changed the source. Reload and reapply the edit. Unsupported shapes and rotations remain viewable; edit those in Tiled.
 
@@ -25,7 +25,7 @@ A placed chest respawns after its configured delay in seconds. The timer starts 
 
 An encounter area spawns the configured population of a mob type on walkable tiles within its rectangle. Mob respawn delays and combat settings come from **Mobs**. Loot from individual mob kills is also configured there.
 
-Save the encounter, then use **Add clear-area reward** to create a matching reward region. Alternatively, use **Draw reward area**. Choose **Place reward chest** or enter its tile coordinates, and configure its loot table. The chest can appear outside the combat rectangle, on any free walkable tile.
+Use **Add clear-area reward** to create a matching reward region; the encounter and reward can be saved together. Alternatively, use **Draw reward area**. Choose **Place reward chest** or enter its tile coordinates, and configure its loot table. The chest can appear outside the combat rectangle, on any free walkable tile.
 
 The reward tracks static and roaming mobs whose initial spawn lies inside its rectangle. Enclose the **whole encounter** for a predictable group; partially overlapping regions can track a random subset. A mob remains part of its initial reward group while chasing players or roaming. Overlapping reward areas can track the same mob.
 

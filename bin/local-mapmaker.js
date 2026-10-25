@@ -125,6 +125,8 @@ class MapmakerToolbox {
         if (this.doorSaveCount) throw Object.assign(new Error('Wait for the entrance save to finish before building.'), {status: 409});
         if (this.entitySaveCount) throw Object.assign(new Error('Wait for the entity placement save to finish before building.'), {status: 409});
         if (this.lightingSaveCount) throw Object.assign(new Error('Wait for the lighting save to finish before building.'), {status: 409});
+        if (this.zoneSaveCount) throw Object.assign(new Error('Wait for the checkpoint or zone save to finish before building.'), {status:409});
+        if (this.fishingSaveCount) throw Object.assign(new Error('Wait for the fishing save to finish before building.'), {status: 409});
         if (this.encounterSaveCount) throw Object.assign(new Error('Wait for the chest or encounter save to finish before building.'), {status: 409});
         validateMap(this.root, mapId);
         this.job = {id: require('crypto').randomUUID(), status: 'running', step: 'Stop game', logs: []};
@@ -172,13 +174,17 @@ class MapmakerToolbox {
         return {checks, checkedAt: new Date().toISOString()};
     }
     async buildMap(mapId) {
+        const started = performance.now();
         const backup = fs.mkdtempSync(path.join(os.tmpdir(), 'looperlands-mapmaker-'));
         const outputs = ['server/maps/world_server_' + mapId + '.json', 'client/maps/world_client_' + mapId + '.json',
             'client/maps/world_client_' + mapId + '.js'];
-        let filesPrepared = false, clientPrepared = false, buildSucceeded = false;
+        let filesPrepared = false, clientPrepared = false, buildSucceeded = false, clientMoved = false;
+        const mapCopies = [];
         const run = async (step, command, args, cwd) => {
             this.job.step = step; this.log(step);
+            const started = performance.now();
             await this.run(command, args, {cwd, signal: this.buildAbort.signal, onLog: line => this.log(line)});
+            this.log(step + ' complete (' + ((performance.now() - started) / 1000).toFixed(2) + 's).');
         };
         try {
             await this.stopGame();
@@ -199,9 +205,31 @@ class MapmakerToolbox {
             const worker = fs.readFileSync(path.join(this.root, outputs[2]), 'utf8');
             JSON.parse(worker.replace(/^var mapData\s*=\s*/, '').replace(/;\s*$/, ''));
             const client = path.join(this.root, 'client-build');
-            if (fs.existsSync(client)) fs.cpSync(client, path.join(backup, 'client-build'), {recursive: true});
-            clientPrepared = true;
-            await run('Build game client', process.execPath, [path.join(this.root, 'bin/build-client.js')], this.root);
+            this.job.step = 'Check client changes';
+            if (require('./mapmaker-client').canReuseClient(this.root)) {
+                this.job.step = 'Update built map';
+                for (const relative of outputs.slice(1)) {
+                    const target = path.join(client, 'maps', path.basename(relative));
+                    const saved = path.join(backup, 'built-' + path.basename(relative));
+                    const exists = fs.existsSync(target);
+                    if (exists) fs.copyFileSync(target, saved);
+                    mapCopies.push({target, saved, exists});
+                    fs.mkdirSync(path.dirname(target), {recursive: true});
+                    fs.copyFileSync(path.join(this.root, relative), target);
+                }
+                this.log('Updated built map; game client unchanged, skipping compilation.');
+            } else {
+                this.job.step = 'Prepare client build';
+                if (fs.existsSync(client)) {
+                    try {fs.renameSync(client, path.join(backup, 'client-build')); clientMoved = true;}
+                    catch (error) {
+                        if (error.code !== 'EXDEV') throw error;
+                        fs.cpSync(client, path.join(backup, 'client-build'), {recursive: true});
+                    }
+                }
+                clientPrepared = true;
+                await run('Build game client', process.execPath, [path.join(this.root, 'bin/build-client.js')], this.root);
+            }
             buildSucceeded = true;
         } catch (error) {
             this.job.error = error.message;
@@ -213,14 +241,25 @@ class MapmakerToolbox {
             }
             if (clientPrepared) {
                 fs.rmSync(path.join(this.root, 'client-build'), {recursive: true, force: true});
-                if (fs.existsSync(path.join(backup, 'client-build'))) fs.cpSync(path.join(backup, 'client-build'), path.join(this.root, 'client-build'), {recursive: true});
+                if (fs.existsSync(path.join(backup, 'client-build'))) {
+                    if (clientMoved) fs.renameSync(path.join(backup, 'client-build'), path.join(this.root, 'client-build'));
+                    else fs.cpSync(path.join(backup, 'client-build'), path.join(this.root, 'client-build'), {recursive: true});
+                }
+            }
+            for (const {target, saved, exists} of mapCopies) {
+                if (exists) fs.copyFileSync(saved, target);
+                else fs.rmSync(target, {force: true});
             }
         } finally {
             this.job.step = 'Restart game';
+            const restarting = performance.now();
             if (!this.closed) {
                 try {await this.startGame(mapId);}
                 catch (error) {this.job.error = (this.job.error ? this.job.error + ' ' : '') + error.message; this.log(error.message);}
             }
+            this.log('Restart game complete (' + ((performance.now() - restarting) / 1000).toFixed(2) + 's).');
+            this.job.durationMs = Math.round(performance.now() - started);
+            this.log('Build finished (' + (this.job.durationMs / 1000).toFixed(2) + 's).');
             this.job.status = buildSucceeded && !this.job.error && !this.closed ? 'succeeded' : 'failed';
             this.job.step = this.job.status === 'succeeded' ? 'Ready to play' : 'Build failed';
             fs.rmSync(backup, {recursive: true, force: true});
@@ -263,10 +302,13 @@ function createToolboxApp(toolbox) {
     require('../server/js/localentitybuilder').install(app, toolbox);
     require('../server/js/locallightingbuilder').install(app, toolbox);
     require('../server/js/localencounterbuilder').install(app, toolbox);
+    require('../server/js/localfishingbuilder').install(app, toolbox);
+    require('../server/js/localzonebuilder').install(app, toolbox);
     require('../server/js/localmappreview').install(app, toolbox);
     require('../server/js/localworldauthoring').install(app, toolbox);
     require('../server/js/localtilebuilder').install(app, toolbox);
     require('../server/js/localworldconnections').install(app, toolbox);
+    require('../server/js/localmapworkspace').install(app, toolbox);
     app.get('/local/api/quests', (req, res) => {
         try {res.json(require('../server/js/localquestbuilder').readQuests(toolbox.root, req.query.mapId));}
         catch (error) {res.status(error.status || 500).json({error: error.message});}
@@ -278,7 +320,7 @@ function createToolboxApp(toolbox) {
             res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
-    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-lighting', 'mapmaker-encounters', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-sequences', 'mapmaker-lighting', 'mapmaker-encounters', 'mapmaker-fishing', 'mapmaker-zones', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));

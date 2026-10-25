@@ -25,7 +25,7 @@ async function setup(map = 'one') {
     const one = {...L.preset('lamp', 8.5, 8.5), id: '1'}, two = {...L.preset('lamp', 18.5, 8.5), id: '2'};
     let data = {mapId: map, revision: 'initial', source: 'one.tmx', dimensions: {width: 40, height: 30, tilewidth: 16, tileheight: 16}, objects: map === 'empty' ? [] : [one, two]};
     let boot;
-    const window = {MapmakerLighting: L, addEventListener() {}, matchMedia: () => ({matches: true}),
+    const window = {MapmakerLighting: L, MapmakerObjectDrafts: require('./objectdrafts'), addEventListener() {}, matchMedia: () => ({matches: true}),
         ToolboxNavigation: {params: () => new URLSearchParams('map=' + map), route: (tool, handler) => {boot = handler;}},
         MapmakerCanvas: {attach(parent, id, options) {mounts++;interaction = options.interaction;return {ready: Promise.resolve(), draw() {}, fit() {}, destroy() {}};}}
     };
@@ -33,8 +33,8 @@ async function setup(map = 'one') {
         let result;
         if (options.method === 'POST') {
             const body = JSON.parse(options.body);payloads.push(body);
-            const row = {...body.object, id: body.object.id || String(nextId++)};
-            data = {...data, revision: 'saved', objects: data.objects.filter(row => row.id !== body.objectId).concat(row)};result = data;
+            for(const change of body.operations){data.objects=data.objects.filter(row=>row.id!==change.objectId);if(change.operation!=='remove')data.objects.push({...change.object,id:change.objectId||String(nextId++)});}
+            data = {...data, revision: 'saved'};result = data;
         } else if (url === './api/lighting') result = {maps: [map]};
         else if (url === './api/catalog') result = {maps: [{id: map, checkpoints: [{x: 12, y: 10, starting: true}]}]};
         else result = data;
@@ -63,7 +63,7 @@ test('click placement and saving preserve the map viewport and persist the chose
     const h = await setup();h.button('Lamp').onclick();
     h.interaction.start(h.context(11.2, 14.1));h.interaction.end(h.context(11.2, 14.1), false);
     await h.nodes['.lighting-save'].onclick();
-    const saved = h.payloads[0];expect(saved.operation).toBe('add');
+    const saved = h.payloads[0].operations[0];expect(saved.operation).toBe('add');
     expect(L.position(saved.object, {tilewidth: 16, tileheight: 16})).toEqual({x: 11.5, y: 14.5});
     expect(h.mounts).toBe(1);expect(h.nodes['.lighting-save'].disabled).toBe(true);
 });
@@ -74,7 +74,7 @@ test('markers move directly and radius handles resize the saved source without a
     expect(h.field('X (tiles)').value).toBe(10.5);expect(h.field('Y (tiles)').value).toBe(9.5);
     h.interaction.start(h.context(14.5, 9.5));h.interaction.move(h.context(17.5, 9.5));h.interaction.end(h.context(17.5, 9.5), false);
     expect(h.field('Radius (tiles)').value).toBe(7);
-    await h.nodes['.lighting-save'].onclick();expect(h.payloads[0].object.properties.radius).toBe('7');expect(h.mounts).toBe(1);
+    await h.nodes['.lighting-save'].onclick();expect(h.payloads[0].operations[0].object.properties.radius).toBe('7');expect(h.mounts).toBe(1);
 });
 
 test('cancelled gestures restore geometry and Shift-drag leaves panning to the map', async () => {
@@ -85,14 +85,21 @@ test('cancelled gestures restore geometry and Shift-drag leaves panning to the m
     expect(h.interaction.start(h.context(30, 20))).toBe(false);expect(h.nodes['.lighting-save'].disabled).toBe(true);
 });
 
-test('switching markers with an unsaved edit requires explicitly keeping or discarding it', async () => {
-    const h = await setup();h.interaction.keydown({key: 'ArrowRight'});
-    h.interaction.start(h.context(18.5, 8.5));h.interaction.end(h.context(18.5, 8.5), false);
-    expect(h.nodes['.lighting-discard'].hidden).toBe(false);expect(h.field('X (tiles)').value).toBe(9.5);
-    h.nodes['.lighting-discard-no'].onclick();expect(h.field('X (tiles)').value).toBe(9.5);
-    h.interaction.start(h.context(18.5, 8.5));h.interaction.end(h.context(18.5, 8.5), false);
-    h.nodes['.lighting-discard-yes'].onclick();expect(h.field('X (tiles)').value).toBe(18.5);
-    expect(h.nodes['.lighting-save'].disabled).toBe(true);expect(h.mounts).toBe(1);
+test('switching markers retains both edits and saves them in one batch', async () => {
+    const h=await setup();h.interaction.keydown({key:'ArrowRight'});
+    h.interaction.start(h.context(18.5,8.5));h.interaction.end(h.context(18.5,8.5),false);
+    expect(h.field('X (tiles)').value).toBe(18.5);h.interaction.keydown({key:'ArrowDown'});
+    expect(h.payloads).toHaveLength(0);await h.nodes['.lighting-save'].onclick();
+    expect(h.payloads).toHaveLength(1);expect(h.payloads[0].operations).toHaveLength(2);
+    expect(L.position(h.payloads[0].operations[0].object,{tilewidth:16,tileheight:16})).toEqual({x:9.5,y:8.5});
+    expect(L.position(h.payloads[0].operations[1].object,{tilewidth:16,tileheight:16})).toEqual({x:18.5,y:9.5});
+});
+test('a placement preset stays active for several additions before saving', async () => {
+    const h=await setup('empty');h.button('Lamp').onclick();
+    for(const [x,y]of [[6,6],[10,10],[14,14]]){h.interaction.start(h.context(x,y));h.interaction.end(h.context(x,y),false);}
+    expect(h.payloads).toHaveLength(0);expect(h.nodes['.lighting-save'].textContent).toContain('(3)');
+    await h.nodes['.lighting-save'].onclick();expect(h.payloads).toHaveLength(1);
+    expect(h.payloads[0].operations).toHaveLength(3);expect(h.mounts).toBe(1);
 });
 
 test('keyboard moves stay within map bounds and shrinking radius keeps falloff valid', () => {

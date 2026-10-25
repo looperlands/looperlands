@@ -11,6 +11,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.mapId = mapId;
             this.debugMessages = false;
             this.dynamicAppearances = new Map();
+            this.visibleEntities = new Set();
             this.resetPendingSpawns();
             this.deferredEntityActions = new Set([
                 Types.Messages.MOVE, Types.Messages.LOOTMOVE, Types.Messages.ATTACK,
@@ -72,6 +73,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.TILE_ACTION] = this.receiveTileAction;
             this.handlers[Types.Messages.NPC_STATE] = this.receiveNpcState;
             this.handlers[Types.Messages.WORLD_AMBIENCE] = this.receiveWorldAmbience;
+            this.handlers[Types.Messages.WORLD_TIME] = data => this.worldTime_callback?.(data[1]);
 
             this.useBison = false;
             this.enable();
@@ -101,6 +103,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         dispose: function() {
             if (this.isDisposed) return;
+            this.sequencePlayer?.destroy();
             this.isDisposed = true;
             this.disable();
             this.dynamicAppearances?.clear();
@@ -117,6 +120,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
              
             const connection = this.connection = io(url, {'force new connection':true, query : "mapId=" + this.mapId});
             const current = () => !self.isDisposed && self.connection === connection;
+            self.sequencePlayer?.connect(connection);
             connection.on('connection', function(socket){
                 if (!current()) return;
                 console.log("Connected to server " + url);
@@ -185,6 +189,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         sendMessage: function(json) {
+            if (this.sequencePlayer?.locked && ![Types.Messages.CHAT,Types.Messages.WHO,Types.Messages.ZONE,Types.Messages.HURT].includes(Number(json[0]))) return;
             if(!this.isDisposed && this.connection?.connected) {
                 this.connection.emit("message", json);
             }
@@ -301,10 +306,21 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             return state;
         },
 
-        receiveSpawn: function(data) {
+        receiveSequenceActor: function(state) {
+            this.receiveSpawn([Types.Messages.SPAWN, ...state], true);
+        },
+
+        releaseSequenceActors: function(ids) {
+            for (const id of ids) {
+                if (!this.visibleEntities.has(id)) this.receiveDestroy([Types.Messages.DESTROY, id]);
+            }
+        },
+
+        receiveSpawn: function(data, fromSequence = false) {
             if (this.isDisposed) return;
             const state = this.readSpawnState(data);
             const {id, kind, x, y} = state;
+            if (!fromSequence) this.visibleEntities.add(id);
             // Reconcile an existing object without constructing it or reloading NFTs.
             if (this.entity_state_callback?.(state)) {
                 this.pendingSpawns.delete(id);
@@ -531,6 +547,9 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         receiveList: function(data) {
             data = data.slice(1);
+            this.visibleEntities = new Set(data);
+            // Cutscene actors remain subscribed while the camera leaves the player's groups.
+            data = [...new Set([...data, ...(this.sequencePlayer?.actorIds() || [])])];
             const visible = new Set(data);
             for (const id of this.pendingSpawns.keys()) {
                 if (!visible.has(id)) this.pendingSpawns.delete(id);
@@ -543,6 +562,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         receiveDestroy: function(data) {
             var id = data[1];
+            this.visibleEntities.delete(id);
+            if (this.sequencePlayer?.ownsActor(id)) return;
             this.pendingSpawns.delete(id);
         
             if(this.destroy_callback) {
@@ -668,6 +689,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onNpcState: function(callback) { this.npcState_callback = callback; },
         onWorldAmbience: function(callback) { this.worldAmbience_callback = callback; },
+        onWorldTime: function(callback) { this.worldTime_callback = callback; },
 
         receiveSpawnFloat: function(data) {
             let id = data[1],

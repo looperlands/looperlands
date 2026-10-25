@@ -29,6 +29,22 @@ test('players joining at different browser uptimes see the same server clock and
     expect(second.getWorldTime()).toBe(first.getWorldTime());
 });
 
+test('a local starting time advances across midnight and takes priority over scene preview phases', () => {
+    const clock = {now: 90000}, game = gameClock(clock);
+    game.previewTimeMode = 'day';
+    game.syncLocalWorldTime(WorldTime.duration - 1000);
+    expect(game.getWorldTime()).toBe(WorldTime.duration - 1000);
+    clock.now += 2500;
+    expect(game.getWorldTime()).toBe(WorldTime.duration + 1500);
+    expect(WorldTime.isInRange(game.getWorldTime(), '00:00-01:00')).toBe(true);
+    // WELCOME on revive or map change is followed by a fresh local clock packet.
+    game.syncWorldTime(1234);
+    game.syncLocalWorldTime(20 / 24 * WorldTime.duration);
+    expect(game.getWorldTime()).toBe(20 / 24 * WorldTime.duration);
+    game.syncLocalWorldTime(NaN);
+    expect(game.getWorldTime()).toBe(20 / 24 * WorldTime.duration);
+});
+
 test('the HUD reads the same clock and preview phase as lighting and fireflies', () => {
     const game = gameClock({now: 1000}); game.syncWorldTime(42.5 * minute);
     let tick, app, displayed;

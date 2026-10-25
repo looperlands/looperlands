@@ -18,10 +18,12 @@ module.exports = class Mapx {
                 var json = JSON.parse(file.toString());
                 // Existing server exports omit scenes; their companion client export
                 // contains the configured names and bounds used by the game camera.
-                if (!json.scenes) {
+                if (!json.scenes || !json.fishingTiles) {
                     const clientPath = path.join(root, 'client/maps', path.basename(filepath).replace('world_server_', 'world_client_'));
                     try {
-                        json.scenes = JSON.parse(await fs.promises.readFile(clientPath, 'utf8')).scenes || [];
+                        const companion = JSON.parse(await fs.promises.readFile(clientPath, 'utf8'));
+                        json.scenes ??= companion.scenes || [];
+                        json.fishingTiles ??= companion.fishingTiles || {};
                     } catch (error) {
                         if (error.code !== 'ENOENT') console.warn('Unable to load map scene names:', clientPath);
                     }
@@ -46,6 +48,7 @@ module.exports = class Mapx {
         this.height = map.height;
         this.collisions = map.collisions;
         this.scenes = map.scenes || [];
+        this.fishingTiles = map.fishingTiles || {};
         this.eventBoards = map.eventBoards || [];
         this.mobAreas = map.roamingAreas;
         this.chestAreas = map.chestAreas;
@@ -83,6 +86,8 @@ module.exports = class Mapx {
     	this.ready_func = f;
     }
 
+    getLakeName(x, y) {return this.fishingTiles[y * this.width + x];}
+
     getSceneAt(x, y) {
         return this.scenes.find(scene => x >= scene.x && y >= scene.y && x < scene.x + scene.w && y < scene.y + scene.h);
     }
@@ -113,11 +118,12 @@ module.exports = class Mapx {
         this.grid = [];
     
         if(this.isLoaded) {
+            const collisions = new Set(this.collisions);
             var tileIndex = 0;
             for(var	j, i = 0; i < this.height; i++) {
                 this.grid[i] = [];
                 for(j = 0; j < this.width; j++) {
-                    if(_.include(this.collisions, tileIndex)) {
+                    if(collisions.has(tileIndex)) {
                         this.grid[i][j] = 1;
                     } else {
                         this.grid[i][j] = 0;
@@ -283,10 +289,11 @@ module.exports = class Mapx {
         var self = this;
         
         this.checkpoints = {};
+        const blocked = new Set(this.collisions || []);
         this.startingAreas = [];
         
         _.each(cpList, function(cp) {
-            var checkpoint = new Checkpoint(cp.id, cp.x, cp.y, cp.w, cp.h);
+            var checkpoint = new Checkpoint(cp.id, cp.x, cp.y, cp.w, cp.h, (x,y)=>x>0&&y>0&&x<self.width&&y<self.height&&!blocked.has(y*self.width+x));
             self.checkpoints[checkpoint.id] = checkpoint; 
             if(cp.s === 1) {
                 self.startingAreas.push(checkpoint);

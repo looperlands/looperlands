@@ -26,7 +26,7 @@ Edit polygon vertices as `x,y` pairs separated by spaces. For example, `0,0 32,0
 
 The map uses the same lighting and shadow renderer as the game, with all current lighting objects and your unsaved draft. **Preview darkness** helps inspect lights without changing the map atmosphere; turn **Preview lighting** off to see the original artwork. Markers and radius rings are editor guides. The preview uses the last built artwork and excludes player lights and tile-emitted lights. Fire flicker pauses when reduced motion is enabled. Full-map lighting previews use lower resolution than close-ups.
 
-**Save changes** updates only the selected object in `tools/maps/tmx/<map>.tmx`, preserving unrelated map data and custom properties. **Remove object → Delete object → Confirm deletion** saves a deletion immediately. Unsaved drafts are guarded when switching objects or maps; a source changed by another tab or Tiled must be reloaded before saving.
+Place several lights or blockers with the same preset, then choose Select / move to tune them. Switching objects preserves every edit. **Save all changes** writes all pending additions, edits and removals together in `tools/maps/tmx/<map>.tmx`, preserving unrelated map data and custom properties. The button shows the pending count. **Remove object → Delete object → Confirm deletion** stages a removal in that batch. Reloading or switching maps asks before discarding the whole draft. Invalid or stale saves keep every pending change available for correction.
 
 Choose **Build this map**, wait for the build, then start a fresh local session. The regular map exporter includes these lights and blockers in the client map. Ambient light, the day/night cycle and tint remain in the [Scene manager](mapmaker-atmosphere.md).
 

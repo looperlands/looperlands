@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {isLocalPlaytest} = require('./localplaytest');
+const WorldClock = require('./worldclock');
 
 const traits = ['fighter', 'ranger', 'tank', 'rogue'];
 const maxLevel = 9999;
@@ -9,6 +10,11 @@ const defaultAvatar = '0xb69e3e44f58d5399faad29b94108a88dbed79e6a14c676fb202e817
 function experienceAtLevel(level) {
     if (!Number.isInteger(level) || level < 1 || level > maxLevel) throw new Error('Choose a level between 1 and ' + maxLevel + '.');
     return level === 1 ? 1 : Math.floor(100 * (9 * level ** 3 - 51 * level ** 2 + 126 * level - 108)) + 1;
+}
+
+function fishingExperienceAtLevel(level) {
+    if (!Number.isInteger(level) || level < 1 || level > 45) throw new Error('Choose a fishing rod level between 1 and 45.');
+    return level === 1 ? 0 : 1000 * 2 ** (level - 2);
 }
 
 function buildCatalog(worlds) {
@@ -25,7 +31,7 @@ function buildCatalog(worlds) {
             items.push({id: String(kind), name: names.getName(id), key: id});
         }
         const avatar = id.startsWith('NFT_') && Types.isArmor(kind);
-        if (!avatar && !Types.isWeapon(kind)) continue;
+        if (!avatar && !Types.isWeapon(kind) && !Types.isFishingRod(kind)) continue;
         const metadata = path.join(client, 'sprites', id + '.json');
         if (!fs.existsSync(metadata) || !fs.existsSync(path.join(client, 'img/1', id + '.png'))) continue;
         const sprite = JSON.parse(fs.readFileSync(metadata, 'utf8'));
@@ -34,6 +40,7 @@ function buildCatalog(worlds) {
         const name = alias !== id ? alias : nftId ? (avatar ? 'Avatar ' : 'Weapon ') + kind + ' · ' + nftId.slice(2, 8) + '…' + nftId.slice(-4) : id;
         const entry = {id, nftId, name, sprite: {url: '/img/1/' + id + '.png', width: sprite.width, height: sprite.height,
             row: sprite.animations?.idle_down?.row ?? sprite.animations?.walk_down?.row ?? 0}};
+        if (Types.isFishingRod(kind)) {entry.fishingRod = true;entry.maxLevel = 45;}
         if (!avatar && !nftId) entry.fixedLevel = Properties.getWeaponLevel(kind);
         (avatar ? avatars : weapons).push(entry);
     }
@@ -66,6 +73,8 @@ function sameOrigin(req, appUrl) {
 function sessionSettings(input, catalog, worlds) {
     const invalid = message => {throw new Error(message);};
     if (!input || typeof input !== 'object' || Array.isArray(input)) invalid('Choose your playtest settings.');
+    const timeOfDay = input.timeOfDay ?? '';
+    if (timeOfDay !== '') WorldClock.parseTimeOfDay(timeOfDay);
     const localDoorAccess = input.localDoorAccess ?? 'local';
     if (!['local', 'live', 'allow-all'].includes(localDoorAccess)) invalid('Choose a door access mode.');
     if (localDoorAccess === 'live' && !require('./localdooraccess').configuration()) invalid('Real ownership checks are not configured on this local server.');
@@ -85,7 +94,7 @@ function sessionSettings(input, catalog, worlds) {
     const weapon = catalog.weapons.find(row => row.id === input.weaponId || row.nftId === input.weaponId);
     if (!weapon) invalid('Choose a weapon included in this game client.');
     const xp = experienceAtLevel(input.level);
-    const weaponXp = weapon.nftId ? experienceAtLevel(input.weaponLevel) : null;
+    const weaponXp = weapon.nftId ? (weapon.fishingRod ? fishingExperienceAtLevel(input.weaponLevel) : experienceAtLevel(input.weaponLevel)) : null;
     if (!weapon.nftId && input.weaponLevel !== undefined && input.weaponLevel !== weapon.fixedLevel) invalid('This bundled weapon uses its fixed game level. Choose an NFT weapon to set a custom level.');
     if (!catalog.traits.includes(input.trait)) invalid('Choose a character class.');
     if (typeof input.title !== 'string' || !input.title.trim() || input.title.trim().length > 24 || /[\u0000-\u001f<>]/.test(input.title)) invalid('Use a display name of 1–24 characters.');
@@ -99,7 +108,8 @@ function sessionSettings(input, catalog, worlds) {
             !(typeof worlds === 'function' ? worlds() : worlds)[map.id]?.isValidPosition(input.x, input.y)) invalid('Choose a walkable spawn tile with both X and Y coordinates.');
         body.x = input.x; body.y = input.y;
     }
-    return {body, weapon, weaponXp};
+    const fishingRod = catalog.weapons.find(row => row.fishingRod && row.nftId);
+    return {body, weapon, weaponXp, timeOfDay, fishingRod};
 }
 
 function installLocalLauncher(app, options) {
@@ -128,8 +138,11 @@ function installLocalLauncher(app, options) {
         try {settings = sessionSettings(req.body, getCatalog(), options.worlds);}
         catch (error) {return res.status(400).json({error: error.message});}
         try {
-            const {body, weapon, weaponXp} = settings;
-            if (weapon.nftId) await options.platform.prepareSession({walletId: body.walletId, nftId: weapon.nftId, xp: weaponXp, trait: 'speed'});
+            const {body, weapon, weaponXp, timeOfDay, fishingRod} = settings;
+            if (weapon.nftId) await options.platform.prepareSession({walletId: body.walletId, nftId: weapon.nftId, xp: weaponXp, trait: weapon.fishingRod ? 'upper_hand' : 'speed'});
+            if (!weapon.fishingRod && fishingRod) {
+                await options.platform.prepareSession({walletId: body.walletId, nftId: fishingRod.nftId, trait: 'upper_hand'});
+            }
             await options.platform.equip(body.walletId, body.nftId, weapon.nftId || weapon.id);
             let status = 200;
             const response = {
@@ -138,6 +151,13 @@ function installLocalLauncher(app, options) {
                 send(data) {
                     if (status >= 400) return res.status(status).json({error: data?.error || 'The game could not create this session.'});
                     if (typeof data?.sessionId !== 'string' || !/^[a-f0-9]{40}$/.test(data.sessionId)) return res.status(502).json({error: 'The game did not return a valid session ID.'});
+                    if (timeOfDay !== '') {
+                        WorldClock.startAt(timeOfDay);
+                        const worlds = typeof options.worlds === 'function' ? options.worlds() : options.worlds;
+                        for (const world of Object.values(worlds)) {
+                            for (const player of Object.values(world.players || {})) WorldClock.syncPlayer(player);
+                        }
+                    }
                     return res.status(status).json({sessionId: data.sessionId, url: '/?sessionId=' + data.sessionId});
                 }
             };
@@ -149,4 +169,4 @@ function installLocalLauncher(app, options) {
     return true;
 }
 
-module.exports = {installLocalLauncher, experienceAtLevel, buildCatalog};
+module.exports = {installLocalLauncher, experienceAtLevel, fishingExperienceAtLevel, buildCatalog};

@@ -4,6 +4,8 @@ async function completeFishingCatch(player, success, bullseye, {lakes, messages,
     player.pendingFish = null;
     if (success !== true || !fish || !lakes[fish.lakeName]?.fish?.[fish.name]) return null;
 
+    if (fish.expiresAt != null && (fish.expiresAt < Date.now() || fish.mapId !== player.server.id || player.isDead || player.hitPoints <= 0)) return null;
+
     const quantity = fish.double ? 2 : 1;
     const experience = (bullseye === true ? Math.round(fish.exp * 1.5) : fish.exp) * quantity;
     await player.playerEventBroker.lootEvent({kind: fish.name}, quantity, {source: 'catch'});

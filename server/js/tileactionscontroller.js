@@ -98,14 +98,17 @@ class TileActionsController {
         const result = await controller.executeStage(nftId, map, tileAction, item, world, expectedStage, expectedRevision);
         const after = JSON.stringify(world?.map?.tileStages?.[key]);
         // Effects are transient confirmed-action events, never persisted in tile snapshots.
-        if (result?.success && result.activity && before !== after) {
+        const definition = controller.stageDefinitions?.[map]?.[result?.activity?.action];
+        if (result?.success && result.activity && !result.activity.failed && (before !== after || definition?.type === 'sequence')) {
             try {
-                const definition = controller.stageDefinitions?.[map]?.[result.activity.action];
                 const particles = WorldFxConfig.stageBurst(definition?.stageParticles, result.activity.stage);
                 if (particles) {
                     const Messages = require('./message');
-                    world.pushBroadcast(new Messages.TileStage({x: tileAction.gridX, y: tileAction.gridY,
-                        particlesOnly: true, particles, action: result.activity.stage}));
+                    const message = new Messages.TileStage({x: tileAction.gridX, y: tileAction.gridY,
+                        particlesOnly: true, particles, action: result.activity.stage});
+                    const player = definition?.scope === 'player' && Object.values(world.players || {}).find(p => p.nftId === nftId);
+                    if (definition?.scope === 'player') {if (player) world.pushToPlayer(player, message);}
+                    else world.pushBroadcast(message);
                 }
             } catch (error) { console.warn('Tile-stage particles skipped:', error.message); }
         }

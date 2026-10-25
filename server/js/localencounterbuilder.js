@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const {execFile} = require('child_process');
 const Types = require('../../shared/js/gametypes');
-const saves = new Map();
+const {saves} = require('./localobjectbatch');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 const maps = root => JSON.parse(fs.readFileSync(path.join(root, 'server/config.json'), 'utf8')).maps;
 function source(root, mapId) {
@@ -53,9 +53,12 @@ function decorate(data, mapId) {
     });
     return {...data, objects, mapId, source: 'tools/maps/tmx/' + mapId + '.tmx'};
 }
-async function readEncounters(root, mapId) {return decorate(await run(root, mapId), mapId);}
+async function readEncounters(root, mapId) {
+    const file = source(root, mapId);
+    return decorate(await require('./localtmxcache').readTmx(file, 'encounters', () => run(root, mapId)), mapId);
+}
 function integer(value, min, max, name) {if (!Number.isSafeInteger(value) || value < min || value > max) fail(name + ' must be a whole number from ' + min + ' to ' + max + '.');}
-function validate(root, mapId, row, current, data) {
+function validate(root, mapId, row, current, data, builtMap) {
     if (!row || typeof row !== 'object' || Array.isArray(row) || !['chest', 'encounter', 'reward'].includes(row.kind)) fail('Choose a chest, encounter or clear-area reward.');
     if (Object.keys(row).some(k => !['id','kind','name','x','y','width','height','mob','count','loot','lootMode','respawnSeconds','rewardX','rewardY','editable'].includes(k))) fail('Only chest and encounter settings can be edited here.');
     if (current && (current.kind !== row.kind || !current.editable)) fail('Keep the existing object type. Rotated or unsupported shapes must be edited in Tiled.');
@@ -67,7 +70,7 @@ function validate(root, mapId, row, current, data) {
         if (row.width * row.height > 250000) fail('Use an area of at most 250000 tiles.');
     }
     const filename = path.join(root, 'server/maps/world_server_' + mapId + '.json');
-    let map;try {map = JSON.parse(fs.readFileSync(filename, 'utf8'));} catch (_) {fail('Build this map first so placements can be checked against collisions.');}
+    let map;try {map = builtMap || require('./localmapfiles').readJson(filename);} catch (_) {fail('Build this map first so placements can be checked against collisions.');}
     if (map.width !== d.width || map.height !== d.height) fail('Map dimensions changed in Tiled. Build the map before placing objects.');
     const blocked = new Set(map.collisions || []), walkable = (x, y) => x > 0 && y > 0 && x < map.width && y < map.height && !blocked.has(y * map.width + x);
     const properties = {};
@@ -104,6 +107,25 @@ function validate(root, mapId, row, current, data) {
 async function saveObject(root, input, beforeWrite = () => {}) {
     const file = source(root, input?.mapId);
     const work = (saves.get(file) || Promise.resolve()).catch(() => {}).then(async () => {
+        if (input.operations !== undefined) {
+            const changes = require('./localobjectbatch').operations(input);
+            const data = await readEncounters(root, input.mapId);
+            if (data.revision !== input.revision) fail('This map changed in Tiled or another tab. Keep the draft and reload before saving.', 409);
+            const edited = new Set(changes.filter(row => row.operation !== 'add').map(row => String(row.objectId)));
+            const final = data.objects.filter(row => !edited.has(row.id));
+            const candidates = changes.map((change, index) => {
+                const current = data.objects.find(row => row.id === String(change.objectId));
+                if (change.operation !== 'add' && !current) fail('A chest or encounter was removed. Keep the draft and reload.', 404);
+                const id = current?.id || 'draft-' + index;
+                if (change.operation !== 'remove') final.push({...change.object, id});
+                return {change, current, id};
+            });
+            const built = candidates.some(row => row.change.operation !== 'remove') ? require('./localmapfiles').readJson(path.join(root, 'server/maps/world_server_' + input.mapId + '.json')) : null;
+            const operations = candidates.map(({change, current, id}) => ({...change, object: change.operation === 'remove' ? undefined :
+                validate(root, input.mapId, {...change.object, id}, current || {id, kind: change.object?.kind, editable: true}, {...data, objects: final}, built)}));
+            beforeWrite();
+            return decorate(await run(root, input.mapId, {revision: input.revision, operations}), input.mapId);
+        }
         if (!['add', 'update', 'remove'].includes(input.operation) || typeof input.revision !== 'string') fail('Reload chests and encounters before saving.');
         const data = await readEncounters(root, input.mapId);
         if (data.revision !== input.revision) fail('This map changed in Tiled or another tab. Reload before saving.', 409);

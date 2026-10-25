@@ -3,6 +3,7 @@ global.Types = {};
 const Types = require('../../shared/js/gametypes');
 function setup() {
     let methods;
+    const worldClock = {syncPlayer: jest.fn()};
     function PlayerClass() {}
     vm.runInNewContext(fs.readFileSync(require.resolve('./player'), 'utf8'), {
         module: {exports: {}}, process: {env: {}}, console, FormatChecker: function () {}, performance: {now: () => 1000},
@@ -10,6 +11,7 @@ function setup() {
         require: name => {
             if (name === '../../shared/js/gametypes') return Types;
             if (name === './format') return {check: () => true};
+            if (name === './worldclock') return worldClock;
             if (name === './quests/playereventbroker.js') return {PlayerEventBroker: function () {this.spawnEvent = jest.fn();}};
             if (name === './looperlandsplatformclient.js') return {LooperLandsPlatformClient: function () {}};
             return {};
@@ -23,14 +25,15 @@ function setup() {
         id: 42, level: 9, weapon: 'same-weapon', resetTimeout: jest.fn(), clearTarget: jest.fn(),
         updatePosition: jest.fn(() => {player.x = 12; player.y = 20;}),
         updateHitPoints: jest.fn(() => {player.hitPoints = 200;}), send: jest.fn(), startFlowPolling: jest.fn().mockResolvedValue()});
-    return {player, world, receive: connection.listen.mock.calls[0][0], connection};
+    return {player, world, receive: connection.listen.mock.calls[0][0], connection, worldClock};
 }
 
 test('dead HELLO revives in the same authenticated session at the server checkpoint exactly once', async () => {
-    const {player, world, receive, connection} = setup();
+    const {player, world, receive, connection, worldClock} = setup();
     await receive([Types.Messages.HELLO, 'ignored', 'ignored', 'ignored', 'same-session']);
     expect(player).toMatchObject({isDead: false, id: 42, level: 9, weapon: 'same-weapon', x: 12, y: 20});
     expect(player.send).toHaveBeenCalledWith([Types.Messages.WELCOME, 42, undefined, 12, 20, 200, undefined, 1000]);
+    expect(worldClock.syncPlayer).toHaveBeenCalledWith(player);
     expect(world.addEntity).toHaveBeenCalledWith(player);
     expect(world.addPlayer).not.toHaveBeenCalled();
     expect(world.enter_callback).not.toHaveBeenCalled();

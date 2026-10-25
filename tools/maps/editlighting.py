@@ -98,7 +98,7 @@ def scan(filename):
     return {'objects': objects, 'dimensions': dimensions, 'revision': digest.hexdigest()}, original, groups, ids, max_layer, map_start, map_end
 
 
-def edit(filename, payload, result, original, groups, ids, max_layer, map_start, map_end):
+def edit(filename, payload, result, original, groups, ids, max_layer, map_start, map_end, plan=None):
     if payload.get('revision') != result['revision']:
         fail('This map changed in another tab or in Tiled. Reload lights before saving.', 409)
     data, operation = payload.get('object', {}), payload['operation']
@@ -121,6 +121,9 @@ def edit(filename, payload, result, original, groups, ids, max_layer, map_start,
         else:
             next_id = re.search(rb'\bnextobjectid="(\d+)"', map_open)
             object_id = max(max([int(i) for i in ids] + [0]) + 1, int(next_id[1]) if next_id else 1)
+            if plan is not None:
+                object_id = plan.next_object
+                plan.next_object += 1
             element = ET.Element('object', id=str(object_id))
     patches = []
     if operation == 'remove':
@@ -162,31 +165,37 @@ def edit(filename, payload, result, original, groups, ids, max_layer, map_start,
             patches.append((existing['start'], existing['end'], replacement))
         else:
             group_name = 'lights' if data['kind'] == 'light' else 'shadows'
-            group = groups.get(group_name)
-            if group:
-                with open(filename, 'rb') as source:
-                    source.seek(group['end'])
-                    is_closing = source.read(2) == b'</'
-                if is_closing:
-                    patches.append((group['end'], group['end'], b' ' + replacement + newline.encode() + b' '))
-                else:
-                    # Expand a self-closing object layer without altering its attributes.
-                    patches.append((group['end'] - 2, group['end'], b'>' + newline.encode() + b'  ' + replacement + newline.encode() + b' </objectgroup>'))
+            if plan is not None:
+                plan.insert(group_name, replacement)
             else:
-                next_layer = re.search(rb'\bnextlayerid="(\d+)"', map_open)
-                layer_id = max(max_layer + 1, int(next_layer[1]) if next_layer else 1)
-                opening = (' <objectgroup id="' + str(layer_id) + '" name="' + group_name + '">' + newline + '  ').encode()
-                patches.append((map_end, map_end, opening + replacement + (newline + ' </objectgroup>' + newline).encode()))
-            updated_open = map_open
-            for key, value in [('nextobjectid', int(element.get('id')) + 1), ('nextlayerid', max_layer + 1 if group else layer_id + 1)]:
-                expression = rb'\b' + key.encode() + rb'="(\d+)"'
-                match = re.search(expression, updated_open)
-                value = max(value, int(match[1]) if match else 0)
-                if match:
-                    updated_open = re.sub(expression, (key + '="' + str(value) + '"').encode(), updated_open)
+                group = groups.get(group_name)
+                if group:
+                    with open(filename, 'rb') as source:
+                        source.seek(group['end'])
+                        is_closing = source.read(2) == b'</'
+                    if is_closing:
+                        patches.append((group['end'], group['end'], b' ' + replacement + newline.encode() + b' '))
+                    else:
+                        # Expand a self-closing object layer without altering its attributes.
+                        patches.append((group['end'] - 2, group['end'], b'>' + newline.encode() + b'  ' + replacement + newline.encode() + b' </objectgroup>'))
                 else:
-                    updated_open = updated_open[:-1] + (' ' + key + '="' + str(value) + '">').encode()
-            patches.append((map_start, map_start + len(map_open), updated_open))
+                    next_layer = re.search(rb'\bnextlayerid="(\d+)"', map_open)
+                    layer_id = max(max_layer + 1, int(next_layer[1]) if next_layer else 1)
+                    opening = (' <objectgroup id="' + str(layer_id) + '" name="' + group_name + '">' + newline + '  ').encode()
+                    patches.append((map_end, map_end, opening + replacement + (newline + ' </objectgroup>' + newline).encode()))
+                updated_open = map_open
+                for key, value in [('nextobjectid', int(element.get('id')) + 1), ('nextlayerid', max_layer + 1 if group else layer_id + 1)]:
+                    expression = rb'\b' + key.encode() + rb'="(\d+)"'
+                    match = re.search(expression, updated_open)
+                    value = max(value, int(match[1]) if match else 0)
+                    if match:
+                        updated_open = re.sub(expression, (key + '="' + str(value) + '"').encode(), updated_open)
+                    else:
+                        updated_open = updated_open[:-1] + (' ' + key + '="' + str(value) + '">').encode()
+                patches.append((map_start, map_start + len(map_open), updated_open))
+    if plan is not None:
+        plan.patches.extend(patches)
+        return
     descriptor, temporary = tempfile.mkstemp(prefix='.mapmaker-light-', dir=os.path.dirname(filename))
     try:
         with os.fdopen(descriptor, 'wb') as destination, open(filename, 'rb') as source:
@@ -218,7 +227,12 @@ def edit(filename, payload, result, original, groups, ids, max_layer, map_start,
 def main():
     filename, payload = sys.argv[1], json.load(sys.stdin)
     result, original, groups, ids, max_layer, map_start, map_end = scan(filename)
-    if payload.get('operation'):
+    if payload.get('operations') is not None:
+        sys.dont_write_bytecode = True
+        from batchobjects import edit_batch
+        edit_batch(sys.modules[__name__], filename, payload, (result, original, groups, ids, max_layer, map_start, map_end))
+        result = scan(filename)[0]
+    elif payload.get('operation'):
         edit(filename, payload, result, original, groups, ids, max_layer, map_start, map_end)
         result = scan(filename)[0]
     for row in result['objects']:

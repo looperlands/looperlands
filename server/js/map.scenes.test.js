@@ -66,6 +66,19 @@ test('adding scenes preserves collision coordinates and hidden layer gates', () 
     expect(map.tileIndexToGridPosition(113)).toEqual({x: 0, y: 1});
 });
 
+test('collision grid matches the exported zero-based tile indices, including edges and duplicate entries', () => {
+    const map = configuredMap();
+    map.collisions = [0, 111, 112, 113, 113, 5375, -1, 5376];
+    map.generateCollisionGrid();
+    expect(map.grid).toHaveLength(map.height);
+    for (let y = 0; y < map.height; y++) {
+        expect(map.grid[y]).toHaveLength(map.width);
+        for (let x = 0; x < map.width; x++) expect(map.grid[y][x]).toBe(map.collisions.includes(y * map.width + x) ? 1 : 0);
+    }
+    map.collisions = []; map.generateCollisionGrid();
+    expect(map.grid.every(row => row.every(value => value === 0))).toBe(true);
+});
+
 test('scene initialization retains portal presence groups, token gates and checkpoints', () => {
     const map = configuredMap(); const groups = [];
     map.forEachGroup(id => groups.push(id));

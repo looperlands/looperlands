@@ -1,5 +1,6 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const locations = new WeakMap(), images = new Map();
     const popup = document.createElement('section');
     popup.id = 'map-location-preview';
@@ -78,11 +79,11 @@
         canvas.setAttribute('aria-label', '13 by 13 tile preview of ' + location.mapId + ', centered on tile ' + location.x + ', ' + location.y + '. Blue outline marks the center tile.');
         status.textContent = 'Loading built map…';draw();popup.hidden = false;position();controller = new AbortController();
         try {
-            const params = new URLSearchParams(location), response = await fetch('./api/map-preview?' + params, {signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])});
+            const params = new URLSearchParams(location), response = await fetchData('./api/map-preview?' + params, {signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])});
             const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Map preview could not load.');
             if (token !== generation) return;
             draw(data);status.textContent = 'Built map · 13 × 13 tiles · blue center';position();
-            try {const image = await imageFor(data.tileset + '?v=' + encodeURIComponent(data.revision));if (token === generation) draw(data, image);}
+            try {const image = await (window.ToolboxMapData ? window.ToolboxMapData.image(data.tileset, data.artworkRevision || data.revision) : imageFor(data.tileset + '?v=' + encodeURIComponent(data.revision)));if (token === generation) draw(data, image);}
             catch (error) {if (token === generation) status.textContent = error.message;}
         } catch (error) {if (token === generation && error.name !== 'AbortError') status.textContent = error.name === 'TimeoutError' ? 'Preview timed out. Hover or focus the coordinates to retry.' : error.message;}
         if (token === generation) position();

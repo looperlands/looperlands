@@ -88,3 +88,15 @@ test('tile outcome styles survive persistence and reject unsupported markup and 
         expect(() => B.validate(document, B.readMap(root, 'one'))).toThrow();
     }
 });
+
+test('custom interaction bursts survive shared-library save and do not reset gameplay progress', () => {
+    const Templates=require('../../shared/js/interactiontemplates'),Fx=require('../../client/js/worldfxconfig');
+    const action=Templates.create('chest'),before=Templates.runtimeDefinition(action);
+    action.stageParticles={stages:{use:{preset:'sparks',count:24,lifetimeMs:1000,design:Fx.custom({shape:'star',glow:12})}}};
+    const data=B.readTool(root,'one');data.document.actions.magic_chest=action;
+    B.save(root,{mapId:'one',revision:data.revision,document:data.document});
+    expect(B.readTool(root,'one').document.actions.magic_chest.stageParticles).toEqual(action.stageParticles);
+    expect(Templates.runtimeDefinition(action)).toEqual(before);
+    action.stageParticles.stages.use.design.glow=100;
+    expect(()=>B.validate(data.document,B.readMap(root,'one'))).toThrow('glow');
+});

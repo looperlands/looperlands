@@ -51,6 +51,7 @@ class PlayerEventBroker {
             eventData.allowedObjectives[definition.id] = (definition.ordered === false ? pending : pending.slice(0, 1)).map(o => o.id);
         }
 
+        player.server?.scenes?.event?.(player, eventType, eventData);
         let eventId = eventType + ',' + sessionId;
         const key = eventData.playerData?.nftId || sessionId;
         const previous = PlayerEventBroker.pending.get(key) || Promise.resolve();

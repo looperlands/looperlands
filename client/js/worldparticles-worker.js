@@ -9,17 +9,18 @@
     const speeds = {leaves: [5, 7], pollen: [3, -1], dust: [11, 2], gusts: [15, 2],
         spray: [7, -3], sand: [9, 1], embers: [2, -6], ash: [4, 3], mist: [2, 0]};
 
-    function positions(type, count, elapsed, view, width, height) {
+    function positions(type, count, elapsed, view, width, height, design) {
         const {x: cameraX = 0, y: cameraY = 0, scale = 1} = view || {};
         const points = [];
-        const drift = speeds[type] || [0, 0];
-        const margin = type === 'mist' ? 48 : 16;
+        const custom = type === 'custom' && design;
+        const drift = custom ? [custom.velocityX, custom.velocityY] : speeds[type] || [0, 0];
+        const margin = type === 'mist' ? 48 : custom ? Math.max(16, custom.glow + custom.size * 2) : 16;
         for (let patchY = Math.floor((cameraY - margin) / 224); patchY <= Math.floor((cameraY + height / scale + margin) / 224); patchY++) {
             for (let patchX = Math.floor((cameraX - margin) / 480); patchX <= Math.floor((cameraX + width / scale + margin) / 480); patchX++) {
                 for (let index = 0; index < count; index++) {
                     const seed = index * 1.618 + 0.5 + (type === 'fireflies' ? 0 : type.length * 0.73);
-                    const worldX = patchX * 480 + wrap(seed * 137 + elapsed * drift[0] + Math.sin(elapsed * 0.25 + seed) * 7, 480);
-                    const worldY = patchY * 224 + wrap(seed * 83 + elapsed * drift[1] + Math.cos(elapsed * 0.3 + seed) * 6, 224);
+                    const worldX = patchX * 480 + wrap(seed * 137 + elapsed * drift[0] + Math.sin(elapsed * 0.25 + seed) * (custom ? custom.sway : 7), 480);
+                    const worldY = patchY * 224 + wrap(seed * 83 + elapsed * drift[1] + Math.cos(elapsed * 0.3 + seed) * (custom ? custom.sway : 6), 224);
                     const x = (worldX - cameraX) * scale, y = (worldY - cameraY) * scale;
                     if (x >= -margin * scale && y >= -margin * scale && x <= width + margin * scale && y <= height + margin * scale) {
                         points.push({index, seed, x, y, scale});
@@ -49,7 +50,28 @@
         context.fillRect(x, y, width, height);
     }
 
-    function draw(context, point, type, elapsed, daylight) {
+    function drawCustom(context, point, elapsed, design) {
+        const {x, y, scale, seed, index = 0} = point;
+        const color = design.colors[index % design.colors.length];
+        const rgb = [1,3,5].map(i => parseInt(color.slice(i, i + 2), 16)).join(',');
+        const opacity = design.opacity * (1 - design.pulse * (0.5 + Math.sin(elapsed * 2 + seed) * 0.5));
+        const size = design.size * scale;
+        context.save();
+        context.translate(x, y);
+        if (design.spin) context.rotate(seed + elapsed * design.spin);
+        if (design.glow > 0) halo(context, 0, 0, (design.glow + design.size) * scale, rgb, opacity * 0.4);
+        context.fillStyle = 'rgba(' + rgb + ',' + opacity + ')';
+        if (design.shape === 'soft') halo(context, 0, 0, size * 2, rgb, opacity);
+        else if (design.shape === 'star') {
+            context.fillRect(-size * 1.5, -size / 2, size * 3, size);
+            context.fillRect(-size / 2, -size * 1.5, size, size * 3);
+        } else if (design.shape === 'spark') context.fillRect(-size / 2, -size * 1.5, size, size * 3);
+        else context.fillRect(-size / 2, -size / 2, size, size);
+        context.restore();
+    }
+
+    function draw(context, point, type, elapsed, daylight, design) {
+        if (type === 'custom') {if (design) drawCustom(context, point, elapsed, design);return;}
         const {x, y, scale, seed} = point;
         const visibility = 0.35 + daylight * 0.65;
         const flutter = 0.65 + Math.sin(elapsed * 1.1 + seed) * 0.15;

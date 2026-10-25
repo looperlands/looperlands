@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const vm = require('vm');
+jest.mock('./worldclock', () => ({...jest.requireActual('./worldclock'), startAt: jest.fn(), syncPlayer: jest.fn()}));
+const WorldClock = require('./worldclock');
 
 // The legacy game-types module assigns its namespace on the global object.
 global.Types = {};
@@ -30,6 +32,7 @@ const environmentKeys = ['NODE_ENV', 'LOOPERLANDS_LOCAL_PLAYTEST', 'LOOPERLANDS_
 let environment, server, baseUrl, platform, createSession, world;
 
 beforeEach(() => {
+    jest.clearAllMocks();
     environment = Object.fromEntries(environmentKeys.map(key => [key, process.env[key]]));
     process.env.NODE_ENV = 'development';
     process.env.LOOPERLANDS_LOCAL_PLAYTEST = '1';
@@ -125,6 +128,30 @@ test('a basic sword can start a session without creating an NFT weapon', async (
     expect(platform.prepareSession.mock.calls.some(([settings]) => settings.nftId === 'sword1')).toBe(false);
 });
 
+test.each(['00:00', '08:00', '17:30', '23:59'])('starting at %s updates the shared clock and existing players after session creation', async timeOfDay => {
+    world.players = {first: {id: 1}, second: {id: 2}};
+    await start();
+    expect((await post({...validSettings, timeOfDay})).status).toBe(200);
+    expect(WorldClock.startAt).toHaveBeenCalledWith(timeOfDay);
+    expect(WorldClock.startAt.mock.invocationCallOrder[0]).toBeGreaterThan(createSession.mock.invocationCallOrder[0]);
+    expect(WorldClock.syncPlayer.mock.calls).toEqual([[world.players.first], [world.players.second]]);
+});
+
+test.each([undefined, '', null])('an unset starting time (%s) preserves the current world clock', async timeOfDay => {
+    await start();
+    expect((await post({...validSettings, timeOfDay})).status).toBe(200);
+    expect(WorldClock.startAt).not.toHaveBeenCalled();
+});
+
+test.each([503, 502])('a failed session (%s) does not change the world clock', async status => {
+    createSession.mockImplementation((req, res) => status === 503
+        ? res.status(503).json({error: 'Game unavailable'}) : res.status(200).json({sessionId: null}));
+    await start();
+    expect((await post({...validSettings, timeOfDay: '20:00'})).status).toBe(status);
+    expect(WorldClock.startAt).not.toHaveBeenCalled();
+    expect(WorldClock.syncPlayer).not.toHaveBeenCalled();
+});
+
 test.each(['local', 'allow-all', 'live'])('door mode %s and selected starting progress reach the new session', async localDoorAccess => {
     process.env.LOOPERLANDS_OWNERSHIP_BASE_URL = 'https://example.invalid';
     process.env.LOOPERLANDS_OWNERSHIP_API_KEY = 'server-secret';
@@ -149,6 +176,12 @@ test('live checks without server configuration are rejected before modifying pro
 });
 
 test.each([
+    ['invalid time', {timeOfDay: '24:00'}],
+    ['invalid minutes', {timeOfDay: '12:60'}],
+    ['partial time', {timeOfDay: '8:00'}],
+    ['seconds in time', {timeOfDay: '08:00:30'}],
+    ['non-string time', {timeOfDay: 8}],
+    ['array time', {timeOfDay: ['08:00']}],
     ['invalid access mode', {localDoorAccess: 'anything'}],
     ['unknown starting item', {startingInventory: [{item: '99999', amount: 1}]}],
     ['negative item amount', {startingInventory: [{item: '100', amount: -1}]}],
@@ -262,4 +295,18 @@ test('loading maps return a useful error and the catalog recovers when maps beco
     const ready = await fetch(baseUrl + '/local/api/catalog');
     expect(ready.status).toBe(200);
     expect((await ready.json()).maps).toEqual(catalog.maps);
+});
+
+test('the playtest catalog includes fishing rods and their tool-level limits',()=>{
+    const types=require('../../shared/js/gametypes');const generated=buildCatalog({});
+    const rods=generated.weapons.filter(row=>types.isFishingRod(types.getKindFromString(row.id)));
+    expect(rods.length).toBeGreaterThan(0);expect(rods.every(row=>row.fishingRod&&row.maxLevel===45)).toBe(true);
+});
+test.each([1,2,12,45])('fishing preset level %i matches the game tool XP curve',level=>{
+    const xp=require('./localplaytestlauncher').fishingExperienceAtLevel(level);expect(Number.isSafeInteger(xp)).toBe(true);const module={exports:{}};vm.runInNewContext(fs.readFileSync(require.resolve('./formulas'),'utf8'),{module,exports:module.exports,process:{env:{}},require:name=>name==='node-cron'?{schedule:()=>{}}:{}});expect(module.exports.toolLevel(xp)).toBe(level);
+});
+test('fishing sessions prepare rod XP and a supported fishing trait',async()=>{
+    const rod={...catalog.weapons[1],fishingRod:true,maxLevel:45};await start({...catalog,weapons:[catalog.weapons[0],rod]});
+    const response=await post({...validSettings,weaponLevel:12});expect(response.status).toBe(200);
+    expect(platform.prepareSession).toHaveBeenCalledWith(expect.objectContaining({nftId:weapon,xp:1024000,trait:'upper_hand'}));
 });

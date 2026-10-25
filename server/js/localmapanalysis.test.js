@@ -122,3 +122,8 @@ test('inspector serves original artwork independently of the built client and re
     fs.unlinkSync(path.join(root,'client/img/1/tilesheet_one.png'));fs.symlinkSync(path.join(root,'server/config.json'),path.join(root,'client/img/1/tilesheet_one.png'));
     await routes['/local/api/map-artwork']({query:{mapId:'one'}},res);expect(res.json).toHaveBeenLastCalledWith({error:expect.stringContaining('symbolic')});
 });
+
+test('checkpoint and gameplay-zone findings open their exact source object',async()=>{
+    const options=sources();options.readZones=async()=>({objects:[{id:'44',kind:'checkpoint',name:'Bad spawn',x:2,y:2,width:1,height:1,checkpointId:7,starting:false},{id:'45',kind:'trigger',name:'Prompt',x:4,y:4,width:1,height:1,trigger:'gate',delaySeconds:-1,playerMessage:'',message:'',minigame:'',offsetX:0,offsetY:0}]});
+    write('server/maps/world_server_one.json',map({collisions:[18]}));const report=await analyze(root,'one',options);expect(report.findings.find(row=>row.code==='zone-definition').editor).toBe('#zones/?map=one&object=44');expect(report.objects.find(row=>row.id==='trigger:45').editor).toBe('#zones/?map=one&object=45');expect(report.findings.find(row=>row.code==='checkpoint-fallback').editor).toBe('#zones/?map=one&object=44');
+});

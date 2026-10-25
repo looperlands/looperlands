@@ -1,11 +1,12 @@
 (function (root, factory) {
-    if (typeof module === 'object' && module.exports) module.exports = factory;
+    if (typeof module === 'object' && module.exports) module.exports = () => factory(require('./worldparticles-worker'));
     else {
-        const fx = factory();
+        if (!root.WorldParticles) importScripts('worldparticles-worker.js');
+        const fx = factory(root.WorldParticles);
         root.RendererExtensions.register('world-fx-ground', {layer: 'ground', draw: fx.ground});
         root.RendererExtensions.register('world-fx', {layer: 'foreground', draw: fx.draw});
     }
-})(typeof self !== 'undefined' ? self : null, function () {
+})(typeof self !== 'undefined' ? self : null, function (Particles) {
     function ground(ctx, state, view) {
         const source = view.sources?.background;
         if (!state.flags.heat || !source) return;
@@ -67,7 +68,9 @@
         for (const p of state.particles || []) {
             ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
             const [px, py] = xy(p.x, p.y);
-            if (p.shape === 'star') {
+            if (p.design) {
+                Particles.draw(ctx, {x: px, y: py, scale, seed: p.seed}, 'custom', p.elapsed, 1, p.design);
+            } else if (p.shape === 'star') {
                 ctx.fillRect(px - p.size * scale, py, (p.size * 2 + 1) * scale, scale);
                 ctx.fillRect(px, py - p.size * scale, scale, (p.size * 2 + 1) * scale);
                 ctx.fillStyle = '#fffdf0'; ctx.fillRect(px, py, scale, scale);

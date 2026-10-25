@@ -24,6 +24,32 @@ beforeEach(() => {
 afterEach(() => fs.rmSync(root,{recursive:true,force:true}));
 const object = (kind, extra = {}) => ({kind,name:'Treasure',x:6,y:6,width:4,height:3,mob:'rat',count:3,loot:[{item:'GOLD',weight:.25},{item:'flask',weight:.75}],lootMode:'weighted',respawnSeconds:75,rewardX:12,rewardY:9,...extra});
 async function add(kind, extra = {}, data) {data ||= await readEncounters(root,'one');return saveObject(root,{mapId:'one',revision:data.revision,operation:'add',object:object(kind,extra)});}
+test('one batch creates several chests, an encounter and its reward while preserving unrelated XML', async () => {
+    const initial=await readEncounters(root,'one');
+    const saved=await saveObject(root,{mapId:'one',revision:initial.revision,operations:[
+        {operation:'add',object:object('chest',{x:6,y:6})},
+        {operation:'add',object:object('chest',{x:8,y:6})},
+        {operation:'add',object:object('encounter',{x:10,y:10})},
+        {operation:'add',object:object('reward',{x:10,y:10,rewardX:15,rewardY:15})}
+    ]});
+    expect(saved.objects).toHaveLength(5);expect(new Set(saved.objects.map(row=>row.id)).size).toBe(5);
+    const after=fs.readFileSync(file,'utf8');expect(after).toContain('<!-- Outside: café &amp; unchanged -->');
+    expect(after).toContain('<!-- keep note -->');expect(after).toContain('nextobjectid="34"');
+    const final=await saveObject(root,{mapId:'one',revision:saved.revision,operations:[
+        {operation:'remove',objectId:'7'},
+        {operation:'update',objectId:saved.objects.find(row=>row.id!=='7'&&row.kind==='chest').id,object:object('chest',{x:2,y:3})}
+    ]});
+    expect(final.objects).toHaveLength(4);expect(final.objects.some(row=>row.kind==='chest'&&row.x===2&&row.y===3)).toBe(true);
+});
+test('duplicate chest destinations and invalid changes reject the entire batch', async () => {
+    const data=await readEncounters(root,'one'),before=fs.readFileSync(file);
+    await expect(saveObject(root,{mapId:'one',revision:data.revision,operations:[
+        {operation:'add',object:object('chest')},{operation:'add',object:object('chest')}
+    ]})).rejects.toThrow('Another chest');expect(fs.readFileSync(file)).toEqual(before);
+    await expect(saveObject(root,{mapId:'one',revision:data.revision,operations:[
+        {operation:'add',object:object('chest')},{operation:'add',object:object('encounter',{count:0})}
+    ]})).rejects.toThrow('population');expect(fs.readFileSync(file)).toEqual(before);
+});
 test('reads legacy duplicate items as equivalent weighted loot',async()=>{
     const data=await readEncounters(root,'one');expect(data.objects[0]).toMatchObject({id:'7',x:2,y:3,lootMode:'weighted',loot:[{item:'GOLD',weight:2},{item:'flask',weight:1}]});
     expect(catalog().mobs.some(row=>row.id==='rat')).toBe(true);

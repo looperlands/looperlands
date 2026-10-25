@@ -3,7 +3,7 @@ const path = require('path');
 const {execFile} = require('child_process');
 const {catalog} = require('./localassetbuilder');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
-const saves = new Map();
+const {saves} = require('./localobjectbatch');
 
 function mapFile(root, mapId) {
     const configured = JSON.parse(fs.readFileSync(path.join(root, 'server/config.json'), 'utf8')).maps;
@@ -29,7 +29,10 @@ function run(root, mapId, input = {}) {
         child.stdin.end(JSON.stringify(input));
     });
 }
-async function readPlacements(root, mapId) {return run(root, mapId);}
+async function readPlacements(root, mapId) {
+    const file = mapFile(root, mapId);
+    return require('./localtmxcache').readTmx(file, 'entities', () => run(root, mapId));
+}
 function spriteFile(root, relative) {
     const file = path.resolve(root, relative);
     for (let current = file; current !== path.resolve(root); current = path.dirname(current)) {
@@ -38,7 +41,8 @@ function spriteFile(root, relative) {
     return file;
 }
 function library(root) {
-    return {entries: catalog(root).entries.map(entry => {
+    const assets = catalog(root);
+    return {revision: assets.revision, entries: assets.entries.map(entry => {
         try {
             const id = (entry.type === 'item' ? 'item-' : '') + entry.id;
             const sprite = JSON.parse(fs.readFileSync(spriteFile(root, 'client/sprites/' + id + '.json'), 'utf8'));
@@ -53,6 +57,21 @@ async function savePlacement(root, input) {
     const file = mapFile(root, input?.mapId);
     const previous = saves.get(file) || Promise.resolve();
     const work = previous.catch(() => {}).then(async () => {
+        if (input.operations !== undefined) {
+            const operations = require('./localobjectbatch').operations(input, ['add', 'move', 'remove']);
+            const registered = operations.some(row => row.operation === 'add') ? new Set(catalog(root).entries.map(row => row.id)) : null;
+            const map = operations.some(row => row.operation !== 'remove') ? require('./localmapfiles').readJson(spriteFile(root, 'server/maps/world_server_' + input.mapId + '.json')) : null;
+            const blocked = new Set(map?.collisions || []);
+            for (const change of operations) {
+                if (change.operation === 'add' && !registered.has(change.kind)) fail('Choose registered items, mobs or NPCs.');
+                if (change.operation === 'remove') continue;
+                const p = change.position;
+                if (!p || !Number.isInteger(p.x) || !Number.isInteger(p.y)) fail('Choose whole-number tile coordinates.');
+                if (blocked.has(p.y * map.width + p.x)) fail('A placement is on a blocked tile. Keep the draft and choose walkable tiles.');
+            }
+            return run(root, input.mapId, {revision: input.revision, operations,
+                ...(map ? {dimensions: {width: map.width, height: map.height}} : {})});
+        }
         if (!['add', 'move', 'remove'].includes(input.operation) || typeof input.revision !== 'string') fail('Refresh the map and choose a placement action.');
         if (input.operation === 'add' && !catalog(root).entries.some(row => row.id === input.kind)) fail('Choose a registered item, mob or NPC. Save new definitions in their editor first.');
         let dimensions;
@@ -64,7 +83,7 @@ async function savePlacement(root, input) {
             for (let current = built; current !== path.resolve(root); current = path.dirname(current)) {
                 if (fs.existsSync(current) && fs.lstatSync(current).isSymbolicLink()) fail('Map paths must not contain symbolic links.');
             }
-            const map = JSON.parse(fs.readFileSync(built, 'utf8'));
+            const map = require('./localmapfiles').readJson(built);
             dimensions = {width: map.width, height: map.height};
             if ((map.collisions || []).includes(p.y * map.width + p.x)) fail('This tile is blocked. Choose a walkable tile.');
         }

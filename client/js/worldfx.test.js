@@ -27,6 +27,16 @@ test('stage effects require a transient event and leave tile state alone', () =>
     expect(state.particles[0]).toMatchObject({x: 168, y: 332, alpha: 1});
     expect(game.tileStages).toBeUndefined();
 });
+
+test('custom burst appearance survives transient events and fades with its lifetime', () => {
+    const {fx, renderer} = setup(), design = Config.custom({shape: 'soft', colors: ['#abcdef'], glow: 8});
+    fx.tileChanged({x: 10,y: 20,particlesOnly: true,particles: {preset: 'sparks',count: 2,lifetimeMs: 1000,design}});
+    fx.render(renderer, 1500);
+    const state = renderer.setExtensionData.mock.calls.find(([id, data]) => id === 'world-fx' && data)[1];
+    expect(state.particles).toHaveLength(2);
+    expect(state.particles[0]).toMatchObject({design: {shape: 'soft',colors: ['#abcdef'],glow: 8},alpha: 0.5,elapsed: 0.5});
+    fx.render(renderer, 2000);expect(fx.particles).toHaveLength(0);
+});
 test.each(['toggle', 'reduced', 'map', 'session', 'stop', 'death', 'removed'])('particles cannot leak after %s', reason => {
     const {fx, game, renderer, settings} = setup();
     fx.tileChanged({x: 10, y: 20, particlesOnly: true, particles: 'soil'});
@@ -69,6 +79,17 @@ test('scene ambience works without NPC config and obeys the map opt-out', () => 
     const {fx} = setup();
     expect(fx.ambience(null).effects).toEqual(Config.ambient('forest'));
     fx.configure({worldFx: {enabled: {ambience: false}}}); expect(fx.ambience(null).effects).toEqual([]);
+});
+
+test('cutscene ambience follows the camera scene, including positions outside every scene', () => {
+    const {fx, game} = setup();
+    const destination = {x: 70, y: 60, width: 50, height: 45, ambience: 'forest'};
+    game.getViewScene = () => destination;
+    expect(fx.scene()).toBe(destination);
+    expect(fx.ambience(null).bounds).toEqual({x: 1120, y: 960, width: 800, height: 720});
+    game.getViewScene = () => undefined;
+    expect(fx.scene()).toBeUndefined();
+    expect(fx.ambience(null)).toMatchObject({effects: [{type: 'none', count: 0}], bounds: undefined});
 });
 test('existing NPC ambience and its epoch are preserved when no scene override is present', () => {
     const {fx, game} = setup(); game.map.getCurrentScene = () => null;

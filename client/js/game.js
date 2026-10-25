@@ -1,11 +1,11 @@
 define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', 'maptransition', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', 'maptransition', 'scriptedsequenceplayer', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype, MapTransition) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype, MapTransition, SequencePlayer) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -19,6 +19,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.worldFx = new WorldFx(this);
                 this.combatPrototype = new CombatPrototype(this);
                 this.footstepFeedback = new FootstepFeedback(this);
+                this.scriptedSequence = new SequencePlayer(this);
 
                 this.renderer = null;
                 this.updater = null;
@@ -6379,6 +6380,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             resetForMapTransition: function (map, storage) {
                 const previousPlayer = this.player;
+                this.scriptedSequence?.destroy();
                 this.client.dispose();
                 this.tileActions.destroy();
                 for (const entity of Object.values(this.entities)) {
@@ -6424,6 +6426,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.username = storage.data.player.name;
                 this.worldAmbience.clear();
                 this.previewTimeMode = undefined;
+                this.localWorldTimeOverride = false;
                 WorldScenery.update(this.renderer, null, this);
                 this.audioManager.areas = [];
                 this.worldMusicAreas = [];
@@ -6595,7 +6598,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             getWorldTime: function () {
-                return WorldTime.previewTime(this.previewTimeMode, (this.serverTime || 0) + performance.now());
+                return WorldTime.previewTime(this.localWorldTimeOverride ? 'cycle' : this.previewTimeMode, (this.serverTime || 0) + performance.now());
+            },
+
+            syncLocalWorldTime: function (time) {
+                if (!Number.isFinite(time)) return;
+                this.syncWorldTime(time);
+                this.localWorldTimeOverride = true;
             },
 
             canEnterDoorByTime: function (dest) {
@@ -7178,8 +7187,17 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.updateCursorLogic();
                     this.updater.update();
                     this.footstepFeedback?.render(this.renderer, this.currentTime);
-                    if (this.canUseCenteredCamera()) {
+                    this.scriptedSequence?.tick(this.currentTime);
+                    if (this.canUseCenteredCamera() && !this.scriptedSequence?.cameraActive) {
                         this.renderer.camera.follow(this.player, this.currentTime);
+                    }
+                    // Cutscenes and camera snaps can reveal tiles while the player is stationary.
+                    // Refresh after all camera movement, before any frame is rendered.
+                    const camera = this.renderer.camera, area = this.visibleTileArea;
+                    if (camera && (!area || area.map !== this.map ||
+                        area.x !== camera.gridX || area.y !== camera.gridY ||
+                        area.w !== camera.gridW || area.h !== camera.gridH)) {
+                        this.findVisibleTiles();
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
                     this.worldFx?.render?.(this.renderer, this.currentTime);
@@ -7204,6 +7222,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             stop: function () {
+                this.scriptedSequence?.reset();
                 console.log("Game stopped.");
                 this.isStopped = true;
                 this.combatFeedback.clear();
@@ -7232,8 +7251,17 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
+            getViewScene: function () {
+                const camera = this.renderer.camera;
+                const target = this.scriptedSequence?.cameraActive ? {
+                    gridX: camera.x / this.renderer.tilesize + camera.gridW / 2,
+                    gridY: camera.y / this.renderer.tilesize + camera.gridH / 2
+                } : this.player;
+                return this.map.getCurrentScene(target);
+            },
+
             findVisibleAnimatedTiles: function (animatedTiles) {
-                let scene = this.map.getCurrentScene(this.player);
+                let scene = this.scriptedSequence?.cameraActive ? null : this.map.getCurrentScene(this.player);
                 let visibleAnimatedTiles = [];
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
@@ -7284,6 +7312,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                 }, 20);
+
+                this.visibleTileArea = {
+                    map: m, x: this.camera.gridX, y: this.camera.gridY,
+                    w: this.camera.gridW, h: this.camera.gridH
+                };
             },
 
             connect: function (started_callback) {
@@ -7291,6 +7324,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     connecting = false; // always in dispatcher mode in the build version
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
+                this.client.sequencePlayer = this.scriptedSequence;
                 this.client.isRecovering = this.app.clientUpdates?.recovering;
                 if (this.client.isRecovering) this.app.clientUpdates.recoveryStatus('Reconnecting to the game server…');
                 this.bindTileActionCallbacks();
@@ -7368,11 +7402,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     // Refresh known entities too: activity may have changed while away.
                     // WHO/SPAWN replies share the existing per-player outgoing batch.
-                    if (list.length > 0) {
-                        self.client.sendWho(list);
+                    const nearby = list.filter(id => !self.scriptedSequence?.ownsActor(id));
+                    if (nearby.length > 0) {
+                        self.client.sendWho(nearby);
                     }
                 });
 
+                this.client.onWorldTime(time => self.syncLocalWorldTime(time));
                 this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset, buildInfo) {
                     self.app.settings?.setBuildInfo?.(buildInfo);
                     self.combatFeedback?.hitFeel?.bindAudioGestures();
@@ -8142,6 +8178,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onEntityMove(function (id, x, y) {
+                        if (self.scriptedSequence?.ownsActor(id)) return;
                         self.clearPendingEntityAttack(id);
                         var entity = null;
                         entity = self.getEntityById(id);
@@ -8214,10 +8251,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onPlayerKillMob(function (kind, xp) {
+                        // Fishing sends this XP message with its string item ID.
+                        self.renderStatistics();
+                        if (!Types.isMob(kind)) return;
                         let kindString = Types.getKindAsString(kind);
                         let mobName = AltNames.getName(kindString);
-
-                        self.renderStatistics();
 
                         if (mobName === 'boss') {
                             self.showNotification("You killed the skeleton king");
@@ -8302,6 +8340,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onPlayerTeleport(function (id, x, y) {
+                        if (self.scriptedSequence?.ownsActor(id)) return;
                         self.clearPendingEntityAttack(id);
                         var entity = null,
                             currentOrientation;
@@ -8448,10 +8487,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onFollow(function (entityId) {
+                        if (self.scriptedSequence?.cameraActive) return;
                         self.renderer.camera.focusEntity(self.getEntityById(entityId));
                     });
 
                     self.client.onCamera(function (x, y) {
+                        if (self.scriptedSequence?.cameraActive) return;
                         let cameraX = x - (self.renderer.camera.gridW / 2);
                         let cameraY = y - (self.renderer.camera.gridH / 2);
 
@@ -8798,6 +8839,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              * @see makeCharacterGoTo
              */
             makePlayerGoTo: function (x, y) {
+                if (this.scriptedSequence?.locked) return;
                 this.makeCharacterGoTo(this.player, x, y);
             },
 
@@ -8878,6 +8920,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              *
              */
             makePlayerAttack: function (mob) {
+                if (this.scriptedSequence?.locked) return;
                 if (this.combatPrototype?.select(mob)) return;
                 this.player.previousTarget = null;
                 this.player.disengage();
@@ -9102,7 +9145,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             forEachVisibleEntityByDepth: function (callback) {
                 var self = this,
                     m = this.map,
-                    scene = this.map.getCurrentScene(this.player);
+                    scene = this.scriptedSequence?.cameraActive ? null : this.map.getCurrentScene(this.player);
 
                 this.camera.forEachVisiblePosition(function (x, y) {
                     if (m.isOutOfBounds(x, y)) {
@@ -9143,7 +9186,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 var self = this;
                 var m = this.map;
-                var scene = this.player.getScene();
+                var scene = this.scriptedSequence?.cameraActive ? null : this.player.getScene();
 
                 this.camera.forEachVisiblePosition(function (x, y) {
                     if (m.isOutOfBounds(x, y)) {
@@ -9184,14 +9227,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             forEachTileIndex: function (callback, extra) {
                 var m = this.map;
-                var scene = this.player ? this.player.getScene() : null;
 
+                // Animation instances must also exist in scenes revealed by a cutscene.
                 this.map.forEachPosition(function (x, y) {
                     if (m.isOutOfBounds(x, y)) {
-                        return;
-                    }
-
-                    if (scene && scene.isOutOfBounds(x, y)) {
                         return;
                     }
 
@@ -9544,6 +9583,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              * Processes game logic when the user triggers a click/touch event during the game.
              */
             click: function (pos) {
+                if (this.scriptedSequence?.locked) return;
                 if (this.combatPrototype?.locked()) return;
 
                 if ($('body').hasClass('inventory')
@@ -9816,6 +9856,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             handleTrigger(trigger, entity) {
+                const self = this;
                 if (entity instanceof Npc && entity.behaviorControlled) return;
                 if (!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
                     entity.triggerArea = trigger;
@@ -10858,7 +10899,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         if (!isCurrent()) return;
                         if (!response.data.allowed) {
                             self.player.isFishing = false;
-                            self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
+                            self.showNotification(response.data.error || "You need level " + response.data.reqLevel + " fishing to fish here.");
                             return;
                         }
                         let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
@@ -11045,7 +11086,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     if (!self.map.isOutOfBounds(x, y)) {
                         if (self.renderingGrid[y][x]) {
                             _.each(self.renderingGrid[y][x], function (entity) {
-                                if (entity && self.currentTime - entity.lastUpdate > 5000) {
+                                if (entity && !self.scriptedSequence?.ownsActor(entity.id) && self.currentTime - entity.lastUpdate > 5000) {
                                     //console.log("Garbage collecting entity " + entity.id);
                                     self.removeFromRenderingGrid(entity, x, y);
                                 }

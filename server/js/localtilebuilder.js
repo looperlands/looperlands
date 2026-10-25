@@ -30,7 +30,7 @@ function document(root,id) {
 }
 function base(root,id) {const p=safe(root,'client/tileActions/'+id+'.json');return fs.existsSync(p)?JSON.parse(fs.readFileSync(p)):{};}
 function definitions(root,id) {return {...base(root,id),...document(root,id).actions};}
-function readMap(root,id) {source(root,id);const map=JSON.parse(fs.readFileSync(safe(root,'client/maps/world_client_'+id+'.json')));const sheet=safe(root,'client/img/1/tilesheet_'+(['oadungeon','oaoverworld'].includes(id)?'oa':id)+'.png');if(fs.existsSync(sheet)){const header=Buffer.alloc(24),fd=fs.openSync(sheet,'r');try{fs.readSync(fd,header,0,24,0);}finally{fs.closeSync(fd);}if(header.toString('ascii',1,4)==='PNG')map.tileCount=header.readUInt32BE(16)/(map.tilesize||16)*header.readUInt32BE(20)/(map.tilesize||16);}return map;}
+function readMap(root,id) {source(root,id);const map=require('./localmapfiles').readJson(safe(root,'client/maps/world_client_'+id+'.json'));const sheet=safe(root,'client/img/1/tilesheet_'+(['oadungeon','oaoverworld'].includes(id)?'oa':id)+'.png');if(fs.existsSync(sheet)){const header=Buffer.alloc(24),fd=fs.openSync(sheet,'r');try{fs.readSync(fd,header,0,24,0);}finally{fs.closeSync(fd);}if(header.toString('ascii',1,4)==='PNG')map.tileCount=header.readUInt32BE(16)/(map.tilesize||16)*header.readUInt32BE(20)/(map.tilesize||16);}return map;}
 function item(id,label) {if(!Number.isSafeInteger(Number(id))||(!Types.isItem(Number(id))||Types.getKindAsString(Number(id))?.startsWith('NFT_')))fail('Choose a registered '+label+'.');}
 function integer(v,min,max,label) {if(!Number.isSafeInteger(v)||v<min||v>max)fail(label+' must be a whole number from '+min+' to '+max+'.');}
 function number(v,min,max,label) {if(!Number.isFinite(v)||v<min||v>max)fail(label+' must be from '+min+' to '+max+'.');}
@@ -40,6 +40,17 @@ function validate(doc,map,available={}) {
     if(doc.version!==1||!doc.actions||Array.isArray(doc.actions)||!Array.isArray(doc.placements)||Object.keys(doc.actions).length>100||doc.placements.length>1000)fail('Use at most 100 actions and 1000 placement regions.');
     for(const [id,a] of Object.entries(doc.actions)) {
         if(!/^[a-z][a-zA-Z0-9_-]{0,79}$/.test(id)||['constructor','prototype','__proto__'].includes(id))fail('Use a safe action ID.');
+        if(a.stageParticles!==undefined) {
+            const config=a.stageParticles,fx=require('../../client/js/worldfxconfig');
+            if(config!==false) {
+                if(!config||typeof config!=='object'||Array.isArray(config)||Object.keys(config).some(k=>!['enabled','stages'].includes(k)))fail('Particle bursts need enabled and stage settings.');
+                if(config.enabled!==undefined&&typeof config.enabled!=='boolean')fail('Particle bursts enabled must be true or false.');
+                if(config.stages!==undefined) {
+                    if(!config.stages||typeof config.stages!=='object'||Array.isArray(config.stages)||Object.keys(config.stages).length>51)fail('Use at most 51 particle stage settings.');
+                    for(const spec of Object.values(config.stages))fx.burst(spec);
+                }
+            }
+        }
         if(a.type==='sequence') {
             if(a.interaction) {
                 if(!Templates.templates.some(t=>t.id===a.interaction.template))fail('Choose an interaction template.');
@@ -112,7 +123,7 @@ function readTool(root,id) {
     for(const rule of rules)for(const block of [rule.when,...(rule.conditions||[]),...(rule.actions||[])])if(block.options?.trigger)triggerIds.add(block.options.trigger);
     for(const action of Object.values({...bundled,...doc.actions}))for(const s of action.stages||[])if(s.trigger)triggerIds.add(s.trigger);
     const serverMap=safe(root,'server/maps/world_server_'+id+'.json');
-    if(fs.existsSync(serverMap))for(const t of JSON.parse(fs.readFileSync(serverMap)).triggers||[])if(t.trigger)triggerIds.add(String(t.trigger));
+    if(fs.existsSync(serverMap))for(const t of require('./localmapfiles').readJson(serverMap).triggers||[])if(t.trigger)triggerIds.add(String(t.trigger));
     const events=[...triggerIds].map(id=>({id,name:id}));
     return {mapId:id,document:doc,base:bundled,revision:hash({doc,bundled,shared}),source:shared.maps[id]||Object.keys(shared.actions).length?'tools/interactions/library.json':'tools/tiles/'+id+'.json',width:map.width,height:map.height,
         libraryIds:Object.keys(shared.actions),usage,capabilities:{localOnly:true},

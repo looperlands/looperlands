@@ -26,3 +26,21 @@ test('scene geometry and named toggles are validated', () => {
     expect(() => Fx.scenery({enabled: {heat: true}})).not.toThrow();
     expect(() => Fx.scenery({enabled: {rain: true}})).toThrow();
 });
+
+test('custom ambience and bursts share a cloned, bounded appearance contract', () => {
+    const design = {colors: ['#123456', '#ffffff'], shape: 'star', size: 8, velocityX: -40, glow: 24};
+    const effect = Fx.ambient([{type: 'custom', count: 12, design}])[0];
+    expect(effect.design).toMatchObject(design);
+    expect(effect.design).toHaveProperty('opacity', 0.8);
+    effect.design.colors.push('#abcdef');
+    expect(design.colors).toHaveLength(2);
+    expect(Fx.burst({preset: 'sparks', design})).toMatchObject({size: 8, colors: design.colors, design});
+    expect(Fx.stageBurst({stages: {open: {preset: 'sparks', design}}}, 'open').design.shape).toBe('star');
+});
+
+test.each([{shape: 'unknown'}, {size: 9}, {size: 1.5}, {opacity: -0.1}, {velocityX: 81}, {velocityY: NaN},
+    {sway: 33}, {glow: 25}, {spin: Infinity}, {pulse: 2}, {colors: []}, {colors: ['red']}, {colors: Array(7).fill('#ffffff')}, {code: 'run()'}, null])(
+    'custom particle designs reject unsafe or unbounded settings: %j', design => {
+        expect(() => Fx.ambient([{type: 'custom', count: 1, design}])).toThrow();
+        expect(() => Fx.burst({design})).toThrow();
+    });

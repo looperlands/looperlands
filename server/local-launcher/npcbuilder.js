@@ -1,5 +1,6 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const pane = document.getElementById('npc-behaviour');
     if (!pane) return;
     const el = (tag, text = '', attrs = {}) => Object.assign(document.createElement(tag), {textContent: text, ...attrs});
@@ -7,7 +8,7 @@
     <div class="asset-library editor-toolbar"><div class="field"><label for="npc-map">Map</label><select id="npc-map"></select></div><button type="button" id="npc-reload">Reload routines</button><button type="button" id="npc-new" disabled>New routine</button><button type="button" id="npc-save-top" class="primary" disabled>Save routine</button></div>
     <p id="npc-status" role="status" aria-live="polite">Choose a map to load its routines.</p>
     <div id="npc-discard" class="asset-discard" hidden><p>You have unsaved changes. Discard them to continue?</p><button type="button" id="npc-discard-yes">Discard changes</button><button type="button" id="npc-discard-no">Keep editing</button></div>
-    <div class="npc-workspace"><aside><div class="field"><label for="npc-search">Search routines</label><input id="npc-search" type="search" placeholder="Name, ID or NPC type"></div><p id="npc-count" class="field-hint"></p><div id="npc-list" class="npc-list" aria-label="NPC routines"></div></aside><form id="npc-form" hidden><div id="npc-fields"></div><div class="asset-save"><button type="submit" class="primary" id="npc-save">Save routine</button><button type="button" id="npc-reset">Reset saved override</button><span id="npc-dirty"></span></div><p id="npc-source" class="field-hint"></p><p class="field-hint">Save, then <a href="#build">build this map</a> to restart the game and load its NPC files. Placement and collision checks use the most recent map build.</p></form></div>`;
+    <div class="npc-workspace"><aside><div class="field"><label for="npc-search">Search routines</label><input id="npc-search" type="search" placeholder="Name, ID or NPC type"></div><p id="npc-count" class="field-hint"></p><div id="npc-list" class="npc-list" aria-label="NPC routines"></div></aside><form id="npc-form" hidden><div id="npc-fields"></div><div class="asset-save"><button type="submit" class="primary" id="npc-save">Save routine</button><button type="button" id="npc-reset" class="destructive">Reset saved override</button><span id="npc-dirty"></span></div><p id="npc-source" class="field-hint"></p><p class="field-hint">Save, then <a href="#build">build this map</a> to restart the game and load its NPC files. Placement and collision checks use the most recent map build.</p></form></div>`;
     const $ = selector => pane.querySelector(selector), form = $('#npc-form');
     let data, draft, originalKey, dirty = false, busy = false, sequence = 0, pending, loaded = false, fieldId = 0;
     function status(message, error = false) {$('#npc-status').textContent = message; $('#npc-status').classList.toggle('error', error);}
@@ -15,7 +16,7 @@
     function guard(action) {if (!dirty) return action(); pending = action; $('#npc-discard').hidden = false; $('#npc-discard-no').focus();}
     $('#npc-discard-yes').onclick = () => {const action = pending; pending = null; $('#npc-discard').hidden = true; changed(false); action?.();};
     $('#npc-discard-no').onclick = () => {pending = null; $('#npc-discard').hidden = true;};
-    async function request(url, body) {const response = await fetch(url, body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {}); const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Could not load NPC routines. Try again.'); return result;}
+    async function request(url, body) {const response = await fetchData(url, body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {}); const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Could not load NPC routines. Try again.'); return result;}
     const coordinateInputs = new WeakMap();
     function field(parent, object, key, label, options = {}) {
         const id = 'npc-field-' + ++fieldId, wrap = el('div', '', {className: 'field'});
@@ -35,7 +36,7 @@
     function grid(parent) {const node = el('div', '', {className: 'asset-field-grid'}); parent.append(node); return node;}
     function section(parent, heading, help) {const node = el('section', '', {className: 'asset-section'}); node.append(el('h3', heading)); if (help) node.append(el('p', help, {className: 'field-hint'})); parent.append(node); return node;}
     function collapsible(parent, heading, help) {const node = el('details', '', {className: 'npc-detail'}); node.append(el('summary', heading)); if (help) node.append(el('p', help, {className: 'field-hint'})); parent.append(node); return node;}
-    function button(parent, label, action) {const node = el('button', label, {type: 'button'}); node.onclick = action; parent.append(node); return node;}
+    function button(parent, label, action, attrs = {}) {const node = el('button', label, {type: 'button', ...attrs}); node.onclick = action; parent.append(node); return node;}
     function area(parent, object) {const row = grid(parent); for (const [key, label] of [['x','Area X'],['y','Area Y'],['width','Area width'],['height','Area height']]) field(row, object, key, label, {type: 'number', min: ['width','height'].includes(key) ? 1 : 0, required: true});}
     function point(parent, object, prefix) {const row = grid(parent); field(row, object, 'x', prefix + ' X', {type: 'number', required: true}); field(row, object, 'y', prefix + ' Y', {type: 'number', required: true});}
     function route(parent, points, movementArea = () => draft.area) {
@@ -61,7 +62,7 @@
                 field(fields, p, 'activity', 'Activity', {maxLength: 240}); field(fields, p, 'line', 'Ambient message', {dialogue: true, maxLength: 240}); field(fields, p, 'sound', 'Sound', {choices: [['','None'],['npc','NPC'],['watersplash','Water splash'],['honk','Honk']]});
                 row.addEventListener('input',()=>{summary.replaceChildren(el('strong','Waypoint '+(index+1)+' '),window.MapLocation.coordinate(data.mapId,p.x,p.y),el('span',p.waitSeconds+'s wait',{className:'field-hint'}));});const actions=el('div','',{className:'npc-row-actions'});row.append(actions);
                 button(actions,'Move up',()=>{if(index){[points[index-1],points[index]]=[points[index],points[index-1]];selected=index-1;changed();draw();}}).disabled=index===0;button(actions,'Move down',()=>{if(index<points.length-1){[points[index+1],points[index]]=[points[index],points[index+1]];selected=index+1;changed();draw();}}).disabled=index===points.length-1;
-                button(actions, 'Remove waypoint', () => {points.splice(index,1);selected=Math.min(selected,points.length-1);changed();draw();}); container.append(row);
+                button(actions, 'Remove waypoint', () => {points.splice(index,1);selected=Math.min(selected,points.length-1);changed();draw();}, {className: 'destructive'}); container.append(row);
             });
             button(container, 'Add waypoint', () => {if(points.length>=100)return;points.push({x:movementArea().x,y:movementArea().y,waitSeconds:10});selected=points.length-1;changed();draw();});updateMap();
         }
@@ -85,7 +86,7 @@
                 const details = el('details', '', {className: 'npc-detail'}); details.append(el('summary', building.label || 'New building')); const row = grid(details);
                 field(row, building, 'key', 'Building ID', {required: true, hint: 'Use this ID in a schedule phase’s Location.'}); field(row, building, 'label', 'Building description', {required: true, maxLength: 240});
                 point(details, building.entrance, 'Outside entrance'); point(details, building.exit, 'Inside return door'); area(details, building.area);
-                button(details, 'Remove building', () => {draft.schedule.buildings.splice(index, 1); changed(); drawBuildings();}); buildings.append(details);
+                button(details, 'Remove building', () => {draft.schedule.buildings.splice(index, 1); changed(); drawBuildings();}, {className: 'destructive'}); buildings.append(details);
             });
             button(buildings, 'Add building', () => {draft.schedule.buildings.push({key: 'building-' + (draft.schedule.buildings.length + 1), label: 'New building', entrance: {...draft.origin}, exit: {...draft.origin}, area: {...draft.area}}); changed(); drawBuildings();});
         }
@@ -100,7 +101,7 @@
                 field(row, phase, 'location', 'Location ID', {required: true, hint: 'outside, or a Building ID above.'}); field(row, phase, 'label', 'Location description', {required: true, maxLength: 240}); field(row, phase, 'travelling', 'Travelling description', {required: true, maxLength: 240});
                 field(details, phase, 'explanation', 'Routine dialogue', {dialogue: true, required: true, maxLength: 240}); details.append(el('h4', 'Phase route')); route(details, phase.route,()=>phase.location==='outside'?draft.area:draft.schedule.buildings.find(b=>b.key===phase.location)?.area||draft.area);
                 button(details, 'Move phase up', () => {if (index) {[draft.schedule.phases[index-1], draft.schedule.phases[index]] = [draft.schedule.phases[index], draft.schedule.phases[index-1]]; changed(); drawPhases();}}).disabled = index === 0;
-                button(details, 'Remove phase', () => {draft.schedule.phases.splice(index, 1); changed(); drawPhases();}); phases.append(details);
+                button(details, 'Remove phase', () => {draft.schedule.phases.splice(index, 1); changed(); drawPhases();}, {className: 'destructive'}); phases.append(details);
             });
             button(phases, 'Add phase', () => {draft.schedule.phases.push({at: 12, key: 'free-time', activity: 'taking a break', label: 'outside', location: 'outside', explanation: 'I am taking a break.', travelling: 'walking to my break', route: structuredClone(draft.route)}); changed(); drawPhases();});
         }
@@ -112,7 +113,7 @@
         const identity = section(content, 'Behaviour', 'A routine controls one placed NPC. Origin must exactly match its tile in the built map. Existing story reactions and quest references are preserved.');
         let row = grid(identity); field(row, draft, 'key', 'Routine ID', {disabled: !!originalKey, required: true}); field(row, draft, 'label', 'Name', {required: true, maxLength: 100});
         if (originalKey) field(row, draft, 'kind', 'NPC type', {disabled: true});
-        else {const available = data.placements.filter(p => !data.config.npcs.some(n => n.kind === p.kind && n.origin.x === p.x && n.origin.y === p.y)); const choice = {placement: available.findIndex(p => p.kind === draft.kind && p.x === draft.origin.x && p.y === draft.origin.y)}; const select = field(row, choice, 'placement', 'NPC placement', {choices: available.map((p, i) => [String(i), p.kind + ' · ' + p.x + ', ' + p.y])}); window.MapLocation.mark(select, () => ({mapId: data.mapId, ...draft.origin})); select.onchange = () => {const p = available[Number(select.value)]; draft.kind = p.kind; draft.origin = {x: p.x, y: p.y}; draft.area = {...draft.origin, width: 1, height: 1}; draft.route = [{...draft.origin, waitSeconds: 10}]; delete draft.schedule; changed(); render();};}
+        else {const available = data.placements.filter(p => !data.config.npcs.some(n => n.kind === p.kind && n.origin.x === p.x && n.origin.y === p.y)); const choice = {placement: available.findIndex(p => p.kind === draft.kind && p.x === draft.origin.x && p.y === draft.origin.y)}; const select = field(row, choice, 'placement', 'NPC placement', {choices: available.map((p, i) => [String(i), p.kind + ' · ' + p.x + ', ' + p.y])}); window.MapLocation.mark(select, () => ({mapId: data.mapId, ...draft.origin})); window.ToolboxEntityPicker.attach(select,{type:'npc',label:'NPC placement',entries:available.map((p,i)=>({id:String(i),entityId:p.kind,name:p.kind+' · '+p.x+', '+p.y}))}); select.onchange = () => {const p = available[Number(select.value)]; draft.kind = p.kind; draft.origin = {x: p.x, y: p.y}; draft.area = {...draft.origin, width: 1, height: 1}; draft.route = [{...draft.origin, waitSeconds: 10}]; delete draft.schedule; changed(); render();};}
         field(row, draft, 'preset', 'Behaviour preset', {choices: [['patrol','Patrol'],['work','Work'],['socialise','Socialise']]}); field(row, draft, 'stepMs', 'Step duration · ms', {type: 'number', min: 300, max: 2000, required: true, hint: 'Lower values make walking faster.'});
         check(identity, 'Preserve the original click-through dialogue', draft.preserveDialogue === true, value => {draft.preserveDialogue = value;});
         point(identity, draft.origin, 'Spawn tile'); area(identity, draft.area);
@@ -162,7 +163,7 @@
         const active = location.hash.startsWith('#npcs/behaviour'); document.getElementById('npc-assets').hidden = active; pane.hidden = !active;
         for (const link of document.querySelectorAll('.npc-subnav a')) {if (link.hash === (active ? '#npcs/behaviour' : '#npcs')) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');}
         if (!active || loaded) return; loaded = true;
-        try {const result = await request('./api/npcs'); $('#npc-map').replaceChildren(...result.maps.map(map => el('option', map, {value: map}))); await load(window.ToolboxNavigation?.params().get('map')||result.maps[0],window.ToolboxNavigation?.params().get('routine'));}
+        try {const result = await request('./api/npcs'); $('#npc-map').replaceChildren(...result.maps.map(map => el('option', map, {value: map}))); await load(window.ToolboxNavigation?.params().get('map')||window.ToolboxMapData?.preferred(result.maps[0])||result.maps[0],window.ToolboxNavigation?.params().get('routine'));}
         catch (error) {status(error.message, true); loaded = false;}
     }
     window.ToolboxNavigation?.route('npcs',async params=>{if(!location.hash.startsWith('#npcs/behaviour')||!params.has('map'))return;await routeScreen();guard(async()=>{if(data?.mapId!==params.get('map')||params.has('routine'))await load(params.get('map'),params.get('routine'));if(params.has('kind')&&data?.mapId===params.get('map')){const p=data.placements.find(p=>p.kind===params.get('kind')&&p.x===Number(params.get('x'))&&p.y===Number(params.get('y')));if(p){const routine=data.config.npcs.find(n=>n.kind===p.kind&&n.origin.x===p.x&&n.origin.y===p.y);if(routine)select(routine.key);else newRoutine(p);}else status('This NPC placement is no longer in the built map. Refresh the inspector.',true);}});});

@@ -17,7 +17,7 @@ function safe(root, relative) {
     }
     return file;
 }
-function read(root, relative) {return JSON.parse(fs.readFileSync(safe(root, relative), 'utf8'));}
+function read(root, relative) {return require('./localmapfiles').readJson(safe(root, relative));}
 function grid(map) {
     if (!Number.isInteger(map.width) || !Number.isInteger(map.height) || map.width < 1 || map.height < 1 || map.width * map.height > 2000000) fail('Map dimensions must contain at most 2 million tiles.');
     const blocked = new Set(map.collisions || []);
@@ -51,22 +51,26 @@ async function analyze(root, mapId, options = {}) {
     Types.registerMapmakerEntities(custom);
     const kind=value=>typeof value==='number'?value:Types.getKindFromString(value);
     const idFor=value=>Types.getKindAsString(kind(value))||String(value);
-    const usedMobs=new Map();
+    const usedMobs=new Map(), assets=new Map();
+    const exists=relative=>{if(!assets.has(relative))assets.set(relative,fs.existsSync(safe(root,relative)));return assets.get(relative);};
     for(const [index,value]of Object.entries(map.staticEntities||{})) {
         const i=Number(index)-1, k=kind(value), id=idFor(value), type=Types.isNpc(k)?'npc':Types.isMob(k)?'mob':Types.isItem(k)?'item':'entity';
         const row=add(type,index,id,{x:i%map.width+1,y:Math.floor(i/map.width)},{kind:id,editor:['npc','mob','item'].includes(type)?link(type==='npc'?'npcs':type==='mob'?'mobs':'items',{asset:id}):null,tiledLayer:'entity / mapmaker-entities'});
         if(k===undefined)finding('error','unknown-entity','Unknown gameplay type: '+id,row);
         else {
             const sprite=(type==='item'?'item-':'')+id;
-            if(['npc','mob','item'].includes(type) && !fs.existsSync(safe(root,'client/sprites/'+sprite+'.json')))finding('error','missing-sprite','Missing sprite definition for '+id+'.',row);
-            if(['npc','mob','item'].includes(type) && !fs.existsSync(safe(root,'client/img/1/'+sprite+'.png')))finding('error','missing-artwork','Missing 1× artwork for '+id+'.',row);
+            if(['npc','mob','item'].includes(type) && !exists('client/sprites/'+sprite+'.json'))finding('error','missing-sprite','Missing sprite definition for '+id+'.',row);
+            if(['npc','mob','item'].includes(type) && !exists('client/img/1/'+sprite+'.png'))finding('error','missing-artwork','Missing 1× artwork for '+id+'.',row);
         }
         if(!terrain.walkable(row))finding('error','blocked-entity','Entity spawn is outside playable bounds or on a collision tile.',row);
         if(type==='mob')usedMobs.set(id,row);
     }
-    let sourceEncounters;
-    try {sourceEncounters = await (options.readEncounters || readEncounters)(root, mapId);}
-    catch(error) {finding('warning','encounter-source','Chest and encounter source checks are unavailable: '+error.message,null,link('encounters',{map:mapId}));}
+    const [encountersResult, doorsResult] = await Promise.allSettled([
+        Promise.resolve().then(() => (options.readEncounters || readEncounters)(root, mapId)),
+        Promise.resolve().then(() => (options.readDoors || readDoors)(root, mapId))
+    ]);
+    const sourceEncounters = encountersResult.value;
+    if(encountersResult.status==='rejected')finding('warning','encounter-source','Chest and encounter source checks are unavailable: '+encountersResult.reason.message,null,link('encounters',{map:mapId}));
     const sourceSpawns = sourceEncounters?.objects.filter(row => row.kind === 'encounter') || [];
     for(const [index,area] of (map.roamingAreas||[]).entries()) {
         const id=idFor(area.type), row=add('spawn',area.id,id+' spawn area',area,{kind:id,editor:link('encounters',{map:mapId,object:String(area.objectId ?? sourceSpawns[index]?.id ?? '')}),tiledLayer:'roaming'});
@@ -93,16 +97,28 @@ async function analyze(root, mapId, options = {}) {
         }
     }
     checks.push('Tiled chest positions, registered loot, positive weights and clear-area membership');
-    for(const c of map.checkpoints||[]) {
-        const row=add('checkpoint',c.id,'Checkpoint '+c.id,c,{tiledLayer:'checkpoints'});let free=false;
-        for(let y=Math.max(1,c.y);y<Math.min(map.height,c.y+(c.h||1))&&!free;y++)for(let x=Math.max(1,c.x);x<Math.min(map.width,c.x+(c.w||1));x++)if(terrain.walkable({x,y})){free=true;break;}
-        if(!free)finding('error','blocked-checkpoint','Checkpoint has no walkable spawn tiles.',row);
+    let zoneSource;
+    try {zoneSource=await (options.readZones||require('./localzonebuilder').readZones)(root,mapId);}catch(error){finding('warning','zone-source','Checkpoint and zone source checks are unavailable: '+error.message,null,link('zones',{map:mapId}));}
+    if(zoneSource) {
+        const builder=require('./localzonebuilder'),choices=builder.catalog(root),ids=new Set();
+        for(const area of zoneSource.objects) {
+            const row=add(area.kind,area.id,area.name||require('../../shared/js/gameplayzones').kinds[area.kind].label,area,{editor:link('zones',{map:mapId,object:area.id}),tiledLayer:require('../../shared/js/gameplayzones').kinds[area.kind].layer,source:'Tiled source',properties:area});
+            try{builder.validate(area,map,choices);}catch(error){finding('error','zone-definition',error.message,row);}
+            if(area.kind==='checkpoint'){if(ids.has(area.checkpointId))finding('error','checkpoint-id','Checkpoint ID is duplicated. Keep saved IDs unique.',row);ids.add(area.checkpointId);}
+        }
+        for(let i=0;i<zoneSource.objects.length;i++)for(let j=i+1;j<zoneSource.objects.length;j++) {
+            const a=zoneSource.objects[i],b=zoneSource.objects[j];if(a.kind===b.kind&&['checkpoint','trigger','music'].includes(a.kind)&&a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height)finding('warning','zone-overlap','These '+a.kind+' areas overlap; the first matching area takes precedence.',objects.find(row=>row.id===a.kind+':'+a.id));
+        }
+        const checkpoints=zoneSource.objects.filter(row=>row.kind==='checkpoint');if(checkpoints.length&&!checkpoints.some(row=>row.starting))finding('warning','checkpoint-fallback','No starting checkpoint is marked. New arrivals fall back to the first checkpoint.',null,link('zones',{map:mapId,object:checkpoints[0].id}));
+        checks.push('Tiled checkpoint IDs, spawn collisions, zone settings and same-type overlaps');
+    } else {
+        for(const c of map.checkpoints||[]) {const row=add('checkpoint',c.id,'Checkpoint '+c.id,c,{tiledLayer:'checkpoints',editor:link('zones',{map:mapId,object:c.objectId||''})});let free=false;for(let y=Math.max(1,c.y);y<Math.min(map.height,c.y+(c.h||1))&&!free;y++)for(let x=Math.max(1,c.x);x<Math.min(map.width,c.x+(c.w||1));x++)if(terrain.walkable({x,y})){free=true;break;}if(!free)finding('error','blocked-checkpoint','Checkpoint has no walkable spawn tiles.',row);}
+        for(const t of map.triggers||[])add('trigger',t.id,'Trigger '+(t.trigger||t.id),t,{tiledLayer:'triggers',properties:t,editor:link('zones',{map:mapId,object:t.id})});
     }
-    if(!map.checkpoints?.length)finding('warning','no-checkpoints','No checkpoints are exported. Reachability checks cannot establish a player starting area.',null,link('build',{map:mapId}));
-    for(const t of map.triggers||[])add('trigger',t.id,'Trigger '+(t.trigger||t.id),t,{tiledLayer:'triggers',properties:t});
+    if(!map.checkpoints?.length)finding('warning','no-checkpoints','No checkpoints are exported. Reachability checks cannot establish a player starting area.',null,link('zones',{map:mapId}));
     for(const s of client?.scenes||map.scenes||[])add('scene',s.id,s.name||'Scene '+s.id,s,{tiledLayer:'scenes'});
-    let sourceDoors;
-    try{sourceDoors=await (options.readDoors||readDoors)(root,mapId);}catch(error){finding('warning','door-source','Entrance source checks are unavailable: '+error.message,null,link('doors',{map:mapId}));}
+    const sourceDoors = doorsResult.value;
+    if(doorsResult.status==='rejected')finding('warning','door-source','Entrance source checks are unavailable: '+doorsResult.reason.message,null,link('doors',{map:mapId}));
     const doors=sourceDoors?sourceDoors.doors.map(d=>({id:d.id,x:d.tileX,y:d.tileY,portal:d.type==='portal',properties:d.properties})): (map.doors||[]).map((d,i)=>({id:'built-'+i,x:d.x,y:d.y,portal:!!d.p,properties:Object.fromEntries(Object.entries(d).filter(([k])=>k.startsWith('t')).map(([k,v])=>[k.slice(1),v]))}));
     const destinations=new Map([[mapId,terrain]]);
     for(const d of doors) {
@@ -120,6 +136,20 @@ async function analyze(root, mapId, options = {}) {
     }
     checks.push('Built map bounds, collision tiles, checkpoints, entity assets, spawn areas and entrance destinations');
     const reach=reachable(map,terrain,mapId);
+    try {
+        const fishing = await (options.readFishing || require('./localfishingbuilder').readFishing)(root,mapId);
+        const geometry = {...(client || map),baseFishingTiles:client?.baseFishingTiles || client?.fishingTiles || {}};
+        const Areas = require('./fishingareas');
+        try {Areas.validate(fishing.objects,geometry);} catch(error) {finding('error','fishing-definition',error.message,null,link('fishing',{map:mapId}));}
+        for (const area of fishing.objects) {
+            const row = add('fishing',area.id,area.name || 'Fishing area',area,{editor:link('fishing',{map:mapId,object:area.id}),tiledLayer:'fishing',source:'Tiled source',level:area.level,fish:area.fish});
+            try {Areas.validate([area],geometry);} catch(error) {finding('error','fishing-area',error.message,row);continue;}
+            if (area.scope === 'closed') continue;
+            const shore = Areas.cells(area,geometry).some(index => {const x=index%map.width,y=Math.floor(index/map.width);return [[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0],[0,2],[0,-2]].some(([dx,dy])=>terrain.walkable({x:x+dx,y:y+dy}) && (!reach.count||reach.has({x:x+dx,y:y+dy})));});
+            if(!shore)finding('warning','fishing-shore','No reachable walkable casting tile lies one or two tiles from this water. Move or resize the area, or add access to the shore.',row);
+        }
+        checks.push('Fishing tables, required rod levels, area overlaps and reachable casting positions');
+    } catch(error) {finding('warning','fishing-source','Fishing source checks are unavailable: '+error.message,null,link('fishing',{map:mapId}));}
     if(reach.count)for(const row of objects.filter(o=>['npc','item'].includes(o.type))) {
         const near=row.type==='npc'?[row,{x:row.x-1,y:row.y},{x:row.x+1,y:row.y},{x:row.x,y:row.y-1},{x:row.x,y:row.y+1}]:[row];
         if(!near.some(p=>reach.has(p)))finding('warning','unreachable-entity','No base-collision route from a checkpoint reaches '+row.name+'. Dynamic layers and scripted travel are not simulated.',row);
@@ -135,6 +165,14 @@ async function analyze(root, mapId, options = {}) {
             if(q.reward?.item!==undefined&&!Types.isItem(kind(q.reward.item)))finding('error','quest-item','Quest '+q.id+' references an unknown reward item.',row,editor);
         }checks.push('Authored quest validation, prerequisites, quest NPCs and reward item references');
     }catch(error){finding('error','quest-source','Quest source could not be checked: '+error.message,null,link('quests',{map:mapId}));}
+    try {
+        const W=require('./localworldauthoring'),entries=W.readDocument(root,mapId).sequences;
+        if(entries.length){const catalog=await W.catalog(root,mapId);for(const sequence of entries){
+            const editor=link('sequences',{map:mapId,sequence:sequence.id}),p=sequence.when?.type==='area.entered'?sequence.when:sequence.steps.find(s=>Number.isFinite(s.x))||{x:1,y:1};
+            const row=add('sequence',sequence.id,sequence.name,p,{editor,tiledLayer:'World sequences'});
+            try{require('./scriptedsequenceconfig').validate([sequence],catalog);}catch(error){finding('error','sequence-definition',error.message,row);}
+        }checks.push('Scripted sequence targets, NPC routines, audio references and timeline limits');}
+    }catch(error){finding('error','sequence-source','Scripted sequences could not be checked: '+error.message,null,link('sequences',{map:mapId}));}
     for(const [id,row]of usedMobs){const drops=custom.find(e=>e.id===id)?.gameplay?.drops||properties[id]?.drops||{};let total=0;for(const [item,chance]of Object.entries(drops)){if(!Types.isItem(kind(item)))finding('error','drop-item','Drop table references an unknown item: '+item,row);if(!Number.isFinite(chance)||chance<0||chance>100)finding('error','drop-chance','Invalid drop chance for '+item+'.',row);total+=chance;}if(total>100)finding('error','drop-total','Drop chances total more than 100%.',row);}
     return {mapId,width:map.width,height:map.height,collisions:map.collisions||[],tiles:client?.data||[],tilesize:client?.tilesize||16,tileset:'/local/api/map-artwork?mapId='+encodeURIComponent(mapId),objects,findings,checks,sources,
         checkedAt:new Date().toISOString(),summary:{errors:findings.filter(f=>f.severity==='error').length,warnings:findings.filter(f=>f.severity==='warning').length,objects:objects.length},

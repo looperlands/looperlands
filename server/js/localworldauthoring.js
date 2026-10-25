@@ -6,8 +6,8 @@ const {validateScenes, applyScenes} = require('./localworldscenes');
 const {validateDialogue} = require('./localquestdialogue');
 const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
-const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes'};
-const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: []});
+const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes', sequences: 'sequences'};
+const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: [], sequences: []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 function fields(value, allowed, label) {if (!object(value) || Object.keys(value).some(k => !allowed.includes(k))) fail(label + ' contains unsupported fields.');}
@@ -31,7 +31,7 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere','scenes'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences'], 'World authoring source');
     if (value.version !== 1) fail('World authoring source requires version: 1.');
     for (const key of Object.values(tools)) list(value[key] == null && key === 'scenes' ? [] : value[key] === undefined ? [] : value[key], 100, key);
     return {...empty(), ...value};
@@ -119,13 +119,13 @@ function validateAtmosphere(entries, catalog) {
     }
     return entries;
 }
-const validate = {events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere};
+const validate = {events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere,sequences:require('./scriptedsequenceconfig').validate};
 let baseline;
 function bundled() {return baseline ||= require('../world-definitions').register(new (require('./worlddefinitions').WorldDefinitions)(), {local:false});}
 async function catalog(root, mapId) {
     source(root, mapId);const assets = require('./localquestbuilder').buildCatalog(root, mapId);
-    const server = JSON.parse(fs.readFileSync(safe(root, 'server/maps/world_server_' + mapId + '.json'), 'utf8'));
-    const builtClient = JSON.parse(fs.readFileSync(safe(root, 'client/maps/world_client_' + mapId + '.json'), 'utf8'));
+    const server = require('./localmapfiles').readJson(safe(root, 'server/maps/world_server_' + mapId + '.json'));
+    const builtClient = require('./localmapfiles').readJson(safe(root, 'client/maps/world_client_' + mapId + '.json'));
     const client = applyScenes(builtClient, readDocument(root, mapId).scenes);
     const doors = await require('./localdoorbuilder').readDoors(root, mapId);
     const routines = require('./localnpcbuilder').readBehavior(root, mapId).config.npcs;
@@ -142,7 +142,7 @@ async function catalog(root, mapId) {
     return {...assets,quests:[...new Map(quests.map(q=>[q.id,q])).values()],routines:routines.map(r=>({id:r.key,name:r.label,npc:Types.getKindFromString(r.kind),x:r.origin.x,y:r.origin.y})),
         triggers:[...new Set([...(server.triggers||[]).map(t=>String(t.trigger)),...doors.doors.map(d=>String(d.properties.tid||'').replace(/^!/,''))].filter(Boolean))].map(id=>({id,name:id})),
         doors:doors.doors.map(d=>({id:d.id,name:(d.type==='portal'?'Portal #':'Door #')+d.id,trigger:String(d.properties.tid||'').replace(/^!/,''),inverted:String(d.properties.tid||'').startsWith('!'),x:d.tileX,y:d.tileY})),
-        scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
+        scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,collisions:server.collisions||[],music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
 }
 function sectionValue(doc, tool, catalog) {
     return tool === 'scenes' ? {scenes:doc.scenes ?? null, atmosphere:doc.atmosphere, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
@@ -153,8 +153,8 @@ function sceneEntries(doc, catalog) {
     return [{sceneId:'*'}, ...catalog.scenes.map(({id,name,x,y,w,h}) => ({sceneId:String(id),name:name||'',x,y,w,h}))]
         .map(scene => ({...scene, atmosphere:doc.atmosphere.find(row => row.sceneId === scene.sceneId) || null}));
 }
-async function readTool(root, mapId, tool) {
-    if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId),options=await catalog(root,mapId);
+async function readTool(root, mapId, tool, options) {
+    if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId);options ||= await catalog(root,mapId);
     const entries=tool==='scenes'?sceneEntries(doc,options):doc[tools[tool]];
     return {mapId,tool,entries,revision:hash(sectionValue(doc,tool,options)),source:'tools/worlds/'+mapId+'.json',catalog:options};
 }

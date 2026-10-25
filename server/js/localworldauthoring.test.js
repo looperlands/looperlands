@@ -20,6 +20,20 @@ test('conversation preview filters choices and simulates actions in a cloned pla
 test.each(['production','development'])('saved dialogues override bundled trees in %s',environment=>{write('tools/worlds/one.json',{version:1,rules:[],dialogues:[tree()],atmosphere:[]});const {WorldDefinitions}=require('./worlddefinitions'),target=new WorldDefinitions();target.register('one',{id:'original',dialogues:[{npc:40,start:'old',nodes:{old:{text:'Old'}}}]});const before=process.env.NODE_ENV;try{process.env.NODE_ENV=environment;W.registerDialogues(root,target);expect(target.dialogues('one')).toHaveLength(2);expect(target.dialogues('one')[0]).toMatchObject({id:'guard_talk',localBuilder:true});}finally{if(before===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=before;}});
 test('atmosphere overrides preserve geometry, prefer a specific scene, and expose correct music IDs',()=>{const map={width:20,height:20,data:[1],scenes:[{id:1,x:1,y:2,w:5,h:6,name:'Forest'},{id:2,x:10,y:10,w:5,h:5,name:'Cave'}],musicAreas:[{id:'old',x:0,y:0,w:20,h:20}]},before=JSON.stringify(map);const specific={...atmosphere('2'),cycle:false,dayDarkness:0.5,music:''},result=W.applyAtmosphere(map,[atmosphere(),specific]);expect(JSON.stringify(map)).toBe(before);expect(result.data).toBe(map.data);expect(result.scenes[1]).toMatchObject({id:2,authoringAtmosphere:{cycle:false,dayDarkness:0.5},ambience:[{type:'fireflies',count:12}]});expect(result.scenes.slice(0,2).map(s=>s.authoringMusic)).toEqual(['forest','']);expect(result.musicAreas.map(a=>a.id)).toEqual(['old']);});
 test('atmosphere validates unique scenes, lighting ranges, color and particle budget',()=>{expect(()=>W.validateAtmosphere([atmosphere(),atmosphere()])).toThrow('unique');for(const change of [{dayDarkness:2},{color:'red'},{particles:[{type:'mist',count:24},{type:'leaves',count:1}]}])expect(()=>W.validateAtmosphere([{...atmosphere(),...change}])).toThrow();expect(()=>W.validateAtmosphere([atmosphere('deleted')],{scenes:[]})).toThrow('no longer exists');});
+test('custom particle designs survive scene save, reload and both runtime map transports',async()=>{
+    const effect={type:'custom',count:8,design:require('../../client/js/worldfxconfig').custom({shape:'star',colors:['#abcdef'],velocityY:-12})};
+    const base=await W.readTool(root,'one','scenes');base.entries[1].atmosphere={...atmosphere('1'),particles:[effect]};
+    const saved=await W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries});
+    expect(saved.entries[1].atmosphere.particles).toEqual([effect]);
+    expect((await W.readTool(root,'one','scenes')).entries).toEqual(saved.entries);
+    const app=require('express')();W.installRuntime(app,root);const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+    try {
+        const url='http://127.0.0.1:'+server.address().port+'/maps/world_client_one';
+        expect((await(await fetch(url+'.json')).json()).scenes[0].ambience).toEqual([effect]);
+        const context={};require('vm').runInNewContext(await(await fetch(url+'.js')).text(),context);
+        expect(JSON.parse(JSON.stringify(context.mapData.scenes[0].ambience))).toEqual([effect]);
+    }finally{await new Promise(r=>server.close(r));}
+});
 test.each(['../one','one.json','unknown',null])('rejects unsafe map %j',mapId=>expect(()=>W.readDocument(root,mapId)).toThrow('configured'));
 test('symlink paths and malformed authoring files cannot be silently replaced',()=>{fs.mkdirSync(path.join(root,'tools/worlds'),{recursive:true});fs.symlinkSync(path.join(root,'server/config.json'),path.join(root,'tools/worlds/one.json'));expect(()=>W.readDocument(root,'one')).toThrow('symbolic');fs.unlinkSync(path.join(root,'tools/worlds/one.json'));write('tools/worlds/one.json','{broken');expect(()=>W.readDocument(root,'one')).toThrow('invalid JSON');});
 test('local map transport applies atmosphere to JSON and worker JS, without rewriting map exports',async()=>{write('tools/worlds/one.json',{...W.readDocument(root,'one'),atmosphere:[atmosphere()]});const app=require('express')();W.installRuntime(app,root);const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));try{const url='http://127.0.0.1:'+server.address().port+'/maps/world_client_one';const json=await(await fetch(url+'.json')).json();expect(json.scenes[0].authoringAtmosphere.nightDarkness).toBe(.8);const js=await(await fetch(url+'.js')).text();const context={};require('vm').runInNewContext(js,context);expect(context.mapData.scenes[0].ambience[0].type).toBe('fireflies');expect(JSON.parse(fs.readFileSync(path.join(root,'client/maps/world_client_one.json'))).scenes[0]).not.toHaveProperty('authoringAtmosphere');}finally{await new Promise(r=>server.close(r));}});
@@ -95,4 +109,14 @@ test('styled player choices survive save and simulation, and do not accept quest
     expect(step.node.options[0].text).toBe(entries[0].nodes.welcome.options[0].text);
     entries[0].nodes.welcome.options[0].text = '{{remaining}}';
     expect(() => W.validateDialogues(entries)).toThrow('no quest-progress counters');
+});
+
+test('sequence saves preserve other world sections, reject stale writes and load in production',async()=>{
+    const S=require('../../shared/js/scriptedsequences'),base=await W.readTool(root,'one','sequences'),events=await W.readTool(root,'one','events');
+    await W.saveTool(root,{mapId:'one',tool:'events',revision:events.revision,entries:[rule()]});
+    const sequence=S.create('arrival'),saved=await W.saveTool(root,{mapId:'one',tool:'sequences',revision:base.revision,entries:[sequence]});
+    expect(saved.entries).toEqual([sequence]);expect(W.readDocument(root,'one').rules).toHaveLength(1);
+    await expect(W.saveTool(root,{mapId:'one',tool:'sequences',revision:base.revision,entries:[]})).rejects.toMatchObject({status:409});
+    const {WorldDefinitions}=require('./worlddefinitions'),registry=new WorldDefinitions(),before=process.env.NODE_ENV;
+    try{process.env.NODE_ENV='production';require('./scriptedsequenceloader').register(root,registry);expect(registry.create({id:'world_one'}).get('mapmaker-sequences').definitions[0]).toMatchObject({id:'arrival'});}finally{if(before===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=before;}
 });

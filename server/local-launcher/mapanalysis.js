@@ -1,8 +1,9 @@
 (() => {
     'use strict';
+    const fetchData = (...args) => (window.ToolboxMapData?.fetch || fetch)(...args);
     const el=(tag,text='',attrs={})=>Object.assign(document.createElement(tag),{textContent:text,...attrs});
     const href=(screen,values={})=>'#'+screen+'/?'+new URLSearchParams(values);
-    async function request(url){const response=await fetch(url,{signal:AbortSignal.timeout(45000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'Map analysis could not load. Refresh to retry.');return data;}
+    async function request(url){const response=await fetchData(url,{signal:AbortSignal.timeout(45000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'Map analysis could not load. Refresh to retry.');return data;}
     function make(tool){
         const pane=document.getElementById(tool+'-pane'),inspector=tool==='inspector';if(!pane)return;
         pane.innerHTML=`<header class="pane-heading"><h2>${inspector?'Interactive map inspector':'Map validator'}</h2><p>${inspector?'Place items, mobs and NPCs. Select an entity to inspect it or open its editor.':'Find map problems before playtesting, then open the object or editor that can fix them.'} <a href="#documentation/mapmaker-${tool}">Read the guide</a></p></header>
@@ -11,11 +12,11 @@
         const $=selector=>pane.querySelector(selector);let bootPromise,data,sequence=0,loaded=false;
         function status(message,error=false){$('.analysis-status').textContent=message;$('.analysis-status').classList.toggle('error',error);}
         function boot(){if(bootPromise)return bootPromise;bootPromise=bootData().finally(()=>{bootPromise=undefined;});return bootPromise;}
-        async function bootData(){if(loaded)return;loaded=true;try{const list=await request('./api/map-inspector');$('#'+tool+'-map').replaceChildren(...list.maps.map(id=>el('option',id,{value:id})));await load(window.ToolboxNavigation.params().get('map')||list.maps[0]);}catch(error){loaded=false;status(error.message,true);}}
-        async function load(mapId,objectId){const seq=++sequence;$('.analysis-refresh').disabled=true;status(inspector?'Reading map and object definitions…':'Checking map geometry and references…');$('.analysis-body').setAttribute('aria-busy','true');
+        async function bootData(){if(loaded)return;loaded=true;try{const list=await request('./api/map-inspector');$('#'+tool+'-map').replaceChildren(...list.maps.map(id=>el('option',id,{value:id})));await load(window.ToolboxNavigation.params().get('map')||window.ToolboxMapData?.preferred(list.maps[0])||list.maps[0]);}catch(error){loaded=false;status(error.message,true);}}
+        async function load(mapId,objectId){if(inspectorView?.hasDraft?.()&&!window.confirm('Discard the unsaved placement and reload map data?')){$('#'+tool+'-map').value=data.mapId;window.ToolboxMapData?.select(data.mapId).catch(()=>{});return;}const seq=++sequence;$('#'+tool+'-map').value=mapId;$('.analysis-refresh').disabled=true;status(inspector?'Reading map and object definitions…':'Checking map geometry and references…');$('.analysis-body').setAttribute('aria-busy','true');$('.analysis-body').inert=true;
             try{const result=await request('./api/'+(inspector?'map-inspector':'map-validation')+'?mapId='+encodeURIComponent(mapId));if(seq!==sequence)return;data=result;$('#'+tool+'-map').value=mapId;$('.analysis-other').href=href(inspector?'validator':'inspector',{map:mapId});$('.analysis-source').textContent='Built geometry: '+result.sources.server+' · Tiled source: '+result.sources.tiled+(result.sources.stale?' · Build is older than Tiled source':'');status(result.summary.errors+' errors · '+result.summary.warnings+' warnings · '+result.summary.objects+' objects. Checked '+new Date(result.checkedAt).toLocaleTimeString()+'.');if(inspector){renderInspector();const target=objectId||window.ToolboxNavigation.params().get('object');if(target)selectObject(target,true);}else renderValidator();}
             catch(error){if(seq===sequence){data=null;$('.analysis-body').replaceChildren();status(error.message,true);}}
-            finally{if(seq===sequence){$('.analysis-refresh').disabled=false;$('.analysis-body').setAttribute('aria-busy','false');}}
+            finally{if(seq===sequence){$('.analysis-refresh').disabled=false;$('.analysis-body').setAttribute('aria-busy','false');$('.analysis-body').inert=false;}}
         }
         function action(parent,text,url){if(!url)return;parent.append(el('a',text,{href:url,className:'analysis-link'}));}
         function renderValidator(){const body=$('.analysis-body');body.replaceChildren();

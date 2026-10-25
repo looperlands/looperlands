@@ -32,8 +32,14 @@ function validate(root = projectRoot) {
     const registry = require('../world-definitions').register(new WorldDefinitions(), {authored: false});
     require('./localquestbuilder').registerLocalQuests(root, registry, {strict: true});
     for (const mapId of Tiles.maps(root)) {
+        const fishingMap = JSON.parse(fs.readFileSync(path.join(root, 'server/maps/world_server_' + mapId + '.json'), 'utf8'));
+        require('./fishingareas').validate(fishingMap.fishingAreas || [], fishingMap);
+        const checkpointIds=new Set();
+        for(const cp of fishingMap.checkpoints||[]){if(!Number.isSafeInteger(cp.id)||cp.id<1||checkpointIds.has(cp.id))throw new Error('Checkpoint IDs must be unique positive whole numbers in '+mapId);checkpointIds.add(cp.id);}
         const doc = World.readDocument(root, mapId), tileDoc = Tiles.document(root, mapId);
         World.validateRules(doc.rules);
+        require('./scriptedsequenceconfig').validate(doc.sequences);
+        require('./scriptedsequenceloader').validateDefinitions(root,mapId,doc.sequences,registry);
         World.validateDialogues(doc.dialogues);
         World.validateAtmosphere(doc.atmosphere);
         if (doc.scenes != null || doc.atmosphere.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {

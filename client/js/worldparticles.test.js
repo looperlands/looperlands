@@ -1,5 +1,27 @@
 const WorldParticles = require('./worldparticles-worker');
 
+test('custom drift is deterministic and camera movement preserves world positions', () => {
+    const design = require('./worldfxconfig').custom({velocityX: 10, velocityY: -5, sway: 0});
+    const positions = (time, x = 0) => WorldParticles.positions('custom', 12, time, {x, y: 0, scale: 2}, 960, 448, design);
+    const start = positions(0).find(point => point.index === 0 && point.x > 40 && point.x < 900 && point.y > 30);
+    const next = positions(1).find(point => point.index === 0 && Math.abs(point.x - start.x - 20) < 0.1);
+    expect(next.y - start.y).toBeCloseTo(-10);
+    expect(positions(1, 8)).toContainEqual({...next, x: next.x - 16});
+    expect(positions(1)).toEqual(positions(1));
+});
+
+test.each(['pixel', 'spark', 'star', 'soft'])('custom %s draws its palette, opacity and bounded geometry', shape => {
+    const design = require('./worldfxconfig').custom({shape, colors: ['#123456'], opacity: 0.5, pulse: 0, glow: 4, spin: 1});
+    const colors = [], rects = [];
+    const context = {save: jest.fn(), restore: jest.fn(), translate: jest.fn(), rotate: jest.fn(),
+        createRadialGradient: () => ({addColorStop: (_, color) => colors.push(color)}),
+        fillRect(...values) {rects.push(values);if (typeof this.fillStyle === 'string') colors.push(this.fillStyle);}};
+    WorldParticles.draw(context, {x: 20,y: 30,scale: 2,index: 0,seed: 0.5}, 'custom', 1, 1, design);
+    expect(colors).toContain('rgba(18,52,86,0.5)');
+    expect(rects.flat().every(Number.isFinite)).toBe(true);
+    expect(context.save).toHaveBeenCalledTimes(1);expect(context.restore).toHaveBeenCalledTimes(1);
+});
+
 test('reactive fireflies use world coordinates without mutating procedural positions', () => {
     const point = {x: 40, y: 40, scale: 2, seed: 1};
     const fx = {actor: {x: 22, y: 28, vx: 80, vy: 0}, flags: {fireflies: true, leaves: true}};

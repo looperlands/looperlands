@@ -19,7 +19,7 @@ def fail(message, status=400):
     raise error
 
 
-def scan(filename):
+def scan(filename, observer=None):
     original = os.stat(filename, follow_symlinks=False)
     if not stat.S_ISREG(original.st_mode) or original.st_size > 512 * 1024 * 1024:
         fail('Use a regular Tiled source smaller than 512 MB.')
@@ -33,6 +33,8 @@ def scan(filename):
     def start(tag, attrs):
         nonlocal group_start, map_start, max_object, max_layer, tile_id, first_gid
         nonlocal entity_data, entity_index, encoded, encoding, compression
+        if observer is not None and tag not in ['tile', 'data']:
+            observer.start(tag, attrs, stack)
         if not stack and tag == 'map':
             attributes.update(attrs)
             map_start = parser.CurrentByteIndex
@@ -66,6 +68,8 @@ def scan(filename):
 
     def end(tag):
         nonlocal group_end, map_end, tile_id, first_gid, entity_data
+        if observer is not None and tag not in ['tile', 'data']:
+            observer.end(tag)
         stack.pop()
         if len(stack) == 1 and tag == 'objectgroup' and group_start is not None and group_end is None:
             group_end = parser.CurrentByteIndex
@@ -98,6 +102,8 @@ def scan(filename):
             map_end = parser.CurrentByteIndex
 
     def text(value):
+        if observer is not None and observer.prop is not None:
+            observer.text(value)
         if entity_data and encoding:
             encoded.append(value)
 
@@ -177,37 +183,52 @@ def edit(filename, payload):
     raw, root, group, offsets, result, original = scan(filename)
     if payload.get('revision') != result['revision']:
         fail('This map changed in another tab or in Tiled. Refresh the map before saving.', 409)
-    operation, position = payload.get('operation'), payload.get('position', {})
-    if operation not in ['add', 'move', 'remove']:
-        fail('Choose a supported placement action.')
-    target = None
-    if operation != 'add':
-        target = next((obj for obj in group.findall('object') if obj.get('id') == str(payload.get('id'))), None) if group is not None else None
-        if target is None:
-            fail('This Toolbox placement no longer exists. Refresh the map.', 404)
-    if operation != 'remove':
-        x, y, d = position.get('x'), position.get('y'), result['dimensions']
-        if payload.get('dimensions') != {key: d[key] for key in ['width', 'height']}:
-            fail('Map dimensions changed. Build the map before placing entities.', 409)
-        if type(x) is not int or type(y) is not int or not (0 < x < d['width'] and 0 < y < d['height']):
-            fail('Choose a playable tile inside the map, after the first row and column.')
-        occupied = result['legacy'] + [p for p in result['placements'] if target is None or p['id'] != target.get('id')]
-        if any(p['x'] == x and p['y'] == y for p in occupied):
-            fail('This tile already contains an entity. Choose an empty tile.')
+    operations = payload.get('operations', [payload])
+    if not isinstance(operations, list) or not 0 < len(operations) <= 500:
+        fail('Save between 1 and 500 placement changes together.')
     next_object = max([int(root.get('nextobjectid', '1'))] + [int(obj.get('id')) + 1 for obj in root.iter('object')])
     next_layer = max([int(root.get('nextlayerid', '1'))] + [int(obj.get('id', '0')) + 1 for obj in root if obj.tag in ['layer', 'objectgroup', 'group', 'imagelayer']])
     if group is None:
         group = ET.Element('objectgroup', {'id': str(next_layer), 'name': 'mapmaker-entities'})
         next_layer += 1
-    if operation == 'add':
-        target = ET.SubElement(group, 'object', {'id': str(next_object), 'name': payload['kind']})
-        ET.SubElement(target, 'point')
-        next_object += 1
-    if operation == 'remove':
-        group.remove(target)
-    else:
-        target.set('x', str(x * result['dimensions']['tilewidth']))
-        target.set('y', str(y * result['dimensions']['tileheight']))
+    changed, handled = set(), set()
+    for change in operations:
+        operation, position = change.get('operation'), change.get('position', {})
+        if operation not in ['add', 'move', 'remove']:
+            fail('Choose a supported placement action.')
+        target = None
+        if operation != 'add':
+            target_id = str(change.get('id'))
+            if target_id in handled:
+                fail('Each placement may be changed once per batch.')
+            handled.add(target_id)
+            target = next((obj for obj in group.findall('object') if obj.get('id') == target_id), None)
+            if target is None:
+                fail('This Toolbox placement no longer exists. Refresh the map.', 404)
+        if operation != 'remove':
+            x, y, d = position.get('x'), position.get('y'), result['dimensions']
+            if payload.get('dimensions') != {key: d[key] for key in ['width', 'height']}:
+                fail('Map dimensions changed. Build the map before placing entities.', 409)
+            if type(x) is not int or type(y) is not int or not (0 < x < d['width'] and 0 < y < d['height']):
+                fail('Choose a playable tile inside the map, after the first row and column.')
+        if operation == 'add':
+            target = ET.SubElement(group, 'object', {'id': str(next_object), 'name': change['kind']})
+            ET.SubElement(target, 'point')
+            next_object += 1
+        if operation == 'remove':
+            group.remove(target)
+        else:
+            target.set('x', str(x * result['dimensions']['tilewidth']))
+            target.set('y', str(y * result['dimensions']['tileheight']))
+            changed.add(target.get('id'))
+    # Validate final occupancy so two moves may swap places in one transaction.
+    occupied = [(p['x'], p['y']) for p in result['legacy']]
+    positions = [(obj.get('id'), int(float(obj.get('x', '0')) // result['dimensions']['tilewidth']),
+                  int(float(obj.get('y', '0')) // result['dimensions']['tileheight'])) for obj in group.findall('object')]
+    occupied.extend((x, y) for _, x, y in positions)
+    for object_id, x, y in positions:
+        if object_id in changed and occupied.count((x, y)) > 1:
+            fail('This tile already contains an entity. Choose an empty tile.')
     ET.indent(group, space=' ', level=1)
     replacement = ET.tostring(group, encoding='utf-8')
     with open(filename, 'rb') as source:
@@ -256,7 +277,7 @@ def edit(filename, payload):
 if __name__ == '__main__':
     try:
         payload = json.load(sys.stdin)
-        result = edit(sys.argv[1], payload) if payload.get('operation') else scan(sys.argv[1])[4]
+        result = edit(sys.argv[1], payload) if payload.get('operation') or payload.get('operations') is not None else scan(sys.argv[1])[4]
         print(json.dumps(result))
     except Exception as error:
         print(json.dumps({'error': str(error), 'status': getattr(error, 'status', 400)}))
