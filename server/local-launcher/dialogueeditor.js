@@ -1,14 +1,7 @@
 (() => {
     'use strict';
-    const styles = [
-        {label: 'Item', classes: 'dialogue-item', hint: 'Gold emphasis for an item or supply'},
-        {label: 'Danger', classes: 'dialogue-danger', hint: 'Red emphasis for a threat'},
-        {label: 'Wave', classes: 'dialogue-wave', hint: 'Blue emphasis with a gentle wave in the game'},
-        {label: 'Shake', classes: 'dialogue-shake', hint: 'A small shake in the game'},
-        {label: 'Danger + shake', classes: 'dialogue-danger dialogue-shake', hint: 'Red emphasis with a small shake'}
-    ];
-    const allowed = new Set(['dialogue-item', 'dialogue-danger', 'dialogue-wave', 'dialogue-shake']);
-    const editors = [];
+    const format = window.DialogueFormat;
+    const instances = new WeakMap();
     function element(tag, text, className) {
         const node = document.createElement(tag);
         if (text !== undefined) node.textContent = text;
@@ -16,29 +9,17 @@
         return node;
     }
     function appendPreview(parent, source) {
-        // Copy only text and known styling spans into the live document.
-        const parsed = document.createElement('template');
-        parsed.innerHTML = source;
-        function copy(from, to) {
-            for (const child of from.childNodes) {
-                if (child.nodeType === Node.TEXT_NODE) {to.append(document.createTextNode(child.textContent)); continue;}
-                if (child.nodeType !== Node.ELEMENT_NODE || ['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT'].includes(child.tagName)) continue;
-                if (child.tagName === 'BR') {to.append(document.createTextNode('\n')); continue;}
-                if (child.tagName === 'SPAN') {
-                    const span = element('span');
-                    span.className = [...child.classList].filter(name => allowed.has(name)).join(' ');
-                    copy(child, span); to.append(span);
-                } else {
-                    copy(child, to);
-                    if (['P', 'DIV'].includes(child.tagName)) to.append(document.createTextNode('\n'));
-                }
-            }
-        }
-        copy(parsed.content, parent);
+        format.append(parent, source);
+        window.DialogueText.presentInstant(parent);
     }
-    for (const id of ['quest-start', 'quest-progress', 'quest-end', 'quest-long-text', 'quest-log-text', 'quest-npc-text']) {
-        const input = document.getElementById(id);
-        const label = document.querySelector(`label[for="${id}"]`).textContent;
+    /** Enhance a textarea in place, preserving its constraints and input events.
+     * tags: optional [{key, sample}], or a function returning them for current context.
+     * reset() clears toolbar history after loading a record; refresh() updates tags/state.
+     * Dynamic forms are weakly held and need no teardown when their DOM is removed.
+     */
+    function attach(input, options = {}) {
+        if (instances.has(input)) return instances.get(input);
+        const label = options.label || input.labels?.[0]?.textContent || 'Dialogue';
         const wrapper = element('div', undefined, 'dialogue-editor');
         input.before(wrapper);
         const toolbar = element('div', undefined, 'dialogue-editor-toolbar');
@@ -48,13 +29,17 @@
         const preview = element('div', undefined, 'dialogue-editor-preview');
         preview.setAttribute('aria-label', label + ' preview');
         const note = element('p', undefined, 'dialogue-editor-note');
-        note.id = id + '-editor-note';
+        if (input.id) note.id = input.id + '-editor-note';
         wrapper.append(toolbar, input, previewHeading, preview, note);
         const history = [];
         let applying = false;
+        const tags = () => (typeof options.tags === 'function' ? options.tags() : options.tags) || [];
+        const controlsDisabled = () => input.disabled || input.readOnly;
+        const blocked = () => input.matches(':disabled') || input.readOnly || !!input.closest('[inert]');
         function apply(replacement, start = input.selectionStart, end = input.selectionEnd, selection) {
+            if (blocked()) return;
             const value = input.value.slice(0, start) + replacement + input.value.slice(end);
-            if (input.maxLength > 0 && value.length > input.maxLength) {
+            if (input.maxLength >= 0 && value.length > input.maxLength) {
                 note.textContent = 'This text is too long. Shorten it before adding more formatting.';
                 return;
             }
@@ -68,9 +53,9 @@
             const control = element('button', text);
             control.type = 'button'; control.title = title;
             control.addEventListener('pointerdown', event => event.preventDefault());
-            control.addEventListener('click', callback); parent.append(control); return control;
+            control.addEventListener('click', () => {if (!blocked()) callback();}); parent.append(control); return control;
         }
-        for (const style of styles) {
+        for (const style of format.styles) {
             button(style.label, style.hint + `: <span class="${style.classes}">text</span>`, () => {
                 const selected = input.value.slice(input.selectionStart, input.selectionEnd) || 'text';
                 if (!selected.trim()) {note.textContent = 'Select a word or phrase to style.'; input.focus(); return;}
@@ -89,30 +74,31 @@
             input.focus(); input.value = previous.value; input.setSelectionRange(previous.start, previous.end);
             applying = true; input.dispatchEvent(new Event('input', {bubbles: true})); applying = false; refresh();
         });
-        if (id === 'quest-progress') {
-            counterControls.append(element('span', 'Insert progress:'));
-            for (const tag of ['remaining', 'done', 'amount']) button('{{' + tag + '}}', 'Insert the ' + tag + ' progress tag at the cursor', () => apply('{{' + tag + '}}'), counterControls);
-            toolbar.append(counterControls);
-        }
-        function refresh(resetHistory = false) {
-            if (resetHistory) history.length = 0;
-            const progress = id === 'quest-progress';
-            const counters = progress && !document.getElementById('quest-progress-tags').hidden;
+        toolbar.append(counterControls);
+        function refresh() {
+            const available = tags();
+            const counters = available.length > 0;
             counterControls.hidden = !counters;
+            counterControls.replaceChildren();
+            if (counters) {
+                counterControls.append(element('span', 'Insert progress:'));
+                for (const tag of available) button('{{' + tag.key + '}}', 'Insert the ' + tag.key + ' progress tag at the cursor', () => apply('{{' + tag.key + '}}'), counterControls);
+            }
             preview.replaceChildren();
             let source = input.value;
-            if (counters) source = source.replace(/\{\{(remaining|done|amount)\}\}/g, (_, key) => ({remaining: 7, done: 3, amount: 10})[key]);
+            source = source.replace(/\{\{(\w+)\}\}/g, (text, key) => {const tag = available.find(tag => tag.key === key); return tag ? String(tag.sample) : text;});
             if (source.trim()) appendPreview(preview, source);
             else {const empty = element('span', 'Your dialogue will appear here.', 'dialogue-editor-empty'); preview.append(empty);}
-            note.textContent = (counters ? 'Preview uses sample progress: 7 remaining, 3 done, 10 total. ' : '') +
-                'Select a word or phrase, then choose a style. Wave and shake animate in the game.';
-            for (const control of toolbar.querySelectorAll('button')) control.disabled = input.disabled;
-            undo.disabled = input.disabled || !history.length;
-            remove.disabled = input.disabled || !/<span\b/i.test(input.value);
+            note.textContent = (counters ? 'Preview samples: ' + available.map(tag => '{{' + tag.key + '}} = ' + tag.sample).join(', ') + '. ' : '') +
+                'Select a word or phrase, then choose a style. Wave and shake animate in this preview and in the game.';
+            for (const control of toolbar.querySelectorAll('button')) control.disabled = controlsDisabled();
+            undo.disabled = controlsDisabled() || !history.length;
+            remove.disabled = controlsDisabled() || !/<span\b/i.test(input.value);
         }
         input.addEventListener('input', () => {if (!applying) history.length = 0; refresh();});
-        editors.push(refresh); refresh();
+        wrapper.addEventListener('focusin', event => {if (event.target === input) refresh();});
+        const controller = {refresh, reset() {history.length = 0; refresh();}};
+        instances.set(input, controller); refresh(); return controller;
     }
-    window.ToolboxDialoguePreview = {append: appendPreview};
-    document.addEventListener('toolbox:dialogue', () => editors.forEach(refresh => refresh(true)));
+    window.ToolboxDialogueEditor = {attach, appendPreview};
 })();

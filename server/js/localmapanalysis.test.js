@@ -100,3 +100,13 @@ test('API lists maps, rejects builds in progress and omits large tile data from 
     expect(body).not.toHaveProperty('tiles');
     expect(body).not.toHaveProperty('collisions');
 });
+test('inspector serves original artwork independently of the built client and rejects unsafe paths', async () => {
+    const routes={},res={type:jest.fn().mockReturnThis(),send:jest.fn(),json:jest.fn(),status:jest.fn().mockReturnThis()};
+    write('client/img/1/tilesheet_one.png','original artwork');
+    install({get:(url,handler)=>{routes[url]=handler;}},{root});
+    await routes['/local/api/map-artwork']({query:{mapId:'one'}},res);
+    expect(res.type).toHaveBeenCalledWith('png');expect(res.send).toHaveBeenCalledWith(Buffer.from('original artwork'));
+    await routes['/local/api/map-artwork']({query:{mapId:'../one'}},res);expect(res.status).toHaveBeenCalledWith(400);
+    fs.unlinkSync(path.join(root,'client/img/1/tilesheet_one.png'));fs.symlinkSync(path.join(root,'server/config.json'),path.join(root,'client/img/1/tilesheet_one.png'));
+    await routes['/local/api/map-artwork']({query:{mapId:'one'}},res);expect(res.json).toHaveBeenLastCalledWith({error:expect.stringContaining('symbolic')});
+});

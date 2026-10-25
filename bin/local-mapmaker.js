@@ -123,6 +123,8 @@ class MapmakerToolbox {
         if (this.closed) throw Object.assign(new Error('The toolbox is shutting down.'), {status: 503});
         if (this.job?.status === 'running') throw Object.assign(new Error('A build is already running.'), {status: 409});
         if (this.doorSaveCount) throw Object.assign(new Error('Wait for the entrance save to finish before building.'), {status: 409});
+        if (this.entitySaveCount) throw Object.assign(new Error('Wait for the entity placement save to finish before building.'), {status: 409});
+        if (this.lightingSaveCount) throw Object.assign(new Error('Wait for the lighting save to finish before building.'), {status: 409});
         validateMap(this.root, mapId);
         this.job = {id: require('crypto').randomUUID(), status: 'running', step: 'Stop game', logs: []};
         this.buildAbort = new AbortController();
@@ -257,6 +259,8 @@ function createToolboxApp(toolbox) {
     require('../server/js/localdoorbuilder').install(app, toolbox);
     require('../server/js/localnpcbuilder').install(app, toolbox);
     require('../server/js/localmapanalysis').install(app, toolbox);
+    require('../server/js/localentitybuilder').install(app, toolbox);
+    require('../server/js/locallightingbuilder').install(app, toolbox);
     require('../server/js/localmappreview').install(app, toolbox);
     require('../server/js/localworldauthoring').install(app, toolbox);
     require('../server/js/localtilebuilder').install(app, toolbox);
@@ -272,7 +276,7 @@ function createToolboxApp(toolbox) {
             res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
-    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-items', 'mapmaker-doors']);
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-lighting', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));

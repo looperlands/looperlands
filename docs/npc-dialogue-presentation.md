@@ -39,8 +39,7 @@ Use effects selectively. Words keep their meaning when animation is disabled.
 Quest dialogue across the main map, Taiko Town, Cobsfarm, Looporia, Robits,
 MRMlabs, Short Destroyers and m88n uses gold for requested supplies and red for
 active threats. The Bitcorn and Thornbeard conversations and the Lantern Picnic
-use occasional wave or shake for expressive story moments. Response buttons
-remain plain; spoken wording, quest IDs, rewards and choices are unchanged.
+use occasional wave or shake for expressive story moments. Response buttons support the same authored styles. Spoken wording, quest IDs, rewards and choice destinations are unchanged.
 
 Popups show the NPC name and use the existing `custom_css.avatar` configuration,
 or the NPC's loaded idle-down sprite as a fallback. The portrait bobs only while
@@ -66,3 +65,5 @@ For a game session with fresh quest progress, set `NPC_PREVIEW_DATA_DIR` to a
 new local directory when running `bin/local-npc-preview.js`. Give parallel
 sessions separate `NPC_PREVIEW_PORT` and `NPC_PREVIEW_FIXTURE_PORT` values.
 The default preview directory keeps its existing progress.
+
+The Toolbox uses one [shared dialogue editor](mapmaker-dialogues.md#shared-dialogue-editor). Game notifications (including entrance failures, tile outcomes and event messages), private event speech, quest details and response buttons prepare Wave and Shake glyphs immediately, without a typing delay. Ambient NPC speech uses the NPC reveal presentation. Notification history retains styling when moving the latest message to the previous-message slot. Quest-list summaries strip markup before shortening text, so a style tag cannot be cut in half. Arbitrary notification text remains literal; only validated dialogue spans are rendered as styles.

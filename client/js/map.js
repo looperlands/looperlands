@@ -198,6 +198,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.doors = this._getDoors(map);
             this.triggers = this._getTriggers(map);
             this.scenes = this._getScenes(map);
+            this.sceneOrder = (map.scenes || []).map(scene => this.scenes[scene.id]);
             this.lights = map.lights;
             this.shadows = map.shadows;
             this.lightTiles = map.lightTiles;
@@ -557,7 +558,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
         },
 
         getCurrentScene: function (entity) {
-            return _.detect(this.scenes, function (scene) {
+            return _.detect(this.sceneOrder || this.scenes, function (scene) {
                 return scene.contains(entity);
             });
         },

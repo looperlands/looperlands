@@ -97,6 +97,8 @@ class ClientReloadController {
                 resumeState: {revision, reboot, expiresAt: this.now() + 180000, hp: player.hitPoints, dead: player.isDead,
                     orientation: player.orientation,
                     consumableBuff: {buff: player.consumableBuff?.buff, expireTime: player.consumableBuff?.expireTime},
+                    dropOverride: {item: player.dropOverride, expiresAt: player.dropOverrideExpiresAt},
+                    dropTableOverride: player.dropTableOverride,
                     invincibilityExpiresAt: player.invincibilityExpiresAt,
                     cooldowns: player.server.consumeCooldowns?.[player.nftId] || {}}}));
             this.records.set(id, session);

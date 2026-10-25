@@ -2,7 +2,7 @@ const crypto=require('crypto');
 const Builder=require('./localtilebuilder');
 const Types=require('../../shared/js/gametypes');
 const quests=require('./quests/quests');
-// Generic sequences are local authoring data. Inventory and stage revisions commit together.
+// Repository-authored sequences use the selected provider's atomic persistence.
 class LocalTileSequences {
     constructor(cache,platform,options={}) {this.cache=cache;this.platform=platform;this.dao=options.dao||require('./dao');this.now=options.now||Date.now;this.random=options.random||Math.random;this.root=options.root||require('path').resolve(__dirname,'../..');this.definitions={};for(const id of Builder.maps(this.root)){const definitions=Builder.definitions(this.root,id);this.definitions[id]=Object.fromEntries(Object.entries(definitions).filter(([,a])=>a.type==='sequence'));}this.stageDefinitions=this.definitions;}
     resolve(map,tile) {if(!Number.isInteger(tile?.gridX)||!Number.isInteger(tile?.gridY))return null;const name=Builder.actionAt(this.root,map,tile.gridX,tile.gridY);const action=this.definitions[map]?.[name];return action?{name,action,x:tile.gridX,y:tile.gridY,signature:Builder.hash(action)}:null;}
@@ -33,11 +33,16 @@ class LocalTileSequences {
         const requestId=crypto.createHash('sha256').update(JSON.stringify([nftId,map,r.x,r.y,r.signature,state.revision])).digest('hex');
         let receipt;try{receipt=await this.dao.commitTileSequence({requestId,nftId,mapId:map,x:r.x,y:r.y,signature:r.signature,expectedRevision:state.revision,stage:stage||null,readyAt:this.now()+(next?.waitSeconds||0)*1000,tile:success?s.tile:(state.tile||0),items,xp:success?s.xp:0,requiredItems,success});}catch(e){return fail(e.code==='tile_changed'?'This tile changed. Try again.':'The action could not commit. Check your items and retry.');}
         for(const key of this.cache.keys()){const data=this.cache.get(key);if(data?.nftId===nftId){data.gameData.items={...data.gameData.items,...receipt.quantities};this.cache.set(key,data);}}
-        if(receipt.replayed)return {success:true,message:'This action already completed. Refresh the tile.'};
+        // A replay can be our first received reply after a lost response. Publish
+        // that durable result once; concurrent attempts must not emit two events.
+        this.published ||= new Set();
+        if(this.published.has(requestId))return {success:true,message:'This action already completed. Refresh the tile.'};
+        this.published.add(requestId);if(this.published.size>10000)this.published.delete(this.published.values().next().value);
+        const committedSuccess=receipt.success ?? success;
         // Publication failures must not turn a committed receipt into a failed inventory action.
-        try{await player.applyPersistedExperience?.(receipt.xp);this.publish(world,r,receipt.state);if(success&&s.trigger&&!world.checkTriggerActive(s.trigger))world.activateTrigger(s.trigger);}catch(e){console.error('Committed tile sequence publication failed:',e.message);}
-        const message=success?(s.message||s.name+' complete.'):(s.failureMessage||'The attempt failed. Try again.');world.sendNotifications(player,message,false);
-        return {success:true,message,activity:{action:r.name,stage:s.id,target:r.name,quantity:1,x:r.x,y:r.y,failed:!success}};
+        try{await player.applyPersistedExperience?.(receipt.xp);this.publish(world,r,receipt.state);if(committedSuccess&&s.trigger&&!world.checkTriggerActive(s.trigger))world.activateTrigger(s.trigger);}catch(e){console.error('Committed tile sequence publication failed:',e.message);}
+        const message=committedSuccess?(s.message||s.name+' complete.'):(s.failureMessage||'The attempt failed. Try again.');world.sendNotifications(player,message,false);
+        return {success:true,message,activity:{action:r.name,stage:s.id,target:r.name,quantity:1,x:r.x,y:r.y,failed:!committedSuccess}};
     }
     publish(world,r,state) {if(state.tile)world.placeStagedTile(r.x,r.y,state.tile,0);else world.clearStagedTile(r.x,r.y);}
     async loadPersistedPlots(map,world) {const doc=Builder.document(this.root,map);for(const p of doc.placements)if(this.definitions[map]?.[p.action])for(let y=p.y;y<p.y+p.height;y++)for(let x=p.x;x<p.x+p.width;x++){const r=this.resolve(map,{gridX:x,gridY:y}),state=await this.state(map,r);if(state.tile)this.publish(world,r,state);}}

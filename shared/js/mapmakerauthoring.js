@@ -38,7 +38,7 @@
         killed_mob:{label:'Mob defeats at least',field:'mob',source:'mobs',amount:true},is_level:{label:'Player level at least',field:'level',number:true}
     };
     const dialogueActions={record_choice:{label:'Remember a choice',field:'choice'},handout_quest:{label:'Start a quest',field:'quest',source:'quests'},complete_quest:{label:'Complete a quest',field:'quest',source:'quests'}};
-    function compile(rules){let idx=1000000;return {handlers:rules.filter(r=>r.enabled!==false).map(rule=>{
+    function compile(rules,startIndex=1000000){let idx=startIndex;return {handlers:rules.filter(r=>r.enabled!==false).map(rule=>{
         let next=[];for(const action of [...rule.actions].reverse())next=[{idx:idx++,type:action.type,options:{...action.options},then:next}];
         for(const condition of [...rule.conditions].reverse())next=[{idx:idx++,type:condition.type,options:{...condition.options},[condition.not?'false':'true']:next}];
         return {idx:idx++,type:rule.when.type,options:{...rule.when.options},then:next};

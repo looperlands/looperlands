@@ -187,6 +187,7 @@ module.exports = World = cls.Class.extend({
                 self.addItem(item);
                 if (item) {
                     player.broadcast(player.drop(item), false);
+                    self.handleItemDespawn(item);
                 }
             });
 
@@ -846,11 +847,7 @@ module.exports = World = cls.Class.extend({
         if (entity.hitPoints <= 0) {
             if (entity.type === "mob") {
                 let mob = entity,
-                    item = this.getDroppedItem(mob);
-
-                if (attacker.dropOverride !== undefined) {
-                    item = this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y));
-                }
+                    item = attacker.dropOverride !== undefined ? this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y)) : this.getDroppedItem(mob, attacker);
                 if (item) item.fieldGuideSource = 'loot';
 
                 let kind = Types.getKindAsString(mob.kind);
@@ -1005,7 +1002,12 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    getDroppedItem: function (mob) {
+    getDroppedItem: function (mob, attacker) {
+        const override = attacker?.dropTableOverride;
+        if (override?.expiresAt > Date.now() && (override.mob === null || override.mob === mob.kind)) {
+            const item = require('../../shared/js/itemeffects').rollDrop(override.drops);
+            return item ? this.addItem(this.createItem(Types.getKindFromString(item), mob.x, mob.y)) : null;
+        }
         var kind = Types.getKindAsString(mob.kind),
             drops = Properties[kind].drops,
             v = Utils.random(100),

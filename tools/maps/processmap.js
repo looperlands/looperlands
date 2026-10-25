@@ -376,46 +376,41 @@ module.exports = function processMap(json, options) {
 
         if (light.properties) {
 
-            let lightProps = light.properties;
-            if (!Array.isArray(light.properties)) {
-                lightProps = [light.properties];
-            }
+            // The TMX converter wraps properties differently for a single child
+            // and for an object with both properties and an ellipse.
+            const lightProps = [].concat(light.properties).flatMap(group => [].concat(group.property || []));
 
             if (lightProps) {
                 for (var k = 0; k < lightProps.length; k += 1) {
-                    if (lightProps[k].property.name === "light") {
-                        lightProps[k].property.name = "intensity";
-                    }
-
-                    switch (lightProps[k].property.name) {
+                    switch (lightProps[k].name) {
                         case "intensity":
                         case "light":
-                            newLight.intensity = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
+                            newLight.intensity = parseFloat(String(lightProps[k].value).replace(',', '.'));
                             break;
                         case "color":
-                            let colors = lightProps[k].property.value.split(',');
+                            let colors = String(lightProps[k].value).split(',');
                             newLight.color = {r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2])};
                             break;
                         case "radius":
-                            newLight.radius = parseInt(lightProps[k].property.value);
+                            newLight.radius = parseInt(lightProps[k].value);
                             break;
                         case "innerRadius":
-                            newLight.innerRadius = parseInt(lightProps[k].property.value);
+                            newLight.innerRadius = parseInt(lightProps[k].value);
                             break;
                         case "spread":
-                            newLight.spread = parseInt(lightProps[k].property.value);
+                            newLight.spread = parseInt(lightProps[k].value);
                             break;
                         case "innerSpread":
-                            newLight.innerSpread = parseInt(lightProps[k].property.value);
+                            newLight.innerSpread = parseInt(lightProps[k].value);
                             break;
                         case "angle":
-                            newLight.angle = parseInt(lightProps[k].property.value);
+                            newLight.angle = parseInt(lightProps[k].value);
                             break;
                         case "shadow":
-                            newLight.shadow = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
+                            newLight.shadow = parseFloat(String(lightProps[k].value).replace(',', '.'));
                             break;
                         case "animation":
-                            newLight.animation = lightProps[k].property.value;
+                            newLight.animation = lightProps[k].value;
                             break;
                     }
                 }

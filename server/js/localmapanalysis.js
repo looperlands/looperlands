@@ -114,9 +114,19 @@ async function analyze(root, mapId, options = {}) {
         }checks.push('Authored quest validation, prerequisites, quest NPCs and reward item references');
     }catch(error){finding('error','quest-source','Quest source could not be checked: '+error.message,null,link('quests',{map:mapId}));}
     for(const [id,row]of usedMobs){const drops=custom.find(e=>e.id===id)?.gameplay?.drops||properties[id]?.drops||{};let total=0;for(const [item,chance]of Object.entries(drops)){if(!Types.isItem(kind(item)))finding('error','drop-item','Drop table references an unknown item: '+item,row);if(!Number.isFinite(chance)||chance<0||chance>100)finding('error','drop-chance','Invalid drop chance for '+item+'.',row);total+=chance;}if(total>100)finding('error','drop-total','Drop chances total more than 100%.',row);}
-    return {mapId,width:map.width,height:map.height,collisions:map.collisions||[],tiles:client?.data||[],tilesize:client?.tilesize||16,tileset:'/img/1/tilesheet_'+(['oadungeon','oaoverworld'].includes(mapId)?'oa':mapId)+'.png',objects,findings,checks,sources,
+    return {mapId,width:map.width,height:map.height,collisions:map.collisions||[],tiles:client?.data||[],tilesize:client?.tilesize||16,tileset:'/local/api/map-artwork?mapId='+encodeURIComponent(mapId),objects,findings,checks,sources,
         checkedAt:new Date().toISOString(),summary:{errors:findings.filter(f=>f.severity==='error').length,warnings:findings.filter(f=>f.severity==='warning').length,objects:objects.length},
         limitations:'Checks use built base collisions and current Tiled entrance properties. Dynamic layers, runtime events, ownership and scripted spawns are not simulated. A clean report does not replace a playtest.'};
 }
-function install(app,toolbox){for(const route of ['map-inspector','map-validation'])app.get('/local/api/'+route,async(req,res)=>{try{if(req.query.mapId===undefined)return res.json({maps:maps(toolbox.root)});if(toolbox.job?.status==='running')fail('Wait for the map build to finish, then refresh analysis.',409);const result=await analyze(toolbox.root,req.query.mapId);if(route==='map-validation'){const {tiles,collisions,tileset,...report}=result;return res.json(report);}res.json(result);}catch(error){res.status(error.status||500).json({error:error.message});}});}
+function install(app,toolbox){
+    app.get('/local/api/map-artwork',(req,res)=>{
+        try {
+            const id=req.query.mapId;
+            if(typeof id!=='string'||!/^[A-Za-z0-9_-]+$/.test(id)||!maps(toolbox.root).includes(id))fail('Choose a configured map.');
+            const sheet=['oadungeon','oaoverworld'].includes(id)?'oa':id;
+            res.type('png').send(fs.readFileSync(safe(toolbox.root,'client/img/1/tilesheet_'+sheet+'.png')));
+        } catch(error){res.status(error.status||404).json({error:error.message});}
+    });
+    for(const route of ['map-inspector','map-validation'])app.get('/local/api/'+route,async(req,res)=>{try{if(req.query.mapId===undefined)return res.json({maps:maps(toolbox.root)});if(toolbox.job?.status==='running')fail('Wait for the map build to finish, then refresh analysis.',409);let result=await analyze(toolbox.root,req.query.mapId);if(route==='map-validation'){const {tiles,collisions,tileset,...report}=result;return res.json(report);}try{const entities=require('./localentitybuilder');const source=await entities.readPlacements(toolbox.root,req.query.mapId);source.entries=require('./localassetbuilder').catalog(toolbox.root).entries;result=entities.overlay(result,source);delete result.placements.entries;}catch(error){result.placementError=error.message;}res.json(result);}catch(error){res.status(error.status||500).json({error:error.message});}});
+}
 module.exports={analyze,grid,reachable,link,install};

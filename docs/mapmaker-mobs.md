@@ -37,7 +37,9 @@ Combat and loot appear before sprite preparation so you can tune gameplay first.
 
 **Save & register** assigns a numeric kind to a new character and writes a shared definition, sprite JSON and prepared artwork. A saved ID stays fixed; create another copy to use a different ID. Changes are saved to the checkout, but need a map build before they appear in a new game session.
 
-In Tiled, add an **object layer** named `mapmaker-entities`. Add a **point object** at the desired tile and set its **Name** to the exact asset ID, for example `forest_beetle`. Do not use a tile object or place two entities in one cell. Keep the point inside the map and after its first column; the legacy runtime reserves the left boundary. Existing entity tile layers still work.
+Use **Place on map** to open the map inspector with your mob selected. Choose a walkable tile, save the placement and build the map. See the [placement guide](mapmaker-inspector.md#place-items-mobs-and-npcs).
+
+Alternatively, in Tiled, add an **object layer** named `mapmaker-entities`. Add a **point object** at the desired tile and set its **Name** to the exact asset ID, for example `forest_beetle`. Do not use a tile object or place two entities in one cell. Keep the point inside the map and after its first column; the legacy runtime reserves the left boundary. Existing entity tile layers still work.
 
 Save the TMX file, open [Build tools](mapmaker-building.md), build that map, then start a fresh [game session](mapmaker-sessions.md). NPCs and mobs placed in the built map become available to the Quest builder.
 

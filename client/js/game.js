@@ -8353,7 +8353,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         var entity = self.getEntityById(entityId);
                         if (entity) {
                             if (options?.ambient && Date.now() < (entity.dialogueUntil || 0)) return;
-                            self.createBubble(entityId, message);
+                            self.createBubble(entityId, message, undefined, options?.ambient ? {dialogue: true} : undefined);
                             self.bubbleManager.getBubbleById(entityId).element.addClass('chat-message');
                             self.assignBubbleTo(entity);
                             if (!options?.ambient) self.audioManager.playSound("chat");

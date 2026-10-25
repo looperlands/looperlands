@@ -69,7 +69,7 @@ Its **Check main updates** button checks for new changes and suggests fetch/merg
 commands when needed; it does not update your checkout. **Documentation** is
 available inside the toolbox. **Quest builder** saves custom per-map quests in
 `tools/quests/<mapId>.json`; use **Build tools** afterward to restart the game with
-those definitions. Custom toolbox quests are enabled only for local playtests.
+those definitions. Saved Toolbox quests load in local playtests and production after commit and deployment.
 
 To get a new session run in a second terminal after the server starts:
 ```bash

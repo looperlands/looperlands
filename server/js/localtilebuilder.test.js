@@ -43,3 +43,18 @@ test('the HTTP editor loads catalog metadata, saves item costs and rejects stale
         await new Promise(resolve=>server.close(resolve));
     }
 });
+
+test('tile outcome styles survive persistence and reject unsupported markup and progress tags', () => {
+    const document = doc();
+    Object.assign(document.actions.repair.stages[0], {
+        message: 'Found <span class="dialogue-item">wood</span>.',
+        failureMessage: '<span class="dialogue-danger dialogue-shake">Try again!</span>'
+    });
+    const before = B.readTool(root, 'one');
+    B.save(root, {mapId: 'one', revision: before.revision, document});
+    expect(B.readTool(root, 'one').document).toEqual(document);
+    for (const message of ['{{amount}}', '<img src="x">', '<span class="other">Oops</span>']) {
+        document.actions.repair.stages[0].message = message;
+        expect(() => B.validate(document, B.readMap(root, 'one'))).toThrow();
+    }
+});

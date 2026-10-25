@@ -38,8 +38,9 @@ test('inventory groups tagged items beside fishing rods without duplicate or equ
     for (const [name, qty] of [['M88NSHOVEL', 1], ['M88NWATERCAN', 2], ['M88NSEEDS', 5]]) {
         items[Types.Entities[name]] = {qty, consumable: false, image: 'item-' + name.toLowerCase(), description: name};
     }
+    items[Types.Entities.GOLD]={qty:3,consumable:true,image:'item-GOLD',description:'Consumable resource',effect:'Restores 50 HP'};
     const data = {inventory: [], special: [{nftId: 'fishingrod', name: 'Fishing rod', level: 1}], items, bots: []};
-    const document = {getElementById: jest.fn(() => null)};
+    const document = {getElementById: jest.fn(() => ({addEventListener: jest.fn(), querySelector: jest.fn()}))};
     vm.runInNewContext(fs.readFileSync(require.resolve('./app'), 'utf8'), {
         document, window: {}, $, Types, _: require('underscore'), console,
         axios: {get: async () => ({data})}, setTimeout, clearTimeout, setInterval, clearInterval,
@@ -62,6 +63,8 @@ test('inventory groups tagged items beside fishing rods without duplicate or equ
     }
     expect(tools).not.toContain("id='" + Types.Entities.M88NSEEDS + "'");
     expect(html).toContain("id='" + Types.Entities.M88NSEEDS + "'");
+    expect(html).toContain("id='item_" + Types.Entities.GOLD + "'");
+    expect(app.inventoryToolTips[Types.Entities.GOLD].footer).toBe('Restores 50 HP');
     expect(app.game.client.sendEquipInventory).not.toHaveBeenCalled();
     expect(app.game.player.switchWeapon).not.toHaveBeenCalled();
 });

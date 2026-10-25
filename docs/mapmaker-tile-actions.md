@@ -2,7 +2,7 @@
 
 Open **Tile actions & stages** and select a map. You can edit an existing farming action, create a farming action or create a **stage sequence** for interactions such as mining, repairs and repeatable resource gathering.
 
-All changes are local playtest overrides in `tools/tiles/<map>.json`. Bundled definitions in `client/tileActions` and Tiled map exports remain intact. Save, build the map and start a fresh local session. Changing a sequence definition starts a new persistent state namespace for its placed tiles; this is useful while authoring, but does not migrate already-running interactions.
+All changes are saved map overrides in `tools/tiles/<map>.json`. Bundled definitions in `client/tileActions` and Tiled map exports remain intact. Save, build the map and start a fresh local session. Changing a sequence definition starts a new persistent state namespace for its placed tiles; this is useful while authoring, but does not migrate already-running interactions.
 
 Use **Stages** (or **Farming**) to edit the definition, **Map placement** to place it, and **Preview** to test the configuration. Save changes stays available above the editor on desktop. Costs, rewards and care boosts expand when needed. Chances are entered as percentages; saved definitions still use values from 0 to 1.
 
@@ -16,7 +16,7 @@ Connect **On success go to** and **On failure go to** to other stages. An empty 
 
 Use a matching Trigger ID in **Doors & portals** or **Triggers & events**. The latter offers **Player completes a tile stage**, with action and stage IDs. In **Quest builder**, select **Use tile action**, choose the action, optionally restrict a stage, and count either completed actions or output quantity. Reload those editors after creating or renaming tile actions.
 
-State is shared by players on that map tile. The local provider commits the stage revision, inventory costs/rewards and XP together. Stale/concurrent attempts cannot award the same transition twice. Completed sequence progress persists in the local game-data volume. These generic sequences are supported by the local provider; they are not published to the live Platform by the Toolbox.
+State is shared by players on that map tile. The local provider commits the stage revision, inventory costs/rewards and XP together. Stale/concurrent attempts cannot award the same transition twice. Completed sequence progress persists in the local game-data volume. Generic sequences also run in production using the Platform's atomic transaction API. Deploy the Platform sequence extension before the game update; the game never substitutes local player state for live inventory. Commit the saved definitions and placements, then deploy to ship them.
 
 ## Farming
 
@@ -31,3 +31,5 @@ Click the map to add a 1 × 1 action region, or use Tile X/Y and **Place at coor
 **Start preview**, **Simulate success/failure** and **Advance 60 seconds** let you inspect transitions and waits. The preview does not spend inventory, verify requirements or alter game state. Test actual tool ownership, quest requirements and rewards in a fresh game session.
 
 Continue with [Quest builder](mapmaker-quest-builder.md), [Triggers & events](mapmaker-events.md), [Building maps](mapmaker-building.md) and [Linked tool animations](tile-action-tools.md).
+
+Success and failure messages use the [shared dialogue editor](mapmaker-dialogues.md#shared-dialogue-editor), with styles, preview and Undo. Styled outcomes appear in game notifications. Progress tags are not available for tile outcomes.

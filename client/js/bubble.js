@@ -84,6 +84,8 @@ define(['jquery', 'timer', 'dialoguetext'], function($, Timer, DialogueText) {
                 } else {
                     bubble.dialogueText = null;
                     bubble.timer.duration = 5000;
+                    // Private event speech has no reveal flag, but still supports authored effects.
+                    DialogueText.presentInstant(bubble.element.find('p')[0]);
                 }
             }
         },

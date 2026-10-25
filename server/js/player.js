@@ -665,6 +665,8 @@ module.exports = Player = Character.extend({
             clearTimeout(self.loopringTimeout);
         }
         clearTimeout(self.disconnectTimeout);
+        clearTimeout(self.dropOverrideTimeout);
+        clearTimeout(self.dropTableOverrideTimeout);
         if (self.exit_callback) {
             self.exit_callback();
         }
@@ -682,6 +684,11 @@ module.exports = Player = Character.extend({
             this.send(new Messages.Buffinfo(buff.buff.stat, buff.buff.percent, buff.expireTime - Date.now()).serialize());
         }
         this.hitPoints = Math.max(0, Math.min(this.maxHitPoints, state.hp));
+        if (state.dropTableOverride?.expiresAt > Date.now()) {
+            this.setDropTableOverride(state.dropTableOverride.drops, state.dropTableOverride.expiresAt - Date.now(), state.dropTableOverride.mob);
+        } else if (state.dropOverride?.expiresAt > Date.now()) {
+            this.setDropOverride(state.dropOverride.item, state.dropOverride.expiresAt - Date.now());
+        }
         if (Number.isFinite(state.invincibilityExpiresAt) && state.invincibilityExpiresAt > Date.now()) {
             this.invincible = true;
             this.invincibilityExpiresAt = state.invincibilityExpiresAt;
@@ -1281,6 +1288,9 @@ module.exports = Player = Character.extend({
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
 
+            if (Types.isResource(Number(item))) {
+                this.server.pushToPlayer(this, new Messages.Resource(Number(item), gameData.items[item]));
+            }
             let cooldownDuration = cooldownData.duration >= 0 ? cooldownData.duration : 0;
             if (cooldownGroup && cooldownDuration) {
                 this.applyCooldown(cooldownGroup, cooldownDuration);
@@ -1452,6 +1462,8 @@ module.exports = Player = Character.extend({
     },
 
     setDropOverride: function (item, timeout) {
+        clearTimeout(this.dropTableOverrideTimeout);
+        delete this.dropTableOverride;
         clearTimeout(this.dropOverrideTimeout);
         this.dropOverride = item;
         this.dropOverrideExpiresAt = Date.now() + timeout;
@@ -1459,6 +1471,18 @@ module.exports = Player = Character.extend({
             delete this.dropOverride;
             delete this.dropOverrideExpiresAt;
             delete this.dropOverrideTimeout;
+        }, timeout);
+    },
+
+    setDropTableOverride: function (drops, timeout, mob = null) {
+        clearTimeout(this.dropOverrideTimeout);
+        delete this.dropOverride;
+        delete this.dropOverrideExpiresAt;
+        clearTimeout(this.dropTableOverrideTimeout);
+        this.dropTableOverride = {drops: {...drops}, mob, expiresAt: Date.now() + timeout};
+        this.dropTableOverrideTimeout = setTimeout(() => {
+            delete this.dropTableOverride;
+            delete this.dropTableOverrideTimeout;
         }, timeout);
     },
 

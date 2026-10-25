@@ -2,9 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const Contract = require('../../shared/js/mapmakerauthoring');
+const {validateScenes, applyScenes} = require('./localworldscenes');
 const {validateDialogue} = require('./localquestdialogue');
+const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
-const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere'};
+const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes'};
 const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -29,9 +31,9 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes'], 'World authoring source');
     if (value.version !== 1) fail('World authoring source requires version: 1.');
-    for (const key of Object.values(tools)) list(value[key] === undefined ? [] : value[key], 100, key);
+    for (const key of Object.values(tools)) list(value[key] == null && key === 'scenes' ? [] : value[key] === undefined ? [] : value[key], 100, key);
     return {...empty(), ...value};
 }
 function reference(value, spec, catalog) {
@@ -88,7 +90,7 @@ function validateDialogues(trees, catalog) {
             if (node.goto && node.options?.length) fail('Node ' + key + ' must use either Continue or choices.');
             if (node.goto) target(node.goto);list(node.options || [], 12, 'Node choices');list(node.actions || [], 12, 'Node actions');
             for (const option of node.options || []) {
-                fields(option, ['text','goto','conditions'], 'Choice');text(option.text, 'Choice label', 240);target(option.goto);list(option.conditions || [], 12, 'Choice conditions');
+                fields(option, ['text','goto','conditions'], 'Choice');DialogueFormat.validate(option.text, 'Choice label', 240);target(option.goto);list(option.conditions || [], 12, 'Choice conditions');
                 for (const c of option.conditions || []) {
                     const kind=c.if_not||c.if;const spec = Object.hasOwn(Contract.dialogueConditions,kind)&&Contract.dialogueConditions[kind];if (!spec || (!!c.if === !!c.if_not)) fail('Choose a supported dialogue condition.');
                     fields(c, ['if','if_not',spec.field,...(spec.amount ? ['amount'] : [])], 'Choice condition');
@@ -122,7 +124,8 @@ function bundled() {return baseline ||= require('../world-definitions').register
 async function catalog(root, mapId) {
     source(root, mapId);const assets = require('./localquestbuilder').buildCatalog(root, mapId);
     const server = JSON.parse(fs.readFileSync(safe(root, 'server/maps/world_server_' + mapId + '.json'), 'utf8'));
-    const client = JSON.parse(fs.readFileSync(safe(root, 'client/maps/world_client_' + mapId + '.json'), 'utf8'));
+    const builtClient = JSON.parse(fs.readFileSync(safe(root, 'client/maps/world_client_' + mapId + '.json'), 'utf8'));
+    const client = applyScenes(builtClient, readDocument(root, mapId).scenes);
     const doors = await require('./localdoorbuilder').readDoors(root, mapId);
     const routines = require('./localnpcbuilder').readBehavior(root, mapId).config.npcs;
     const Types = require('../../shared/js/gametypes');
@@ -138,19 +141,46 @@ async function catalog(root, mapId) {
     return {...assets,quests:[...new Map(quests.map(q=>[q.id,q])).values()],routines:routines.map(r=>({id:r.key,name:r.label,npc:Types.getKindFromString(r.kind),x:r.origin.x,y:r.origin.y})),
         triggers:[...new Set([...(server.triggers||[]).map(t=>String(t.trigger)),...doors.doors.map(d=>String(d.properties.tid||'').replace(/^!/,''))].filter(Boolean))].map(id=>({id,name:id})),
         doors:doors.doors.map(d=>({id:d.id,name:(d.type==='portal'?'Portal #':'Door #')+d.id,trigger:String(d.properties.tid||'').replace(/^!/,''),inverted:String(d.properties.tid||'').startsWith('!'),x:d.tileX,y:d.tileY})),
-        scenes:client.scenes||[],width:client.width,height:client.height,music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
+        scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
+}
+function sectionValue(doc, tool, catalog) {
+    return tool === 'scenes' ? {scenes:doc.scenes ?? null, atmosphere:doc.atmosphere, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
+}
+function sceneEntries(doc, catalog) {
+    const orphan = doc.atmosphere.find(row => row.sceneId !== '*' && !catalog.scenes.some(scene => String(scene.id) === row.sceneId));
+    if (orphan) fail('Atmosphere refers to missing scene ' + orphan.sceneId + '. Remove its override through the atmosphere API or repair the source before editing scenes.', 422);
+    return [{sceneId:'*'}, ...catalog.scenes.map(({id,name,x,y,w,h}) => ({sceneId:String(id),name:name||'',x,y,w,h}))]
+        .map(scene => ({...scene, atmosphere:doc.atmosphere.find(row => row.sceneId === scene.sceneId) || null}));
 }
 async function readTool(root, mapId, tool) {
-    if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId),entries=doc[tools[tool]];
-    return {mapId,tool,entries,revision:hash(entries),source:'tools/worlds/'+mapId+'.json',catalog:await catalog(root,mapId)};
+    if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId),options=await catalog(root,mapId);
+    const entries=tool==='scenes'?sceneEntries(doc,options):doc[tools[tool]];
+    return {mapId,tool,entries,revision:hash(sectionValue(doc,tool,options)),source:'tools/worlds/'+mapId+'.json',catalog:options};
 }
 async function saveTool(root, input, beforeWrite = () => {}) {
     fields(input,['mapId','tool','revision','entries'],'Authoring request');if(!Object.hasOwn(tools,input.tool))fail('Choose a world authoring tool.');
-    const doc=readDocument(root,input.mapId),section=tools[input.tool];if(input.revision!==hash(doc[section]))fail('This section changed on disk. Keep your draft, reload, then apply your edits again.',409);
-    validate[input.tool](input.entries,await catalog(root,input.mapId));doc[section]=input.entries;
-    const json=JSON.stringify(doc,null,2)+'\n';if(Buffer.byteLength(json)>262144)fail('World authoring source exceeds 256 KB.');
+    const options=await catalog(root,input.mapId),doc=readDocument(root,input.mapId),section=tools[input.tool];
+    if(input.revision!==hash(sectionValue(doc,input.tool,options)))fail('This section changed on disk. Keep your draft, reload, then apply your edits again.',409);
+    let changes;
+    if(input.tool==='scenes') {
+        list(input.entries,101,'Scene manager entries');
+        for(const row of input.entries) fields(row,['sceneId','name','x','y','w','h','atmosphere'],'Scene manager entry');
+        if(input.entries.filter(row=>row.sceneId==='*').length!==1)fail('Keep one whole map default.');
+        const scenes=input.entries.filter(row=>row.sceneId!=='*').map(({sceneId,name,x,y,w,h})=>({id:sceneId,name,x,y,w,h}));
+        validateScenes(scenes,options);
+        const atmosphere=input.entries.filter(row=>row.atmosphere!==null).map(row=>{
+            if(!object(row.atmosphere)||row.atmosphere.sceneId!==row.sceneId)fail('Atmosphere must belong to its scene.');
+            return row.atmosphere;
+        });
+        validateAtmosphere(atmosphere,{...options,scenes});changes={scenes,atmosphere};
+    } else {validate[input.tool](input.entries,options);changes={[section]:input.entries};}
     // Recheck after asynchronous catalog reads so concurrent saves cannot overwrite each other.
-    const latest=readDocument(root,input.mapId);if(hash(latest[section])!==input.revision)fail('This section changed on disk. Reload before saving.',409);latest[section]=input.entries;
+    const latest=readDocument(root,input.mapId);
+    if(input.tool==='scenes') {
+        const built=JSON.parse(fs.readFileSync(safe(root,'client/maps/world_client_'+input.mapId+'.json'),'utf8'));
+        options.builtScenes=built.scenes||[];options.width=built.width;options.height=built.height;
+    }
+    if(hash(sectionValue(latest,input.tool,options))!==input.revision)fail('This section changed on disk. Reload before saving.',409);Object.assign(latest,changes);
     const finalJson=JSON.stringify(latest,null,2)+'\n';if(Buffer.byteLength(finalJson)>262144)fail('World authoring source exceeds 256 KB.');beforeWrite();
     const file=source(root,input.mapId);fs.mkdirSync(path.dirname(file),{recursive:true});const temp=file+'.'+crypto.randomUUID()+'.tmp';
     try{fs.writeFileSync(temp,finalJson,{flag:'wx'});fs.renameSync(temp,file);}finally{fs.rmSync(temp,{force:true});}
@@ -158,7 +188,6 @@ async function saveTool(root, input, beforeWrite = () => {}) {
 }
 function loadFlows(root,mapId) {mapId=mapId.replace(/^world_/,'');const rows=readDocument(root,mapId).rules;validateRules(rows);return Contract.compile(rows);}
 function registerDialogues(root,target) {
-    if(!require('./localplaytest').isLocalPlaytest())return;
     for(const mapId of maps(root)){try{const entries=readDocument(root,mapId).dialogues;validateDialogues(entries);if(entries.length)target.register(mapId,{id:'local-dialogue-builder',dialogues:entries.map(d=>({...d,npc:Number(d.npc),localBuilder:true}))});}catch(error){console.error('Could not load local conversations for '+mapId+': '+error.message);}}
 }
 function applyAtmosphere(map,entries) {
@@ -174,9 +203,26 @@ function applyAtmosphere(map,entries) {
     return {...map,scenes};
 }
 
-function installRuntime(app,root) {
-    app.use('/maps',(req,res,next)=>{const match=req.path.match(/^\/world_client_([A-Za-z0-9_-]+)\.(json|js)$/);if(!match)return next();try{const entries=readDocument(root,match[1]).atmosphere,tiles=require('./localtilebuilder'),tileDoc=tiles.document(root,match[1]);if(!entries.length&&!tileDoc.placements.length)return next();const map=JSON.parse(fs.readFileSync(safe(root,'client/maps/world_client_'+match[1]+'.json'),'utf8')),value=tiles.applyMap(applyAtmosphere(map,entries),tileDoc);res.setHeader('Cache-Control','no-store');if(match[2]==='js')return res.type('application/javascript').send('var mapData = '+JSON.stringify(value)+';');res.json(value);}catch(error){res.status(error.status||500).json({error:error.message});}});
+function installRuntime(app,root,getWorlds=()=>({})) {
+    app.use('/maps',(req,res,next)=>{
+        const match=req.path.match(/^\/world_client_([A-Za-z0-9_-]+)\.(json|js)$/);
+        if(!match)return next();
+        try {
+            const mapId=match[1],doc=readDocument(root,mapId),tiles=require('./localtilebuilder'),tileDoc=tiles.document(root,mapId);
+            const map=JSON.parse(fs.readFileSync(safe(root,'client/maps/world_client_'+mapId+'.json'),'utf8'));
+            const value=require('./mapmakercontent').applyMap(root,mapId,map);
+            // A fresh client map load must also refresh the already-running server's
+            // area lookup, including when the local layout was removed or restored.
+            const worlds=getWorlds()||{},world=worlds[mapId]||worlds['world_'+mapId];
+            if(world?.map)world.map.scenes=value.scenes||[];
+            if(doc.scenes==null&&!doc.atmosphere.length&&!tileDoc.placements.length)return next();
+            res.setHeader('Cache-Control','no-store');
+            if(match[2]==='js')return res.type('application/javascript').send('var mapData = '+JSON.stringify(value)+';');
+            res.json(value);
+        } catch(error) {res.status(error.status||500).json({error:error.message});}
+    });
 }
+
 function install(app,toolbox) {
     app.get('/local/api/world-authoring',async(req,res)=>{try{res.json(req.query.mapId===undefined?{maps:maps(toolbox.root)}:await readTool(toolbox.root,req.query.mapId,req.query.tool));}catch(error){res.status(error.status||500).json({error:error.message});}});
     app.post('/local/api/world-authoring',async(req,res)=>{try{if(toolbox.closed)fail('The toolbox is shutting down.',503);if(toolbox.job?.status==='running')fail('Wait for the build to finish before saving.',409);res.json(await saveTool(toolbox.root,req.body,()=>{if(toolbox.closed)fail('The toolbox is shutting down.',503);if(toolbox.job?.status==='running')fail('Wait for the build to finish before saving.',409);}));}catch(error){res.status(error.status||500).json({error:error.message});}});

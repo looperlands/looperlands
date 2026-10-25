@@ -5,26 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Mapmaker Toolbox · LooperLands</title>
+  <link rel="stylesheet" href="./dialogue-presentation.css?v=dialogue-preview-1">
   <link rel="stylesheet" href="./launcher.css?v=map-tools-3">
   <script src="./toolboxnavigation.js" defer></script>
   <script src="./mappreview.js" defer></script>
   <script src="./launcher.js" defer></script>
+  <script src="./dialogue-format.js" defer></script>
+  <script src="./dialogue-text.js?v=dialogue-preview-1" defer></script>
+  <script src="./dialogueeditor.js?v=dialogue-preview-1" defer></script>
   <script src="./questbuilder.js" defer></script>
-  <script src="./dialogueeditor.js" defer></script>
   <script src="./documentation.js" defer></script>
   <script src="./dropeditor.js" defer></script>
+  <script src="./item-effects.js" defer></script>
+  <script src="./itemsettings.js" defer></script>
   <script src="./assetbuilder.js" defer></script>
   <script src="./doorbuilder.js" defer></script>
   <script src="./mapmaker-path.js" defer></script>
   <script src="./mapcanvas.js" defer></script>
+  <script src="./regiongeometry.js" defer></script>
+  <script src="./regioneditor.js" defer></script>
   <script src="./npcbuilder.js" defer></script>
   <script src="./assetlookup.js" defer></script>
+  <script src="./mapinspector.js" defer></script>
   <script src="./mapanalysis.js" defer></script>
   <script src="./authoring-contract.js" defer></script>
   <script src="./vendor/worldtime.js" defer></script>
   <script src="./vendor/particles.js" defer></script>
   <script src="./vendor/worldfxconfig.js" defer></script>
   <script src="./worldbuilders.js" defer></script>
+  <script src="./lighting-contract.js" defer></script>
+  <script src="./lightingbuilder.js" defer></script>
   <script src="./tilebuilder.js" defer></script>
   <script src="./worldconnections.js" defer></script>
 </head>
@@ -47,7 +57,8 @@
       <button id="tab-connections" type="button" role="tab" aria-selected="false" aria-controls="connections-pane" data-pane="connections" tabindex="-1">World connections</button>
       <button id="tab-events" type="button" role="tab" aria-selected="false" aria-controls="events-pane" data-pane="events" tabindex="-1">Triggers &amp; events</button>
       <button id="tab-dialogues" type="button" role="tab" aria-selected="false" aria-controls="dialogues-pane" data-pane="dialogues" tabindex="-1">Dialogue trees</button>
-      <button id="tab-atmosphere" type="button" role="tab" aria-selected="false" aria-controls="atmosphere-pane" data-pane="atmosphere" tabindex="-1">Atmosphere</button>
+      <button id="tab-scenes" type="button" role="tab" aria-selected="false" aria-controls="scenes-pane" data-pane="scenes" tabindex="-1">Scene manager</button>
+      <button id="tab-lighting" type="button" role="tab" aria-selected="false" aria-controls="lighting-pane" data-pane="lighting" tabindex="-1">Lights &amp; shadows</button>
       <button id="tab-build" type="button" role="tab" aria-selected="false" aria-controls="build-pane" data-pane="build" tabindex="-1">Build tools</button>
       <button id="tab-quests" type="button" role="tab" aria-selected="false" aria-controls="quests-pane" data-pane="quests" tabindex="-1">Quest builder</button>
       <button id="tab-mobs" type="button" role="tab" aria-selected="false" aria-controls="mobs-pane" data-pane="mobs" tabindex="-1">Mobs</button>
@@ -278,7 +289,7 @@
           <div class="quest-list-heading"><h3>Custom quests</h3><button id="quest-new" class="secondary" type="button">New quest</button></div>
           <p id="quest-empty" class="field-hint">No custom quests yet. Create your first quest to get started.</p>
           <ul id="quest-list" class="quest-list"></ul>
-          <details id="quest-bundled"><summary>Bundled quests <span id="quest-bundled-count"></span></summary><p class="field-hint">Edit local overrides while preserving the original game definitions.</p>
+          <details id="quest-bundled"><summary>Bundled quests <span id="quest-bundled-count"></span></summary><p class="field-hint">Edit saved overrides while preserving the original game definitions.</p>
             <div class="field bundled-search"><label for="quest-bundled-search">Search bundled quests</label><input id="quest-bundled-search" type="search" placeholder="Name or quest ID" autocomplete="off" aria-controls="quest-bundled-list" aria-describedby="quest-bundled-results"></div>
             <p id="quest-bundled-results" class="field-hint" role="status" aria-live="polite"></p>
             <ul id="quest-bundled-list" class="bundled-list"></ul></details>
@@ -288,7 +299,7 @@
           <div id="quest-welcome" class="quest-welcome"><h3>Your map’s next adventure</h3><p>Give players a reason to explore. Start with a quest giver, add objectives, and write the story they will see.</p><button id="quest-first" type="button" class="secondary">Create a quest</button></div>
           <form id="quest-form" hidden>
             <div class="quest-editor-heading"><h3 id="quest-editor-title">New quest</h3><button id="quest-delete" type="button" class="text-button">Remove quest</button></div>
-            <p id="quest-builtin-note" class="builtin-note" hidden>Local override. The original quest ID and saved progress stay intact. Changes apply everywhere this quest is offered in your local game.</p>
+            <p id="quest-builtin-note" class="builtin-note" hidden>Saved override. The original quest ID and saved progress stay intact. Changes apply everywhere this quest is offered, including production after deployment.</p>
             <div class="quest-fields two-columns">
               <div class="field"><label for="quest-id">Quest ID</label><input id="quest-id" maxlength="64" pattern="[A-Za-z][A-Za-z0-9_-]*" required aria-describedby="quest-id-hint"><span id="quest-id-hint" class="field-hint">Keep this stable after playtesting. Progress uses this ID.</span></div>
               <div class="field"><label for="quest-name">Name</label><input id="quest-name" maxlength="120" required placeholder="A name players will remember"></div>
@@ -365,7 +376,8 @@ You only have {{remaining}} blue monsters left to slay!</pre>
     <section id="connections-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-connections" hidden></section>
     <section id="events-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-events" hidden></section>
     <section id="dialogues-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-dialogues" hidden></section>
-    <section id="atmosphere-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-atmosphere" hidden></section>
+    <section id="scenes-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-scenes" hidden></section>
+    <section id="lighting-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-lighting" hidden></section>
     <section id="validator-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-validator" hidden></section>
     <section id="inspector-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-inspector" hidden></section>
     <section id="mobs-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-mobs" hidden></section>
@@ -388,7 +400,8 @@ You only have {{remaining}} blue monsters left to slay!</pre>
           <a href="#documentation/mapmaker-connections">World connections</a>
           <a href="#documentation/mapmaker-events">Triggers &amp; events</a>
           <a href="#documentation/mapmaker-dialogues">Dialogue trees</a>
-          <a href="#documentation/mapmaker-atmosphere">Atmosphere</a>
+          <a href="#documentation/mapmaker-atmosphere">Scene manager</a>
+          <a href="#documentation/mapmaker-lighting">Lights &amp; shadows</a>
           <a href="#documentation/mapmaker-validator">Map validator</a>
           <a href="#documentation/mapmaker-inspector">Map inspector</a>
           <a href="#documentation/mapmaker-building">Building maps</a>

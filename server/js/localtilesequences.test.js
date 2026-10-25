@@ -19,3 +19,16 @@ test('authoritative inventory rejects a cost even when the session cache still r
     expect(result.success).toBe(false);expect(JSON.stringify(platform.state)).toBe(before);
     expect(player.playerEventBroker.tileAction).not.toHaveBeenCalled();
 });
+
+test('a replay after a lost reply publishes committed XP, tile and quest activity once', async () => {
+    const commit = platform.commitTileSequence.bind(platform);
+    controller.localSequences.dao.commitTileSequence = async transaction => {
+        await commit(transaction);
+        return commit(transaction);
+    };
+    const result = await controller.executeStage('avatar', 'one', tile, null, world, 'work', 0);
+    expect(result.activity.failed).toBe(false);
+    expect(player.applyPersistedExperience).toHaveBeenCalledWith(2);
+    expect(world.map.tileStages['3.4']).toEqual({tile: 1});
+    expect(player.playerEventBroker.tileAction).toHaveBeenCalledTimes(1);
+});

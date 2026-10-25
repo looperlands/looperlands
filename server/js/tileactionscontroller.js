@@ -7,7 +7,7 @@ class TileActionsController {
     constructor(cache, platformClient, options = {}) {
         const duckvilleController = options.duckvilleController || new DuckvilleTileActionsController(cache, platformClient, options);
 
-        if(platformClient?.localPlaytest && platformClient.getTileSequenceState) this.localSequences=new (require('./localtilesequences'))(cache,platformClient,options);
+        if(platformClient?.getTileSequenceState) this.localSequences=new (require('./localtilesequences'))(cache,platformClient,options);
         this.activeAnimations = new WeakMap();
         this.controllers = {};
         this.stageDefinitions = {};

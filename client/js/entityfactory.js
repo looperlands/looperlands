@@ -1905,7 +1905,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects', 'mob', 'npc'
                 if (!original) entity.deathAnimated = !!entry.sprite.animations.death;
             }
             entity.name = entry.name;
-            if (entry.type === 'item') entity.lootMessage = 'You pick up ' + entry.name;
+            if (entry.type === 'item') {
+                entity.lootMessage = 'You pick up ' + entry.name;
+                if (typeof entry.client?.showSparks === 'boolean') entity.nosparks = !entry.client.showSparks;
+            }
             return entity;
         };
     });

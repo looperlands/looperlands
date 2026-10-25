@@ -3,7 +3,9 @@ const path = require('path');
 const vm = require('vm');
 const crypto = require('crypto');
 const zlib = require('zlib');
+const ItemEffects = require('../../shared/js/itemeffects');
 const manifestPath = 'shared/js/mapmakerentities.json';
+const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 const hash = (...values) => crypto.createHash('sha256').update(Buffer.concat(values.map(v => Buffer.isBuffer(v) ? v : Buffer.from(v)))).digest('hex');
 function readManifest(root) {return JSON.parse(fs.readFileSync(path.join(root, manifestPath), 'utf8'));}
@@ -49,11 +51,15 @@ function readAsset(root, id) {
         const file = safeFile(root, 'client/img/' + scale + '/' + sid + '.png');
         return fs.existsSync(file) ? fs.readFileSync(file) : Buffer.alloc(0);
     });
-    // Only data fields are exposed. Existing scripted item effects remain in properties.js.
+    // Expose data and the presence of a script, never executable source.
     const properties = require('./properties')[id] || {};
-    const gameplay = {...Object.fromEntries(['level','hpMod','armorMod','weaponMod','respawnDelay','collectAmount','inventoryDescription','transferable','drops'].filter(key => properties[key] !== undefined).map(key => [key, properties[key]])), ...custom?.gameplay};
+    const Types = baseTypes(root);
+    const gameplay = {...Object.fromEntries(['level','hpMod','armorMod','weaponMod','respawnDelay','collectAmount','inventoryDescription','transferable','drops','consumable','effectDescription','cooldown'].filter(key => properties[key] !== undefined).map(key => [key, properties[key]])), ...custom?.gameplay};
+    if (entry.type === 'item') gameplay.resource ??= !entry.builtin || Types.isResource(entry.kind);
+    const inventoryCategory = entry.builtin && !Types.isObject(entry.kind) && !Types.isResource(entry.kind) ? 'equipment' : gameplay.resource ? 'resource' : 'object';
     return {...entry, name: custom?.name || id, sprite, gameplay, dialogue: custom?.dialogue || require('../../shared/js/npctalk')[id] || ['Hello, traveler.'],
-        client: custom?.client || require('./localassetdefaults').mobDefaults(root,entry.kind,baseTypes(root)),
+        client: entry.type === 'item' ? {showSparks: entry.kind !== Types.Entities.CAKE, ...custom?.client} : custom?.client || require('./localassetdefaults').mobDefaults(root,entry.kind,Types),
+        ...(entry.type === 'item' ? {hasScriptedEffect: typeof properties.onConsume === 'function', inventoryCategory} : {}),
         revision: hash(JSON.stringify(custom || null), JSON.stringify(sprite), ...images),
         image: images[0].length ? 'data:image/png;base64,' + images[0].toString('base64') : null,
         source: manifestPath};
@@ -152,14 +158,52 @@ function saveAsset(root, input) {
         gameplay.drops=drops;
     }
     if (type==='item') {
+        const previous=existing ? readAsset(root,id) : null;
+        Object.assign(gameplay, manifest[index]?.gameplay);
         gameplay.collectAmount=integer(input.gameplay?.collectAmount,1,9999,'Collection amount');
         gameplay.inventoryDescription=String(input.gameplay?.inventoryDescription||'').slice(0,500);
         gameplay.transferable=input.gameplay?.transferable===true;
+        for (const key of ['resource','consumable']) if (input.gameplay?.[key] !== undefined) {
+            if (typeof input.gameplay[key] !== 'boolean') fail(key+' must be enabled or disabled.');
+            gameplay[key]=input.gameplay[key];
+        }
+        if (previous?.inventoryCategory === 'equipment' && gameplay.resource) fail('Equipment keeps its existing inventory category.');
+        if (input.client?.showSparks !== undefined) {
+            if (typeof input.client.showSparks !== 'boolean') fail('Show sparks must be enabled or disabled.');
+            client.showSparks=input.client.showSparks;
+        } else Object.assign(client,manifest[index]?.client);
+        if (input.gameplay?.consumeEffects !== undefined) {
+            if (input.gameplay.consumeEffects === null) {
+                if (!previous?.hasScriptedEffect) fail('This item has no existing scripted effect. Configure its effects instead.');
+                gameplay.consumeEffects=null;
+            } else {
+                const references=new Map(catalog(root).entries.map(entry=>[entry.id,entry.type]));
+                try {gameplay.consumeEffects=ItemEffects.validate(input.gameplay.consumeEffects,id=>references.get(id));} catch (error) {fail(error.message);}
+            }
+        }
+        if (input.gameplay?.effectDescription !== undefined) {
+            if (typeof input.gameplay.effectDescription !== 'string' || input.gameplay.effectDescription.length>500 || /[<>]/.test(input.gameplay.effectDescription)) fail('The effect tooltip must be plain text, up to 500 characters.');
+            gameplay.effectDescription=input.gameplay.effectDescription;
+        }
+        if (input.gameplay?.cooldown !== undefined) {
+            const cooldown=input.gameplay.cooldown;
+            const duration=integer(cooldown?.duration,0,86400000,'Cooldown duration');
+            if (typeof cooldown.group !== 'string' || !/^[A-Za-z0-9_-]{0,64}$/.test(cooldown.group)) fail('Cooldown groups use up to 64 letters, numbers, underscores or hyphens.');
+            if (Object.hasOwn(Object.prototype,cooldown.group) || cooldown.group === 'prototype') fail('Choose a different cooldown group name.');
+            gameplay.cooldown={duration,group:duration ? cooldown.group || id : ''};
+        }
+        if (gameplay.consumable && Array.isArray(gameplay.consumeEffects) && !gameplay.consumeEffects.length) fail('Add at least one effect for this consumable.');
+        if (gameplay.consumable && !previous?.hasScriptedEffect && !gameplay.consumeEffects?.length) fail('Add at least one effect for this consumable.');
+        if (gameplay.consumable || gameplay.resource) gameplay.collectable=true;
         if (!existing || !existing.builtin) gameplay.collectable=true;
     }
     const dialogue=type==='npc' ? input.dialogue : undefined;
-    const unchangedDialogue=type==='npc' && existing && JSON.stringify(dialogue)===JSON.stringify(readAsset(root,id).dialogue);
-    if (type==='npc' && !unchangedDialogue && (!Array.isArray(dialogue) || !dialogue.length || dialogue.length>50 || dialogue.some(line=>typeof line!=='string'||line.length>2000||/[<>]/.test(line)))) fail('Add 1–50 plain-text dialogue lines, up to 2000 characters each. Use the Quest builder for styled quest dialogue.');
+    const previousDialogue = type==='npc' && existing ? readAsset(root,id).dialogue : null;
+    const unchangedDialogue=previousDialogue && JSON.stringify(dialogue)===JSON.stringify(previousDialogue);
+    if (type==='npc' && !unchangedDialogue) {
+        if (!Array.isArray(dialogue) || !dialogue.length || dialogue.length>50) fail('Add 1–50 dialogue lines, up to 2000 characters each.');
+        dialogue.forEach((line, index) => {if (line !== previousDialogue?.[index]) DialogueFormat.validate(line, 'NPC dialogue');});
+    }
     const entry={id,kind,type,name,builtin:existing?.builtin===true,sprite,gameplay,client,...(dialogue?{dialogue}:{})};
     if (index>=0) manifest[index]=entry; else manifest.push(entry);
     const updates=[];

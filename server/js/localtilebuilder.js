@@ -1,5 +1,6 @@
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const Types = require('../../shared/js/gametypes');
+const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message,status=400) => {throw Object.assign(new Error(message),{status});};
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 function maps(root) {return JSON.parse(fs.readFileSync(path.join(root,'server/config.json'))).maps;}
@@ -33,7 +34,7 @@ function validate(doc,map,available={}) {
                 if(s.quest && available.quests && !available.quests.includes(s.quest))fail('Choose an existing quest.');
                 for(const dest of [s.next,s.failureNext])if(dest&&!ids.has(dest))fail('Stage '+s.id+' points to missing stage '+dest+'.');
                 rows(s.costs,'cost items');rows(s.rewards,'reward items');integer(s.tile,0,map.tileCount||1000000,'Tile ID');
-                if(s.message)text(s.message,'success message',2000);if(s.failureMessage)text(s.failureMessage,'failure message',2000);
+                if(s.message)DialogueFormat.validate(s.message,'Success message');if(s.failureMessage)DialogueFormat.validate(s.failureMessage,'Failure message');
                 if(s.trigger && !/^[^<>\x00-\x1f]{1,100}$/.test(s.trigger))fail('Use a plain trigger ID.');
             }
             const seen=new Set(),visit=id=>{if(!id||seen.has(id))return;seen.add(id);const s=a.stages.find(s=>s.id===id);visit(s.next);visit(s.failureNext);};visit(a.start);if(seen.size!==ids.size)fail('Every stage must be reachable from the start.');

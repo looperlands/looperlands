@@ -8,6 +8,9 @@
     const fieldNames = {'quest-id': 'id', 'quest-name': 'name', 'quest-npc': 'npc', 'quest-level': 'level', 'quest-required-level': 'requiredLevel',
         'quest-prerequisite': 'requiredQuest', 'quest-start': 'startText', 'quest-progress': 'inProgressText', 'quest-end': 'endText', 'quest-return': 'returnToNpc',
         'quest-long-text': 'longText', 'quest-log-text': 'questLogText', 'quest-npc-text': 'npcText'};
+    const dialogueEditors = ['quest-start', 'quest-progress', 'quest-end', 'quest-long-text', 'quest-log-text', 'quest-npc-text'].map(id =>
+        window.ToolboxDialogueEditor.attach($(id), {tags: () => id === 'quest-progress' && !$('quest-progress-tags').hidden ?
+            [{key: 'remaining', sample: 7}, {key: 'done', sample: 3}, {key: 'amount', sample: 10}] : []}));
     const numeric = new Set(['npc', 'level', 'requiredLevel', 'returnToNpc']);
     const editableFields = ['name', 'startText', 'inProgressText', 'endText', 'longText', 'questLogText', 'npcText', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'eventType', 'target', 'amount', 'needToReturn'];
     const bundled = () => data?.existingQuests.find(item => item.id === bundledId);
@@ -51,7 +54,7 @@
         $('quest-first').disabled = saving;
         $('quest-save').textContent = saving ? 'Saving…' : 'Save quests';
         $('quest-status').dataset.dirty = String(!!changed);
-        $('quest-status').textContent = message || (changed ? 'Unsaved changes in this map. Save quests when you are ready.' : `${data?.quests.length || 0} custom quests · ${data?.overrides?.length || 0} local overrides · ${data?.source || 'Choose a map'}`);
+        $('quest-status').textContent = message || (changed ? 'Unsaved changes in this map. Save quests when you are ready.' : `${data?.quests.length || 0} custom quests · ${data?.overrides?.length || 0} saved overrides · ${data?.source || 'Choose a map'}`);
     }
     function changed() {
         updateOverride();
@@ -114,7 +117,7 @@
         if (isBundled) renderLegacy(); else renderObjectives();
         renderProgressHelp();
         renderPreview();
-        document.dispatchEvent(new Event('toolbox:dialogue'));
+        dialogueEditors.forEach(editor => editor.reset());
     }
     function renderProgressHelp() {
         const current = quest();
@@ -345,7 +348,7 @@
         quest().target = firstTarget(quest().eventType);
         renderLegacy(); changed(); $('quest-legacy-action').focus();
         renderProgressHelp();
-        document.dispatchEvent(new Event('toolbox:dialogue'));
+        dialogueEditors.forEach(editor => editor.refresh());
     });
     $('quest-legacy-target').addEventListener('change', () => {quest().target = Number($('quest-legacy-target').value); changed();});
     $('quest-legacy-amount').addEventListener('input', () => {quest().amount = Number($('quest-legacy-amount').value); changed();});

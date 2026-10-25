@@ -15,6 +15,7 @@ class DuckvilleTileActionsController {
         this.dao = options.dao || defaultDao;
         this.now = options.now || (() => Date.now());
         this.random = options.random || Math.random;
+        this.root = options.root || path.resolve(__dirname, '../../..');
         this.debugLogging = options.debugLogging ?? (process.env.LOOPERLANDS_DEBUG_FARM === "1");
         this.disableLevelGate = options.disableLevelGate !== undefined
             ? options.disableLevelGate
@@ -39,8 +40,8 @@ class DuckvilleTileActionsController {
         const result = Object.fromEntries(fs.readdirSync(directory)
             .filter((file) => file.endsWith(".json"))
             .map((file) => [path.basename(file, ".json"), JSON.parse(fs.readFileSync(path.join(directory, file), "utf8"))]));
-        if (require('../localplaytest').isLocalPlaytest()) {
-            const builder=require('../localtilebuilder'),root=path.resolve(__dirname,'../../..');
+        {
+            const builder=require('../localtilebuilder'),root=this.root;
             for(const id of builder.maps(root)) result[id]=Object.fromEntries(Object.entries(builder.definitions(root,id)).filter(([,a])=>a.type!=='sequence'));
         }
         return result;
@@ -62,8 +63,8 @@ class DuckvilleTileActionsController {
                 }
             });
         }
-        if (require('../localplaytest').isLocalPlaytest()) {
-            const builder=require('../localtilebuilder'),doc=builder.document(path.resolve(__dirname,'../../..'),map);
+        {
+            const builder=require('../localtilebuilder'),doc=builder.document(this.root,map);
             Object.assign(grid,builder.applyMap({},doc).authoringActions);
         }
         this.mapActionGrids[map] = grid;

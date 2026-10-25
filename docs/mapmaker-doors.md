@@ -45,7 +45,7 @@ Opening hours are checked before the main condition and again before travel afte
 
 ## Messages and preview
 
-Edit the general fallback and the individual NFT, item, quest, collection, trigger and opening-hour failure messages. These are plain-text messages, up to 2000 characters each. They are failure messages, not a greeting shown every time someone enters.
+Edit the general fallback and the individual NFT, item, quest, collection, trigger and opening-hour failure messages. These use the [shared dialogue editor](mapmaker-dialogues.md#shared-dialogue-editor), with styles, preview and Undo, up to 2000 characters each including markup. They are failure messages, not a greeting shown every time someone enters.
 
 The runtime picks a condition-specific message first, then the **General fallback message**, then its built-in default. Player-level and weapon-level failures use the general fallback or a generated level requirement. Leaving a field blank removes that custom message.
 

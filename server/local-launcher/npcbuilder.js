@@ -19,17 +19,17 @@
     const coordinateInputs = new WeakMap();
     function field(parent, object, key, label, options = {}) {
         const id = 'npc-field-' + ++fieldId, wrap = el('div', '', {className: 'field'});
-        const input = options.choices ? el('select') : el(options.multiline ? 'textarea' : 'input');
+        const input = options.choices ? el('select') : el(options.multiline || options.dialogue ? 'textarea' : 'input');
         if (options.choices) for (const [value, text] of options.choices) input.append(el('option', text, {value}));
-        else if (!options.multiline) input.type = options.type || 'text';
+        else if (!options.multiline && !options.dialogue) input.type = options.type || 'text';
         Object.assign(input, {id, value: object[key] ?? '', disabled: !!options.disabled});
         if (options.type === 'number') {input.min = String(options.min ?? 0); input.max = String(options.max ?? 10000); input.step = String(options.step ?? 1);}
-        if (options.multiline) input.rows = 3;
+        if (options.multiline || options.dialogue) input.rows = 3;
         if (options.maxLength) input.maxLength = options.maxLength;
         if (options.required) input.required = true;
         input.addEventListener('input', () => {object[key] = options.type === 'number' ? Number(input.value) : input.value; changed();});
         if (key === 'x' || key === 'y') {const pair = coordinateInputs.get(object) || {}; pair[key] = input; coordinateInputs.set(object, pair); window.MapLocation.mark(input, () => ({mapId: data?.mapId, x: pair.x?.value.trim() ? Number(pair.x.value) : NaN, y: pair.y?.value.trim() ? Number(pair.y.value) : NaN}));}
-        wrap.append(el('label', label, {htmlFor: id}), input); if (options.hint) wrap.append(el('span', options.hint, {className: 'field-hint'})); parent.append(wrap); return input;
+        wrap.append(el('label', label, {htmlFor: id}), input); if (options.hint) wrap.append(el('span', options.hint, {className: 'field-hint'})); parent.append(wrap); if (options.dialogue) window.ToolboxDialogueEditor.attach(input); return input;
     }
     function check(parent, label, value, update) {const input = el('input', '', {type: 'checkbox', checked: value}); const wrap = el('label', '', {className: 'asset-check'}); wrap.append(input, document.createTextNode(label)); parent.append(wrap); input.onchange = () => {update(input.checked); changed();};}
     function grid(parent) {const node = el('div', '', {className: 'asset-field-grid'}); parent.append(node); return node;}
@@ -58,7 +58,7 @@
             container.replaceChildren(); points.forEach((p, index) => {
                 const row=el('details','',{className:'npc-waypoint',open:index===selected}),summary=el('summary');summary.append(el('strong','Waypoint '+(index+1)+' '),window.MapLocation.coordinate(data.mapId,p.x,p.y),el('span',p.waitSeconds+'s wait',{className:'field-hint'}));row.append(summary);row.ontoggle=()=>{if(row.open){selected=index;for(const other of container.children)if(other!==row&&other.tagName==='DETAILS')other.open=false;updateMap();}};const fields=grid(row);
                 for(const key of ['x','y'])field(fields,p,key,'Tile '+key.toUpperCase(),{type:'number',required:true}).addEventListener('input',()=>updateMap()); field(fields, p, 'waitSeconds', 'Wait · seconds', {type: 'number', min: 1, step: 'any', required: true});
-                field(fields, p, 'activity', 'Activity', {maxLength: 240}); field(fields, p, 'line', 'Ambient message', {maxLength: 240}); field(fields, p, 'sound', 'Sound', {choices: [['','None'],['npc','NPC'],['watersplash','Water splash'],['honk','Honk']]});
+                field(fields, p, 'activity', 'Activity', {maxLength: 240}); field(fields, p, 'line', 'Ambient message', {dialogue: true, maxLength: 240}); field(fields, p, 'sound', 'Sound', {choices: [['','None'],['npc','NPC'],['watersplash','Water splash'],['honk','Honk']]});
                 row.addEventListener('input',()=>{summary.replaceChildren(el('strong','Waypoint '+(index+1)+' '),window.MapLocation.coordinate(data.mapId,p.x,p.y),el('span',p.waitSeconds+'s wait',{className:'field-hint'}));});const actions=el('div','',{className:'npc-row-actions'});row.append(actions);
                 button(actions,'Move up',()=>{if(index){[points[index-1],points[index]]=[points[index],points[index-1]];selected=index-1;changed();draw();}}).disabled=index===0;button(actions,'Move down',()=>{if(index<points.length-1){[points[index+1],points[index]]=[points[index],points[index+1]];selected=index+1;changed();draw();}}).disabled=index===points.length-1;
                 button(actions, 'Remove waypoint', () => {points.splice(index,1);selected=Math.min(selected,points.length-1);changed();draw();}); container.append(row);
@@ -98,7 +98,7 @@
                 const activity = field(row, phase, 'activity', 'Activity description', {required: true, maxLength: 240});
                 for (const input of [at, activity]) input.addEventListener('input', () => {summary.textContent = formatHour(phase.at) + ' · ' + phase.activity;});
                 field(row, phase, 'location', 'Location ID', {required: true, hint: 'outside, or a Building ID above.'}); field(row, phase, 'label', 'Location description', {required: true, maxLength: 240}); field(row, phase, 'travelling', 'Travelling description', {required: true, maxLength: 240});
-                field(details, phase, 'explanation', 'Routine dialogue', {multiline: true, required: true, maxLength: 240}); details.append(el('h4', 'Phase route')); route(details, phase.route,()=>phase.location==='outside'?draft.area:draft.schedule.buildings.find(b=>b.key===phase.location)?.area||draft.area);
+                field(details, phase, 'explanation', 'Routine dialogue', {dialogue: true, required: true, maxLength: 240}); details.append(el('h4', 'Phase route')); route(details, phase.route,()=>phase.location==='outside'?draft.area:draft.schedule.buildings.find(b=>b.key===phase.location)?.area||draft.area);
                 button(details, 'Move phase up', () => {if (index) {[draft.schedule.phases[index-1], draft.schedule.phases[index]] = [draft.schedule.phases[index], draft.schedule.phases[index-1]]; changed(); drawPhases();}}).disabled = index === 0;
                 button(details, 'Remove phase', () => {draft.schedule.phases.splice(index, 1); changed(); drawPhases();}); phases.append(details);
             });
@@ -117,9 +117,9 @@
         check(identity, 'Preserve the original click-through dialogue', draft.preserveDialogue === true, value => {draft.preserveDialogue = value;});
         point(identity, draft.origin, 'Spawn tile'); area(identity, draft.area);
         route(collapsible(content, 'Normal route · ' + draft.route.length + ' waypoints', 'Waypoints repeat in this order. Keep tiles walkable, inside the outside area and away from doors. Used when no daily schedule or during scene overrides.'), draft.route);
-        const lines = collapsible(content, 'Ambient dialogue', 'One short plain-text message per line. These messages accompany behaviour; quest dialogue stays in the Quest builder.'); draft.lines ||= {};
+        const lines = collapsible(content, 'Ambient dialogue', 'One short message per line. Use the shared editor to style words. These messages accompany behaviour; quest dialogue stays in the Quest builder.'); draft.lines ||= {};
         for (const [key, label] of [['greeting','First greeting'],['return','Returning player'],['talk','Conversation'],['kill','Nearby combat'],['quest','Quest completed']]) {
-            const proxy = {text: (draft.lines[key] || []).join('\n')}; const input = field(lines, proxy, 'text', label, {multiline: true}); input.addEventListener('input', () => {draft.lines[key] = input.value.split('\n').filter(line => line.trim());});
+            const proxy = {text: (draft.lines[key] || []).join('\n')}; const input = field(lines, proxy, 'text', label, {dialogue: true}); input.addEventListener('input', () => {draft.lines[key] = input.value.split('\n').filter(line => line.trim());});
         }
         schedule(content);
         $('#npc-reset').hidden = !data.customized.includes(originalKey); $('#npc-reset').textContent = data.bundled.includes(originalKey) ? 'Reset to bundled routine' : 'Remove saved routine';
