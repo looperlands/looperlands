@@ -140,6 +140,7 @@ module.exports = Mob = Character.extend({
     
     handleRespawn: function() {
         var self = this;
+        for (const area of this.chestAreas || []) area.removeFromArea(this);
 
         let delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;
         if (delay === undefined) {

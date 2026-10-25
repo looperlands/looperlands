@@ -5,6 +5,7 @@ const {readDoors, gates} = require('./localdoorbuilder');
 const {readBehavior, validateRoutine} = require('./localnpcbuilder');
 const {readQuests} = require('./localquestbuilder');
 const properties = require('./properties');
+const {readEncounters} = require('./localencounterbuilder');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 const link = (screen, values = {}) => '#' + screen + '/?' + new URLSearchParams(values);
 function maps(root) {return JSON.parse(fs.readFileSync(path.join(root, 'server/config.json'), 'utf8')).maps;}
@@ -63,14 +64,35 @@ async function analyze(root, mapId, options = {}) {
         if(!terrain.walkable(row))finding('error','blocked-entity','Entity spawn is outside playable bounds or on a collision tile.',row);
         if(type==='mob')usedMobs.set(id,row);
     }
-    for(const area of map.roamingAreas||[]) {
-        const id=idFor(area.type), row=add('spawn',area.id,id+' spawn area',area,{kind:id,editor:link('mobs',{asset:id}),tiledLayer:'roaming'});
+    let sourceEncounters;
+    try {sourceEncounters = await (options.readEncounters || readEncounters)(root, mapId);}
+    catch(error) {finding('warning','encounter-source','Chest and encounter source checks are unavailable: '+error.message,null,link('encounters',{map:mapId}));}
+    const sourceSpawns = sourceEncounters?.objects.filter(row => row.kind === 'encounter') || [];
+    for(const [index,area] of (map.roamingAreas||[]).entries()) {
+        const id=idFor(area.type), row=add('spawn',area.id,id+' spawn area',area,{kind:id,editor:link('encounters',{map:mapId,object:String(area.objectId ?? sourceSpawns[index]?.id ?? '')}),tiledLayer:'roaming'});
         if(!Types.isMob(kind(area.type)))finding('error','unknown-spawn','Spawn area does not reference a registered mob: '+id,row);
         usedMobs.set(id,row);
         let free=false; for(let y=Math.max(1,area.y);y<Math.min(map.height,area.y+area.height)&&!free;y++)for(let x=Math.max(1,area.x);x<Math.min(map.width,area.x+area.width);x++)if(terrain.walkable({x,y})){free=true;break;}
         if(!free)finding('error','blocked-spawn','Spawn area has no walkable tiles.',row);
         if(!terrain.inside(row)||area.x+area.width>map.width||area.y+area.height>map.height)finding('warning','spawn-bounds','Spawn area extends beyond playable map bounds.',row);
     }
+    for (const entry of sourceEncounters?.objects || []) {
+        if (entry.kind === 'encounter') continue;
+        const row = add(entry.kind,entry.id,entry.name || (entry.kind === 'chest' ? 'Chest' : 'Clear-area reward'),entry,{editor:link('encounters',{map:mapId,object:entry.id}),tiledLayer:entry.kind === 'chest' ? 'chests' : 'chestareas',source:'Tiled source',loot:entry.loot});
+        const target = entry.kind === 'chest' ? entry : {x:entry.rewardX,y:entry.rewardY};
+        if(!terrain.walkable(target))finding('error','chest-position','Chest destination is blocked or outside playable bounds.',row);
+        if(!entry.loot.length)finding('error','chest-loot','Chest needs at least one loot item.',row);
+        for(const item of entry.loot) {
+            if(!Types.isItem(kind(item.item)) || kind(item.item) === Types.Entities.CHEST)finding('error','chest-item','Unknown chest loot item: '+item.item,row);
+            if(!Number.isFinite(item.weight)||item.weight<=0)finding('error','chest-weight','Loot weights must be greater than zero.',row);
+        }
+        if(entry.kind === 'reward') {
+            const contains = p => p.x >= entry.x && p.y >= entry.y && p.x < entry.x + entry.width && p.y < entry.y + entry.height;
+            const hasMob = objects.some(o => o.type === 'mob' && contains(o)) || sourceSpawns.some(o => o.x >= entry.x && o.y >= entry.y && o.x+o.width <= entry.x+entry.width && o.y+o.height <= entry.y+entry.height);
+            if(!hasMob)finding('warning','reward-members','No static mob or fully enclosed roaming area was found. Include a whole encounter for a predictable clear reward.',row);
+        }
+    }
+    checks.push('Tiled chest positions, registered loot, positive weights and clear-area membership');
     for(const c of map.checkpoints||[]) {
         const row=add('checkpoint',c.id,'Checkpoint '+c.id,c,{tiledLayer:'checkpoints'});let free=false;
         for(let y=Math.max(1,c.y);y<Math.min(map.height,c.y+(c.h||1))&&!free;y++)for(let x=Math.max(1,c.x);x<Math.min(map.width,c.x+(c.w||1));x++)if(terrain.walkable({x,y})){free=true;break;}

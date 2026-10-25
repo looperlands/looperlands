@@ -221,3 +221,5 @@ The local Mapmaker Toolbox also includes separate [Mob](docs/mapmaker-mobs.md), 
 Use the local [Doors & portals editor](docs/mapmaker-doors.md) to inspect map entrances and edit their conditions, opening hours and failure messages, then build the map normally.
 
 Use [Live assets](docs/mapmaker-live-assets.md) to search the Platform catalog and copy asset, NFT and collection identifiers. Configure a server-side API key with `asset_read` access.
+
+Mapmakers can place treasure, configure loot and create combat areas using [Chests & encounters](docs/mapmaker-encounters.md).

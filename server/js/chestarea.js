@@ -15,6 +15,23 @@ module.exports = ChestArea = Area.extend({
         this.chances = chances;
     },
 
+    // Reward membership is independent of the area's roaming/respawn owner.
+    addToArea: function(mob) {
+        if (this.entities.some(entity => entity.id === mob.id)) return;
+        this.entities.push(mob);
+        mob.chestAreas ||= new Set();mob.chestAreas.add(this);
+        if (this.isFull()) this.hasCompletelyRespawned = true;
+    },
+
+    removeFromArea: function(mob) {
+        const index = this.entities.findIndex(entity => entity.id === mob.id);
+        if (index < 0) return;
+        this.entities.splice(index, 1);
+        if (this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
+            this.hasCompletelyRespawned = false;this.empty_callback();
+        }
+    },
+
     contains: function(entity) {
         if(entity) {
             return entity.x >= this.x
