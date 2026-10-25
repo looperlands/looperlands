@@ -1,6 +1,6 @@
 # Quest builder
 
-Use **Quest builder** in the [Mapmaker Toolbox](mapmaker-toolbox.md) to create custom quests or adapt bundled quests for a local playtest. It uses the existing quest engine, NPC interactions and Journal. Bundled quest edits are saved as local overrides while their original source stays intact.
+Use **Quest builder** in the [Mapmaker Toolbox](mapmaker-toolbox.md) to create custom quests or adapt bundled quests for local playtesting and production. It uses the existing quest engine, NPC interactions and Journal. Bundled quest edits are stored as overrides while their original source stays intact.
 
 ## Create a quest
 
@@ -9,7 +9,7 @@ Use **Quest builder** in the [Mapmaker Toolbox](mapmaker-toolbox.md) to create c
 3. Choose a **Quest giver** present on the map. Write **Start text** and **End text** for acceptance and completion. Optional **In-progress text** gives the player a reminder.
 4. Click **Add objective** to add steps. Give each an **Objective ID**, **Player-facing label**, **Action**, **Target** and **Amount**.
 5. Set **Quest level** and **Required player level**. Optionally choose a **Reward item**, **Reward quantity** or **Prerequisite quest ID**.
-6. Click **Save quests** to save this map's custom quests and local overrides.
+6. Click **Save quests** to save this map's custom quests and saved overrides.
 7. Use **Build tools → Build map and restart game** for that map. After **Build complete**, [start a new session](mapmaker-sessions.md), speak to the quest giver and accept the quest.
 
 Saving writes the definition to disk. The running game loads it after the restart; saving alone does not change an active playtest.
@@ -21,7 +21,7 @@ Saving writes the definition to disk. The running game loads it after the restar
 3. Under **Quest goal**, adjust the existing **Action**, **Target** and **Amount**. Use **Return to quest giver** when the player must report back. Additional quest text contains the longer description, quest-log text and target NPC's response where the original quest uses them.
 4. Click **Save quests**, then build the selected map in **Build tools** to restart the game with your changes.
 
-An override changes the same bundled quest everywhere it is available in the local game. The map selected for editing determines where its override file is saved. Custom quests created with **New quest** are scoped to their own map.
+An override changes the same bundled quest everywhere it is available, including production after deployment. The map selected for editing determines where its override file is saved. Custom quests created with **New quest** are scoped to their own map.
 
 Bundled quests keep their existing progression rules. Their defeat goals can count earlier lifetime kills; collection goals check current inventory and remove the required items at completion. Editing a bundled quest does not convert it into the custom objective system below.
 
@@ -132,7 +132,7 @@ Switching maps keeps unsaved drafts while the toolbox page remains open. Save ea
 
 If a map edit removes a quest target, **Reload quests** shows the validation error and keeps the quest editable. Choose an available target or remove the affected quest, save, then build again. The local game skips invalid map quest definitions and logs the reason so other maps remain playable. Fix malformed JSON directly in the named source file before reloading it.
 
-Custom quests and bundled quest overrides load only in local playtest mode. Including their file in a production checkout does not apply the changes on the live server. Moving a finished change into the normal world definitions remains a separate development step.
+Custom quests and bundled quest overrides use the same saved files in local playtests and production. Commit `tools/quests/<mapId>.json` with the map sources, generated exports and any new assets. After merge to `main` and a successful deployment, the live server loads those definitions. Production builds reject invalid saved content instead of silently omitting it.
 
 Continue with [Building maps](mapmaker-building.md), [Starting game sessions](mapmaker-sessions.md) or the [Mapmaker Toolbox overview](mapmaker-toolbox.md).
 
@@ -140,4 +140,4 @@ Use **Search bundled quests** to filter the bundled list by name or quest ID. Se
 
 ## Tile action objectives
 
-Choose **Use tile action** to count successful stages from a saved map action. Pick the action, optionally enter a stage ID (for example `harvest` or `work`), and choose whether progress counts completed actions or output quantity. Failed sequence attempts do not count. Reload Quest builder after creating tile definitions in [Tile actions & stages](mapmaker-tile-actions.md).
+Choose **Use interaction** to count successful actions from a saved interaction. Select the interaction and optionally a named action, then count completed actions or items received. Failed attempts do not count. Reload Quest builder after saving new definitions in [Interactions](mapmaker-tile-actions.md).

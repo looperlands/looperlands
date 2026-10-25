@@ -241,7 +241,7 @@ WS.socketIOServer = Server.extend({
         if (require('./localplaytest').isLocalPlaytest()) {
             app.get('/', (req, res, next) => req.query.sessionId ? next() : res.redirect(process.env.LOOPERLANDS_TOOLBOX_URL || '/local/'));
         }
-        if (require('./localplaytest').isLocalPlaytest()) require('./localworldauthoring').installRuntime(app, path.resolve(__dirname,'../..'));
+        if (require('./localplaytest').isLocalPlaytest()) require('./localworldauthoring').installRuntime(app, path.resolve(__dirname,'../..'), () => self.worldsMap);
         app.use("/", express.static(__dirname + "/../../client-build"));
 
         let httpInclude = require('http');
@@ -602,12 +602,15 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-            let items = sessionData.gameData?.items || {};
+            let items = {...sessionData.gameData?.items};
             let resources = {};
             Object.keys(items).forEach(item => {
                 if (Types.isResource(parseInt(item))) {
                     resources[item] = items[item];
-                    delete items[item];
+                    if (!Collectables.isConsumable(item)) {
+                        delete items[item];
+                        return;
+                    }
                 }
 
                 if (Types.isWeapon(parseInt(item)) && items[item] > 0) {

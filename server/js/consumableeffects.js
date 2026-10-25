@@ -36,6 +36,10 @@ function getConsumableEffects(player, now = Date.now()) {
             effects.push({id: 'drops', label: 'Drops: ' + (AltNames[Types.getKindAsString(player.dropOverride)] || 'special loot'),
                 expiresAt: player.dropOverrideExpiresAt});
         }
+        if (player.dropTableOverride?.expiresAt > now) {
+            effects.push({id: 'drops', label: 'Custom loot' + (player.dropTableOverride.mob === null ? '' : ': ' + Types.getKindAsString(player.dropTableOverride.mob)),
+                expiresAt: player.dropTableOverride.expiresAt});
+        }
     }
     return {effects, effectsUpdatedAt: now};
 }

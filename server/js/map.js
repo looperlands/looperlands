@@ -8,6 +8,7 @@ var fs = require('fs'),
 module.exports = class Mapx {
     constructor(filepath) {
     	var self = this;
+        const root = path.resolve(path.dirname(filepath), '../..');
     
     	this.isLoaded = false;
     
@@ -18,7 +19,7 @@ module.exports = class Mapx {
                 // Existing server exports omit scenes; their companion client export
                 // contains the configured names and bounds used by the game camera.
                 if (!json.scenes) {
-                    const clientPath = path.resolve(__dirname, '../../client/maps', path.basename(filepath).replace('world_server_', 'world_client_'));
+                    const clientPath = path.join(root, 'client/maps', path.basename(filepath).replace('world_server_', 'world_client_'));
                     try {
                         json.scenes = JSON.parse(await fs.promises.readFile(clientPath, 'utf8')).scenes || [];
                     } catch (error) {
@@ -26,6 +27,11 @@ module.exports = class Mapx {
                     }
                 }
             
+                if (require('./localplaytest').isLocalPlaytest()) {
+                    const mapId = path.basename(filepath).replace(/^world_server_/, '').replace(/\.json$/, '');
+                    const doc = require('./localworldauthoring').readDocument(root, mapId);
+                    json = require('./localworldscenes').applyScenes(json, doc.scenes);
+                }
                 self.initMap(json);
             });
         }

@@ -12652,6 +12652,10 @@ Types.emotions = {
             Types.Entities[entry.id.toUpperCase()] = entry.kind;
             kinds[entry.id] = [entry.kind, entry.type === 'item' ? 'resource' : entry.type];
         }
+        if (entry.type === 'item' && typeof entry.gameplay?.resource === 'boolean' &&
+            ['resource', 'object'].includes(kinds[entry.id]?.[1])) {
+            kinds[entry.id][1] = entry.gameplay.resource ? 'resource' : 'object';
+        }
     });
     };
     Types.registerMapmakerEntities(entries);

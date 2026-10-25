@@ -44,7 +44,9 @@ Continue with [Starting game sessions](mapmaker-sessions.md) or [Quest builder](
 
 ## Place Toolbox characters and items
 
-Use an object layer named `mapmaker-entities` for assets created in the [Mob & NPC editor](mapmaker-mobs.md) or [Item editor](mapmaker-items.md). Add a point object and give it the exact asset ID as its Name. Place it inside the map, after the first column, with one entity per cell. The exporter adds these points to the existing static entity registry. Build the map after saving the TMX and after changing an asset definition.
+The easiest option is **Map inspector → Place entities**: choose a visual entry, click a tile and save the placement. Use **Create a new entity** for a new definition. See the [placement guide](mapmaker-inspector.md#place-items-mobs-and-npcs).
+
+In Tiled, use an object layer named `mapmaker-entities` for assets created in the [Mob & NPC editor](mapmaker-mobs.md) or [Item editor](mapmaker-items.md). Add a point object and give it the exact asset ID as its Name. Place it inside the map, after the first column, with one entity per cell. The exporter adds these points to the existing static entity registry. Build the map after saving the TMX and after changing an asset definition.
 
 ## Edit door and portal conditions
 

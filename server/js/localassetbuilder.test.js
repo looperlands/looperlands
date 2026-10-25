@@ -52,6 +52,76 @@ test('the client factory builds all three new gameplay types and keeps built-in 
     for(const entry of entries)expect(factory.createEntity(entry.kind,'entity')).toMatchObject({id:'entity',kind:entry.kind,name:entry.name});
 });
 test('reading built-in mob settings preserves the actual rat aggression and attack timing',()=>{expect(readAsset(source,'rat').client).toMatchObject({isAggressive:false,atkSpeed:50,moveSpeed:350,idleSpeed:700});});
+test('items expose existing consumption, cooldown and resource defaults without returning scripts',()=>{
+    for(const id of ['cpotion_s','cake','GOLD','sword2'])write('client/sprites/item-'+id+'.json',fs.readFileSync(path.join(source,'client/sprites/item-'+id+'.json')));
+    const potion=readAsset(root,'cpotion_s');
+    expect(potion).toMatchObject({hasScriptedEffect:true,gameplay:{consumable:true,effectDescription:'Adds 75 HP',cooldown:{group:'hpPotions',duration:60000}},client:{showSparks:true}});
+    expect(potion.gameplay.onConsume).toBeUndefined();
+    expect(readAsset(root,'wood').gameplay.resource).toBe(false);
+    expect(readAsset(root,'GOLD').gameplay.resource).toBe(true);
+    expect(readAsset(root,'cake').client.showSparks).toBe(false);
+    expect(readAsset(root,'sword2').inventoryCategory).toBe('equipment');
+});
+test('item effects, resource category, sparks and tooltip survive saves and register in both runtimes',()=>{
+    const input=fixture();Object.assign(input.gameplay,{resource:false,consumable:true,consumeEffects:[{type:'heal',amount:50},{type:'modifier',stat:'xp',multiplier:2,duration:30000}],effectDescription:'Heal and gain double XP',cooldown:{duration:5000,group:''}});input.client={showSparks:false};
+    const saved=saveAsset(root,input);
+    expect(readAsset(root,saved.id)).toMatchObject({gameplay:{resource:false,consumable:true,consumeEffects:input.gameplay.consumeEffects,effectDescription:'Heal and gain double XP',cooldown:{duration:5000,group:saved.id}},client:{showSparks:false}});
+    const entries=JSON.parse(fs.readFileSync(path.join(root,'shared/js/mapmakerentities.json')));
+    for(const amd of [false,true]){
+        let Types;const context={console};if(amd)context.define=(deps,factory)=>{Types=factory(entries);};else Object.assign(context,{module:{exports:{}},exports:{},require:()=>entries});
+        vm.runInNewContext(fs.readFileSync(path.join(source,'shared/js/gametypes.js'),'utf8'),context);Types=amd?Types:context.module.exports;
+        expect(Types.isResource(saved.kind)).toBe(false);expect(Types.isObject(saved.kind)).toBe(true);expect(Types.isItem(saved.kind)).toBe(true);
+    }
+    const updated=saveAsset(root,{...saved,originalId:saved.id,gameplay:{...saved.gameplay,resource:true,consumable:false},client:{showSparks:true}});
+    expect(updated.gameplay.consumeEffects).toEqual(input.gameplay.consumeEffects);
+    const legacy=saveAsset(root,{...fixture('item',saved.id),originalId:saved.id,revision:updated.revision,images:undefined});
+    expect(legacy).toMatchObject({gameplay:{resource:true,consumable:false,consumeEffects:input.gameplay.consumeEffects},client:{showSparks:true}});
+});
+test.each([
+    {consumeEffects:[{type:'script',code:'bad'}]}, {consumeEffects:[{type:'heal',amount:-10}]},
+    {consumeEffects:[{type:'modifier',stat:'unknown',multiplier:2,duration:30000}]},
+    {consumeEffects:[{type:'modifier',stat:'xp',multiplier:Infinity,duration:30000}]},
+    {consumeEffects:[{type:'modifier',stat:'xp',multiplier:2,duration:0}]},
+    {consumeEffects:[{type:'heal',amount:1},{type:'heal',amount:2}]},
+    {consumeEffects:[]}, {consumeEffects:null}, {cooldown:{duration:-1,group:''}},
+    {cooldown:{duration:1000,group:'<bad>'}}, {cooldown:{duration:1000,group:'constructor'}},
+    {cooldown:{duration:1000,group:'__proto__'}}, {cooldown:{duration:1000,group:'toString'}},
+    {effectDescription:'<img src=x>'}, {resource:'true'}
+])('invalid consumable settings fail before writing any files: %j',settings=>{
+    const input=fixture();Object.assign(input.gameplay,{consumable:true},settings);
+    expect(()=>saveAsset(root,input)).toThrow();
+    expect(JSON.parse(fs.readFileSync(path.join(root,'shared/js/mapmakerentities.json')))).toEqual([]);
+    expect(fs.existsSync(path.join(root,'client/sprites/item-moon_shard.json'))).toBe(false);
+});
+test('built-in scripts can be kept, replaced and restored while equipment cannot become resources',()=>{
+    for(const id of ['cpotion_s','sword2'])for(const file of ['client/sprites/item-'+id+'.json',...[1,2,3].map(scale=>'client/img/'+scale+'/item-'+id+'.png')])write(file,fs.readFileSync(path.join(source,file)));
+    const potion=readAsset(root,'cpotion_s');
+    let saved=saveAsset(root,{...potion,originalId:potion.id,gameplay:{...potion.gameplay,collectAmount:1,consumeEffects:null}});
+    saved=saveAsset(root,{...saved,originalId:potion.id,gameplay:{...saved.gameplay,consumeEffects:[{type:'heal',amount:125}]}});
+    expect(saved.gameplay.consumeEffects).toEqual([{type:'heal',amount:125}]);
+    saved=saveAsset(root,{...saved,originalId:potion.id,gameplay:{...saved.gameplay,consumeEffects:null}});
+    expect(saved.gameplay.consumeEffects).toBeNull();expect(saved.hasScriptedEffect).toBe(true);
+    const sword=readAsset(root,'sword2');
+    expect(()=>saveAsset(root,{...sword,originalId:sword.id,gameplay:{collectAmount:1,resource:true}})).toThrow('Equipment');
+});
+test('spawns and temporary loot tables save registered references and survive readback',()=>{
+    const input=fixture();input.gameplay.consumable=true;input.gameplay.consumeEffects=[
+        {type:'spawn',entityType:'mob',entity:'rat',amount:2}, {type:'spawn',entityType:'npc',entity:'guard',amount:1,duration:20000},
+        {type:'spawn',entityType:'item',entity:'wood',amount:3}, {type:'drops',mob:'rat',drops:{wood:40},duration:60000}];
+    const saved=saveAsset(root,input);expect(readAsset(root,saved.id).gameplay.consumeEffects).toEqual(input.gameplay.consumeEffects);
+    const custom=saveAsset(root,fixture('mob','beetle'));
+    expect(saveAsset(root,{...saved,originalId:saved.id,gameplay:{...saved.gameplay,consumeEffects:[{type:'spawn',entityType:'mob',entity:custom.id,amount:1}]}}).gameplay.consumeEffects[0].entity).toBe('beetle');
+});
+test.each([
+    {type:'spawn',entityType:'mob',entity:'wood',amount:1}, {type:'spawn',entityType:'item',entity:'missing_item',amount:1},
+    {type:'spawn',entityType:'npc',entity:'guard',amount:1,duration:0}, {type:'spawn',entityType:'mob',entity:'rat',amount:11},
+    {type:'drops',mob:'guard',drops:{wood:10},duration:30000}, {type:'drops',mob:'',drops:{rat:50},duration:30000},
+    {type:'drops',mob:'',drops:{wood:101},duration:30000}, {type:'drops',mob:'',drops:{wood:75,ore:30},duration:30000},
+    {type:'drops',mob:'',drops:{},duration:30000}, {type:'drops',mob:'',drops:{wood:50},duration:0}
+])('invalid spawn or drop reference/configuration is rejected before writing: %j',effect=>{
+    const input=fixture();input.gameplay.consumeEffects=[effect];
+    expect(()=>saveAsset(root,input)).toThrow();expect(JSON.parse(fs.readFileSync(path.join(root,'shared/js/mapmakerentities.json')))).toEqual([]);
+});
 test('a later write failure restores images and leaves the registration untouched',()=>{
     const before=fs.readFileSync(path.join(root,'shared/js/mapmakerentities.json')),rename=fs.renameSync;let writes=0;
     const mock=jest.spyOn(fs,'renameSync').mockImplementation((...args)=>{if(++writes===2)throw new Error('Disk full');return rename(...args);});
@@ -73,6 +143,24 @@ test('NPC sprite edits preserve unchanged built-in dialogue links while edited o
     for(const file of ['client/sprites/villager.json', ...[1,2,3].map(scale=>'client/img/'+scale+'/villager.png')])write(file,fs.readFileSync(path.join(source,file)));
     const asset=readAsset(root,'villager');expect(asset.dialogue.some(line=>line.includes('<a '))).toBe(true);
     const saved=saveAsset(root,{...asset,originalId:asset.id,images:undefined}); expect(saved.dialogue).toEqual(asset.dialogue);
-    expect(()=>saveAsset(root,{...saved,originalId:asset.id,dialogue:['<a href="https://example.com">Changed</a>']})).toThrow('plain-text');
-    expect(()=>saveAsset(root,{...fixture('npc','new_speaker'),dialogue:asset.dialogue})).toThrow('plain-text');
+    expect(()=>saveAsset(root,{...saved,originalId:asset.id,dialogue:['<a href="https://example.com">Changed</a>']})).toThrow('allows only balanced');
+    expect(()=>saveAsset(root,{...fixture('npc','new_speaker'),dialogue:asset.dialogue})).toThrow('allows only balanced');
+});
+
+test('NPC greeting styles survive save and readback, while counters and unsafe markup are rejected', () => {
+    const input = fixture('npc', 'styled_speaker');
+    input.dialogue = ['Bring <span class="dialogue-item">wood</span>.', '<span class="dialogue-wave dialogue-shake">Hello!</span>'];
+    const saved = saveAsset(root, input);
+    expect(readAsset(root, saved.id).dialogue).toEqual(input.dialogue);
+    for (const line of ['{{remaining}}', '<span class="dialogue-wave" onclick="bad()">Hello</span>']) {
+        expect(() => saveAsset(root, {...saved, originalId: saved.id, dialogue: [line]})).toThrow();
+    }
+});
+
+test('styling one greeting preserves an unchanged legacy link in another greeting', () => {
+    for (const file of ['client/sprites/villager.json', ...[1,2,3].map(scale => 'client/img/'+scale+'/villager.png')]) write(file, fs.readFileSync(path.join(source, file)));
+    const asset = readAsset(root, 'villager');
+    const dialogue = [...asset.dialogue, '<span class="dialogue-wave">Welcome back!</span>'];
+    const saved = saveAsset(root, {...asset, originalId: asset.id, dialogue});
+    expect(saved.dialogue).toEqual(dialogue);
 });

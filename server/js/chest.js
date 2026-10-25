@@ -32,13 +32,14 @@ module.exports = Chest = Item.extend({
     },
 
     getRandomItemByChances: function() {
-        let sum = Object.values(this.chances).reduce((a, b) => a + b, 0);
-        let rnd = Utils.random(sum);
+        const entries = Object.entries(this.chances).filter(([, weight]) => Number.isFinite(weight) && weight > 0);
+        let sum = entries.reduce((total, [, weight]) => total + weight, 0);
+        let rnd = Math.random() * sum;
         let tmpSum = 0;
-        for(let i = 0; i < Object.keys(this.chances).length; i++) {
-            tmpSum += Object.values(this.chances)[i];
+        for(let i = 0; i < entries.length; i++) {
+            tmpSum += entries[i][1];
             if(rnd < tmpSum) {
-                return parseInt(Object.keys(this.chances)[i]);
+                return parseInt(entries[i][0]);
             }
         }
     }

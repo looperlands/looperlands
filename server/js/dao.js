@@ -44,15 +44,16 @@ const updateExperience = async function (nftId, xp, retry) {
 }
 
 const loadMapFlow = async function (mapId) {
+  let flow;
   try {
-    const flow = await platformClient.loadMapFlow(mapId);
+    flow = await platformClient.loadMapFlow(mapId);
 
     printResponseJSON('loadMapFlow:' + mapId, flow);
 
-    return flow;
   } catch (error) {
-    return undefined;
+    // Repository-authored rules remain available when no Platform flow exists.
   }
+  return platformClient.localPlaytest ? flow : require('./mapmakercontent').mergeFlow(mapId, flow);
 }
 
 const saveWeapon = async function (wallet, nft, weaponName) {

@@ -37,3 +37,13 @@ test('an enemy death reaches its own and adjacent groups once, before loot', () 
     expect(delivered.adjacent).toEqual(['death', 'loot']);
     expect(world.removeEntity).toHaveBeenCalledWith(mob);
 });
+
+test('a fixed loot override creates one item and skips the normal loot roll',()=>{
+    const world=Object.create(moduleStub.exports);
+    for(const name of ['pushToPlayer','pushToAdjacentGroups','handleRedPacket','handleItemDespawn','distributeExp','handleExpMultiplierOnDeath','removeEntity'])world[name]=jest.fn();
+    world.getDroppedItem=jest.fn();world.createItem=jest.fn(kind=>({kind}));world.addItem=jest.fn(item=>item);
+    const mob={type:'mob',kind:1,hitPoints:0,group:'own',x:3,y:4,dmgTakenArray:[],despawn:()=>['death'],drop:item=>item};
+    world.handleHurtEntity(mob,{type:'player',dropOverride:99},1);
+    expect(world.getDroppedItem).not.toHaveBeenCalled();expect(world.createItem).toHaveBeenCalledTimes(1);
+    expect(world.createItem).toHaveBeenCalledWith(99,3,4);expect(world.handleItemDespawn).toHaveBeenCalledTimes(1);
+});

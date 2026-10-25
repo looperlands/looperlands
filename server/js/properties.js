@@ -5296,6 +5296,23 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
+    const effects = Properties[Types.getKindAsString(kind)]?.consumeEffects;
+    if (Array.isArray(effects)) {
+        for (const effect of effects) {
+            if (effect.type === 'heal') player.regenHealthBy(effect.amount);
+            else if (effect.type === 'modifier') player.playerClassModifiers.applyTemporaryModifierWithTimeout(effect.stat, effect.multiplier, effect.duration);
+            else if (effect.type === 'drops') player.setDropTableOverride(effect.drops, effect.duration, effect.mob ? Types.getKindFromString(effect.mob) : null);
+            else if (effect.type === 'spawn') {
+                const kind = Types.getKindFromString(effect.entity);
+                for (let i = 0; i < effect.amount; i++) {
+                    if (effect.entityType === 'mob') player.releaseMob(kind);
+                    else if (effect.entityType === 'npc') player.releaseNpc(kind, effect.duration);
+                    else player.releaseItem(kind);
+                }
+            }
+        }
+        return;
+    }
     let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
     if(onConsume !== undefined) {
         onConsume(player);
@@ -5308,7 +5325,9 @@ Properties.getInventoryDescription = function(kind) {
 }
 
 Properties.getEffectDescription = function(kind) {
-    let retDescription = Properties[Types.getKindAsString(kind)]?.effectDescription;
+    const item = Properties[Types.getKindAsString(kind)];
+    let retDescription = item?.effectDescription;
+    if (!retDescription && Array.isArray(item?.consumeEffects)) retDescription = require('../../shared/js/itemeffects').describe(item.consumeEffects);
     return retDescription !== undefined ? retDescription : false;
 }
 

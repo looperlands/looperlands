@@ -578,8 +578,10 @@ describe("TileActionsController farming", () => {
 
     test("garden JSON files register new maps without another controller", async () => {
         const fs = require("fs");
+        const readFile = fs.readFileSync.bind(fs);
         const directorySpy = jest.spyOn(fs, "readdirSync").mockReturnValueOnce(["duckville.json", "moon.json", "README.md"]);
         const fileSpy = jest.spyOn(fs, "readFileSync").mockImplementation((file) => {
+            if (!/client\/tileActions\/(duckville|moon)\.json$/.test(file)) return readFile(file, 'utf8');
             const farm = createFarmingDefinitions().duckville.farm;
             return JSON.stringify(file.endsWith("/moon.json") ? { moonGarden: farm } : { farm });
         });
@@ -600,17 +602,18 @@ describe("TileActionsController farming", () => {
     test("client map export supplies garden actions without a new server export", async () => {
         const fs = require("fs");
         const duckvilleController = controller.getController("duckville");
-        const existsSpy = jest.spyOn(fs, "existsSync").mockReturnValue(true);
-        const readSpy = jest.spyOn(fs, "readFileSync").mockReturnValue(JSON.stringify({
+        const exists = fs.existsSync.bind(fs), readFile = fs.readFileSync.bind(fs);
+        const existsSpy = jest.spyOn(fs, "existsSync").mockImplementation(file => file.endsWith('world_client_duckville.json') || exists(file));
+        const readSpy = jest.spyOn(fs, "readFileSync").mockImplementation(file => file.endsWith('world_client_duckville.json') ? JSON.stringify({
             width: 2, data: [0, [0, 42]], actionTiles: { 42: { action: "farm" } },
-        }));
+        }) : readFile(file, 'utf8'));
         world.map = {};
         tileAction = { name: "potFarm", gridX: 1, gridY: 0 };
         try {
             const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
             expect(stage.optimisticStage.tile).toBe(17118);
             expect(duckvilleController.getMapActionGrid("duckville")).toEqual({ "1.0": { action: "farm" } });
-            expect(readSpy).toHaveBeenCalledTimes(1);
+            expect(readSpy.mock.calls.filter(([file]) => file.endsWith('world_client_duckville.json'))).toHaveLength(1);
             expect(await controller.findCurrentStage("avatar", "duckville", { ...tileAction, gridX: -1 }, world)).toBeNull();
             expect((await controller.executeStage("avatar", "duckville", { ...tileAction, gridX: -1 }, null, world)).success).toBe(false);
         } finally {

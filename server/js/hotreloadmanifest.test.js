@@ -57,3 +57,19 @@ test('symlinked runtime files cannot enter a release artifact', () => {
     fs.symlinkSync(path.join(root, 'package.json'), path.join(root, 'client/linked.json'));
     expect(() => createManifest(root, 'a'.repeat(40))).toThrow('Runtime symlink is unsupported');
 });
+
+test('saved content changes and removals enter the server manifest and require a reboot', () => {
+    const {HotReload} = require('./hotreload');
+    for (const folder of ['quests', 'npcs', 'worlds', 'tiles', 'interactions']) {
+        fs.mkdirSync(path.join(root, 'tools', folder), {recursive: true});
+        fs.writeFileSync(path.join(root, 'tools', folder, 'main.json'), '{}');
+    }
+    const before = createManifest(root, 'a'.repeat(40));
+    for (const folder of ['quests', 'npcs', 'worlds', 'tiles', 'interactions']) expect(before.files['tools/' + folder + '/main.json']).toBe(hash('{}'));
+    fs.writeFileSync(path.join(root, 'tools/worlds/main.json'), '{"rules":[]}');
+    const next = createManifest(root, 'b'.repeat(40));
+    const reload = new HotReload(root, before);
+    expect(reload.plan({manifest: next, sources: {}}, before.revision).method).toBe('reboot');
+    fs.unlinkSync(path.join(root, 'tools/quests/main.json'));
+    expect(createManifest(root, 'c'.repeat(40)).files['tools/quests/main.json']).toBeUndefined();
+});

@@ -1,4 +1,5 @@
 const WorldTime = require('../../client/js/worldtime-worker');
+const DialogueFormat = require('../../shared/js/dialogueformat');
 const same = (a, b) => a.x === b.x && a.y === b.y;
 const inside = (p, a) => p.x >= a.x && p.y >= a.y && p.x < a.x + a.width && p.y < a.y + a.height;
 const point = p => p && Number.isInteger(p.x) && Number.isInteger(p.y);
@@ -22,10 +23,10 @@ function validateSchedule(definition) {
         const area = phase.location === 'outside' ? definition.area : buildings.find(b => b.key === phase.location)?.area;
         if (!Number.isFinite(phase.at) || phase.at < 0 || phase.at >= 24 || (i > 0 && phase.at <= phases[i - 1].at) ||
             !area || !['work', 'free-time', 'home', 'sleep'].includes(phase.key) || !plain(phase.activity) ||
-            !plain(phase.label) || !plain(phase.explanation) || !plain(phase.travelling) ||
+            !plain(phase.label) || !phase.explanation || !DialogueFormat.isValid(phase.explanation) || !plain(phase.travelling) ||
             !Array.isArray(phase.route) || !phase.route.length || phase.route.some(p => !point(p) || !inside(p, area) ||
                 !Number.isFinite(p.waitSeconds) || p.waitSeconds < 1 ||
-                (p.line && !plain(p.line)) || (p.activity && !plain(p.activity)) ||
+                (p.line && !DialogueFormat.isValid(p.line)) || (p.activity && !plain(p.activity)) ||
                 (p.sound && !['watersplash', 'honk', 'npc'].includes(p.sound)))) throw new Error('Invalid NPC schedule phase: ' + definition.key);
     }
 }

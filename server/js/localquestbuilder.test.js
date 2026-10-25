@@ -122,17 +122,18 @@ test('a symlinked map quest file is never read or replaced by a save', () => {
     expect(() => readQuests(root, 'one')).toThrow('ordinary JSON');
 });
 
-test('runtime registration is limited to explicit local playtest mode and adds map scope', () => {
+test('saved quests register in production and local playtests with the same map scope', () => {
     const originalNode = process.env.NODE_ENV, originalLocal = process.env.LOOPERLANDS_LOCAL_PLAYTEST;
     write('tools/quests/one.json', {version: 1, quests: [fixture()]});
     try {
         const production = new WorldDefinitions();
-        process.env.NODE_ENV = 'production'; process.env.LOOPERLANDS_LOCAL_PLAYTEST = '1';
-        registerLocalQuests(root, production); expect(production.quests).toEqual([]);
+        process.env.NODE_ENV = 'production'; delete process.env.LOOPERLANDS_LOCAL_PLAYTEST;
+        registerLocalQuests(root, production);
         const local = new WorldDefinitions();
-        process.env.NODE_ENV = 'development';
+        process.env.NODE_ENV = 'development'; process.env.LOOPERLANDS_LOCAL_PLAYTEST = '1';
         registerLocalQuests(root, local);
         expect(local.quests).toEqual([{medal: Types.Medals.TALK, ...fixture(), mapId: 'one', localBuilder: true}]);
+        expect(production.quests).toEqual(local.quests);
     } finally {
         if (originalNode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = originalNode;
         if (originalLocal === undefined) delete process.env.LOOPERLANDS_LOCAL_PLAYTEST; else process.env.LOOPERLANDS_LOCAL_PLAYTEST = originalLocal;

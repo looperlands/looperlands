@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const {execFile} = require('child_process');
 const WorldTime = require('../../client/js/worldtime-worker');
+const DialogueFormat = require('../../shared/js/dialogueformat');
 const gates = ['nft', 'item', 'quest', 'collection', 'http_redirect', 'level', 'weapon_level'];
 const messages = ['message', 'nft_message', 'item_message', 'quest_message', 'collection_message', 'trigger_message', 'time_message'];
 const editable = [...gates, ...messages, 'tid', 'time_range'];
@@ -40,11 +41,11 @@ function validateChanges(changes, properties) {
     if (!changes || typeof changes !== 'object' || Array.isArray(changes) || Object.keys(changes).some(key => !editable.includes(key))) fail('Only supported entrance conditions and messages can be edited.');
     for (const [key, value] of Object.entries(changes)) {
         if (value === null) continue;
+        if (messages.includes(key)) {DialogueFormat.validate(value, 'Entrance message'); continue;}
         if (key === 'level' || key === 'weapon_level') {
             if (!Number.isInteger(value) || value < 1 || value > 10000) fail('Level requirements must be whole numbers from 1 to 10000.');
         } else {
-            if (typeof value !== 'string' || !value.trim() || value.length > (messages.includes(key) ? 2000 : 300) || /[\u0000-\u001f<>]/.test(value.replace(/[\n\r\t]/g, ''))) fail('Conditions and messages must contain plain text. Clear the field to remove it.');
-            if (messages.includes(key)) continue;
+            if (typeof value !== 'string' || !value.trim() || value.length > 300 || /[\u0000-\u001f<>]/.test(value.replace(/[\n\r\t]/g, ''))) fail('Conditions must contain plain text. Clear the field to remove it.');
             if (key === 'time_range') {
                 if (!WorldTime.isInRange(0, value) && !WorldTime.isInRange(WorldTime.duration / 2, value) && !/^([01]?\d|2[0-3]):[0-5]\d\s*-\s*([01]?\d|2[0-3]):[0-5]\d$/.test(value)) fail('Use game-time hours such as 08:00-18:00 or 22:00-06:00.');
             } else if (key === 'http_redirect') {

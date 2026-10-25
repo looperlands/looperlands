@@ -86,3 +86,17 @@ test('API refuses saves during builds and shutdown; map metadata is available be
     routes['POST /local/api/npcs']({body: {}}, res); expect(res.status).toHaveBeenLastCalledWith(409);
     toolbox.closed = true; routes['POST /local/api/npcs']({body: {}}, res); expect(res.status).toHaveBeenLastCalledWith(503);
 });
+
+test('routine, waypoint and schedule speech preserve supported styles after save and runtime reload', () => {
+    const npc = routine();
+    npc.lines.greeting = ['<span class="dialogue-wave">Welcome!</span>'];
+    npc.route[0].line = 'Bring <span class="dialogue-item">wood</span>.';
+    npc.schedule = {buildings: [], phases: [{at: 0, key: 'work', activity: 'working', label: 'market', location: 'outside',
+        explanation: '<span class="dialogue-danger dialogue-shake">Busy!</span>', travelling: 'walking to work', route: npc.route}]};
+    save(npc); definitions.register('fixture', {id: 'base', npcBehavior: base()});
+    expect(loadConfig('fixture', root).npcs[0]).toEqual(npc);
+    for (const line of ['{{remaining}}', '<span class="dialogue-wave" onclick="bad()">Hi</span>']) {
+        npc.schedule.phases[0].explanation = line;
+        expect(() => save(npc)).toThrow();
+    }
+});

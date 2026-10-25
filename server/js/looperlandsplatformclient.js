@@ -290,6 +290,18 @@ class LooperLandsPlatformClient {
         return state;
     }
 
+    async getTileSequenceState(mapId, x, y, signature, owner) {
+        return require('./tilesequencepersistence').read(this, mapId, x, y, signature, owner);
+    }
+
+    async resetTileSequence(transaction) {
+        return require('./tilesequencepersistence').reset(this, transaction);
+    }
+
+    async commitTileSequence(transaction) {
+        return require('./tilesequencepersistence').commit(this, transaction);
+    }
+
     async commitFarmTransaction(transaction) {
         for (let attempt = 0; attempt < 2; attempt++) {
             try {

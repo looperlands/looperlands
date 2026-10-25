@@ -6,9 +6,9 @@ function register(target = definitions, options = {}) {
         target.register(map, {id: 'map-quests', quests: require('../js/quests/' + map).quests});
     }
     require('./main').register(target);
-    if (options.local !== false) {
-        const root = require('path').resolve(__dirname, '../..');
-        require('../js/localquestbuilder').registerLocalQuests(root, target);
+    if (options.authored !== false && options.local !== false) {
+        const root = options.root || require('path').resolve(__dirname, '../..');
+        require('../js/localquestbuilder').registerLocalQuests(root, target, {strict: process.env.NODE_ENV === 'production'});
         require('../js/localworldauthoring').registerDialogues(root, target);
     }
     installed.add(target); return target;

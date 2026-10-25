@@ -1,4 +1,9 @@
-define(function () {
+// The game loads this through AMD; the Toolbox uses the same renderer as a browser script.
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) module.exports = factory();
+    else if (typeof define === 'function') define(factory);
+    else root.DialogueText = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     function graphemes(text) {
         if (typeof Intl !== 'undefined' && Intl.Segmenter) {
             return Array.from(new Intl.Segmenter(undefined, {granularity: 'grapheme'}).segment(text), part => part.segment);
@@ -122,6 +127,12 @@ define(function () {
         }
     }
 
+    // Static surfaces still need glyphs for authored wave/shake effects, without a reveal delay.
+    DialogueText.presentInstant = function (root) {
+        if (!root?.querySelector('.dialogue-wave, .dialogue-shake')) return;
+        const text = new DialogueText(root);
+        text.finish();
+    };
     DialogueText.graphemes = graphemes;
     DialogueText.delayAfter = delayAfter;
     return DialogueText;

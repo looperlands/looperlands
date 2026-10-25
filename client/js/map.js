@@ -198,6 +198,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.doors = this._getDoors(map);
             this.triggers = this._getTriggers(map);
             this.scenes = this._getScenes(map);
+            this.sceneOrder = (map.scenes || []).map(scene => this.scenes[scene.id]);
             this.lights = map.lights;
             this.shadows = map.shadows;
             this.lightTiles = map.lightTiles;
@@ -557,7 +558,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
         },
 
         getCurrentScene: function (entity) {
-            return _.detect(this.scenes, function (scene) {
+            return _.detect(this.sceneOrder || this.scenes, function (scene) {
                 return scene.contains(entity);
             });
         },
@@ -600,7 +601,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                         const placed = this.authoringActions?.[i+'.'+j];
                         if (placed) {
                             const distance=Math.abs(i-x)+Math.abs(j-y);
-                            if(distance<nearestDistance){nearestAction={...placed,name:placed.action,gridX:i,gridY:j,x:i*this.tilesize,y:j*this.tilesize};nearestDistance=distance;}
+                            if(distance<nearestDistance){nearestAction={...placed,id:'tile-action-'+i+'-'+j,name:placed.action,gridX:i,gridY:j,x:i*this.tilesize,y:j*this.tilesize};nearestDistance=distance;}
                             continue;
                         }
                         _.each(this.data[(j * this.width) + i], function (tileId) {

@@ -9,7 +9,7 @@
     function editor(pane, group) {
         const prefix = group, mob = group === 'mobs', npc = group === 'npcs', type = mob ? 'mob' : npc ? 'npc' : 'item';
         const label = mob ? 'Mob' : npc ? 'NPC' : 'Item';
-        pane.innerHTML = `<header class="pane-heading"><h2>${label} editor</h2><p>${mob ? 'Tune combat, aggression and loot. Prepare spritesheets and preview attacks.' : npc ? 'Create dialogue characters and prepare their sprites. Set up map-specific routines in Behaviour & schedule.' : 'Create collectible items and prepare their spritesheets.'} <a href="#documentation/mapmaker-${group}">Read the guide</a></p></header>
+        pane.innerHTML = `<header class="pane-heading"><h2>${label} editor</h2><p>${mob ? 'Tune combat, aggression and loot. Prepare spritesheets and preview attacks.' : npc ? 'Create dialogue characters and prepare their sprites. Set up map-specific routines in Behaviour & schedule.' : 'Configure items, consumption effects and player tooltips. Prepare their spritesheets.'} <a href="#documentation/mapmaker-${group}">Read the guide</a></p></header>
         <div class="asset-library"><div class="field"><label for="${prefix}-library">${label}</label><select id="${prefix}-library"><option value="">Loading assets…</option></select></div><button type="button" data-action="reload">Reload list</button><button type="button" data-action="copy" disabled>New ${type}</button></div>
         <p class="field-hint">Choose an existing asset to edit. The New button uses the selected asset as a template; enter a new ID to register a separate type.</p>
         <p class="asset-feedback" role="status" aria-live="polite">Loading assets…</p>
@@ -33,7 +33,7 @@
         <div class="animation-rows"></div></section>
         <section class="asset-section asset-gameplay"><h3>${mob ? 'Combat & loot' : npc ? 'Dialogue' : 'Gameplay'}</h3><div class="asset-mob-fields asset-field-grid"></div>
         <div class="asset-item-fields asset-field-grid"></div>
-        <div class="asset-npc-fields field"><label for="${prefix}-dialogue">Dialogue · one message per line</label><textarea id="${prefix}-dialogue" name="dialogue" rows="5"></textarea><span class="field-hint">New and edited greetings use plain text. Unchanged built-in links are preserved. Add quest objectives and styled quest dialogue in the <a href="#quests">Quest builder</a>.</span></div>
+        <div class="asset-npc-fields field"><label for="${prefix}-dialogue">Dialogue · one message per line</label><textarea id="${prefix}-dialogue" name="dialogue" rows="5"></textarea><span class="field-hint">Use the shared editor to style greetings. Unchanged built-in links are preserved. Add quest objectives in the <a href="#quests">Quest builder</a>.</span></div>
         <p class="asset-gameplay-hint field-hint"></p></section>
         <div class="asset-save"><button type="submit" class="primary">Save & register</button><span class="asset-dirty" role="status"></span></div><p class="asset-save-result field-hint"></p>
         <p class="field-hint">Writes sprite files, all prepared image scales and the shared gameplay definition. Then <a href="#build">build your map</a> to load the changes in the game.</p>
@@ -43,7 +43,8 @@
         <p class="frame-caption field-hint"></p><p class="sheet-caption field-hint"></p><h4>Sheet & frame grid</h4><div class="sheet-scroll"><canvas class="sheet-preview" role="img" aria-label="Spritesheet with frame grid"></canvas></div>
         <p class="asset-placement field-hint"></p></aside></div></form>`;
         const $ = selector => pane.querySelector(selector), form=$('form'), fields=form.elements;
-        if(mob || npc) $('.asset-controls').insertBefore($('.asset-gameplay'), $('.asset-controls').children[1]);
+        $('.asset-controls').insertBefore($('.asset-gameplay'), $('.asset-controls').children[1]);
+        const dialogueEditor = npc ? window.ToolboxDialogueEditor.attach(fields.dialogue) : null;
         const state={catalog:null,asset:null,image:null,uploaded:false,dirty:false,frame:0,playing:!matchMedia('(prefers-reduced-motion: reduce)').matches,sequence:0};
         function status(message,error=false) {const node=$('.asset-feedback');node.textContent=message;node.classList.toggle('error',error);const result=$('.asset-save-result');if(result){result.textContent=message;result.classList.toggle('error',error);}}
         function dirty(value=true) {state.dirty=value; $('.asset-dirty').textContent=value?'Unsaved changes':'';}
@@ -62,8 +63,11 @@
         numberField($('.asset-item-fields'),'collectAmount','Amount per pickup',1,1,9999);
         const description=el('div','',{className:'field'});description.append(el('label','Inventory description',{htmlFor:prefix+'-description'}),el('textarea','',{id:prefix+'-description',name:'inventoryDescription',maxLength:500}));$('.asset-item-fields').append(description);
         const transfer=el('label','',{className:'asset-check'});transfer.append(el('input','',{type:'checkbox',name:'transferable'}),document.createTextNode('Allow transfers between players'));$('.asset-item-fields').append(transfer);
-        function toggleType(){for(const type of ['mob','npc','item']) {const node=$('.asset-'+type+'-fields');node.hidden=fields.type.value!==type;for(const input of node.querySelectorAll('input,textarea,button')) input.disabled=node.hidden;}
-            $('.asset-gameplay-hint').textContent=fields.type.value==='item'?'New items are inventory collectibles. Existing equipment and consumable effects keep their current scripted behavior.':fields.type.value==='mob'?'Combat uses the normal game formulas. Smaller movement and animation durations are faster. Drop chances below use registered item IDs.':'';}
+        const itemSettings=new window.ItemSettings($('.asset-item-fields'),prefix,()=>dirty());
+        function toggleType(){for(const type of ['mob','npc','item']) {const node=$('.asset-'+type+'-fields');node.hidden=fields.type.value!==type;for(const input of node.querySelectorAll('input,textarea,select,button')) input.disabled=node.hidden;}
+            dialogueEditor?.refresh();
+            if(fields.type.value==='item' && state.asset)itemSettings.load(state.asset,state.catalog.entries);
+            $('.asset-gameplay-hint').textContent=fields.type.value==='item'?'Settings apply to this item type on every map. Use Keep existing effect to preserve scripted consumables, or Configure effects to replace them.':fields.type.value==='mob'?'Combat uses the normal game formulas. Smaller movement and animation durations are faster. Drop chances below use registered item IDs.':'';}
         function animations(){const result={};for(const row of $('.animation-rows').children){const inputs=row.querySelectorAll('input');const name=inputs[0].value.trim();if(!name||Object.hasOwn(result,name)) throw new Error('Give every animation a unique name.');const old=state.asset.sprite.animations[name];result[name]={row:Number(inputs[1].value),length:Number(inputs[2].value)};if(inputs[3].value) result[name].speed=Number(inputs[3].value);else if(Array.isArray(old?.speed))result[name].speed=old.speed;}return result;}
         function sprite(){return {...state.asset.sprite,id:(fields.type.value==='item'?'item-':'')+fields.id.value,width:Number(fields.width.value),height:Number(fields.height.value),offset_x:Number(fields.offset_x.value),offset_y:Number(fields.offset_y.value),animations:animations()};}
         function addAnimation(name='',value={row:0,length:1}){
@@ -83,9 +87,9 @@
                 const value=asset.gameplay[key]??asset.client[key]??({level:1,hpMod:1,armorMod:1,weaponMod:1,respawnDelay:10000,collectAmount:1,inventoryDescription:'',transferable:true,isAggressive:true,moveSpeed:350,idleSpeed:700,atkSpeed:100,aggroRange:1}[key]);
                 if(fields[key].type==='checkbox')fields[key].checked=value;else fields[key].value=value;
             }
-            dropEditor.setItems(state.catalog.entries.filter(entry=>entry.type==='item'));dropEditor.setValue(asset.gameplay.drops||{});fields.dialogue.value=asset.dialogue.join('\n');$('.animation-rows').replaceChildren();for(const [name,value]of Object.entries(asset.sprite.animations))addAnimation(name,value);
-            $('.asset-origin').textContent=asset.builtin?'Built-in type · saves an override without replacing its scripted behavior.':'Toolbox type · numeric kind '+asset.kind;
-            $('.asset-placement').textContent='Tiled: add a point in an object layer named mapmaker-entities and name the point '+asset.id+'. Build that map to spawn it.';
+            dropEditor.setItems(state.catalog.entries.filter(entry=>entry.type==='item'));dropEditor.setValue(asset.gameplay.drops||{});fields.dialogue.value=asset.dialogue.join('\n');dialogueEditor?.reset();$('.animation-rows').replaceChildren();for(const [name,value]of Object.entries(asset.sprite.animations))addAnimation(name,value);
+            $('.asset-origin').textContent=asset.builtin?'Built-in type · saves sprite and gameplay overrides in the shared definition.':'Toolbox type · numeric kind '+asset.kind;
+            const placeLink=el('a','Place on map',{href:'#inspector/?'+new URLSearchParams({place:asset.id,...(window.ToolboxNavigation.params().get('map')?{map:window.ToolboxNavigation.params().get('map')}:{})})});$('.asset-placement').replaceChildren(placeLink,document.createTextNode(' · Choose a tile in the map inspector, save the placement, then build the map.'));
             toggleType();form.hidden=false;state.frame=0;dirty(false);refresh();$('[data-action="copy"]').disabled=false;status('Loaded '+asset.id+'.');
         }catch(error){if(token===state.sequence)status(error.message,true);}finally{if(token===state.sequence)form.inert=false;}}
         async function loadCatalog(preferred){const token=++state.sequence;status('Loading assets…');try{const data=await request('./api/assets');if(token!==state.sequence)return;state.catalog=data;const entries=data.entries.filter(entry=>entry.type===type);const selectNode=$('#'+prefix+'-library');selectNode.replaceChildren(...entries.map(entry=>el('option',entry.id+(entry.type==='npc'?' · NPC':'')+(entry.builtin?'':' · custom'),{value:entry.id})));selectNode.value=entries.some(e=>e.id===preferred)?preferred:entries.some(e=>e.id===(mob?'rat':npc?'villager':'wood'))?(mob?'rat':npc?'villager':'wood'):entries[0]?.id||'';await select(selectNode.value);if(preferred&&!entries.some(e=>e.id===preferred))status('The linked asset '+preferred+' is unavailable. Choose a template to create or repair it.',true);}catch(error){status(error.message,true);}}
@@ -105,6 +109,7 @@
             for(const key of ['level','hpMod','armorMod','weaponMod','respawnDelay','collectAmount'])payload.gameplay[key]=Number(fields[key].value);
             if(payload.type==='mob')payload.gameplay.drops=dropEditor.value();
             payload.gameplay.inventoryDescription=fields.inventoryDescription.value;payload.gameplay.transferable=fields.transferable.checked;
+            if(payload.type==='item'){const settings=itemSettings.value();Object.assign(payload.gameplay,settings.gameplay);Object.assign(payload.client,settings.client);}
             for(const key of ['moveSpeed','idleSpeed','atkSpeed','aggroRange'])payload.client[key]=Number(fields[key].value);payload.client.isAggressive=fields.isAggressive.checked;
             if(state.uploaded||!state.originalId)payload.images=prepareImages(data);
             const saved=await request('./api/assets',payload);dirty(false);await loadCatalog(saved.id);status('Saved '+saved.id+' · kind '+saved.kind+'. Build your map to load it in the game.');document.dispatchEvent(new CustomEvent('toolbox:assets-saved'));
@@ -116,14 +121,14 @@
         fields.sourceScale.onchange=()=>{if(state.originalId&&!state.uploaded){fields.sourceScale.value='1';status('Upload a sheet before changing its source scale.',true);return;}dirty();refresh();};
         $('#'+prefix+'-library').onchange=event=>{const id=event.target.value;event.target.value=state.originalId||state.templateId;withDiscard(()=>select(id));};
         $('[data-action="reload"]').onclick=()=>withDiscard(()=>loadCatalog(state.originalId));
-        $('[data-action="copy"]').onclick=()=>{if(!state.asset)return;$('.asset-discard').hidden=true;pendingAction=undefined;state.templateId=state.originalId;state.originalId=null;if(npc)fields.dialogue.value=new DOMParser().parseFromString(fields.dialogue.value,'text/html').body.textContent;fields.id.readOnly=false;fields.id.value='';fields.name.value=fields.name.value+' copy';fields.type.disabled=true;$('.asset-origin').textContent='New type · a numeric kind will be assigned when you save.';$('.asset-placement').textContent='After saving, use the new ID as the name of a point in the Tiled object layer mapmaker-entities.';dirty();fields.id.focus();status('Creating a copy. Choose a unique ID and display name.');};
+        $('[data-action="copy"]').onclick=()=>{if(!state.asset)return;$('.asset-discard').hidden=true;pendingAction=undefined;state.templateId=state.originalId;state.originalId=null;if(npc){const copy=document.createElement('div');window.DialogueFormat.append(copy,fields.dialogue.value);fields.dialogue.value=copy.innerHTML;dialogueEditor.reset();}if(type==='item')itemSettings.copy();fields.id.readOnly=false;fields.id.value='';fields.name.value=fields.name.value+' copy';fields.type.disabled=true;$('.asset-origin').textContent='New type · a numeric kind will be assigned when you save.';$('.asset-placement').textContent='Save this definition, then use Place on map to choose its spawn tile.';dirty();fields.id.focus();status('Creating a copy. Choose a unique ID and display name.');};
         $('[data-action="add-animation"]').onclick=()=>{addAnimation();dirty();};
         function setPlaying(value){state.playing=value;$('[data-action="pause"]').textContent=value?'Pause':'Play';}
         $('[data-action="pause"]').onclick=()=>setPlaying(!state.playing);$('[data-action="step"]').onclick=()=>{setPlaying(false);state.frame++;drawFrame();};setPlaying(state.playing);
         let last=0;function tick(time){if(!pane.closest('[hidden]')&&state.playing&&state.image){let animation;try{animation=animations()[$('.animation-select').value];}catch(_){}const duration=Array.isArray(animation?.speed)?animation.speed[state.frame%animation.speed.length]:animation?.speed??Number(fields.idleSpeed.value||150);if(time-last>duration){state.frame++;drawFrame();last=time;}}requestAnimationFrame(tick);}requestAnimationFrame(tick);
         document.addEventListener('toolbox:assets-saved',async()=>{if(!state.catalog)return;try{state.catalog=await request('./api/assets');dropEditor.setItems(state.catalog.entries.filter(entry=>entry.type==='item'));}catch(_){/* Reload list remains available when the refresh cannot reach the server. */}});
         let loaded=false;document.addEventListener('toolbox:pane',event=>{if(event.detail===group&&!loaded){loaded=true;loadCatalog(window.ToolboxNavigation?.params().get('asset'));}});if(location.hash.split('/')[0]==='#'+group){loaded=true;loadCatalog(window.ToolboxNavigation?.params().get('asset'));}
-        window.ToolboxNavigation?.route(group,params=>{const id=params.get('asset');if(!id||state.originalId===id)return;withDiscard(()=>{loaded=true;loadCatalog(id);});});
+        window.ToolboxNavigation?.route(group,params=>{const id=params.get('asset'),creating=params.get('create')==='1';if((!id&&!creating)||(state.originalId===id&&!creating))return;withDiscard(async()=>{loaded=true;await loadCatalog(id);if(creating&&state.asset)$('[data-action="copy"]').click();});});
         return {isDirty:()=>state.dirty};
     }
     for(const group of ['mobs','npcs','items']) {const pane=document.getElementById(group==='npcs'?'npc-assets':group+'-pane');if(pane)editors.push(editor(pane,group));}

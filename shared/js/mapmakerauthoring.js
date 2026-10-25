@@ -2,7 +2,7 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.MapmakerAuthoring=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
     const ref=(key,label,source)=>({key,label,source}), text=(key,label)=>({key,label}), amount={key:'amount',label:'Amount',number:true,min:1,max:100000};
     const events={
-        'tile.action':{label:'Player completes a tile stage',fields:[ref('action','Tile action','tileActions'),{key:'stage',label:'Stage ID'}]},
+        'tile.action':{label:'Player uses an interaction',fields:[ref('action','Interaction','tileActions'),{key:'stage',label:'Interaction action',optional:true}]},
         'player.spawned':{label:'Player enters the map',fields:[]},
         'player.killed_mob':{label:'Player defeats a mob / boss',fields:[ref('mob','Mob','mobs')]},
         'player.looted_item':{label:'Player collects an item',fields:[ref('item','Item','items')]},
@@ -38,7 +38,7 @@
         killed_mob:{label:'Mob defeats at least',field:'mob',source:'mobs',amount:true},is_level:{label:'Player level at least',field:'level',number:true}
     };
     const dialogueActions={record_choice:{label:'Remember a choice',field:'choice'},handout_quest:{label:'Start a quest',field:'quest',source:'quests'},complete_quest:{label:'Complete a quest',field:'quest',source:'quests'}};
-    function compile(rules){let idx=1000000;return {handlers:rules.filter(r=>r.enabled!==false).map(rule=>{
+    function compile(rules,startIndex=1000000){let idx=startIndex;return {handlers:rules.filter(r=>r.enabled!==false).map(rule=>{
         let next=[];for(const action of [...rule.actions].reverse())next=[{idx:idx++,type:action.type,options:{...action.options},then:next}];
         for(const condition of [...rule.conditions].reverse())next=[{idx:idx++,type:condition.type,options:{...condition.options},[condition.not?'false':'true']:next}];
         return {idx:idx++,type:rule.when.type,options:{...rule.when.options},then:next};

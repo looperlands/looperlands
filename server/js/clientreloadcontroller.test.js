@@ -55,6 +55,16 @@ test('tickets contain server-authored position, health, quests and absolute buff
     } finally {clearTimeout(f.player.consumableBuff.buffTimeout);}
 });
 
+test('reload tickets carry loot tables and fixed loot overrides without timer objects',async()=>{
+    const f=fixture();
+    f.player.dropTableOverride={mob:2,drops:{wood:25,ore:50},expiresAt:Date.now()+30000};
+    f.player.dropOverride=333;f.player.dropOverrideExpiresAt=Date.now()+10000;
+    const id=await f.controller.ticket(f.player,REVISION),state=f.server.cache.get(id).resumeState;
+    expect(state.dropTableOverride).toEqual(f.player.dropTableOverride);
+    expect(state.dropOverride).toEqual({item:333,expiresAt:f.player.dropOverrideExpiresAt});
+    expect(state.dropTableOverrideTimeout).toBeUndefined();
+});
+
 test('only one socket can claim a ticket; consumption is durable before the player can act', async () => {
     const f = fixture(), id = await f.controller.ticket(f.player, REVISION);
     expect(f.controller.claim(id, 10).hp).toBe(41);

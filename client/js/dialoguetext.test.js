@@ -97,3 +97,24 @@ test.each([Intl, {}])('Unicode graphemes remain intact with and without Intl.Seg
     const {DialogueText} = load(false, intl);
     expect(Array.from(DialogueText.graphemes('A👩🏽‍🚀e\u0301🇳🇱'))).toEqual(['A', '👩🏽‍🚀', 'e\u0301', '🇳🇱']);
 });
+
+test('static surfaces reveal effect glyphs immediately and leave plain text alone', () => {
+    const {DialogueText} = load();
+    const root = {classList: classes(), querySelector: () => ({})};
+    const glyphs = [{textContent: 'H', classList: classes()}, {textContent: 'i', classList: classes()}];
+    const prepare = jest.spyOn(DialogueText.prototype, 'prepare').mockReturnValue(glyphs);
+    DialogueText.presentInstant(root);
+    expect(prepare).toHaveBeenCalledTimes(1);
+    expect(glyphs.every(glyph => glyph.classList.contains('revealed'))).toBe(true);
+    expect(root.classList.contains('dialogue-instant')).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
+    DialogueText.presentInstant({querySelector: () => null});
+    expect(prepare).toHaveBeenCalledTimes(1);
+});
+
+test('the Toolbox can load the same renderer directly without an AMD loader', () => {
+    const context = {Intl, setTimeout, clearTimeout};
+    vm.runInNewContext(source, context);
+    expect(typeof context.DialogueText.presentInstant).toBe('function');
+    expect(context.DialogueText.graphemes('Hi 👩🏽‍🚀')).toEqual(['H', 'i', ' ', '👩🏽‍🚀']);
+});

@@ -69,7 +69,7 @@ Its **Check main updates** button checks for new changes and suggests fetch/merg
 commands when needed; it does not update your checkout. **Documentation** is
 available inside the toolbox. **Quest builder** saves custom per-map quests in
 `tools/quests/<mapId>.json`; use **Build tools** afterward to restart the game with
-those definitions. Custom toolbox quests are enabled only for local playtests.
+those definitions. Saved Toolbox quests load in local playtests and production after commit and deployment.
 
 To get a new session run in a second terminal after the server starts:
 ```bash
@@ -221,3 +221,5 @@ The local Mapmaker Toolbox also includes separate [Mob](docs/mapmaker-mobs.md), 
 Use the local [Doors & portals editor](docs/mapmaker-doors.md) to inspect map entrances and edit their conditions, opening hours and failure messages, then build the map normally.
 
 Use [Live assets](docs/mapmaker-live-assets.md) to search the Platform catalog and copy asset, NFT and collection identifiers. Configure a server-side API key with `asset_read` access.
+
+Mapmakers can place treasure, configure loot and create combat areas using [Chests & encounters](docs/mapmaker-encounters.md).

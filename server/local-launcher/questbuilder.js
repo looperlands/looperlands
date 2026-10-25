@@ -2,12 +2,15 @@
     'use strict';
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
-    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use tile action'};
+    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use interaction'};
     const drafts = new Map();
     let maps = [], data, selected = -1, bundledId, mapId, loading = false, saving = false, requestId = 0;
     const fieldNames = {'quest-id': 'id', 'quest-name': 'name', 'quest-npc': 'npc', 'quest-level': 'level', 'quest-required-level': 'requiredLevel',
         'quest-prerequisite': 'requiredQuest', 'quest-start': 'startText', 'quest-progress': 'inProgressText', 'quest-end': 'endText', 'quest-return': 'returnToNpc',
         'quest-long-text': 'longText', 'quest-log-text': 'questLogText', 'quest-npc-text': 'npcText'};
+    const dialogueEditors = ['quest-start', 'quest-progress', 'quest-end', 'quest-long-text', 'quest-log-text', 'quest-npc-text'].map(id =>
+        window.ToolboxDialogueEditor.attach($(id), {tags: () => id === 'quest-progress' && !$('quest-progress-tags').hidden ?
+            [{key: 'remaining', sample: 7}, {key: 'done', sample: 3}, {key: 'amount', sample: 10}] : []}));
     const numeric = new Set(['npc', 'level', 'requiredLevel', 'returnToNpc']);
     const editableFields = ['name', 'startText', 'inProgressText', 'endText', 'longText', 'questLogText', 'npcText', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'eventType', 'target', 'amount', 'needToReturn'];
     const bundled = () => data?.existingQuests.find(item => item.id === bundledId);
@@ -51,7 +54,7 @@
         $('quest-first').disabled = saving;
         $('quest-save').textContent = saving ? 'Saving…' : 'Save quests';
         $('quest-status').dataset.dirty = String(!!changed);
-        $('quest-status').textContent = message || (changed ? 'Unsaved changes in this map. Save quests when you are ready.' : `${data?.quests.length || 0} custom quests · ${data?.overrides?.length || 0} local overrides · ${data?.source || 'Choose a map'}`);
+        $('quest-status').textContent = message || (changed ? 'Unsaved changes in this map. Save quests when you are ready.' : `${data?.quests.length || 0} custom quests · ${data?.overrides?.length || 0} saved overrides · ${data?.source || 'Choose a map'}`);
     }
     function changed() {
         updateOverride();
@@ -114,7 +117,7 @@
         if (isBundled) renderLegacy(); else renderObjectives();
         renderProgressHelp();
         renderPreview();
-        document.dispatchEvent(new Event('toolbox:dialogue'));
+        dialogueEditors.forEach(editor => editor.reset());
     }
     function renderProgressHelp() {
         const current = quest();
@@ -205,14 +208,17 @@
                 renderObjectives(); changed(); $(prefix + '-type').focus();
             });
             const target = select(prefix + '-target', targetEntries(objective.eventType), objective.target);
-            target.addEventListener('change', () => {objective.target = ['AREA_ENTERED','TILE_ACTION'].includes(objective.eventType) ? target.value : target.value === '' ? undefined : Number(target.value); changed();});
+            target.addEventListener('change', () => {objective.target = ['AREA_ENTERED','TILE_ACTION'].includes(objective.eventType) ? target.value : target.value === '' ? undefined : Number(target.value);if(objective.eventType==='TILE_ACTION'){delete objective.stage;renderObjectives();} changed();});
             const amount = input(prefix + '-amount', objective.amount || 1, {type: 'number', min: '1', max: '100000', required: true});
             amount.addEventListener('input', () => {objective.amount = Number(amount.value); changed();});
             grid.append(field('Objective ID', identifier), field('Player-facing label', label), field('Action', type), field('Target', target), field('Amount', amount));
             if(objective.eventType==='TILE_ACTION') {
-                const stage=input(prefix+'-stage',objective.stage||'',{placeholder:'Any successful stage'});stage.oninput=()=>{if(stage.value)objective.stage=stage.value;else delete objective.stage;changed();};
-                const count=select(prefix+'-count',[{id:'actions',name:'Completed actions'},{id:'quantity',name:'Harvest / output quantity'}],objective.countBy||'actions');count.onchange=()=>{objective.countBy=count.value;changed();};
-                grid.append(field('Stage ID (optional)',stage),field('Count progress by',count));
+                const stages=data.catalog.tileActions.find(a=>a.id===objective.target)?.stages||[];
+                const stage=node('select');stage.id=prefix+'-stage';stage.replaceChildren(option('','Any successful action'),...stages.map(s=>option(s.id,s.name)));
+                if(objective.stage&&!stages.some(s=>s.id===objective.stage))stage.append(option(objective.stage,objective.stage+' · unavailable'));
+                stage.value=objective.stage||'';stage.onchange=()=>{if(stage.value)objective.stage=stage.value;else delete objective.stage;changed();};
+                const count=select(prefix+'-count',[{id:'actions',name:'Completed actions'},{id:'quantity',name:'Items received'}],objective.countBy||'actions');count.onchange=()=>{objective.countBy=count.value;changed();};
+                grid.append(field('Interaction action',stage),field('Count progress by',count));
             }
             if (objective.eventType === 'NPC_TALKED') {
                 const key = input(prefix + '-key', objective.npcKey, {maxLength: 100, placeholder: 'Any NPC of this kind'});
@@ -345,7 +351,7 @@
         quest().target = firstTarget(quest().eventType);
         renderLegacy(); changed(); $('quest-legacy-action').focus();
         renderProgressHelp();
-        document.dispatchEvent(new Event('toolbox:dialogue'));
+        dialogueEditors.forEach(editor => editor.refresh());
     });
     $('quest-legacy-target').addEventListener('change', () => {quest().target = Number($('quest-legacy-target').value); changed();});
     $('quest-legacy-amount').addEventListener('input', () => {quest().amount = Number($('quest-legacy-amount').value); changed();});

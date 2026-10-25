@@ -15,14 +15,16 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 
 - **Playtest:** choose a map, spawn point, avatar and equipment, then start a game. See [Starting game sessions](mapmaker-sessions.md).
 - **Map validator:** find blocked placements, invalid references and entrance problems, then jump to their editors. See [Map validator](mapmaker-validator.md).
-- **Map inspector:** explore a built map with searchable object layers and editor links. See [Interactive map inspector](mapmaker-inspector.md).
+- **Map inspector:** place items, mobs and NPCs with sprite previews; explore searchable object layers and open their editors. See [Interactive map inspector](mapmaker-inspector.md).
 - **Build tools:** export a saved Tiled map, rebuild the game client and restart the local game. See [Building maps](mapmaker-building.md).
-- **Quest builder:** create custom quests or edit a bundled quest through a local override. See [Quest builder](mapmaker-quest-builder.md).
-- **Tile actions & stages:** place interactions, edit farming and build stage sequences. See [Tile actions & stages](mapmaker-tile-actions.md).
+- **Quest builder:** create custom quests or edit a bundled quest through a saved override. See [Quest builder](mapmaker-quest-builder.md).
+- **Interactions:** create reusable resource deposits, chests, repairs and switches; choose rewards, artwork and repeat behavior, then place them on any map. Existing farming stays available in its compatibility editor. See [Interactions](mapmaker-tile-actions.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
 - **Triggers & events:** configure event, condition and action rules with a simulation. See [Trigger & event builder](mapmaker-events.md).
 - **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).
-- **Atmosphere:** edit scene lighting, music and particles with a game-time preview. See [Atmosphere](mapmaker-atmosphere.md).
+- **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
+- **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
+- **Chests & encounters:** place chests, draw mob areas and add clear-area reward chests. See [Chests & encounters](mapmaker-encounters.md).
 - **Mobs:** tune combat, aggression, drops and sprites. See [Mobs](mapmaker-mobs.md).
 - **NPCs:** create dialogue characters and set map-specific behaviour and schedules. See [NPCs](mapmaker-npcs.md) and [NPC route painter](mapmaker-routes.md).
 - **Live assets:** search the Platform catalog and copy Platform, NFT and collection IDs. See [Live asset lookup](mapmaker-live-assets.md).
@@ -47,7 +49,23 @@ Player progress is saved in the `local-game-data` Docker volume. It stays on thi
 
 Map builds restart the game and end active local sessions. After the build, create a new session from **Playtest**.
 
-Quest builder changes are saved in `tools/quests` in your checkout. Custom quests belong to their selected map. Edits to a bundled quest preserve its original source and apply locally everywhere that same quest appears. **Restore original**, followed by saving and rebuilding, removes those edits. Both kinds of change are enabled only in local playtest mode.
+Quest builder changes are saved in `tools/quests` in your checkout. Custom quests belong to their selected map. Edits to a bundled quest preserve its original source and apply locally everywhere that same quest appears. **Restore original**, followed by saving and rebuilding, removes those edits. Both kinds of change also load in production after these files are committed and deployed.
+
+## Commit and deploy saved content
+
+Saving updates your checkout. Local playtesting and production use the same saved gameplay definitions:
+
+- `tools/quests`: custom quests and bundled quest overrides.
+- `tools/worlds`: event rules, dialogue trees, scenes and atmosphere.
+- `tools/tiles`: farming overrides, generic stage sequences and action placements.
+- `tools/npcs`: NPC routines and schedules.
+- Shared entity definitions, sprite metadata and PNG artwork from the asset editors.
+
+For TMX edits, use **Build tools** and commit the TMX source together with its generated client/server map exports. Include every saved definition and asset file used by your change. Push or merge the reviewed changes into `main`; the deployment workflow builds and deploys the production image. A local commit alone does not deploy.
+
+The production image validates saved content and bakes scene, atmosphere and action-placement overlays into its map artifacts. Content-only changes also enter the server release manifest so deployment restarts the game when required. Player progress, saved session setups and access bypasses remain local playtest settings.
+
+Generic tile sequences require the matching Platform atomic-transaction extension to be deployed first. It uses the existing farming database tables and scopes; no new migration is needed. Other saved content does not require that extension. See [production authoring validation](mapmaker-production.md).
 
 ## Stop or recover
 
@@ -63,7 +81,7 @@ Continue with [Starting game sessions](mapmaker-sessions.md), [Building maps](ma
 
 ## Characters and items
 
-The [Mob editor](mapmaker-mobs.md), [NPC editor](mapmaker-npcs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then place it in Tiled and rebuild your map.
+The [Mob editor](mapmaker-mobs.md), [NPC editor](mapmaker-npcs.md) and [Item editor](mapmaker-items.md) prepare spritesheets, preview animations and register new gameplay types. Start from an existing asset, create a copy, save it, then use **Place on map** to choose a tile in the map inspector and rebuild your map.
 
 Use [Doors & portals](mapmaker-doors.md) to find entrances and edit their access rules, opening hours and player messages directly in the Tiled source.
 

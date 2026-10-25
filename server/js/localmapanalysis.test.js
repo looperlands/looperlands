@@ -36,6 +36,18 @@ test('maps runtime entity coordinates and editor links without writing source fi
     expect(report.tiles).toEqual([1, [2, 3]]);
     expect(fs.readFileSync(file)).toEqual(before);
 });
+test('chest and encounter findings open the exact Tiled object in the editor',async()=>{
+    write('server/maps/world_server_one.json',map({collisions:[18],roamingAreas:[{id:0,objectId:81,x:3,y:3,width:2,height:2,type:'rat',nb:1}]}));
+    const options=sources();options.readEncounters=async()=>({objects:[
+        {id:'80',kind:'chest',x:2,y:2,loot:[{item:'missing',weight:0}]},
+        {id:'81',kind:'encounter',x:3,y:3,width:2,height:2,mob:'rat'},
+        {id:'82',kind:'reward',x:5,y:5,width:1,height:1,rewardX:2,rewardY:2,loot:[]}
+    ]});
+    const report=await analyze(root,'one',options);
+    expect(report.objects.find(o=>o.type==='spawn').editor).toBe('#encounters/?map=one&object=81');
+    expect(report.findings.find(o=>o.code==='chest-item').editor).toBe('#encounters/?map=one&object=80');
+    expect(report.findings.map(o=>o.code)).toEqual(expect.arrayContaining(['chest-position','chest-weight','chest-loot','reward-members']));
+});
 test('checks playable bounds, blocked spawns, missing assets and disconnected NPCs', async () => {
     write('server/maps/world_server_one.json', map({collisions: [19, ...Array.from({length: 8}, (_, y) => y * 8 + 4)], staticEntities: {'19': 'flask', '23': 'villager', '24': 'nonexistent'}, roamingAreas: [{id: 3, x: 0, y: 0, width: 1, height: 1, type: 'rat'}]}));
     fs.unlinkSync(path.join(root, 'client/img/1/item-flask.png'));
@@ -99,4 +111,14 @@ test('API lists maps, rejects builds in progress and omits large tile data from 
     expect(body.mapId).toBe('one');
     expect(body).not.toHaveProperty('tiles');
     expect(body).not.toHaveProperty('collisions');
+});
+test('inspector serves original artwork independently of the built client and rejects unsafe paths', async () => {
+    const routes={},res={type:jest.fn().mockReturnThis(),send:jest.fn(),json:jest.fn(),status:jest.fn().mockReturnThis()};
+    write('client/img/1/tilesheet_one.png','original artwork');
+    install({get:(url,handler)=>{routes[url]=handler;}},{root});
+    await routes['/local/api/map-artwork']({query:{mapId:'one'}},res);
+    expect(res.type).toHaveBeenCalledWith('png');expect(res.send).toHaveBeenCalledWith(Buffer.from('original artwork'));
+    await routes['/local/api/map-artwork']({query:{mapId:'../one'}},res);expect(res.status).toHaveBeenCalledWith(400);
+    fs.unlinkSync(path.join(root,'client/img/1/tilesheet_one.png'));fs.symlinkSync(path.join(root,'server/config.json'),path.join(root,'client/img/1/tilesheet_one.png'));
+    await routes['/local/api/map-artwork']({query:{mapId:'one'}},res);expect(res.json).toHaveBeenLastCalledWith({error:expect.stringContaining('symbolic')});
 });

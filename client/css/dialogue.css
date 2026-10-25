@@ -110,6 +110,14 @@
 .dialogue-danger { color: #ffa3a1; }
 .dialogue-wave { color: #b3d9ff; }
 
+/* HUD rules size every span as a full notification; styled phrases and glyphs stay inline. */
+#notifications span span {
+    display: inline; width: auto; height: auto; line-height: inherit;
+}
+#notifications span.dialogue-word, #notifications .dialogue-word .dialogue-glyph { display: inline-block; }
+#notifications .dialogue-space { white-space: pre; }
+#notifications span.dialogue-accessible { position: absolute; width: 1px; height: 1px; }
+
 /* Keep static text accessible so screen readers do not spell out animated letters. */
 .dialogue-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .dialogue-ready-indicator { display: inline-block; width: 0; height: 0; margin: 0 8px 0 2px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #fce045; animation: dialogue-continue 900ms ease-in-out infinite; }

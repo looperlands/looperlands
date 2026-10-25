@@ -25,7 +25,7 @@ jobs:
     - name: Run linter
       run: npx eslint client --ext .js,.jsx,.ts,.tsx --quiet && npx eslint server --ext .js,.jsx,.ts,.tsx --quiet && npx eslint shared --ext .js,.jsx,.ts,.tsx --quiet
     - name: Run unit tests
-      run: npm run coverage
+      run: npm run coverage -- --runInBand
     - name: Build production image
       run: docker build -f Dockerfile.prod --build-arg GAME_RELEASE_ID=${{ github.sha }} -t looperlands-node-validation .
     - name: Build local toolbox image
@@ -49,6 +49,17 @@ jobs:
           const assert = require("node:assert/strict");
           const fs = require("node:fs");
           assert.equal(process.version, "v" + fs.readFileSync(".nvmrc", "utf8").trim());
+          process.env.LOOPERLANDS_LOCAL_PLAYTEST = "1";
+          assert.equal(require("./server/js/localplaytest").isLocalPlaytest(), false);
+          assert.notEqual(new (require("./server/js/looperlandsplatformclient").LooperLandsPlatformClient)().localPlaytest, true);
+          const manifest = JSON.parse(fs.readFileSync(".live-release.json", "utf8"));
+          for (const folder of ["quests", "npcs", "worlds", "tiles", "interactions"]) {
+            const directory = "tools/" + folder;
+            if (!fs.existsSync(directory)) continue;
+            for (const file of fs.readdirSync(directory).filter(name => name.endsWith(".json"))) {
+              assert.ok(manifest.files[directory + "/" + file], "Saved content missing from release: " + file);
+            }
+          }
           Object.assign(process.env, {
             NEW_RELIC_APP_NAME: "runtime-validation",
             NEW_RELIC_LICENSE_KEY: "0".repeat(40),

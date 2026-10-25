@@ -90,6 +90,7 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
         try {map.scenes = JSON.parse(fs.readFileSync(clientFile, 'utf8')).scenes || [];}
         catch (_) {map.scenes = [];}
     }
+    map = require('./localworldscenes').applyScenes(map, require('./localworldauthoring').readDocument(root, mapId).scenes);
     const npcs = new Set(), mobs = new Set();
     const kindId = value => typeof value === 'number' ? value : Types.getKindFromString(value);
     for (const value of Object.values(map.staticEntities || {})) {
@@ -117,7 +118,8 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
         const id = String(area.name || area.id);
         if (id !== 'undefined') areas.set(id, {id, name: area.name || 'Area ' + area.id});
     }
-    const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id}));
+    const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id,
+        stages:a.stages?.map(s=>({id:s.id,name:s.name}))||['prepare','plant','water','boost','harvest'].map(id=>({id,name:id}))}));
     return {tileActions,npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name))};
 }
 function validateQuests(quests, catalog, availableIds = new Set(), reservedIds = new Set()) {
@@ -246,7 +248,6 @@ function saveQuests(root, input) {
     return readQuests(root, input.mapId);
 }
 function registerLocalQuests(root, registry, options = {}) {
-    if (!require('./localplaytest').isLocalPlaytest()) return;
     const Types = require('../../shared/js/gametypes');
     const baseline = new WorldDefinitions();
     baseline.maps = new Map(registry.maps);
@@ -281,6 +282,7 @@ function registerLocalQuests(root, registry, options = {}) {
             if (!removed) throw error;
         }
     }
+    if (options.strict && errors.length) throw new Error(errors.join('\n'));
     for (const {document} of valid) for (const override of document.overrides) {
         const original = baseline.quests.find(quest => quest.id === override.id);
         registry.replaceQuest(override.id, applyChanges(original, override.changes));

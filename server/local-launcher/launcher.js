@@ -601,7 +601,8 @@
         });
     });
     function routePane() {
-        const pane = location.hash.slice(1).split('/')[0] || 'playtest';
+        const pane = location.hash.slice(1).split('/')[0].split('?')[0] || 'playtest';
+        if(pane==='atmosphere'){location.replace(location.hash.replace('#atmosphere','#scenes'));return;}
         openPane(tabs.find(tab => tab.dataset.pane === pane) || tabs[0]);
     }
     window.addEventListener('hashchange', routePane);

@@ -6,11 +6,11 @@ Use **NPCs** in the Mapmaker Toolbox for dialogue characters. **Mobs** is a sepa
 
 Open **NPCs → Sprites & dialogue**. Choose a built-in or custom NPC to edit it, or click **New npc** to copy it into a separate type. Give the copy a unique ID of 2–48 lowercase letters, numbers or underscores, starting with a letter, and a display name. Saved IDs stay fixed.
 
-The dialogue field holds one plain-text message per line. Unchanged built-in dialogue preserves existing links; a new copy starts with plain text. Use the [Quest builder](mapmaker-quest-builder.md) for styled quest dialogue, objectives and rewards. Built-in types keep their scripted behaviour and numeric kind when you save an override.
+The dialogue field holds one message per line and uses the [shared dialogue editor](mapmaker-dialogues.md#shared-dialogue-editor) for styles, preview and Undo. Unchanged built-in dialogue preserves existing links; a new copy retains supported emphasis and removes links. Use the [Quest builder](mapmaker-quest-builder.md) for quest dialogue, objectives and rewards. Built-in types keep their scripted behaviour and numeric kind when you save an override.
 
 Upload a transparent PNG, choose its uploaded scale and enter the frame dimensions at 1×. The editor prepares 1×, 2× and 3× artwork, with animation and tile-alignment previews. Rows start at 0; frames run from left to right. NPCs need `idle_down`; older front-facing sheets can reuse that animation when walking. Directional walking animations make movement easier to read. See the [sprite preparation guide](mapmaker-mobs.md) for frame sizing and offsets.
 
-Click **Save & register**. In Tiled, add a point object to an object layer named `mapmaker-entities`, with the exact NPC ID as its Name. Save the TMX and [build the map](mapmaker-building.md). The behaviour editor reads placements and collisions from this generated map, so newly placed characters appear there after a build.
+Click **Save & register**, then **Place on map**. In the inspector, select a walkable tile and save the placement. You can also add a point object in Tiled’s `mapmaker-entities` object layer, using the NPC ID as its Name. Then [build the map](mapmaker-building.md). The behaviour editor reads placements and collisions from this generated map, so newly placed characters appear there after a build.
 
 ## Set up behaviour for a placed NPC
 
@@ -22,7 +22,7 @@ Choose **Patrol**, **Work** or **Socialise**, and a step duration from 300–200
 
 Add normal-route waypoints using tile X/Y and wait time in seconds. The NPC visits them in order and repeats the route. Each waypoint must be walkable, inside the outside movement area and away from door tiles. Optional activity text, ambient messages and sounds accompany each stop. Use **Move up** and **Remove waypoint** to arrange the route. At least one waypoint is required.
 
-Ambient dialogue supports first greetings, returning-player greetings, conversation, nearby combat and quest completion. Enter one short plain-text message per line, up to 240 characters each. Existing quest references, story reactions and other unexposed routine fields are preserved when editing a bundled routine.
+Ambient dialogue supports first greetings, returning-player greetings, conversation, nearby combat and quest completion. Enter one short message per line, up to 240 characters each including style markup. Ambient messages, waypoint messages and routine dialogue use the same style toolbar, preview and Undo. Existing quest references, story reactions and other unexposed routine fields are preserved when editing a bundled routine.
 
 ## Add a daily schedule
 
@@ -42,7 +42,7 @@ Existing scripted scenes can temporarily override a routine. When they release i
 
 After saving, build the selected map to restart the local game, then start a fresh [game session](mapmaker-sessions.md). Check walking, conversations and the relevant clock phases. Loading a valid file does not guarantee every path is reachable: walls, narrow corridors and other entities can delay movement.
 
-**Reset to bundled routine** removes that routine's override. **Remove saved routine** removes a routine created in the toolbox. Neither action removes the NPC's placement from the map. Use Tiled for placement changes.
+**Reset to bundled routine** removes that routine's override. **Remove saved routine** removes a routine created in the toolbox. Neither action removes the NPC's placement from the map. Use Map inspector to move or remove Toolbox placements; older entity tile placements remain editable in Tiled.
 
 Saves reject stale revisions and are blocked during map builds. If another tab or external edit changed the source, copy any draft values you need, click **Reload routines**, then reapply them. Switching maps or routines with unsaved changes offers **Discard changes** and **Keep editing**. Moving between toolbox screens retains drafts; reloading the page does not.
 

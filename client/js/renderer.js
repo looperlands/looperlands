@@ -528,7 +528,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                             "a": a
                         });
     
-                        if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
+                        if(entity instanceof Item && !entity.nosparks && (entity.kind !== Types.Entities.CAKE || entity.nosparks === false)) {
                             let sparks = this.game.sprites["sparks"],
                                 anim = this.game.sparksAnimation,
                                 frame = anim.currentFrame,

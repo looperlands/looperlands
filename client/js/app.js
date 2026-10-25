@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
 
     var App = Class.extend({
         init: function () {
@@ -449,6 +449,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
 
             let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
             newQuestPopup.find('#new-achievement-text').html(questText);
+            DialogueText.presentInstant(newQuestPopup.find('#new-achievement-text')[0]);
             newQuestPopup.scrollTop(0);
 
             let eventTypeText = "";
@@ -523,6 +524,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 let option = dialogue.options[i];
 
                 let choice = $('<button type="button" class="choice" disabled></button>').html(option.text);
+                DialogueText.presentInstant(choice[0]);
                 choice.click((e) => {
                     this.closeChoicesPopup();
                     this.game.makeChoice(npcId, option.goto);
@@ -1030,6 +1032,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 questText = questText.join("<br/>");
             }
             details.find('#achievement-details-text').html(questText);
+            DialogueText.presentInstant(details.find('#achievement-details-text')[0]);
             if (achievement.status === 'COMPLETED') {
                 details.find('#achievement-details-status').text(achievement.status);
             } else {
@@ -1083,11 +1086,14 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             if(_.isArray(desc)) {
                 desc = desc.join(" ");
             }
+            const plain = document.createElement('div');
+            DialogueFormat.append(plain, desc);
+            desc = plain.textContent;
             const maxDescriptionLength = 50;
             if (desc.length > maxDescriptionLength) {
                 desc = desc.substring(0, maxDescriptionLength) + "...";
             }
-            $el.find('.achievement-description').html(desc);
+            $el.find('.achievement-description').text(desc);
             $el.find('.achievement-description').attr('title', desc);
         },
 
@@ -1283,7 +1289,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 let hasItem = false;
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if (Types.isResource(Number(item)) || Types.isTool(Number(item))) {
+                    if ((Types.isResource(Number(item)) && !consumablesInventory[item].consumable) || Types.isTool(Number(item))) {
                         return;
                     }
                     hasItem = true;
@@ -2007,11 +2013,12 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         resetMessagesPosition: function () {
-            var message = $('#message2').text();
-
             $('#notifications div').removeClass('top');
-            $('#message2').text('');
-            $('#message1').text(message);
+            const previous = $('#message2')[0];
+            const current = $('#message1')[0];
+            current.replaceChildren(...Array.from(previous.childNodes));
+            for (const name of ['dialogue-text', 'dialogue-instant']) current.classList.toggle(name, previous.classList.contains(name));
+            previous.classList.remove('dialogue-text', 'dialogue-instant');
         },
 
         showMessage: function (message) {
@@ -2019,7 +2026,14 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                 $message = $('#notifications #message2');
 
             this.animateMessages();
-            $message.text(message);
+            const node = $message[0];
+            node.classList.remove('dialogue-text', 'dialogue-instant');
+            // Notifications can include player names and server errors. Keep arbitrary text literal.
+            if (/<span\b/i.test(message) && DialogueFormat.isValid(message, 10000)) {
+                node.replaceChildren();
+                DialogueFormat.append(node, message);
+                DialogueText.presentInstant(node);
+            } else $message.text(message);
             if (this.messageTimer) {
                 this.resetMessageTimer();
             }

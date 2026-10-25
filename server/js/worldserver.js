@@ -187,6 +187,7 @@ module.exports = World = cls.Class.extend({
                 self.addItem(item);
                 if (item) {
                     player.broadcast(player.drop(item), false);
+                    self.handleItemDespawn(item);
                 }
             });
 
@@ -236,15 +237,6 @@ module.exports = World = cls.Class.extend({
 
             self.map.generateCollisionGrid();
 
-            // Populate all mob "roaming" areas
-            _.each(self.map.mobAreas, function (a) {
-                var area = new MobArea(a.id, a.nb, a.type, a.x, a.y, a.width, a.height, self);
-                area.spawnMobs();
-                area.onEmpty(self.handleEmptyMobArea.bind(self, area));
-
-                self.mobAreas.push(area);
-            });
-
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
@@ -253,6 +245,14 @@ module.exports = World = cls.Class.extend({
                 }
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
+            });
+
+            // Reward regions must exist before any roaming mob is registered.
+            _.each(self.map.mobAreas, function (a) {
+                var area = new MobArea(a.id, a.nb, a.type, a.x, a.y, a.width, a.height, self);
+                area.spawnMobs();
+                area.onEmpty(self.handleEmptyMobArea.bind(self, area));
+                self.mobAreas.push(area);
             });
 
             // Create all trigger areas
@@ -309,6 +309,7 @@ module.exports = World = cls.Class.extend({
             }
             if (self.npcBehavior) self.npcBehavior.tick();
             self.scenes?.tick();
+            self.server.tileActionsController?.localSequences?.tick(self).catch(error => console.error('Interaction timer failed:', error.message));
             self.combat?.tick();
             self.processGroups();
             self.processQueues();
@@ -407,6 +408,8 @@ module.exports = World = cls.Class.extend({
             let stage = self.map.tileStages[tileStage];
             self.pushToPlayer(player, new Messages.TileStage(stage));
         });
+        self.server.tileActionsController?.localSequences?.loadPlayerStates(self.id.replace(/^world_/, ''), self, player.nftId)
+            .catch(error => console.error('Could not load player interactions:', error.message));
     },
 
     pushToPlayer: function (player, message) {
@@ -582,6 +585,7 @@ module.exports = World = cls.Class.extend({
     },
 
     addMob: function (mob) {
+        this.tryAddingMobToChestArea(mob);
         this.addEntity(mob);
         this.mobs[mob.id] = mob;
     },
@@ -846,11 +850,7 @@ module.exports = World = cls.Class.extend({
         if (entity.hitPoints <= 0) {
             if (entity.type === "mob") {
                 let mob = entity,
-                    item = this.getDroppedItem(mob);
-
-                if (attacker.dropOverride !== undefined) {
-                    item = this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y));
-                }
+                    item = attacker.dropOverride !== undefined ? this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y)) : this.getDroppedItem(mob, attacker);
                 if (item) item.fieldGuideSource = 'loot';
 
                 let kind = Types.getKindAsString(mob.kind);
@@ -936,9 +936,6 @@ module.exports = World = cls.Class.extend({
                     mob.generateLevel();
                     mob.recalculateStats();
                     self.addMob(mob);
-                    if (mob.area && mob.area instanceof ChestArea) {
-                        mob.area.addToArea(mob);
-                    }
 
                     if (kind === Types.Entities.SEACREATURE) {
                         self.handleSeaCreatureSpawn(mob);
@@ -947,7 +944,6 @@ module.exports = World = cls.Class.extend({
                 mob.onMove(self.onMobMoveCallback.bind(self));
                 mob.onExitCombat(self.onMobExitCombatCallback.bind(self));
                 self.addMob(mob);
-                self.tryAddingMobToChestArea(mob);
 
                 if (kind === Types.Entities.SEACREATURE) {
                     self.handleSeaCreatureSpawn(mob);
@@ -1005,7 +1001,12 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    getDroppedItem: function (mob) {
+    getDroppedItem: function (mob, attacker) {
+        const override = attacker?.dropTableOverride;
+        if (override?.expiresAt > Date.now() && (override.mob === null || override.mob === mob.kind)) {
+            const item = require('../../shared/js/itemeffects').rollDrop(override.drops);
+            return item ? this.addItem(this.createItem(Types.getKindFromString(item), mob.x, mob.y)) : null;
+        }
         var kind = Types.getKindAsString(mob.kind),
             drops = Properties[kind].drops,
             v = Utils.random(100),
@@ -1244,11 +1245,10 @@ module.exports = World = cls.Class.extend({
     },
 
     tryAddingMobToChestArea: function (mob) {
-        _.each(this.chestAreas, function (area) {
-            if (area.contains(mob)) {
-                area.addToArea(mob);
-            }
-        });
+        // Keep the original encounter membership while mobs pursue players.
+        if (mob.chestAreas) {for (const area of mob.chestAreas) area.addToArea(mob);return;}
+        mob.chestAreas = new Set();
+        for (const area of this.chestAreas || []) if (area.contains(mob)) area.addToArea(mob);
     },
 
     updatePopulation: function () {

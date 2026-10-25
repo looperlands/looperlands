@@ -7537,8 +7537,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         // Find the nearest entity with interaction capabilities
                         const condition = (entity) => Types.isNpc(entity.kind) && entity.hasInteraction();
                         const nearestEntity = self.forNearestEntityAround(self.player.gridX, self.player.gridY, 1, condition);
+                        const standingOnInteraction = self.map.authoringActions?.[self.player.gridX + '.' + self.player.gridY];
 
-                        if (nearestEntity) {
+                        if (nearestEntity && !standingOnInteraction) {
                             let msg = "Talk";
                             let entityName = AltNames.getAltNameFromKind(Types.getKindAsString(nearestEntity.kind));
                             if (entityName) {
@@ -7564,7 +7565,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                 self.showTileActionBubble(nearestAction, immediateStage);
 
                                 self.getTileActionStage(nearestAction).then((actionStage) => {
-                                    if (requestId !== self.tileActionStageRequestId || !self.player.isAdjacent(nearestAction)) {
+                                    if (requestId !== self.tileActionStageRequestId || !self.isNearTileAction(nearestAction)) {
                                         return;
                                     }
                                     if (actionStage) {
@@ -8353,7 +8354,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         var entity = self.getEntityById(entityId);
                         if (entity) {
                             if (options?.ambient && Date.now() < (entity.dialogueUntil || 0)) return;
-                            self.createBubble(entityId, message);
+                            self.createBubble(entityId, message, undefined, options?.ambient ? {dialogue: true} : undefined);
                             self.bubbleManager.getBubbleById(entityId).element.addClass('chat-message');
                             self.assignBubbleTo(entity);
                             if (!options?.ambient) self.audioManager.playSound("chat");
@@ -8916,10 +8917,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 return this.tileActions.findCurrentStage(action);
             },
 
-            getInteractionPrompt: function (label) {
+            getInteractionPrompt: function (label, action) {
                 const touch = this.renderer.mobile || this.renderer.tablet || this.touchListener?.hasTouchInput;
                 const hint = this.gamepadListener.isActive() ? 'Left Stick Button' : touch ? 'Tap' : 'E';
-                return '<button type="button" class="interaction-prompt">' + label + ' [' + hint + ']</button>';
+                const target = Number.isInteger(action?.gridX) && Number.isInteger(action?.gridY)
+                    ? ' data-tile-x="' + action.gridX + '" data-tile-y="' + action.gridY + '"' : '';
+                return '<button type="button" class="interaction-prompt"' + target + '>' + label + ' [' + hint + ']</button>';
             },
 
             showTileActionBubble: function (action, stage) {
@@ -8932,14 +8935,14 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     msg += "...";
                 }
 
-                msg = this.getInteractionPrompt(msg);
+                msg = this.getInteractionPrompt(msg, action);
 
                 if (this.lastActionBubbleId && this.lastActionBubbleId !== action.id) {
                     this.destroyBubble(this.lastActionBubbleId);
                 }
 
                 this.createBubble(action.id, msg, () => {
-                    return this.player.isAdjacent(action);
+                    return this.isNearTileAction(action);
                 });
                 this.assignBubbleTo(action, -24);
                 this.lastActionBubbleId = action.id;
@@ -11052,8 +11055,22 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }, this.renderer.mobile ? 0 : 2);
             },
 
+            isNearTileAction: function (action) {
+                return this.player.isAdjacent(action) || (this.player.gridX === action.gridX && this.player.gridY === action.gridY);
+            },
+
+            interactAtTile: function (x, y) {
+                if (!Number.isInteger(x) || !Number.isInteger(y)) return;
+                const action = this.map.findNearestActionTileAround(x, y, 0);
+                if (action && this.isNearTileAction(action)) this.runTileAction(action);
+            },
+
             interact: function () {
                 let self = this;
+                if (this.map.authoringActions?.[this.player.gridX + '.' + this.player.gridY]) {
+                    this.interactAtTile(this.player.gridX, this.player.gridY);
+                    return;
+                }
                 let interacted = false;
                 this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function (entity) {
                     if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
