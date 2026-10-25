@@ -52,7 +52,7 @@ test('map validation rejects traversal, Windows paths and unconfigured or missin
 
 test('a build runs exports and client compilation in order, restarts the game, and excludes concurrent jobs', async () => {
     toolbox.encounterSaveCount = 1;
-    expect(() => toolbox.build('testmap')).toThrow(/encounter save/);
+    expect(() => toolbox.startBuild('testmap')).toThrow(/encounter save/);
     toolbox.encounterSaveCount = 0;
     toolbox.entitySaveCount = 1;
     expect(() => toolbox.startBuild('testmap')).toThrow('placement save');

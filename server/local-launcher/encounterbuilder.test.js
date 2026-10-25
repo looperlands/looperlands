@@ -1,5 +1,5 @@
 const fs = require('fs'), vm = require('vm'), G = require('./regiongeometry');
-async function setup() {
+async function setup(failure) {
     let interaction, mounted, boot, failSave = false;
     const payloads=[], document={activeElement:null};
     function element(tag='div') {
@@ -11,6 +11,7 @@ async function setup() {
     const window={addEventListener(){},MapmakerRegionGeometry:G,ToolboxNavigation:{route(tool,handler){boot=handler;},params:()=>new URLSearchParams('map=one')},MapmakerCanvas:{invalidate(){},attach(parent,id,options){interaction=options.interaction;mounted=options;return {draw(){},set(){},fit(){},destroy(){}};}}};
     let data={mapId:'one',source:'one.tmx',revision:'initial',dimensions:{width:40,height:30},objects:[]};
     const fetch=async(url,options={})=>{
+        if ((failure === 'catalog' && url === './api/encounters') || (failure === 'map' && url.includes('?mapId='))) {failure = null;return {ok:false,json:async()=>({error:'Temporary loading failure'})};}
         if(options.method==='POST') {
             const body=JSON.parse(options.body);payloads.push(body);
             if(failSave)return {ok:false,json:async()=>({error:'This map changed in Tiled. Reload before saving.'})};
@@ -20,7 +21,7 @@ async function setup() {
         return {ok:true,json:async()=>JSON.parse(JSON.stringify(value))};
     };
     vm.runInNewContext(fs.readFileSync(require.resolve('./encounterbuilder'),'utf8'),{window,document,fetch,AbortSignal,Image:class{},URLSearchParams});
-    await boot(new URLSearchParams('map=one'));mounted.onLoad({width:40,height:30});
+    await boot(new URLSearchParams('map=one'));mounted?.onLoad({width:40,height:30});
     const all=()=>Object.values(nodes).flatMap(n=>[n,...n.all()]);
     return {nodes,payloads,get interaction(){return interaction;},button:label=>all().find(n=>n.tag==='button'&&n.textContent===label),field:label=>{const l=all().find(n=>n.tag==='label'&&n.textContent===label);return all().find(n=>n.id===l?.htmlFor);},stale(){failSave=true;},context:(x,y)=>({tile:{x,y},screen:{x:x*20,y:y*20},project:p=>({x:p.x*20,y:p.y*20})})};
 }
@@ -44,4 +45,10 @@ test('reward chest can be positioned independently and cancelled drag restores i
     expect(h.field('Reward tile X').value).toBe('18');expect(h.field('Reward tile Y').value).toBe('19');
     h.interaction.start(h.context(8,9));h.interaction.move(h.context(14,15));h.interaction.end(h.context(14,15),true);
     expect(h.field('Tile X').value).toBe('6');await h.nodes['.encounter-save'].onclick();expect(h.payloads[0].object).toMatchObject({rewardX:18,rewardY:19,x:6,y:7});
+});
+
+test.each(['catalog','map'])('Reload recovers a failed first %s request before any data exists',async failure=>{
+    const h=await setup(failure);expect(h.nodes['.encounter-status'].textContent).toBe('Temporary loading failure');
+    expect(h.nodes['.encounter-reload'].disabled).toBe(false);await h.nodes['.encounter-reload'].onclick();
+    expect(h.nodes['.encounter-status'].textContent).toContain('Loaded 0 objects');expect(h.interaction).toBeTruthy();
 });

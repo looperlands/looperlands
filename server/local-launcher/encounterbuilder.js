@@ -59,8 +59,9 @@
     }
     async function boot(params) {
         if (!loaded) {
+            busy = true;controls();status('Loading chest and mob choices…');
             booting ||= request().then(value => {catalog = value.catalog;$('#encounter-map').replaceChildren(...value.maps.map(id => el('option', id, {value: id})));loaded = true;}).catch(error => status(error.message, true)).finally(() => {booting = null;});
-            await booting;if (!loaded) return;
+            await booting;busy = false;controls();if (!loaded) return;
         }
         const id = params.get('map') || data?.mapId || $('#encounter-map').value;
         if (data?.mapId !== id) return guard(() => load(id));
@@ -195,7 +196,7 @@
     }
     for (const [id, label] of [['select', 'Select / move'], ['chest', 'Place chest'], ['encounter', 'Draw encounter'], ['reward', 'Draw reward area']]) modeButtons.set(id, button($('.encounter-tools'), label, () => id === 'select' ? setMode(id) : guard(() => setMode(id)), {ariaPressed: String(id === 'select')}));
     button($('.encounter-tools'), 'Focus selected', () => {if (draft) mapView?.fit(draft.kind === 'chest' ? {x: draft.x - 5, y: draft.y - 5, width: 11, height: 11} : region(draft));});
-    $('.encounter-save').onclick = () => save();$('.encounter-reload').onclick = () => guard(() => {window.MapmakerCanvas.invalidate(data.mapId);return load(data.mapId);});
+    $('.encounter-save').onclick = () => save();$('.encounter-reload').onclick = () => guard(() => {if (!data) return boot(window.ToolboxNavigation.params());window.MapmakerCanvas.invalidate(data.mapId);return load(data.mapId);});
     $('#encounter-map').onchange = event => {const id = event.target.value;event.target.value = data?.mapId || id;guard(() => load(id));};
     for (const selector of ['#encounter-search', '#encounter-filter']) $(selector).oninput = () => {page = 0;renderList();};
     window.addEventListener('beforeunload', event => {if (dirty()) {event.preventDefault();event.returnValue = '';}});
