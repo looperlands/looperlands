@@ -2,7 +2,7 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.MapmakerAuthoring=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
     const ref=(key,label,source)=>({key,label,source}), text=(key,label)=>({key,label}), amount={key:'amount',label:'Amount',number:true,min:1,max:100000};
     const events={
-        'tile.action':{label:'Player completes a tile stage',fields:[ref('action','Tile action','tileActions'),{key:'stage',label:'Stage ID'}]},
+        'tile.action':{label:'Player uses an interaction',fields:[ref('action','Interaction','tileActions'),{key:'stage',label:'Interaction action',optional:true}]},
         'player.spawned':{label:'Player enters the map',fields:[]},
         'player.killed_mob':{label:'Player defeats a mob / boss',fields:[ref('mob','Mob','mobs')]},
         'player.looted_item':{label:'Player collects an item',fields:[ref('item','Item','items')]},

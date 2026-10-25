@@ -299,22 +299,34 @@ class LocalPlatformClient {
             return {success: true};
         });
     }
-    async getTileSequenceState(mapId,x,y,signature) {
-        return clone(this.state.tileSequences?.[JSON.stringify([mapId,x,y,signature])] || {revision:0});
+    tileSequenceKey(mapId,x,y,signature,owner) {
+        return JSON.stringify(owner ? [mapId,x,y,signature,owner] : [mapId,x,y,signature]);
+    }
+    async getTileSequenceState(mapId,x,y,signature,owner) {
+        return clone(this.state.tileSequences?.[this.tileSequenceKey(mapId,x,y,signature,owner)] || {revision:0});
+    }
+    async resetTileSequence(t) {
+        return this.change(state => {
+            const key=this.tileSequenceKey(t.mapId,t.x,t.y,t.signature,t.owner),current=state.tileSequences?.[key];
+            if(!current||current.revision!==t.expectedRevision||current.stage!==null||!current.readyAt||current.readyAt>t.now)throw failure('tile_changed');
+            const next={...current,revision:current.revision+1,stage:t.stage,readyAt:0,tile:t.tile};
+            put(state.tileSequences,key,next);
+            return next;
+        });
     }
     async commitTileSequence(transaction) {
         return this.change(state => {
             const t=transaction, receiptKey='tile:'+t.requestId;
             if(own(state.receipts,receiptKey)) return {...state.receipts[receiptKey].receipt,replayed:true};
             state.tileSequences ||= {};
-            const key=JSON.stringify([t.mapId,t.x,t.y,t.signature]),current=state.tileSequences[key]||{revision:0};
+            const key=this.tileSequenceKey(t.mapId,t.x,t.y,t.signature,t.owner),current=state.tileSequences[key]||{revision:0};
             if(current.revision!==t.expectedRevision) throw failure('tile_changed');
             if(!t.requestId||!Number.isSafeInteger(t.xp)||t.xp<0||!Array.isArray(t.items)||!Number.isFinite(t.readyAt))throw failure('invalid_tile_transaction');
             const asset=this.asset(state,t.nftId);
             for(const row of t.requiredItems||[])if((asset.items[row.item]||0)<row.quantity)throw failure('insufficient_items');
             this.applyItems(asset,t.items);asset.xp+=t.xp;
             if(!Number.isSafeInteger(asset.xp))throw failure('invalid_experience');
-            const tileState={revision:current.revision+1,stage:t.stage,readyAt:t.readyAt,tile:t.tile};
+            const tileState={revision:current.revision+1,stage:t.stage,readyAt:t.readyAt,tile:t.tile,...(t.effects?{effects:t.effects}:{})};
             put(state.tileSequences,key,tileState);
             const receipt={state:tileState,xp:asset.xp,success:t.success,quantities:Object.fromEntries(t.items.map(r=>[r.item,asset.items[r.item]]))};
             put(state.receipts,receiptKey,{receipt});return receipt;

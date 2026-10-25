@@ -36,9 +36,14 @@
         function check(parent,label,object,key,update){const input=el('input','',{type:'checkbox',checked:!!object[key]}),wrap=el('label','',{className:'asset-check'});wrap.append(input,document.createTextNode(label));input.onchange=()=>{object[key]=input.checked;update?.();touch();};parent.append(wrap);return input;}
         function grid(parent){const row=el('div','',{className:'asset-field-grid'});parent.append(row);return row;}
         function referenceField(parent,definition,object,key=definition.key,update){
+            if(tool==='events'&&key==='stage'&&current()?.when.type==='tile.action') {
+                const stages=state.data.catalog.tileActions.find(a=>a.id===object.action)?.stages||[];
+                return field(parent,definition.label,object,key,{choices:[{id:'',name:'Any successful action'},...stages],required:false});
+            }
             const rows=state.data.catalog[definition.source]||[];
             if(definition.free){const input=field(parent,definition.label,object,key,{update});const id=tool+'-values-'+fieldId,dl=el('datalist','',{id});for(const row of rows)dl.append(el('option',row.name,{value:String(row.id)}));input.setAttribute('list',id);parent.append(dl);return input;}
-            return field(parent,definition.label,object,key,{choices:rows.map(row=>({...row,name:row.name+' · '+row.id})),update});
+            return field(parent,definition.label,object,key,{choices:rows.map(row=>({...row,name:row.name+' · '+row.id})),update,
+                ...(tool==='events'&&definition.source==='tileActions'?{change:()=>{delete object.stage;renderEditor();}}:{})});
         }
         function formatted(parent,label,object,key){const input=field(parent,label,object,key,{multiline:true,maxLength:2000,update:()=>drawGraph()});const toolbar=el('div','',{className:'dialogue-editor-toolbar',role:'group',ariaLabel:label+' styles'});input.before(toolbar);for(const [label,style]of [['Item','dialogue-item'],['Danger','dialogue-danger'],['Wave','dialogue-wave'],['Shake','dialogue-shake']])button(toolbar,label,()=>{const start=input.selectionStart,end=input.selectionEnd,selected=input.value.slice(start,end)||'text';input.setRangeText('<span class="'+style+'">'+selected+'</span>',start,end,'select');input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();});return input;}
         function snapshot(){state.original=JSON.stringify(state.data.entries);}
@@ -128,7 +133,25 @@
             atmosphereDraw=time=>{if(!canvas.isConnected||pane.hidden)return;const ctx=canvas.getContext('2d'),cell=32,clock=Number(hour.value)/24*window.WorldTime.duration,darkness=window.WorldTime.atmosphereDarkness(config,clock),daylight=window.WorldTime.mainDaylight(clock);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#dde2e8';ctx.fillRect(0,0,416,416);if(crop&&image)for(let row=0;row<13;row++)for(let col=0;col<13;col++){const value=crop.tiles[row*13+col];if(value===null)continue;for(const raw of Array.isArray(value)?value:[value]){const id=Number(raw)-1;if(id>=0)ctx.drawImage(image,(id%(image.width/crop.tilesize))*crop.tilesize,Math.floor(id/(image.width/crop.tilesize))*crop.tilesize,crop.tilesize,crop.tilesize,col*cell,row*cell,cell,cell);}}const rgb=[1,3,5].map(i=>parseInt(config.color.slice(i,i+2),16));ctx.fillStyle='rgba('+rgb.join(',')+','+darkness+')';ctx.fillRect(0,0,416,416);const view={x:(point.x-6)*16,y:(point.y-6)*16,scale:2},elapsed=reduced?0:time/1000;for(const effect of config.particles)for(const p of window.WorldParticles.positions(effect.type,Math.min(24,Number(effect.count)||0),elapsed,view,416,416))window.WorldParticles.draw(ctx,p,effect.type,elapsed,daylight);const minutes=Math.round(Number(hour.value)*60);caption.textContent=String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0')+' · '+Math.round((1-darkness)*100)+'% ambient light'+(reduced?' · motion paused':'');};loadCrop();
         }
         $('.world-search').oninput=renderList;$('.world-save').onclick=save;$('.world-reload').onclick=()=>guard(()=>load($('#'+tool+'-map').value));$('#'+tool+'-map').onchange=e=>{const target=e.target.value;e.target.value=state.data?.mapId||target;guard(()=>load(target));};button($('.world-new'),tool==='events'?'New rule':tool==='dialogues'?'New conversation':'Add atmosphere override',()=>addEntry());if(tool==='events')button($('.world-new'),'Boss → gate preset',()=>addEntry(true));
-        document.addEventListener('toolbox:pane',event=>{if(event.detail===tool)boot();});window.ToolboxNavigation.route(tool,async params=>{await boot();if(params.has('map')&&state.data?.mapId!==params.get('map'))guard(()=>load(params.get('map')));});if(window.ToolboxNavigation.screen()===tool)boot();
+        document.addEventListener('toolbox:pane',event=>{if(event.detail===tool)boot();});window.ToolboxNavigation.route(tool,async params=>{
+            await boot();
+            const open=async()=>{
+                if(params.has('map')&&state.data?.mapId!==params.get('map'))await load(params.get('map'));
+                if(tool!=='events'||!params.has('interaction')||!state.data)return;
+                const action=state.data.catalog.tileActions.find(a=>a.id===params.get('interaction'));
+                if(!action){status('Save the interaction, then reload this editor to connect it.',true);return;}
+                const stage=action.stages.find(s=>s.id===params.get('stage'));
+                const existing=state.data.entries.findIndex(r=>r.when.type==='tile.action'&&r.when.options.action===action.id&&(r.when.options.stage||'')===(stage?.id||''));
+                if(existing>=0)state.selected=existing;
+                else {
+                    state.data.entries.push({id:unique('rule'),name:action.name+' · '+(stage?.name||'used'),enabled:true,
+                        when:{type:'tile.action',options:{action:action.id,stage:stage?.id||''}},conditions:[],actions:[{type:'send_notification',options:{message:'Interaction completed.'}}]});
+                    state.selected=state.data.entries.length-1;touch();
+                }
+                renderList();renderEditor();
+            };
+            if(params.has('map')&&state.data?.mapId!==params.get('map'))guard(open);else await open();
+        });if(window.ToolboxNavigation.screen()===tool)boot();
         window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue='';}});
         if(tool==='atmosphere'){const tick=time=>{atmosphereDraw?.(time);requestAnimationFrame(tick);};requestAnimationFrame(tick);}
     }

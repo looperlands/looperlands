@@ -382,7 +382,9 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 event.stopImmediatePropagation();
                 if (game.keyboardHandler.movementIsBlocked()) return;
                 game.touchListener.reset();
-                game.interact();
+                if (this.dataset.tileX !== undefined && this.dataset.tileY !== undefined) {
+                    game.interactAtTile(Number(this.dataset.tileX), Number(this.dataset.tileY));
+                } else game.interact();
             });
 
             const resize = app.scheduleResize.bind(app);

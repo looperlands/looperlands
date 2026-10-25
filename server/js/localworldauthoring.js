@@ -35,6 +35,7 @@ function readDocument(root, mapId) {
     return {...empty(), ...value};
 }
 function reference(value, spec, catalog) {
+    if(spec.optional&&(value===undefined||value===''))return;
     if (spec.number) return number(value, spec.min, spec.max, spec.label, true);
     if (spec.multiline) {validateDialogue(value, spec.label);if (/\{\{|\}\}/.test(value)) fail('This dialogue has no quest-progress counters. Use plain text or styles.');return;}
     if (spec.source && !spec.free) {

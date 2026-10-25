@@ -5,6 +5,7 @@ function install(app, root) {
     const assets = {
         '/local/mapmaker-path.js': 'shared/js/mapmakerpath.js',
         '/local/authoring-contract.js': 'shared/js/mapmakerauthoring.js',
+        '/local/interaction-templates.js': 'shared/js/interactiontemplates.js',
         '/local/vendor/worldtime.js': 'client/js/worldtime-worker.js',
         '/local/vendor/particles.js': 'client/js/worldparticles-worker.js',
         '/local/vendor/worldfxconfig.js': 'client/js/worldfxconfig.js'

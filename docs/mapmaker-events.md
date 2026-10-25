@@ -16,4 +16,4 @@ Triggers belong to the running map world and can affect other players there. The
 
 Continue with [Doors & portals](mapmaker-doors.md), [Dialogue trees](mapmaker-dialogues.md) and [Building maps](mapmaker-building.md).
 
-Tile stages emit **Player completes a tile stage** on success. Select the tile action and its stage ID to connect interactions to other flow rules. See [Tile actions & stages](mapmaker-tile-actions.md).
+Successful interactions emit **Player uses an interaction**. Select the interaction and a named action, or choose any successful action. From the saved interaction editor, **Connect this action to an event** opens a matching rule or drafts one with the references filled in. See [Interactions](mapmaker-tile-actions.md).

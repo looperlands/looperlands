@@ -39,6 +39,7 @@ services:
       - ./tools/npcs:/opt/app/tools/npcs
       - ./tools/worlds:/opt/app/tools/worlds
       - ./tools/tiles:/opt/app/tools/tiles
+      - ./tools/interactions:/opt/app/tools/interactions
     depends_on:
       - jsonserver
     develop:

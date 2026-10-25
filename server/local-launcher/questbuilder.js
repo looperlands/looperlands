@@ -2,7 +2,7 @@
     'use strict';
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
-    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use tile action'};
+    const eventNames = {NPC_TALKED: 'Talk to NPC', KILL_MOB: 'Defeat mob', LOOT_ITEM: 'Collect item', AREA_ENTERED: 'Visit area', DELIVER_ITEM: 'Deliver item', TILE_ACTION: 'Use interaction'};
     const drafts = new Map();
     let maps = [], data, selected = -1, bundledId, mapId, loading = false, saving = false, requestId = 0;
     const fieldNames = {'quest-id': 'id', 'quest-name': 'name', 'quest-npc': 'npc', 'quest-level': 'level', 'quest-required-level': 'requiredLevel',
@@ -205,14 +205,17 @@
                 renderObjectives(); changed(); $(prefix + '-type').focus();
             });
             const target = select(prefix + '-target', targetEntries(objective.eventType), objective.target);
-            target.addEventListener('change', () => {objective.target = ['AREA_ENTERED','TILE_ACTION'].includes(objective.eventType) ? target.value : target.value === '' ? undefined : Number(target.value); changed();});
+            target.addEventListener('change', () => {objective.target = ['AREA_ENTERED','TILE_ACTION'].includes(objective.eventType) ? target.value : target.value === '' ? undefined : Number(target.value);if(objective.eventType==='TILE_ACTION'){delete objective.stage;renderObjectives();} changed();});
             const amount = input(prefix + '-amount', objective.amount || 1, {type: 'number', min: '1', max: '100000', required: true});
             amount.addEventListener('input', () => {objective.amount = Number(amount.value); changed();});
             grid.append(field('Objective ID', identifier), field('Player-facing label', label), field('Action', type), field('Target', target), field('Amount', amount));
             if(objective.eventType==='TILE_ACTION') {
-                const stage=input(prefix+'-stage',objective.stage||'',{placeholder:'Any successful stage'});stage.oninput=()=>{if(stage.value)objective.stage=stage.value;else delete objective.stage;changed();};
-                const count=select(prefix+'-count',[{id:'actions',name:'Completed actions'},{id:'quantity',name:'Harvest / output quantity'}],objective.countBy||'actions');count.onchange=()=>{objective.countBy=count.value;changed();};
-                grid.append(field('Stage ID (optional)',stage),field('Count progress by',count));
+                const stages=data.catalog.tileActions.find(a=>a.id===objective.target)?.stages||[];
+                const stage=node('select');stage.id=prefix+'-stage';stage.replaceChildren(option('','Any successful action'),...stages.map(s=>option(s.id,s.name)));
+                if(objective.stage&&!stages.some(s=>s.id===objective.stage))stage.append(option(objective.stage,objective.stage+' · unavailable'));
+                stage.value=objective.stage||'';stage.onchange=()=>{if(stage.value)objective.stage=stage.value;else delete objective.stage;changed();};
+                const count=select(prefix+'-count',[{id:'actions',name:'Completed actions'},{id:'quantity',name:'Items received'}],objective.countBy||'actions');count.onchange=()=>{objective.countBy=count.value;changed();};
+                grid.append(field('Interaction action',stage),field('Count progress by',count));
             }
             if (objective.eventType === 'NPC_TALKED') {
                 const key = input(prefix + '-key', objective.npcKey, {maxLength: 100, placeholder: 'Any NPC of this kind'});

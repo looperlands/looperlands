@@ -140,4 +140,4 @@ Use **Search bundled quests** to filter the bundled list by name or quest ID. Se
 
 ## Tile action objectives
 
-Choose **Use tile action** to count successful stages from a saved map action. Pick the action, optionally enter a stage ID (for example `harvest` or `work`), and choose whether progress counts completed actions or output quantity. Failed sequence attempts do not count. Reload Quest builder after creating tile definitions in [Tile actions & stages](mapmaker-tile-actions.md).
+Choose **Use interaction** to count successful actions from a saved interaction. Select the interaction and optionally a named action, then count completed actions or items received. Failed attempts do not count. Reload Quest builder after saving new definitions in [Interactions](mapmaker-tile-actions.md).
