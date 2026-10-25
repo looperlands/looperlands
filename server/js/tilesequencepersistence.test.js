@@ -36,3 +36,34 @@ test('malformed upstream sequence state cannot authorize another stage', async (
     const platform = {getFarmState: async () => ({revision: 3, plot: {state: 'growing', signature}})};
     await expect(Persistence.read(platform, 'one', 2, 3, signature)).rejects.toThrow('Invalid tile sequence');
 });
+
+test('personal progress has isolated namespaces and restores durable trigger outcomes', async () => {
+    const plots = new Map();
+    const platform = {
+        getFarmState: jest.fn(async mapId => plots.get(mapId) || {revision: 0, plot: null}),
+        commitFarmTransaction: jest.fn(async request => {
+            const result = {revision: 1, plot: request.plot, xp: 103, quantities: {'100': 9}};
+            plots.set(request.mapId, result);
+            return result;
+        })
+    };
+    await Persistence.commit(platform, {...transaction, owner: 'avatar', effects: {gate: false}});
+    expect(await Persistence.read(platform, 'one', 2, 3, signature, 'avatar')).toMatchObject({revision: 1, effects: {gate: false}});
+    expect(await Persistence.read(platform, 'one', 2, 3, signature, 'other')).toEqual({revision: 0});
+    expect(await Persistence.read(platform, 'one', 2, 3, signature)).toEqual({revision: 0});
+});
+
+test('expired production cooldowns reset through a revision-checked transaction without costs or rewards', async () => {
+    const plot = {state: 'sequence', signature, sequenceStage: null, readyAt: 100, tile: 4,
+        success: true, ownerNftId: 'avatar', sequenceEffects: [{trigger: 'gate', active: true}]};
+    const platform = {getFarmState: jest.fn(async () => ({revision: 2, plot})),
+        commitFarmTransaction: jest.fn(async request => ({revision: 3, plot: request.plot, xp: 103, quantities: {}}))};
+    const reset = {...transaction, expectedRevision: 2, now: 200, stage: 'work', tile: 1};
+    expect(await Persistence.reset(platform, reset)).toEqual({revision: 3, stage: 'work', readyAt: 0, tile: 1, effects: {gate: true}});
+    expect(platform.commitFarmTransaction.mock.calls[0][0]).toMatchObject({expectedRevision: 2, items: [], requiredItems: [], xp: 0,
+        nftId: 'avatar', plot: {sequenceStage: 'work', readyAt: 0, sequenceEffects: [{trigger: 'gate', active: true}]}});
+    platform.commitFarmTransaction.mockClear();
+    await expect(Persistence.reset(platform, {...reset, now: 50})).rejects.toMatchObject({code: 'tile_changed'});
+    await expect(Persistence.reset(platform, {...reset, expectedRevision: 1})).rejects.toMatchObject({code: 'tile_changed'});
+    expect(platform.commitFarmTransaction).not.toHaveBeenCalled();
+});

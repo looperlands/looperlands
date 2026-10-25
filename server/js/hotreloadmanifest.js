@@ -23,7 +23,7 @@ function createManifest(root, revision) {
         'bin/live-update-artifact.js', 'bin/live-update-request.js', 'bin/stage-client-update.js']) visit(relative);
     // These definitions are read by the server. A changed/deleted source must
     // select a reboot rather than a client-only update on an old container.
-    for (const relative of ['tools/quests', 'tools/npcs', 'tools/worlds', 'tools/tiles',
+    for (const relative of ['tools/quests', 'tools/npcs', 'tools/worlds', 'tools/tiles', 'tools/interactions',
         'client/tileActions', 'bin/build-mapmaker-content.js']) {
         if (fs.existsSync(path.join(root, relative))) visit(relative);
     }

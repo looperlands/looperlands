@@ -80,6 +80,6 @@ test('coordinate action placements override exported action tiles while preservi
     let definition;const context=vm.createContext({isInt:Number.isInteger,Class:{extend:value=>value},define:(names,factory)=>{definition=factory();},console:{log:()=>{}}});
     vm.runInContext(underscoreSource,context);vm.runInContext(fs.readFileSync(require.resolve('./map'),'utf8'),context);
     const map=Object.assign(Object.create(definition),{width:8,height:8,tilesize:16,data:Array(64).fill([1]),actionTiles:{1:{action:'farm'}},authoringActions:{'3.4':{action:'repair'}}});
-    expect(map.findNearestActionTileAround(3,4,0)).toMatchObject({name:'repair',gridX:3,gridY:4});
+    expect(map.findNearestActionTileAround(3,4,0)).toMatchObject({id:'tile-action-3-4',name:'repair',gridX:3,gridY:4});
     expect(map.findNearestActionTileAround(4,4,0)).toMatchObject({name:'farm',gridX:4,gridY:4});
 });

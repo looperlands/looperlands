@@ -118,7 +118,8 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
         const id = String(area.name || area.id);
         if (id !== 'undefined') areas.set(id, {id, name: area.name || 'Area ' + area.id});
     }
-    const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id}));
+    const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id,
+        stages:a.stages?.map(s=>({id:s.id,name:s.name}))||['prepare','plant','water','boost','harvest'].map(id=>({id,name:id}))}));
     return {tileActions,npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name))};
 }
 function validateQuests(quests, catalog, availableIds = new Set(), reservedIds = new Set()) {

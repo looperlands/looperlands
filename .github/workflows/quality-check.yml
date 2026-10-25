@@ -53,7 +53,7 @@ jobs:
           assert.equal(require("./server/js/localplaytest").isLocalPlaytest(), false);
           assert.notEqual(new (require("./server/js/looperlandsplatformclient").LooperLandsPlatformClient)().localPlaytest, true);
           const manifest = JSON.parse(fs.readFileSync(".live-release.json", "utf8"));
-          for (const folder of ["quests", "npcs", "worlds", "tiles"]) {
+          for (const folder of ["quests", "npcs", "worlds", "tiles", "interactions"]) {
             const directory = "tools/" + folder;
             if (!fs.existsSync(directory)) continue;
             for (const file of fs.readdirSync(directory).filter(name => name.endsWith(".json"))) {

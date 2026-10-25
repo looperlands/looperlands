@@ -136,6 +136,7 @@ test('tile-stage objectives match action/stage and count successful output witho
     const event=activity=>({eventType:'TILE_ACTION',playerCache,data:{activity}});
     await objective.consume(q,event({action:'farm',stage:'water',quantity:9}));
     await objective.consume(q,event({action:'farm',stage:'harvest',quantity:9,failed:true}));
+    await objective.consume(q,event({action:'farm',stage:'harvest',quantity:0}));
     expect(objective.progress(playerCache.gameData,q)[0].count).toBe(0);
     await objective.consume(q,event({action:'farm',stage:'harvest',quantity:3}));
     expect(objective.progress(playerCache.gameData,q)[0].count).toBe(3);

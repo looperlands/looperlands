@@ -18,7 +18,7 @@ The browser launcher includes the runtime and map-export dependencies in Docker.
 - **Map inspector:** place items, mobs and NPCs with sprite previews; explore searchable object layers and open their editors. See [Interactive map inspector](mapmaker-inspector.md).
 - **Build tools:** export a saved Tiled map, rebuild the game client and restart the local game. See [Building maps](mapmaker-building.md).
 - **Quest builder:** create custom quests or edit a bundled quest through a saved override. See [Quest builder](mapmaker-quest-builder.md).
-- **Tile actions & stages:** place interactions, edit farming and build stage sequences. See [Tile actions & stages](mapmaker-tile-actions.md).
+- **Interactions:** create reusable resource deposits, chests, repairs and switches; choose rewards, artwork and repeat behavior, then place them on any map. Existing farming stays available in its compatibility editor. See [Interactions](mapmaker-tile-actions.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
 - **Triggers & events:** configure event, condition and action rules with a simulation. See [Trigger & event builder](mapmaker-events.md).
 - **Dialogue trees:** build branching NPC conversations and preview player choices. See [Dialogue trees](mapmaker-dialogues.md).

@@ -601,7 +601,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                         const placed = this.authoringActions?.[i+'.'+j];
                         if (placed) {
                             const distance=Math.abs(i-x)+Math.abs(j-y);
-                            if(distance<nearestDistance){nearestAction={...placed,name:placed.action,gridX:i,gridY:j,x:i*this.tilesize,y:j*this.tilesize};nearestDistance=distance;}
+                            if(distance<nearestDistance){nearestAction={...placed,id:'tile-action-'+i+'-'+j,name:placed.action,gridX:i,gridY:j,x:i*this.tilesize,y:j*this.tilesize};nearestDistance=distance;}
                             continue;
                         }
                         _.each(this.data[(j * this.width) + i], function (tileId) {

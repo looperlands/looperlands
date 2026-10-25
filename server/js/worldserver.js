@@ -310,6 +310,7 @@ module.exports = World = cls.Class.extend({
             }
             if (self.npcBehavior) self.npcBehavior.tick();
             self.scenes?.tick();
+            self.server.tileActionsController?.localSequences?.tick(self).catch(error => console.error('Interaction timer failed:', error.message));
             self.combat?.tick();
             self.processGroups();
             self.processQueues();
@@ -408,6 +409,8 @@ module.exports = World = cls.Class.extend({
             let stage = self.map.tileStages[tileStage];
             self.pushToPlayer(player, new Messages.TileStage(stage));
         });
+        self.server.tileActionsController?.localSequences?.loadPlayerStates(self.id.replace(/^world_/, ''), self, player.nftId)
+            .catch(error => console.error('Could not load player interactions:', error.message));
     },
 
     pushToPlayer: function (player, message) {

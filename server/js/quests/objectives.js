@@ -53,7 +53,8 @@ async function consume(quest, event) {
         if (o.done) continue;
         if (event.data.allowedObjectives && !event.data.allowedObjectives[quest.id]?.includes(o.id)) continue;
         if (matches(o, event)) {
-            const increment = o.eventType === 'TILE_ACTION' ? (o.countBy === 'quantity' ? event.data.activity.quantity || 1 : 1) : o.eventType === 'LOOT_ITEM' ? (event.data.amount || 1) : o.eventType === 'DELIVER_ITEM' ? amount(o) : 1;
+            const increment = o.eventType === 'TILE_ACTION' ? (o.countBy === 'quantity' ? event.data.activity.quantity ?? 1 : 1) : o.eventType === 'LOOT_ITEM' ? (event.data.amount || 1) : o.eventType === 'DELIVER_ITEM' ? amount(o) : 1;
+            if (increment <= 0) continue;
             const next = Math.min(amount(o), o.count + increment), key = flag(quest, o, next);
             const response = await dao.registerChoice(event.playerCache.nftId, key);
             if (response === undefined || response === false || response?.status === false) throw new Error('Could not save quest progress. Please try again.');

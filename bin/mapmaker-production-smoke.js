@@ -53,6 +53,19 @@ async function main() {
         const restarted = Object.create(LooperLandsPlatformClient.prototype); restarted.client = platform.client;
         const signature = require('../server/js/localtilebuilder').hash(controller.localSequences.definitions[mapId].repair);
         assert.equal((await restarted.getTileSequenceState(mapId, 3, 4, signature)).stage, null);
+        const personalSignature = 'c'.repeat(64), effects = {'0': true, gate: false};
+        const transaction = {requestId: require('crypto').createHash('sha256').update(nftId + ':personal').digest('hex'),
+            nftId, owner: nftId, mapId, x: 6, y: 4, signature: personalSignature, expectedRevision: 0, stage: null,
+            readyAt: Date.now() - 1, tile: 2, items: [{item: String(Types.Entities.FLASK), amount: 1}],
+            requiredItems: [], xp: 2, success: true, effects};
+        await platform.commitTileSequence(transaction);
+        assert.deepEqual((await restarted.getTileSequenceState(mapId, 6, 4, personalSignature, nftId)).effects, effects);
+        assert.equal((await restarted.getTileSequenceState(mapId, 6, 4, personalSignature, 'another-avatar')).revision, 0);
+        const restored = await restarted.resetTileSequence({...transaction, expectedRevision: 1, now: Date.now(), stage: 'use', tile: 1});
+        assert.equal(restored.revision, 2); assert.equal(restored.stage, 'use'); assert.deepEqual(restored.effects, effects);
+        const inventory = await platform.client.get('/api/game/asset/inventory/' + encodeURIComponent(nftId) + '/' + Types.Entities.FLASK);
+        assert.equal(inventory.data.amount, 2);
+        console.log('PASS: personal progress isolation, numeric trigger IDs and cooldown reset without another reward.');
         console.log('PASS: production provider + real Platform transaction service + PostgreSQL; lost-response retry, one payout, durable stage and stale-request rejection.');
     } finally {fs.rmSync(root, {recursive: true, force: true});}
 }

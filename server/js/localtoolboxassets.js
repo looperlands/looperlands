@@ -11,6 +11,7 @@ function install(app, root) {
         '/local/lighting-contract.js': 'shared/js/mapmakerlighting.js',
         '/local/vendor/lighting-renderer.js': 'client/js/renderer-webworker.js',
         '/local/item-effects.js': 'shared/js/itemeffects.js',
+        '/local/interaction-templates.js': 'shared/js/interactiontemplates.js',
         '/local/vendor/worldtime.js': 'client/js/worldtime-worker.js',
         '/local/vendor/particles.js': 'client/js/worldparticles-worker.js',
         '/local/vendor/worldfxconfig.js': 'client/js/worldfxconfig.js'
