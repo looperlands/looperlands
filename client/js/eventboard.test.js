@@ -3,7 +3,7 @@ const vm = require('vm');
 const path = require('path');
 let Board;
 function element(tag) {
-    return {tag, children: [], dataset: {}, addEventListener() {}, contains() {return false;}, querySelector() {return null;}, replaceChildren(...children) {this.children = children;}, setAttribute() {}, append(...children) {this.children.push(...children);},
+    return {tag, children: [], dataset: {}, classList:{toggle() {}}, addEventListener() {}, contains() {return false;}, querySelector() {return null;}, replaceChildren(...children) {this.children = children;}, setAttribute() {}, append(...children) {this.children.push(...children);},
         set textContent(value) {this.value = value;},
         get textContent() {return (this.value || '')+this.children.map(child => child.textContent).join(' ');}};
 }
@@ -86,13 +86,13 @@ test('daily progress confirms earned points and explains the next streak bonus',
 });
 
 
-test('daily progress stays visible without a live event and older responses remain compatible', () => {
+test('daily progress never opens or fills the live event HUD', () => {
     const board = {app:{game:{mapId:'main'}}, now:()=>start, live:[], panel:element('aside'), opened:false,
         dailyPlay:{points:1,activeDays:1,streak:1,checkedInToday:true,todayPoints:1,nextBonusDay:3,nextBonusPoints:3},
         renderDailyPlay:Board.prototype.renderDailyPlay, updatePanelTimer:Board.prototype.updatePanelTimer};
     Board.prototype.renderPanel.call(board);
-    expect(board.panel.hidden).toBe(false);
-    expect(board.panel.textContent).toContain('Today counted! +1 point');
+    expect(board.panel.hidden).toBe(true);
+    expect(board.panel.textContent).not.toContain('Daily play');
     board.dailyPlay = null;
     Board.prototype.renderPanel.call(board);
     expect(board.panel.hidden).toBe(true);
@@ -105,4 +105,24 @@ test('UTC reset clears yesterday confirmation and requests fresh progress', () =
     Board.prototype.tick.call(board);
     expect(board.dailyPlay).toBeNull();
     expect(board.loadLive).toHaveBeenCalledTimes(1);
+});
+
+
+test('daily progress is available inside the notice board on demand', () => {
+    const board = {board:element('section'), events:[], tab:'upcoming', now:()=>start,
+        dailyPlay:{points:17,activeDays:7,streak:7,checkedInToday:true,todayPoints:8,nextBonusDay:14,nextBonusPoints:7},
+        renderDailyPlay:Board.prototype.renderDailyPlay};
+    Board.prototype.renderBoard.call(board);
+    expect(board.board.textContent).toContain('Daily play · 17 points');
+    expect(board.board.textContent).toContain('Today counted! +8 points');
+});
+
+test('daily progress does not add content to a running event panel', () => {
+    const round = {...event, name:'Fishing', teams:[], leaderboard:[], rules:[], prizes:[]};
+    const board = {app:{game:{mapId:'duckville'}}, now:()=>start, live:[round], panel:element('aside'), opened:false,
+        dailyPlay:{points:99}, standings:()=>{}, detailsLink:()=>null, updatePanelTimer:()=>{}};
+    Board.prototype.renderPanel.call(board);
+    expect(board.panel.hidden).toBe(false);
+    expect(board.panel.textContent).toContain('Fishing');
+    expect(board.panel.textContent).not.toContain('Daily play');
 });

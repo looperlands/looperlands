@@ -41,7 +41,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             this.root = node('div', 'game-events');
             this.board = node('section', 'ev-board'); this.board.hidden = true;
             this.board.setAttribute('role', 'dialog'); this.board.setAttribute('aria-modal', 'true'); this.board.setAttribute('aria-label', 'Town event board');
-            this.panel = node('aside', 'ev-live'); this.panel.hidden = true; this.panel.setAttribute('aria-label', 'Daily play and event standings');
+            this.panel = node('aside', 'ev-live'); this.panel.hidden = true; this.panel.setAttribute('aria-label', 'Active event standings');
             this.root.append(this.board, this.panel); document.body.append(this.root);
             this.root.addEventListener('click', event => event.stopPropagation());
             document.addEventListener('keydown', event => this.keyboard(event), true);
@@ -250,25 +250,23 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         }
 
         renderPanel() {
-            const events = visibleEvents(this.live, this.app.game.mapId, this.now()); this.panel.hidden = this.opened || (!events.length && !this.dailyPlay);
-            if (!events.length && !this.dailyPlay) return;
+            const events = visibleEvents(this.live, this.app.game.mapId, this.now()); this.panel.hidden = this.opened || !events.length;
+            if (!events.length) return;
             const focusKey = this.panel.contains(document.activeElement) ? document.activeElement.dataset.focus : null;
-            const event = events.find(event => event.runId === this.panelRun) || events[0]; this.panelRun = event?.runId || null;
-            const signature = JSON.stringify([event, events.map(value => [value.runId, value.name]), this.minimized, this.website, this.dailyPlay]);
+            const event = events.find(event => event.runId === this.panelRun) || events[0]; this.panelRun = event.runId;
+            const signature = JSON.stringify([event, events.map(value => [value.runId, value.name]), this.minimized, this.website]);
             const select = this.panel.querySelector('[data-focus="event-select"]');
             // Keep the native dropdown intact during countdown ticks and while choosing.
             // Fresh scores can render on blur; a confirmed event change renders immediately.
-            if (signature === this.panelSignature || (select && document.activeElement === select && this.renderedPanelRun === event?.runId && !this.minimized)) {
+            if (signature === this.panelSignature || (select && document.activeElement === select && this.renderedPanelRun === event.runId && !this.minimized)) {
                 this.updatePanelTimer(event);
                 return;
             }
-            this.panelSignature = signature; this.renderedPanelRun = event?.runId;
+            this.panelSignature = signature; this.renderedPanelRun = event.runId;
             this.panel.replaceChildren();
-            if (this.minimized) {const open = button((event?.name || 'Daily play · '+this.dailyPlay.points+' points')+' · Open', () => {this.minimized = false; this.renderPanel();}); open.dataset.focus = 'minimize'; this.panel.append(open); return;}
-            const header = node('header', 'ev-header'); header.append(node('strong', '', event?.name || 'Daily play')); const minimize = button('−', () => {this.minimized = true; this.renderPanel(); this.panel.querySelector('button')?.focus();}); minimize.dataset.focus = 'minimize'; minimize.setAttribute('aria-label', 'Minimize event panel'); header.append(minimize); this.panel.append(header);
+            if (this.minimized) {const open = button(event.name+' · Open', () => {this.minimized = false; this.renderPanel();}); open.dataset.focus = 'minimize'; this.panel.append(open); return;}
+            const header = node('header', 'ev-header'); header.append(node('strong', '', event.name)); const minimize = button('−', () => {this.minimized = true; this.renderPanel(); this.panel.querySelector('button')?.focus();}); minimize.dataset.focus = 'minimize'; minimize.setAttribute('aria-label', 'Minimize event panel'); header.append(minimize); this.panel.append(header);
             const content = node('div', 'ev-panel-content');
-            if (this.dailyPlay) content.append(this.renderDailyPlay());
-            if (!event) {this.panel.append(content); return;}
             if (events.length > 1) {const select = node('select'); select.setAttribute('aria-label', 'Choose active event'); select.dataset.focus = 'event-select'; for (const value of events) {const option = node('option', '', value.name); option.value = value.runId; option.selected = value === event; select.append(option);} select.addEventListener('change', () => {this.panelRun = select.value; this.renderPanel();}); content.append(select);}
             content.append(node('p', 'ev-timer'));
             const team = event.teams.find(team => team.id === event.teamId);
@@ -283,7 +281,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         updatePanelTimer(event) {
             const timer = this.panel.querySelector('.ev-timer');
-            if (!timer || !event) return;
+            if (!timer) return;
             const remaining = Math.max(0, Math.ceil((Date.parse(event.endsAt)-this.now())/1000));
             timer.textContent = 'LIVE · '+(remaining >= 3600 ? Math.floor(remaining/3600)+'h ' : '')+Math.floor(remaining%3600/60)+'m '+remaining%60+'s left';
         }
