@@ -1,0 +1,307 @@
+{
+  "version": 1,
+  "rules": [],
+  "dialogues": [],
+  "atmosphere": [
+    {
+      "sceneId": "1002",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1094",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.9,
+      "nightDarkness": 0.9,
+      "color": "#000000",
+      "particles": [
+        {
+          "type": "embers",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "sceneId": "1095",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.9,
+      "nightDarkness": 0.9,
+      "color": "#000000",
+      "particles": [
+        {
+          "type": "embers",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "sceneId": "1096",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.9,
+      "nightDarkness": 0.9,
+      "color": "#000000",
+      "particles": [
+        {
+          "type": "embers",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "sceneId": "1112",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.9,
+      "nightDarkness": 0.9,
+      "color": "#000000",
+      "particles": [
+        {
+          "type": "embers",
+          "count": 7
+        }
+      ]
+    }
+  ],
+  "sequences": [],
+  "scenes": [
+    {
+      "id": "740",
+      "name": "Duckville",
+      "x": 18,
+      "y": 411,
+      "w": 85,
+      "h": 70
+    },
+    {
+      "id": "741",
+      "name": "Nexus Merch Shop",
+      "x": 85,
+      "y": 484,
+      "w": 18,
+      "h": 16
+    },
+    {
+      "id": "742",
+      "name": "Santa's Island",
+      "x": 90,
+      "y": 0,
+      "w": 82,
+      "h": 79
+    },
+    {
+      "id": "743",
+      "name": "Butterfly Grove Garden",
+      "x": 0,
+      "y": 37,
+      "w": 89,
+      "h": 165
+    },
+    {
+      "id": "744",
+      "name": "The Greenhouse",
+      "x": 41,
+      "y": 221,
+      "w": 29,
+      "h": 29
+    },
+    {
+      "id": "748",
+      "name": "Laser Tag",
+      "x": 90,
+      "y": 80,
+      "w": 82,
+      "h": 53
+    },
+    {
+      "id": "788",
+      "name": "Laser Tag",
+      "x": 148,
+      "y": 133,
+      "w": 24,
+      "h": 15
+    },
+    {
+      "id": "795",
+      "name": "The Deep Blue",
+      "x": 0,
+      "y": 0,
+      "w": 67,
+      "h": 37
+    },
+    {
+      "id": "876",
+      "name": "Zombie Town",
+      "x": 89,
+      "y": 152,
+      "w": 83,
+      "h": 50
+    },
+    {
+      "id": "915",
+      "name": "Welcome Home Nex!",
+      "x": 0,
+      "y": 481,
+      "w": 33,
+      "h": 19
+    },
+    {
+      "id": "916",
+      "name": "Welcome Home Zombie!",
+      "x": 33,
+      "y": 481,
+      "w": 17,
+      "h": 13
+    },
+    {
+      "id": "917",
+      "name": "Downstairs",
+      "x": 50,
+      "y": 481,
+      "w": 17,
+      "h": 13
+    },
+    {
+      "id": "970",
+      "name": "The Tree Tops",
+      "x": 0,
+      "y": 202,
+      "w": 89,
+      "h": 19
+    },
+    {
+      "id": "978",
+      "name": "The Tree House",
+      "x": 0,
+      "y": 221,
+      "w": 41,
+      "h": 29
+    },
+    {
+      "id": "1002",
+      "name": "Welcome home m88nwalker!",
+      "x": 70,
+      "y": 221,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1003",
+      "name": "Welcome home m88nwalker!",
+      "x": 80,
+      "y": 221,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1004",
+      "name": "Welcome home m88nwalker!",
+      "x": 90,
+      "y": 221,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1005",
+      "name": "Welcome home m88nwalker!",
+      "x": 70,
+      "y": 230,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1006",
+      "name": "Welcome home m88nwalker!",
+      "x": 80,
+      "y": 230,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1007",
+      "name": "Welcome home m88nwalker!",
+      "x": 90,
+      "y": 230,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1008",
+      "name": "Welcome home m88nwalker!",
+      "x": 70,
+      "y": 239,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1009",
+      "name": "Welcome home m88nwalker!",
+      "x": 80,
+      "y": 239,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1010",
+      "name": "Welcome home m88nwalker!",
+      "x": 90,
+      "y": 239,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1092",
+      "name": "Portal Room",
+      "x": 131,
+      "y": 471,
+      "w": 28,
+      "h": 18
+    },
+    {
+      "id": "1093",
+      "name": "Thunderdome",
+      "x": 125,
+      "y": 419,
+      "w": 41,
+      "h": 42
+    },
+    {
+      "id": "1094",
+      "name": "Lava Falls Caverns",
+      "x": 103,
+      "y": 471,
+      "w": 28,
+      "h": 10
+    },
+    {
+      "id": "1095",
+      "name": "Lava Falls Caverns",
+      "x": 103,
+      "y": 419,
+      "w": 22,
+      "h": 20
+    },
+    {
+      "id": "1096",
+      "name": "Lava Falls Caverns",
+      "x": 103,
+      "y": 461,
+      "w": 69,
+      "h": 10
+    },
+    {
+      "id": "1112",
+      "name": "Lava Falls Caverns",
+      "x": 166,
+      "y": 419,
+      "w": 6,
+      "h": 42
+    }
+  ]
+}
