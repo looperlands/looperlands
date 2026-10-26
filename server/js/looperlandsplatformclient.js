@@ -547,14 +547,9 @@ class LooperLandsPlatformClient {
     }
 
     async loadMusic(mapId) {
-        try {
-            const url = `/api/maps/${mapId}/music`;
-            const response = await this.client.get(url);
-
-            return response.data;
-        } catch (error) {
-            this.handleError(error);
-        }
+        const url = `/api/maps/${encodeURIComponent(mapId)}/music`;
+        const response = await this.client.get(url, {timeout: 5000});
+        return response.data;
     }
 
     handleError(error) {
