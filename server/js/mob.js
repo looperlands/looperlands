@@ -1,6 +1,7 @@
 
 var cls = require("./lib/class"),
     _ = require("underscore"),
+    Utils = require("./utils"),
     Properties = require("./properties"),
     Formulas = require("./formulas"),
     Types = require("../../shared/js/gametypes");

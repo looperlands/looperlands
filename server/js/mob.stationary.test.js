@@ -10,7 +10,8 @@ function setup() {
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(require.resolve('./lib/class'), 'utf8'), sandbox);
     const cls = sandbox.exports;
-    const Utils = {randomOrientation: () => Types.Orientations.DOWN, random: () => 0};
+    const Utils = {randomOrientation: () => Types.Orientations.DOWN, random: () => 0,
+        distanceTo: require('./utils').distanceTo};
     const Formulas = {gaussianRangeRandom: () => 0};
     function load(file) {
         sandbox.module = {exports: {}};
@@ -34,6 +35,15 @@ function setup() {
     });
     return {world, Mob, MobArea};
 }
+
+test('mob measures distance from its spawn without a global Utils', () => {
+    const {Mob} = setup();
+    const mob = new Mob(7, Types.Entities.RAT, 10, 12);
+    mob.move(40, 40);
+    expect(mob.distanceToSpawningPoint(10, 12)).toBe(0);
+    expect(mob.distanceToSpawningPoint(13, 16)).toBe(4);
+    expect(mob.distanceToSpawningPoint(-16, 12)).toBe(26);
+});
 
 test.each(['TENTACLE', 'TENTACLE2', 'SEACREATURE'])('%s keeps its spawn coordinates in every authoritative snapshot', kind => {
     const {world, Mob} = setup();
