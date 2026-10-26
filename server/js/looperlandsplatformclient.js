@@ -423,13 +423,9 @@ class LooperLandsPlatformClient {
     }
 
     async getInventory(walletAddress, nftId) {
-        try {
-            const url = `/api/game/wallet/inventory/${walletAddress}/${nftId}`;
-            const response = await this.client.get(url);
-            return response.data;
-        } catch (error) {
-            this.handleError(error);
-        }
+        const url = `/api/game/wallet/inventory/${encodeURIComponent(walletAddress)}/${encodeURIComponent(nftId)}`;
+        const response = await this.client.get(url, {timeout: 10000});
+        return response.data;
     }
 
     async setQuestsStatus(nftId, questKey, status) {

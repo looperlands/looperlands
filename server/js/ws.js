@@ -534,7 +534,13 @@ WS.socketIOServer = Server.extend({
             let bots = [];
             const nftId = sessionData.nftId;
 
-            let rcvInventory = await dao.getInventory(walletId, nftId);
+            let rcvInventory;
+            try {
+                rcvInventory = await dao.getInventory(walletId, nftId);
+            } catch (error) {
+                console.warn('Inventory platform request failed', error.code || 'request_failed');
+                return res.status(503).json({error: 'inventory_unavailable'});
+            }
             if (rcvInventory) {
 
                 const prepareItemList = async (item) => {
