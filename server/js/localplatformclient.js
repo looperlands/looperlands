@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Types = require('../../shared/js/gametypes');
+const DailyPlay = require('./dailyplay');
 
 const clone = value => JSON.parse(JSON.stringify(value));
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
@@ -204,7 +205,19 @@ class LocalPlatformClient {
     }
     async storeActivity(activities) {
         return this.change(state => {
-            for (const row of activities) put(state.activities, row.id, row);
+            const wallets = new Set();
+            for (const row of activities) {
+                if (own(state.activities, row.id)) continue;
+                put(state.activities, row.id, row);
+                if (!row.actorWallet || !row.occurredAt || (row.type === 'playtime' && !(row.data?.activeSeconds > 0))) continue;
+                const key = row.actorWallet.toLowerCase().split(':')[0];
+                const wallet = this.wallet(state, key);
+                wallet.dailyPlay ||= {};
+                const day = [DailyPlay.dayOf(row.occurredAt), DailyPlay.dayOf(Date.now())].sort()[0];
+                if (!own(wallet.dailyPlay, day)) put(wallet.dailyPlay, day, 0);
+                wallets.add(key);
+            }
+            for (const key of wallets) DailyPlay.award(this.wallet(state, key).dailyPlay);
             return {accepted: activities.map(row => row.id)};
         });
     }
@@ -332,7 +345,11 @@ class LocalPlatformClient {
             put(state.receipts,receiptKey,{receipt});return receipt;
         });
     }
-    async getEventBoard() {return {events: []};}
+    async getEventBoard(wallet) {
+        if (!wallet) return {events: []};
+        const key = wallet.toLowerCase().split(':')[0];
+        return {events: [], serverTime: new Date().toISOString(), dailyPlay: DailyPlay.present(this.state.wallets[key]?.dailyPlay)};
+    }
     async getEventEquipment() {return {grants: []};}
     async registerEvent() {throw failure('local_events_unavailable');}
     async getFreeRental() {return {success: false, error: 'local_rentals_unavailable'};}

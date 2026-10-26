@@ -34,13 +34,14 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
     class EventBoard {
         constructor(app) {
             this.app = app; this.live = []; this.events = []; this.offset = 0;
+            this.dailyPlay = null;
             this.tab = 'upcoming'; this.selected = null; this.panelRun = null;
             this.opened = false; this.minimized = false; this.pending = false; this.joining = false;
             this.lastLive = 0; this.lastBoard = 0; this.mapId = null; this.disabled = false;
             this.root = node('div', 'game-events');
             this.board = node('section', 'ev-board'); this.board.hidden = true;
             this.board.setAttribute('role', 'dialog'); this.board.setAttribute('aria-modal', 'true'); this.board.setAttribute('aria-label', 'Town event board');
-            this.panel = node('aside', 'ev-live'); this.panel.hidden = true; this.panel.setAttribute('aria-label', 'Active event standings');
+            this.panel = node('aside', 'ev-live'); this.panel.hidden = true; this.panel.setAttribute('aria-label', 'Daily play and event standings');
             this.root.append(this.board, this.panel); document.body.append(this.root);
             this.root.addEventListener('click', event => event.stopPropagation());
             document.addEventListener('keydown', event => this.keyboard(event), true);
@@ -64,6 +65,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 if (this.opened) this.close();
             }
             if (this.opened && !this.nearBoard()) this.close();
+            if (this.dailyPlay && this.now() >= Date.parse(this.dailyPlay.resetsAt)) {this.dailyPlay = null; this.lastLive = 0;}
             this.live = visibleEvents(this.live, game.mapId, this.now());
             this.renderPanel();
             if (!this.pending && Date.now() - this.lastLive >= 15000) this.loadLive();
@@ -78,11 +80,12 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 this.offset = Date.parse(response.data.serverTime) - Date.now();
                 if (!Number.isFinite(this.offset)) this.offset = 0;
                 this.website = response.data.websiteUrl;
+                this.dailyPlay = response.data.dailyPlay || null;
                 this.live = visibleEvents(response.data.events || [], map, this.now());
                 this.renderPanel();
             } catch (error) {
                 // A stale score is not presented as current after a failed refresh.
-                this.live = []; this.renderPanel();
+                this.live = []; this.dailyPlay = null; this.renderPanel();
             } finally {this.pending = false;}
         }
 
@@ -105,6 +108,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 const response = await axios.get('/session/' + encodeURIComponent(this.app.sessionId) + '/events');
                 if (!this.opened || !this.nearBoard()) return;
                 this.website = response.data.websiteUrl;
+                this.dailyPlay = response.data.dailyPlay || null;
                 this.offset = Date.parse(response.data.serverTime) - Date.now();
                 if (!Number.isFinite(this.offset)) this.offset = 0;
                 this.events = (response.data.events || []).filter(event => Date.parse(event.endsAt) > this.now());
@@ -154,6 +158,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 tab.classList.toggle('ev-selected', this.tab === id); tab.setAttribute('aria-pressed', String(this.tab === id)); tab.dataset.focus = 'tab-'+id; tabs.append(tab);
             }
             this.board.append(tabs);
+            if (this.dailyPlay) this.board.append(this.renderDailyPlay());
             if (message || this.error) {const status = node('div', 'ev-empty', message || this.error); status.setAttribute('role', this.error ? 'alert' : 'status'); this.board.append(status); if (this.error) status.append(button('Try again', () => this.loadBoard())); this.board.querySelector('[data-focus="close"]')?.focus(); return;}
             const events = this.events.filter(event => Date.parse(event.endsAt) > this.now() && (this.tab === 'mine' ? event.signedUp : this.tab === 'live' ? Date.parse(event.startsAt) <= this.now() : Date.parse(event.startsAt) > this.now()));
             const body = node('div', 'ev-body'); const list = node('aside', 'ev-list'); list.setAttribute('aria-label', 'Choose an event');
@@ -229,24 +234,41 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             }
         }
 
+        renderDailyPlay() {
+            const progress = this.dailyPlay;
+            const section = node('section', 'ev-daily-play');
+            section.setAttribute('aria-label', 'Daily play progress');
+            section.append(node('strong', 'ev-gold', 'Daily play · '+progress.points+' '+(progress.points === 1 ? 'point' : 'points')));
+            section.append(node('p', '', progress.activeDays+' active '+(progress.activeDays === 1 ? 'day' : 'days')+' · '+progress.streak+'-day streak'));
+            section.append(node('p', progress.checkedInToday ? 'ev-gold' : '', progress.checkedInToday
+                ? 'Today counted! +'+progress.todayPoints+' '+(progress.todayPoints === 1 ? 'point' : 'points')
+                : 'Play today to earn 1 point. Credit appears after activity syncs.'));
+            const remaining = progress.nextBonusDay - progress.streak;
+            section.append(node('small', '', '+'+progress.nextBonusPoints+' bonus at day '+progress.nextBonusDay+' · '+remaining+' more active '+(remaining === 1 ? 'day' : 'days')));
+            section.append(node('small', '', 'Daily reset: 00:00 UTC. Earned points stay yours.'));
+            return section;
+        }
+
         renderPanel() {
-            const events = visibleEvents(this.live, this.app.game.mapId, this.now()); this.panel.hidden = this.opened || !events.length;
-            if (!events.length) return;
+            const events = visibleEvents(this.live, this.app.game.mapId, this.now()); this.panel.hidden = this.opened || (!events.length && !this.dailyPlay);
+            if (!events.length && !this.dailyPlay) return;
             const focusKey = this.panel.contains(document.activeElement) ? document.activeElement.dataset.focus : null;
-            const event = events.find(event => event.runId === this.panelRun) || events[0]; this.panelRun = event.runId;
-            const signature = JSON.stringify([event, events.map(value => [value.runId, value.name]), this.minimized, this.website]);
+            const event = events.find(event => event.runId === this.panelRun) || events[0]; this.panelRun = event?.runId || null;
+            const signature = JSON.stringify([event, events.map(value => [value.runId, value.name]), this.minimized, this.website, this.dailyPlay]);
             const select = this.panel.querySelector('[data-focus="event-select"]');
             // Keep the native dropdown intact during countdown ticks and while choosing.
             // Fresh scores can render on blur; a confirmed event change renders immediately.
-            if (signature === this.panelSignature || (select && document.activeElement === select && this.renderedPanelRun === event.runId && !this.minimized)) {
+            if (signature === this.panelSignature || (select && document.activeElement === select && this.renderedPanelRun === event?.runId && !this.minimized)) {
                 this.updatePanelTimer(event);
                 return;
             }
-            this.panelSignature = signature; this.renderedPanelRun = event.runId;
+            this.panelSignature = signature; this.renderedPanelRun = event?.runId;
             this.panel.replaceChildren();
-            if (this.minimized) {const open = button(event.name+' · Open', () => {this.minimized = false; this.renderPanel();}); open.dataset.focus = 'minimize'; this.panel.append(open); return;}
-            const header = node('header', 'ev-header'); header.append(node('strong', '', event.name)); const minimize = button('−', () => {this.minimized = true; this.renderPanel(); this.panel.querySelector('button')?.focus();}); minimize.dataset.focus = 'minimize'; minimize.setAttribute('aria-label', 'Minimize event panel'); header.append(minimize); this.panel.append(header);
+            if (this.minimized) {const open = button((event?.name || 'Daily play · '+this.dailyPlay.points+' points')+' · Open', () => {this.minimized = false; this.renderPanel();}); open.dataset.focus = 'minimize'; this.panel.append(open); return;}
+            const header = node('header', 'ev-header'); header.append(node('strong', '', event?.name || 'Daily play')); const minimize = button('−', () => {this.minimized = true; this.renderPanel(); this.panel.querySelector('button')?.focus();}); minimize.dataset.focus = 'minimize'; minimize.setAttribute('aria-label', 'Minimize event panel'); header.append(minimize); this.panel.append(header);
             const content = node('div', 'ev-panel-content');
+            if (this.dailyPlay) content.append(this.renderDailyPlay());
+            if (!event) {this.panel.append(content); return;}
             if (events.length > 1) {const select = node('select'); select.setAttribute('aria-label', 'Choose active event'); select.dataset.focus = 'event-select'; for (const value of events) {const option = node('option', '', value.name); option.value = value.runId; option.selected = value === event; select.append(option);} select.addEventListener('change', () => {this.panelRun = select.value; this.renderPanel();}); content.append(select);}
             content.append(node('p', 'ev-timer'));
             const team = event.teams.find(team => team.id === event.teamId);
@@ -261,7 +283,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         updatePanelTimer(event) {
             const timer = this.panel.querySelector('.ev-timer');
-            if (!timer) return;
+            if (!timer || !event) return;
             const remaining = Math.max(0, Math.ceil((Date.parse(event.endsAt)-this.now())/1000));
             timer.textContent = 'LIVE · '+(remaining >= 3600 ? Math.floor(remaining/3600)+'h ' : '')+Math.floor(remaining%3600/60)+'m '+remaining%60+'s left';
         }

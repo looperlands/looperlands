@@ -70,3 +70,12 @@ test('town board passes through community events without enabling competition re
     expect(f.res.status).toHaveBeenCalledWith(400);
     expect(f.platform.registerEvent).not.toHaveBeenCalled();
 });
+
+test('daily progress passes through the session-bound live endpoint without an event or board proximity', async () => {
+    const f = fixture(); f.player.x = 100;
+    const dailyPlay = {points:17, activeDays:7, streak:7, checkedInToday:true};
+    f.platform.getEventBoard.mockResolvedValue({events:[], dailyPlay});
+    await f.controller.list(f.req, f.res, true);
+    expect(f.platform.getEventBoard).toHaveBeenCalledWith(f.session.walletId, f.session.nftId, 'main');
+    expect(f.res.json).toHaveBeenCalledWith({events:[], dailyPlay});
+});
