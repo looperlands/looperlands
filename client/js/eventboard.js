@@ -1,4 +1,4 @@
-define(['jquery', 'mapnames'], function ($, mapNames) {
+define(['jquery', 'mapnames', 'dailyplaycelebration'], function ($, mapNames, DailyPlayCelebration) {
     function node(tag, className, text) {
         const element = document.createElement(tag);
         if (className) element.className = className;
@@ -34,7 +34,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
     class EventBoard {
         constructor(app) {
             this.app = app; this.live = []; this.events = []; this.offset = 0;
-            this.dailyPlay = null;
+            this.dailyPlay = null; this.dailyReward = new DailyPlayCelebration(app);
             this.tab = 'upcoming'; this.selected = null; this.panelRun = null;
             this.opened = false; this.minimized = false; this.pending = false; this.joining = false;
             this.lastLive = 0; this.lastBoard = 0; this.mapId = null; this.disabled = false;
@@ -58,6 +58,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         tick() {
             const game = this.app.game;
             if (this.disabled || !game.started || !game.client?.connection?.connected || game.player?.isDead) {
+                this.dailyReward?.hide();
                 this.panel.hidden = true; if (this.opened) this.close(); return;
             }
             if (this.mapId !== game.mapId) {
@@ -68,6 +69,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             if (this.dailyPlay && this.now() >= Date.parse(this.dailyPlay.resetsAt)) {this.dailyPlay = null; this.lastLive = 0;}
             this.live = visibleEvents(this.live, game.mapId, this.now());
             this.renderPanel();
+            this.dailyReward?.consider(this.dailyPlay, this.opened);
             if (!this.pending && Date.now() - this.lastLive >= 15000) this.loadLive();
             if (this.opened && !this.joining && Date.now() - this.lastBoard >= 15000) this.loadBoard();
         }
@@ -286,7 +288,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             timer.textContent = 'LIVE · '+(remaining >= 3600 ? Math.floor(remaining/3600)+'h ' : '')+Math.floor(remaining%3600/60)+'m '+remaining%60+'s left';
         }
 
-        disconnect() {this.disabled = true; clearInterval(this.timer); this.live = []; this.panel.hidden = true; this.close();}
+        disconnect() {this.dailyReward?.destroy(); this.disabled = true; clearInterval(this.timer); this.live = []; this.panel.hidden = true; this.close();}
     }
     EventBoard.visibleEvents = visibleEvents; EventBoard.safeDetailsUrl = safeDetailsUrl; EventBoard.ruleLabel = ruleLabel;
     return EventBoard;

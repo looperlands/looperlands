@@ -37,3 +37,19 @@
 .game-events .ev-daily-play {padding:12px 16px; flex-shrink:0; line-height:1.45; overflow-wrap:anywhere;}
 .game-events .ev-daily-play p {font-size:14px; margin:5px 0;}
 .game-events .ev-daily-play small {display:block; margin-top:5px;}
+
+/* A brief reward beat using the existing progression-card border and palette. */
+.daily-play-reward {position:fixed; top:64px; left:50%; transform:translateX(-50%); z-index:1200; width:min(290px,calc(100vw - 32px)); pointer-events:none; text-align:center; color:#f4dfbc; font:14px/1.45 GraphicPixel,sans-serif;}
+.daily-play-reward[hidden] {display:none;}
+.dr-content {position:relative; padding:12px 18px; border:7px solid transparent; border-image:url('../img/common/panel.png') 12 fill / 7px / 0 stretch; box-shadow:0 8px 22px #100c1477;}
+.dr-title {margin:0 0 5px; font:24px/1.15 AdvoCut,GraphicPixel,sans-serif; color:#f1cd85;}
+.dr-points {display:block; font:32px/1.1 AdvoCut,GraphicPixel,sans-serif; color:#ffe2a0; font-variant-numeric:tabular-nums;}
+.dr-detail {margin:7px 0 4px; font-size:12px;}
+.dr-total {color:#dec1ad; font-size:11px;}
+.dr-motion {animation:dr-arrive 450ms cubic-bezier(.22,.7,.2,1) both;}
+.dr-sparks {position:absolute; inset:0; overflow:visible; pointer-events:none;}
+.dr-spark {position:absolute; left:50%; top:40%; width:4px; height:4px; background:#fce084; opacity:0; animation:dr-spark 750ms cubic-bezier(.22,.7,.2,1) both;}
+@keyframes dr-arrive {from {opacity:0; transform:translateY(-10px) scale(.94);} to {opacity:1; transform:none;}}
+@keyframes dr-spark {0% {opacity:0; transform:translate(0,0) scale(.5);} 15% {opacity:1;} 100% {opacity:0; transform:translate(var(--dr-x),var(--dr-y)) scale(.3);}}
+@media (max-height:500px) {.daily-play-reward {top:12px;}}
+@media (prefers-reduced-motion:reduce) {.daily-play-reward * {animation:none!important;}}
