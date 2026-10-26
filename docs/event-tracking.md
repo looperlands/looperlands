@@ -49,3 +49,18 @@ The platform projection uses the round's `maps` for both `maps` and `scoringMaps
 ## Leaderboard names
 
 The game event board and live event panel display the stored ENS name first, with the title as a smaller subtitle. Your own entry keeps its “You” marker. The platform projection supplies nullable `ens` and `title` fields alongside the existing `label`; older responses still render using `label`. Wallet scoring uses the wallet profile. Looper scoring uses the wallet from that Looper’s latest activity within the round, with the asset name as its subtitle. This requires the companion platform update in `EventBoardService` and `EventBoardView`.
+
+## Always-on daily play points
+
+Daily play is independent of event rounds, sign-ups, maps and Looper ownership. Each wallet earns one point per qualifying UTC calendar day. A server-recorded gameplay action or positive active playtime qualifies; connecting or remaining idle does not. All Loopers on the same wallet share the day and streak. There is no manual claim button.
+
+Streak day 3 awards three extra points. Day 7 and every subsequent consecutive multiple of seven award seven extra points. Missing a full UTC day resets the current streak, while earned points and bonuses remain. The next day starts at 00:00 UTC. Queued activity can fill missing days and award newly completed bonuses; already awarded bonuses are never revoked. Points are a progression counter; this change adds no spending or prize delivery.
+
+The platform's `game_daily_play` ledger persists calendar days and earned bonuses independently of detailed activity retention. Ingestion writes activity and daily progress in one transaction, deduplicates activity UUIDs and wallet/day pairs, and serializes concurrent updates for each wallet. Existing historical activity is not backfilled. Apply platform migration `Version20261026120000` before deploying the updated ingestion and board controller.
+
+Both board and live-board responses optionally include `dailyPlay`: `points`, `activeDays`, `streak`, `checkedInToday`, `todayPoints`, `nextBonusDay`, `nextBonusPoints`, and ISO timestamp `resetsAt`. The game server passes this wallet-scoped object through its existing session-authenticated event endpoints. Older platform responses simply omit daily progress. Daily progress appears only inside the town notice board when a player opens it; it never opens or fills the live event HUD. Successful refreshes confirm today's credit after the existing activity spool uploads (normally within about 30–45 seconds). Failed refreshes clear stale live progress. At UTC midnight the client discards yesterday's confirmation and refreshes.
+
+Local Mapmaker playtests persist the same progression in their isolated `state.json`, without writing to platform player data.
+
+
+A compact reward celebration appears once confirmed daily points are available after login/initial play. It shows the daily point and any streak bonus, uses the existing reward-card palette/border and a small pixel burst, captures no input, and disappears after 4.2 seconds. It waits for a visible, living player outside menus, the notice board and other progression-card animations. Reduced-motion and effects preferences disable its movement and particles. A wallet/day browser receipt suppresses repeats across reconnects and avatars; if a delayed bonus increases today's award, only the additional points are shown. The full progress summary remains available on demand in the town board. These points remain separate from competition scores.

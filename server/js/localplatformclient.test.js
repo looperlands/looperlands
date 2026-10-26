@@ -158,3 +158,18 @@ test('registered fish string IDs persist alongside normal numeric inventory item
     await restarted.storeInventoryTransaction([{nftId:avatar,item:'cobguppy',amount:-1}]);await expect(restarted.getInventoryItem(avatar,'cobguppy')).resolves.toEqual({amount:0});
     for(const item of ['unknown-fish','__proto__','constructor'])await expect(client.storeInventoryTransaction([{nftId:avatar,item,amount:1}])).rejects.toMatchObject({code:'invalid_inventory_transaction'});
 });
+
+test('daily play survives restart, deduplicates avatars and ignores idle time', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-10-03T12:00:00Z'));
+    try {
+        const activity = (id, day, extra = {}) => ({id, nftId: avatar, actorWallet: '0xABC:ethereum', type: 'kill', occurredAt: `2026-10-0${day}T12:00:00Z`, data: {target:'13'}, ...extra});
+        const rows = [activity('day3', 3), activity('day1', 1), activity('day2', 2), activity('avatar2', 3, {nftId:'other-avatar'})];
+        await client.storeActivity(rows);
+        await client.storeActivity(rows);
+        expect((await client.getEventBoard('0xabc')).dailyPlay).toMatchObject({points:6, activeDays:3, streak:3, todayPoints:4});
+        jest.setSystemTime(new Date('2026-10-04T12:00:00Z'));
+        await client.storeActivity([activity('idle',4,{type:'playtime',data:{activeSeconds:0,connectedSeconds:30}})]);
+        const restarted = new LocalPlatformClient({dataDir});
+        expect((await restarted.getEventBoard('0xabc')).dailyPlay).toMatchObject({points:6, activeDays:3, checkedInToday:false});
+    } finally {jest.useRealTimers();}
+});
