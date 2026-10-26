@@ -78,8 +78,8 @@ test('standings show ENS first with a subtitle and retain legacy labels and your
 test('daily progress confirms earned points and explains the next streak bonus', () => {
     const dailyPlay = {points: 17, activeDays: 7, streak: 7, checkedInToday: true, todayPoints: 8, nextBonusDay: 14, nextBonusPoints: 7};
     const content = Board.prototype.renderDailyPlay.call({dailyPlay});
-    expect(content.textContent).toContain('Daily play · 17 points');
-    expect(content.textContent).toContain('Today counted! +8 points');
+    expect(content.textContent).toContain('Total points 17');
+    expect(content.textContent).toContain('+8 points earned today');
     expect(content.textContent).toContain('+7 bonus at day 14');
     expect(content.textContent).toContain('00:00 UTC');
     expect(Board.prototype.renderDailyPlay.call({dailyPlay: {...dailyPlay, checkedInToday: false}}).textContent).toContain('Credit appears after activity syncs');
@@ -108,13 +108,21 @@ test('UTC reset clears yesterday confirmation and requests fresh progress', () =
 });
 
 
-test('daily progress is available inside the notice board on demand', () => {
+test('daily progress has its own view and leaves the event browser clear', () => {
     const board = {board:element('section'), events:[], tab:'upcoming', now:()=>start,
         dailyPlay:{points:17,activeDays:7,streak:7,checkedInToday:true,todayPoints:8,nextBonusDay:14,nextBonusPoints:7},
         renderDailyPlay:Board.prototype.renderDailyPlay};
     Board.prototype.renderBoard.call(board);
-    expect(board.board.textContent).toContain('Daily play · 17 points');
-    expect(board.board.textContent).toContain('Today counted! +8 points');
+    expect(board.board.textContent).toContain('Daily play 17 pts');
+    expect(board.board.textContent).not.toContain('Today counted!');
+    board.tab = 'daily';
+    Board.prototype.renderBoard.call(board);
+    expect(board.board.textContent).toContain('+8 points earned today');
+    expect(board.board.textContent).not.toContain('More adventures on the way');
+    board.dailyPlay = null;
+    Board.prototype.renderBoard.call(board);
+    expect(board.tab).toBe('upcoming');
+    expect(board.board.textContent).toContain('More adventures on the way');
 });
 
 test('daily progress does not add content to a running event panel', () => {
