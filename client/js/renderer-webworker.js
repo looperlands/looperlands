@@ -785,7 +785,19 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     let canvas = canvases['lighting'];
     let ctx = contexes['lighting'];
 
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const bounded = [scene.x, scene.y, scene.width, scene.height].every(Number.isFinite) && scene.width > 0 && scene.height > 0;
+    const inScene = light => !bounded || (light.x >= scene.x * tilesize && light.x < (scene.x + scene.width) * tilesize &&
+        light.y >= scene.y * tilesize && light.y < (scene.y + scene.height) * tilesize);
+    if (bounded) {
+        // Clip the entire pass, including ambient tint, tile lights, flicker and the player's lantern.
+        ctx.beginPath();
+        ctx.rect(Math.round(scene.x * tilesize - cameraX), Math.round(scene.y * tilesize - cameraY), scene.width * tilesize, scene.height * tilesize);
+        ctx.clip();
+    }
 
     // Add global light
     const tint = scene.authoringAtmosphere?.color || '#000000';
@@ -799,9 +811,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
-            const inScene = lightSource.x >= scene.x * tilesize && lightSource.x <= (scene.x + scene.width) * tilesize &&
-                lightSource.y >= scene.y * tilesize && lightSource.y <= (scene.y + scene.height) * tilesize;
-            return inScene && lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
+            return inScene(lightSource) && lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
         }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
             if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
                 lightSource = updateAnimatedLightSource(lightSource, time);
@@ -813,6 +823,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     // Draw tile lights
     for(let i = 0; i < tileLights.length; i++) {
         let lightSource = tileLights[i];
+        if (!inScene(lightSource)) continue;
         if (!lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height)) continue;
         lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
 
@@ -824,7 +835,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     }
 
     // Player holds lantern
-    drawLightSource(ctx, {
+    const lantern = {
         id: 9999,
         x: playerPosition.x + 8,
         y: playerPosition.y + 6,
@@ -832,13 +843,9 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         innerRadius: 0,
         intensity: 0.2,
         shadow: 0,
-    }, cameraX, cameraY, scene);
-
-    let origCompositeOperation = ctx.globalCompositeOperation;
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.fillStyle = "black";
-    ctx.fillRect((scene.x * tilesize) - cameraX, (scene.y * tilesize) - cameraY, scene.width * tilesize, scene.height * tilesize);
-    ctx.globalCompositeOperation = origCompositeOperation;
+    };
+    if (inScene(lantern)) drawLightSource(ctx, lantern, cameraX, cameraY);
+    ctx.restore();
 }
 
 function updateAnimatedLightSource(lightSource, time) {

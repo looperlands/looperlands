@@ -534,7 +534,13 @@ WS.socketIOServer = Server.extend({
             let bots = [];
             const nftId = sessionData.nftId;
 
-            let rcvInventory = await dao.getInventory(walletId, nftId);
+            let rcvInventory;
+            try {
+                rcvInventory = await dao.getInventory(walletId, nftId);
+            } catch (error) {
+                console.warn('Inventory platform request failed', error.code || 'request_failed');
+                return res.status(503).json({error: 'inventory_unavailable'});
+            }
             if (rcvInventory) {
 
                 const prepareItemList = async (item) => {
@@ -1581,8 +1587,13 @@ WS.socketIOServer = Server.extend({
         });
 
         app.post("/music", async (req, res) => {
-            const music = await platformClient.loadMusic(req.body.map);
-            res.status(200).send(music);
+            try {
+                const music = await platformClient.loadMusic(req.body.map);
+                res.status(200).send(music);
+            } catch (error) {
+                console.warn('Music platform request failed', error.code || 'request_failed', error.response?.status);
+                res.status(503).json({error: 'music_unavailable'});
+            }
         });
 
         require('./localplaytestlauncher').installLocalLauncher(app, {

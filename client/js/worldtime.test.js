@@ -65,7 +65,7 @@ test('the HUD reads the same clock and preview phase as lighting and fireflies',
 });
 
 function lighting() {
-    const context = {clearRect: jest.fn(), fillRect: jest.fn()};
+    const context = Object.fromEntries(['clearRect', 'fillRect', 'save', 'restore', 'beginPath', 'rect', 'clip'].map(method => [method, jest.fn()]));
     const sandbox = {self: {}, performance: {now: () => 9999999}};
     sandbox.importScripts = jest.fn(file => vm.runInNewContext(fs.readFileSync(path.join(__dirname, file), 'utf8'), sandbox));
     const api = vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8') + `
@@ -84,7 +84,7 @@ test('Town and Forest use identical renderer lighting at dusk and night, while i
         for (const name of ['Town', 'Forest', 'Beach', 'Desert']) {
             api.renderLightOverlay([], 0, 0, 1, 0, scenes.find(scene => scene.name === name), [], {}, 'main', time);
             expect(api.intensity()).toBeCloseTo(expected);
-            expect(context.fillRect.mock.calls.at(-2)).toEqual([0, 0, 960, 448]);
+            expect(context.fillRect.mock.calls.at(-1)).toEqual([0, 0, 960, 448]);
         }
     }
     expect(imports).toHaveBeenCalledTimes(1);

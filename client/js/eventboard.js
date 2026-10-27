@@ -1,4 +1,4 @@
-define(['jquery', 'mapnames'], function ($, mapNames) {
+define(['jquery', 'mapnames', 'dailyplaycelebration'], function ($, mapNames, DailyPlayCelebration) {
     function node(tag, className, text) {
         const element = document.createElement(tag);
         if (className) element.className = className;
@@ -34,6 +34,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
     class EventBoard {
         constructor(app) {
             this.app = app; this.live = []; this.events = []; this.offset = 0;
+            this.dailyPlay = null; this.dailyReward = new DailyPlayCelebration(app);
             this.tab = 'upcoming'; this.selected = null; this.panelRun = null;
             this.opened = false; this.minimized = false; this.pending = false; this.joining = false;
             this.lastLive = 0; this.lastBoard = 0; this.mapId = null; this.disabled = false;
@@ -57,6 +58,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         tick() {
             const game = this.app.game;
             if (this.disabled || !game.started || !game.client?.connection?.connected || game.player?.isDead) {
+                this.dailyReward?.hide();
                 this.panel.hidden = true; if (this.opened) this.close(); return;
             }
             if (this.mapId !== game.mapId) {
@@ -64,8 +66,10 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 if (this.opened) this.close();
             }
             if (this.opened && !this.nearBoard()) this.close();
+            if (this.dailyPlay && this.now() >= Date.parse(this.dailyPlay.resetsAt)) {this.dailyPlay = null; this.lastLive = 0;}
             this.live = visibleEvents(this.live, game.mapId, this.now());
             this.renderPanel();
+            this.dailyReward?.consider(this.dailyPlay, this.opened);
             if (!this.pending && Date.now() - this.lastLive >= 15000) this.loadLive();
             if (this.opened && !this.joining && Date.now() - this.lastBoard >= 15000) this.loadBoard();
         }
@@ -78,11 +82,12 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 this.offset = Date.parse(response.data.serverTime) - Date.now();
                 if (!Number.isFinite(this.offset)) this.offset = 0;
                 this.website = response.data.websiteUrl;
+                this.dailyPlay = response.data.dailyPlay || null;
                 this.live = visibleEvents(response.data.events || [], map, this.now());
                 this.renderPanel();
             } catch (error) {
                 // A stale score is not presented as current after a failed refresh.
-                this.live = []; this.renderPanel();
+                this.live = []; this.dailyPlay = null; this.renderPanel();
             } finally {this.pending = false;}
         }
 
@@ -105,6 +110,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 const response = await axios.get('/session/' + encodeURIComponent(this.app.sessionId) + '/events');
                 if (!this.opened || !this.nearBoard()) return;
                 this.website = response.data.websiteUrl;
+                this.dailyPlay = response.data.dailyPlay || null;
                 this.offset = Date.parse(response.data.serverTime) - Date.now();
                 if (!Number.isFinite(this.offset)) this.offset = 0;
                 this.events = (response.data.events || []).filter(event => Date.parse(event.endsAt) > this.now());
@@ -126,7 +132,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             if (!this.opened && !this.root.contains(event.target)) return;
             if (event.key === 'Escape') {event.preventDefault(); this.close();}
             if (this.opened && event.key === 'Tab') {
-                const controls = Array.from(this.board.querySelectorAll('button,a,input,select')).filter(control => !control.disabled && !control.hidden);
+                const controls = Array.from(this.board.querySelectorAll('button,a,input,select,summary')).filter(control => !control.disabled && !control.hidden);
                 const first = controls[0], last = controls[controls.length - 1];
                 if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
                 else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
@@ -145,15 +151,30 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         renderBoard(message) {
             const focusKey = this.board.contains(document.activeElement) ? document.activeElement.dataset.focus : null;
             const scroll = this.board.querySelector('.ev-content')?.scrollTop || 0;
+            const expandedRun = this.board.querySelector('.ev-scoring-details[open]')?.dataset.run;
             this.board.replaceChildren();
-            const header = node('header', 'ev-header'); const title = node('div'); title.append(node('small', '', 'TOWN NOTICE BOARD'), node('h2', '', 'Find your next event'));
+            const header = node('header', 'ev-header'); const title = node('div'); title.append(node('h2', '', 'Event board'), node('p', 'ev-header-description', 'Discover events. Join the adventure.'));
             const close = button('×', () => this.close()); close.setAttribute('aria-label', 'Close event board'); close.dataset.focus = 'close'; header.append(title, close); this.board.append(header);
+            if (!this.dailyPlay && this.tab === 'daily') this.tab = 'upcoming';
             const tabs = node('nav', 'ev-tabs'); tabs.setAttribute('aria-label', 'Event lists');
             for (const [id, label] of [['upcoming', 'Coming up'], ['live', 'Live now'], ['mine', 'My events']]) {
                 const tab = button(label, () => {this.tab = id; this.selected = null; this.confirming = null; this.renderBoard(); this.board.querySelector('[data-focus="tab-'+id+'"]')?.focus();});
                 tab.classList.toggle('ev-selected', this.tab === id); tab.setAttribute('aria-pressed', String(this.tab === id)); tab.dataset.focus = 'tab-'+id; tabs.append(tab);
             }
+            if (this.dailyPlay) {
+                const daily = button('', () => {this.tab = 'daily'; this.confirming = null; this.renderBoard(); this.board.querySelector('[data-focus="tab-daily"]')?.focus();});
+                daily.className = 'ev-daily-tab'+(this.tab === 'daily' ? ' ev-selected' : '');
+                daily.dataset.focus = 'tab-daily'; daily.setAttribute('aria-pressed', String(this.tab === 'daily'));
+                daily.append(node('span', '', 'Daily play'), node('span', 'ev-tab-points', this.dailyPlay.points+' pts'));
+                tabs.append(daily);
+            }
             this.board.append(tabs);
+            if (this.tab === 'daily' && !message && !this.error) {
+                const content = node('div', 'ev-content ev-daily-content'); content.append(this.renderDailyPlay()); this.board.append(content);
+                content.scrollTop = scroll;
+                if (focusKey) Array.from(this.board.querySelectorAll('[data-focus]')).find(control => control.dataset.focus === focusKey)?.focus();
+                return;
+            }
             if (message || this.error) {const status = node('div', 'ev-empty', message || this.error); status.setAttribute('role', this.error ? 'alert' : 'status'); this.board.append(status); if (this.error) status.append(button('Try again', () => this.loadBoard())); this.board.querySelector('[data-focus="close"]')?.focus(); return;}
             const events = this.events.filter(event => Date.parse(event.endsAt) > this.now() && (this.tab === 'mine' ? event.signedUp : this.tab === 'live' ? Date.parse(event.startsAt) <= this.now() : Date.parse(event.startsAt) > this.now()));
             const body = node('div', 'ev-body'); const list = node('aside', 'ev-list'); list.setAttribute('aria-label', 'Choose an event');
@@ -168,6 +189,8 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             body.append(list); this.board.append(body);
             if (selected) body.append(this.renderDetails(selected));
             else {const empty = node('section', 'ev-empty'); empty.append(node('h3', '', this.tab === 'mine' ? 'Your next adventure awaits' : 'More adventures on the way'), node('p', '', this.tab === 'mine' ? 'Choose an upcoming event to sign up.' : 'Check the town board again later.')); body.append(empty);}
+            const scoringDetails = this.board.querySelector('.ev-scoring-details');
+            if (scoringDetails && scoringDetails.dataset.run === expandedRun) scoringDetails.open = true;
             const content = this.board.querySelector('.ev-content'); if (content) content.scrollTop = scroll;
             if (focusKey) Array.from(this.board.querySelectorAll('[data-focus]')).find(control => control.dataset.focus === focusKey)?.focus();
         }
@@ -177,9 +200,9 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         renderDetails(event) {
             const detail = node('section', 'ev-detail'); const content = node('div', 'ev-content');
-            content.append(node('small', 'ev-gold', event.status === 'live' ? 'LIVE NOW' : 'COMING UP'), node('h3', 'ev-title', event.name), node('p', 'ev-description', event.description));
-            const facts = node('div', 'ev-facts');
-            for (const [label, value] of [['When', this.date(event.startsAt)+' – '+this.date(event.endsAt)], ['Where', this.maps(event)+(event.locationDescription ? ' · '+event.locationDescription : '')], ['Format', event.isCompetition === false ? 'Community event' : (event.groupBy === 'wallet' ? 'Per player' : 'Per Looper')+' · '+(event.teams.length ? 'Teams' : 'Solo')]]) {const fact = node('div'); fact.append(node('small', '', label), node('strong', '', value)); facts.append(fact);} content.append(facts);
+            content.append(node('span', 'ev-status'+(event.status === 'live' ? ' ev-status-live' : ''), event.status === 'live' ? 'Live now' : 'Coming up'), node('h3', 'ev-title', event.name), node('p', 'ev-description', event.description));
+            const facts = node('dl', 'ev-facts');
+            for (const [label, value] of [['When', this.date(event.startsAt)+' – '+this.date(event.endsAt)], ['Where', this.maps(event)+(event.locationDescription ? ' · '+event.locationDescription : '')], ['Format', event.isCompetition === false ? 'Community event' : (event.groupBy === 'wallet' ? 'Per player' : 'Per Looper')+' · '+(event.teams.length ? 'Teams' : 'Solo')]]) {const fact = node('div'); fact.append(node('dt', '', label), node('dd', '', value)); facts.append(fact);} content.append(facts);
             if (event.isCompetition === false) {
                 content.append(node('p', 'ev-muted', 'See the event description for attendance, prizes and RSVP instructions.'));
                 detail.append(content);
@@ -196,7 +219,9 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             if (event.equipment) {const equipment = event.equipment; content.append(node('h4', '', 'Equipment & levels'), node('p', '', [equipment.teamEquipment ? 'Equipment is assigned by team.' : equipment.sharedEquipment ? 'Event equipment is available to every signed-up player.' : null, equipment.avatarAvailable ? 'An event avatar is available.' : null, equipment.weaponAvailable ? 'An event weapon is available.' : null, equipment.avatarLevel ? 'Avatar level '+equipment.avatarLevel+'.' : null, equipment.weaponLevel ? 'Weapon level '+equipment.weaponLevel+'.' : null, 'Applies during the round on its linked maps. Your normal levels return outside the event.'].filter(Boolean).join(' ')));}
             content.append(node('h4', '', 'Prizes')); if (!event.prizes.length) content.append(node('p', 'ev-muted', 'No prizes configured.'));
             for (const prize of event.prizes) {const reward = node('p', 'ev-reward'); reward.append(node('strong', '', prize.label), node('span', '', (prize.awardTo === 'winningTeam' ? 'Winning team contributors' : prize.awardTo === 'milestone' ? 'Milestone achievers' : 'Rank '+prize.rankFrom+(prize.rankTo !== prize.rankFrom ? '–'+prize.rankTo : ''))+' · '+(prize.delivery === 'inventory' ? prize.quantity+' × '+(prize.itemLabel || prize.item)+' · Automatic in-game delivery after finalization' : 'Delivered manually by the organizer'))); content.append(reward);}
-            content.append(node('p', 'ev-muted', (event.registrationRequired ? 'Only activity after sign-up counts. ' : 'No sign-up needed; qualifying activity counts automatically. ')+(event.groupBy === 'wallet' ? 'One score across your Loopers. ' : 'Each Looper has its own score. ')+'Ties use the last scoring time, then participant ID. Results can finalize after '+Math.ceil(event.graceSeconds/60)+' minutes for queued activity.'));
+            const scoringDetails = node('details', 'ev-scoring-details'); scoringDetails.dataset.run = event.runId;
+            const summary = node('summary', '', 'Scoring & result details'); summary.dataset.focus = 'scoring-details'; scoringDetails.append(summary);
+            scoringDetails.append(node('p', 'ev-muted', (event.registrationRequired ? 'Only activity after sign-up counts. ' : 'No sign-up needed; qualifying activity counts automatically. ')+(event.groupBy === 'wallet' ? 'One score across your Loopers. ' : 'Each Looper has its own score. ')+'Ties use the last scoring time, then participant ID. Results can finalize after '+Math.ceil(event.graceSeconds/60)+' minutes for queued activity.')); content.append(scoringDetails);
             if (event.status === 'live') {content.append(node('h4', '', 'Live standings')); this.standings(content, event);}
             const confirm = this.confirming === event.runId;
             if (confirm) {const confirmation = node('div', 'ev-confirm'); confirmation.append(node('h4', '', this.action === 'withdraw' ? 'Withdraw from this round?' : 'Join '+event.name+'?')); const label = node('label'); const check = node('input'); check.type = 'checkbox'; check.checked = !!this.accepted; check.dataset.focus = 'accept'; check.addEventListener('change', () => {this.accepted = check.checked; const submit = detail.querySelector('[data-focus="submit"]'); if (submit) submit.disabled = !this.accepted || this.joining;}); label.append(check, node('span', '', this.action === 'withdraw' ? 'Remove my entry and team assignment for this round.' : 'I’ve read the competition rules and want to take part.')); confirmation.append(label); content.append(confirmation);}
@@ -227,6 +252,32 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 if (player.ens && player.title && player.title !== player.ens) identity.append(node('small', 'ev-player-title', player.title));
                 row.append(identity, node('strong', '', player.score)); container.append(row);
             }
+        }
+
+        renderDailyPlay() {
+            const progress = this.dailyPlay;
+            const section = node('section', 'ev-daily-play');
+            section.setAttribute('aria-label', 'Daily play progress');
+            section.append(node('h3', 'ev-title', 'A little adventure, every day'),
+                node('p', 'ev-muted', 'Earn points for active days and build your streak.'));
+            const today = node('div', 'ev-daily-today'+(progress.checkedInToday ? ' ev-daily-earned' : ''));
+            today.append(node('h4', '', progress.checkedInToday ? 'Today counted!' : 'Your next point awaits'),
+                node('p', '', progress.checkedInToday
+                    ? '+'+progress.todayPoints+' '+(progress.todayPoints === 1 ? 'point' : 'points')+' earned today'
+                    : 'Play today to earn 1 point.'));
+            if (!progress.checkedInToday) today.append(node('small', '', 'Credit appears after activity syncs.'));
+            section.append(today);
+            const stats = node('dl', 'ev-daily-stats');
+            for (const [label, value] of [['Total points', progress.points], ['Active days', progress.activeDays], ['Day streak', progress.streak]]) {
+                const stat = node('div'); stat.append(node('dt', '', label), node('dd', '', value)); stats.append(stat);
+            }
+            section.append(stats);
+            const remaining = Math.max(0, progress.nextBonusDay - progress.streak);
+            const bonus = node('div', 'ev-daily-bonus');
+            bonus.append(node('h4', '', 'Next streak bonus'), node('p', 'ev-gold', '+'+progress.nextBonusPoints+' bonus at day '+progress.nextBonusDay),
+                node('p', 'ev-muted', remaining+' more active '+(remaining === 1 ? 'day' : 'days')+' to reach it.'));
+            section.append(bonus, node('p', 'ev-daily-reset', 'Daily reset: 00:00 UTC. Earned points stay yours.'));
+            return section;
         }
 
         renderPanel() {
@@ -266,7 +317,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             timer.textContent = 'LIVE · '+(remaining >= 3600 ? Math.floor(remaining/3600)+'h ' : '')+Math.floor(remaining%3600/60)+'m '+remaining%60+'s left';
         }
 
-        disconnect() {this.disabled = true; clearInterval(this.timer); this.live = []; this.panel.hidden = true; this.close();}
+        disconnect() {this.dailyReward?.destroy(); this.disabled = true; clearInterval(this.timer); this.live = []; this.panel.hidden = true; this.close();}
     }
     EventBoard.visibleEvents = visibleEvents; EventBoard.safeDetailsUrl = safeDetailsUrl; EventBoard.ruleLabel = ruleLabel;
     return EventBoard;

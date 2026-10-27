@@ -15,7 +15,7 @@ function setup(centered = false, {sceneBounded = false} = {}) {
         },
     };
     vm.createContext(sandbox);
-    for (const name of ['lib/class', 'area', 'camera', 'tile', 'renderer', 'scriptedsequenceplayer', 'game']) {
+    for (const name of ['lib/class', 'area', 'camera', 'tile', 'map', 'renderer', 'scriptedsequenceplayer', 'game']) {
         vm.runInContext(fs.readFileSync(require.resolve(`./${name}`), 'utf8'), sandbox);
         modules[name] = modules.current;
     }
@@ -30,7 +30,7 @@ function setup(centered = false, {sceneBounded = false} = {}) {
         GridPositionToTileIndex(x, y) { return y * this.width + x + 1; },
         getCurrentScene: entity => scenes.find(scene => scene.contains(entity)),
         forEachPosition(callback) { for (let y = 0; y < this.height; y++) for (let x = 0; x < this.width; x++) callback(x, y); },
-        tileIndexToGridPosition: index => ({x: index % 140, y: Math.floor(index / 140)}),
+        tileIndexToGridPosition: modules.map.prototype.tileIndexToGridPosition,
         getTileAnimationProps: () => ({length: 2}),
     };
     const renderer = Object.assign(Object.create(modules.renderer.prototype), {
@@ -157,6 +157,36 @@ test('animations outside the player scene are available when a cutscene reveals 
     const frame = h.frame(3000);
     expect(frame.animated).toEqual(h.game.animatedTiles);
     expect(frame.animatedHigh).toEqual(h.game.highAnimatedTiles);
+});
+
+test.each([
+    ['small interior', 70, 60, 10, 9],
+    ['garden at the left map edge', 0, 37, 89, 70],
+    ['scene at the right map edge', 139, 5, 1, 2],
+])('%s clips static and animated layers to the same authored tile columns', (name, x, y, width, height) => {
+    const h = setup(false, {sceneBounded: true});
+    const scene = h.scenes[0];
+    Object.assign(scene, {x, y, width, height});
+    Object.assign(h.game.player, {gridX: x, gridY: y});
+    h.sequence.cameraActive = false;
+    h.camera.bounds = null;
+    h.camera.gridW = width + 4; h.camera.gridH = height + 4;
+    h.camera.setGridPosition(x - 2, y - 2);
+    h.map.data = [];
+    const inside = [[x, y], [x + width - 1, y], [x, y + height - 1], [x + width - 1, y + height - 1]];
+    const outside = [[x - 1, y], [x + width, y], [x, y - 1], [x, y + height]];
+    for (const [tx, ty] of inside.concat(outside)) {
+        if (!h.map.isOutOfBounds(tx, ty)) h.map.data[ty * h.map.width + tx] = [1, 2, 3, 4];
+    }
+    h.game.initAnimatedTiles();
+    const expected = [...new Set(inside.map(([tx, ty]) => ty * h.map.width + tx))].sort((a, b) => a - b);
+    for (const tiles of [h.game.visibleTerrainTiles, h.game.visibleHighTiles]) {
+        expect(tiles.map(tile => tile.cellid).sort((a, b) => a - b)).toEqual(expected);
+    }
+    for (const tiles of [h.game.visibleAnimatedTiles, h.game.visibleAnimatedHighTiles]) {
+        expect(tiles.map(tile => tile.index).sort((a, b) => a - b)).toEqual(expected);
+        for (const tile of tiles) expect([tile.x, tile.y]).toEqual([tile.index % h.map.width, Math.floor(tile.index / h.map.width)]);
+    }
 });
 
 test('a cutscene renders received entities beyond the player scene without changing the player scene', () => {
