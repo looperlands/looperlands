@@ -1045,6 +1045,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let float = this.game.sprites[inputFloat.spriteName],
                                 anim = this.game.floatAnimation;
                 if(anim && float) {
+                    const image = float.getImage();
+                    if (!image) return;
                     let s = this.scale,
                     os = this.upscaledRendering ? 1 : s,
                     ds = this.upscaledRendering ? s : 1,
@@ -1056,7 +1058,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                     this.context.save();
                     this.context.translate(inputFloat.gridX * this.tilesize * s, inputFloat.gridY * this.tilesize * s);
-                    this.context.drawImage(float.image, fx, fy, fw, fh,
+                    this.context.drawImage(image, fx, fy, fw, fh,
                                         float.offsetX * s,
                                         float.offsetY * s,
                                         fw * ds, fh * ds);

@@ -6657,12 +6657,18 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             loadSprite: function (name, tokenHash, assetType, nftId) {
+                // Keep cursor, silhouette, portrait and player artwork ready up front.
+                // Other world sprites already load on demand in the render worker.
+                const needsImage = ['hand', 'handclick', 'sword', 'loot', 'target', 'talk', 'float', 'arrow',
+                    'chest', 'item-cake'].includes(name) || Types.isNpc(Types.getKindFromString(name)) ||
+                    name === this.storage?.data?.player?.armor || name === this.storage?.data?.player?.weapon;
+                const deferImage = !needsImage;
                 if (this.renderer.upscaledRendering) {
-                    return this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker, tokenHash, assetType, nftId);
+                    return this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker, tokenHash, assetType, nftId, deferImage);
                 } else {
-                    let sprite = this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker, tokenHash, assetType, nftId);
+                    let sprite = this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker, tokenHash, assetType, nftId, deferImage);
                     if (!this.renderer.mobile && !this.renderer.tablet) {
-                        sprite = this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker, tokenHash, assetType, nftId);
+                        sprite = this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker, tokenHash, assetType, nftId, deferImage);
                     }
                     return sprite;
                 }

@@ -45,3 +45,17 @@ test('worker image failures reject an awaited transition without an unhandled st
     await Promise.resolve();
     await expect(renderer.whenTilesetReady()).rejects.toThrow('Map tileset could not be loaded');
 });
+
+test('fishing floats wait for lazy artwork before drawing on the main canvas', () => {
+    const renderer = setup(), image = {};
+    const sprite = {getImage: jest.fn().mockReturnValue(null), width: 16, height: 16, offsetX: 0, offsetY: 0};
+    renderer.game = {sprites: {bobber: sprite}, floatAnimation: {currentFrame: {index: 0}, row: 0}};
+    renderer.context = {save: jest.fn(), restore: jest.fn(), translate: jest.fn(), drawImage: jest.fn()};
+    renderer.scale = 2; renderer.tilesize = 16; renderer.upscaledRendering = true;
+    const float = {spriteName: 'bobber', gridX: 3, gridY: 4};
+    renderer.drawFishingFloat(float);
+    expect(renderer.context.drawImage).not.toHaveBeenCalled();
+    sprite.getImage.mockReturnValue(image);
+    renderer.drawFishingFloat(float);
+    expect(renderer.context.drawImage).toHaveBeenCalledWith(image, 0, 0, 16, 16, 0, 0, 32, 32);
+});

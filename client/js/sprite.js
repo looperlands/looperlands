@@ -1,13 +1,14 @@
 define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
 	var Sprite = Class.extend({
-		init: function (name, scale, renderWorker, tokenHash, assetType, nftId) {
+		init: function (name, scale, renderWorker, tokenHash, assetType, nftId, deferImage) {
 			this.name = name;
 			this.scale = scale;
 			this.isLoaded = false;
 			this.offsetX = 0;
 			this.offsetY = 0;
 			this.renderWorker = renderWorker;
+			this.deferImage = deferImage === true;
 
 			if (tokenHash !== undefined && assetType !== undefined) {
 				this.loadNFTSprite(tokenHash, assetType, nftId);
@@ -104,36 +105,49 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 		},
 
 		load: function () {
+			// World artwork is fetched by the renderer when it first becomes visible.
+			// Only sprites also drawn on the main thread need an Image up front.
+			if (this.useWebworker !== false && (this.deferImage || this.id.startsWith("NFT_"))) {
+				this.isLoaded = true;
+				this.sendToWorker();
+			} else {
+				this.loadImage();
+			}
+		},
+
+		getImage: function () {
+			this.loadImage();
+			return this.imageLoaded ? this.image : null;
+		},
+
+		loadImage: function () {
+			if (this.image || this.loadError) return;
 			let self = this;
 
-			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
-				let finished = false;
-				const fail = function () {
-					if (finished) return;
-					finished = true;
-					clearTimeout(timer);
-					self.image.onload = self.image.onerror = null;
-					self.loadError = new Error('Sprite artwork could not be loaded: ' + self.filepath);
-					console.error('[sprite]', self.loadError.message);
-				};
-				// Startup queues many sprite requests; allow time for slower connections.
-				const timer = setTimeout(fail, 120000);
-				this.image = new Image();
-				this.image.crossOrigin = "Anonymous";
-				this.image.onload = function () {
-					if (finished) return;
-					finished = true;
-					clearTimeout(timer);
-					self.image.onload = self.image.onerror = null;
-					self.sendToWorker();
-					self.isLoaded = true;
-				};
-				this.image.onerror = fail;
-				this.image.src = this.filepath;
-			} else {
-				this.isLoaded = true;
-				self.sendToWorker();
-			}
+			let finished = false;
+			const fail = function () {
+				if (finished) return;
+				finished = true;
+				clearTimeout(timer);
+				self.image.onload = self.image.onerror = null;
+				self.loadError = new Error('Sprite artwork could not be loaded: ' + self.filepath);
+				console.error('[sprite]', self.loadError.message);
+			};
+			// Startup queues many sprite requests; allow time for slower connections.
+			const timer = setTimeout(fail, 120000);
+			this.image = new Image();
+			this.image.crossOrigin = "Anonymous";
+			this.image.onload = function () {
+				if (finished) return;
+				finished = true;
+				clearTimeout(timer);
+				self.image.onload = self.image.onerror = null;
+				if (!self.workerRegistered) self.sendToWorker();
+				self.imageLoaded = true;
+				self.isLoaded = true;
+			};
+			this.image.onerror = fail;
+			this.image.src = this.filepath;
 		},
 
 		sendToWorker: function () {
@@ -156,6 +170,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				"offsetX": self.offsetX,
 				"offsetY": self.offsetY
 			});
+			this.workerRegistered = true;
 		},
 
 		createAnimations: function () {
