@@ -78,10 +78,10 @@ define(function () {
             for (const file of files) add(new URL(file, root).href);
             for (const element of this.document.querySelectorAll('script[src], link[rel="stylesheet"]')) add(element.src || element.href);
             for (const entry of this.performance?.getEntriesByType('resource') || []) add(entry.name);
-            // Background NFT sprites do not block startup. Warming the entire catalogue
+            // Background world sprites do not block startup. Warming the entire catalogue
             // would evict startup assets from smaller browser caches.
             for (const sprites of this.app.game.spritesets || []) for (const sprite of Object.values(sprites)) {
-                if (!sprite.id?.startsWith('NFT_') || sprite.image) add(sprite.filepath);
+                if (sprite.image) add(sprite.filepath);
             }
             // Visible sprites fetched by render workers have no window resource timing.
             for (const entity of Object.values(this.app.game.entities || {})) add(entity.sprite?.filepath);

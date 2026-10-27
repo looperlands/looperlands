@@ -216,7 +216,8 @@ test('polls and socket notifications cannot create overlapping reloads', async (
 test('assets including worker sprite images warm fully before requesting a ticket or disconnecting', async () => {
     const f = fixture();
     f.app.game.mapId = 'main';
-    f.app.game.spritesets = [{rat:{filepath:'https://game.test/_client/' + OLD + '/img/1/rat.png'},
+    f.app.game.spritesets = [{rat:{image:{},filepath:'https://game.test/_client/' + OLD + '/img/1/rat.png'},
+        unused:{id:'unused-world-sprite',filepath:'https://game.test/_client/' + OLD + '/img/1/unused.png'},
         background:{id:'NFT_background',filepath:'https://game.test/_client/' + OLD + '/img/1/background.png'},
         external:{filepath:'https://assets.test/avatar.png'}}];
     f.app.game.entities = {player:{sprite:{filepath:'https://game.test/_client/' + OLD + '/img/1/visible.png'}}};
@@ -236,6 +237,7 @@ test('assets including worker sprite images warm fully before requesting a ticke
     expect(urls).toContain('https://game.test/_client/' + NEW + '/img/1/rat.png');
     expect(urls).toContain('https://game.test/_client/' + NEW + '/img/1/visible.png');
     expect(urls).not.toContain('https://game.test/_client/' + NEW + '/img/1/background.png');
+    expect(urls).not.toContain('https://game.test/_client/' + NEW + '/img/1/unused.png');
     expect(urls).toContain('https://game.test/_client/' + NEW + '/maps/world_client_main.js');
     expect(urls).not.toContain('https://assets.test/avatar.png');
     expect(f.assets.mock.calls.every(([, options]) => options.cache === 'force-cache')).toBe(true);

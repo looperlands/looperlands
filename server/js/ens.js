@@ -13,6 +13,7 @@ const alchemyLib = new alchemy.Alchemy(config);
 
 const NodeCache = require("node-cache");
 const cache = new NodeCache();
+const RESOLVER_TIMEOUT_MS = 1500;
 
 getEnsAlchemy = async function (walletId) {
     try {
@@ -33,11 +34,11 @@ getEnsAlchemy = async function (walletId) {
 getDotTaikoName = async function (walletId) {
     try {
         const endpoint = "https://api.dottaiko.me/api/resolveAddress/" + walletId;
-        const ens = await axios.get(endpoint);
+        const ens = await axios.get(endpoint, {timeout: RESOLVER_TIMEOUT_MS});
 
         return ens.data.data ?? "";
     } catch (e) {
-        return "";
+        return null;
     }
 }
 
@@ -48,16 +49,22 @@ const getEnsName = async function (walletId) {
     const cached = cache.get(key);
     if (cached !== undefined) return cached;
     let name = '';
+    let failed = false;
     try {
-        const response = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
+        const response = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`, {timeout: RESOLVER_TIMEOUT_MS});
         name = typeof response.data.data === 'string' ? response.data.data.trim() : '';
     } catch (e) {
         // A failed provider should still allow the secondary resolver.
+        failed = true;
     }
-    if (!name) name = await getDotTaikoName(walletId);
+    if (!name) {
+        name = await getDotTaikoName(walletId);
+        if (name === null) failed = true;
+    }
     name = typeof name === 'string' ? name.trim() : '';
     const resolved = name && !/^0x[a-f0-9]{40}$/i.test(name) ? name : null;
-    cache.set(key, resolved, 60 * 60 * 24);
+    // A timeout must not hide a player's name for the full successful-cache TTL.
+    cache.set(key, resolved, !resolved && failed ? 60 : 60 * 60 * 24);
     return resolved;
 };
 

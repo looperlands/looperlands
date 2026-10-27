@@ -27,3 +27,13 @@ test('secondary resolver is used even when the first provider fails', async () =
     require('axios').get.mockRejectedValueOnce(new Error('Unavailable')).mockResolvedValueOnce({data: {data: 'andre.taiko'}});
     expect(await ens.getEnsName('0xabc')).toBe('andre.taiko');
 });
+
+test('both resolvers have a short timeout and failed resolution still allows a wallet name', async () => {
+    const get = require('axios').get;
+    const cached = jest.spyOn(require('node-cache').prototype, 'set');
+    get.mockRejectedValue(Object.assign(new Error('timeout'), {code: 'ECONNABORTED'}));
+    expect(await ens.getEns('0xabcdef1234')).toBe('abcdef');
+    expect(get).toHaveBeenCalledTimes(2);
+    for (const [, config] of get.mock.calls) expect(config.timeout).toBe(1500);
+    expect(cached).toHaveBeenCalledWith('0xabcdef1234', null, 60);
+});

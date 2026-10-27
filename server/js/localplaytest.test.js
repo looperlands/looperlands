@@ -93,7 +93,7 @@ test('production still resolves ENS when the local flag is set', async () => {
     axios.get.mockResolvedValue({data: {data: 'mapmaker.eth'}});
     await expect(require('./ens').getEnsName(wallet)).resolves.toBe('mapmaker.eth');
     expect(axios.get).toHaveBeenCalledWith(
-        `https://api3.loopring.io/api/wallet/v3/resolveName?owner=${wallet}`
+        `https://api3.loopring.io/api/wallet/v3/resolveName?owner=${wallet}`, {timeout: 1500}
     );
 });
 
