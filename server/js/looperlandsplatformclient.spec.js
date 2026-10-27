@@ -711,11 +711,11 @@ describe('LooperLandsPlatformClient', () => {
 
       const result = await client.getInventory(walletAddress, nftId);
 
-      expect(client.client.get).toHaveBeenCalledWith(`/api/game/wallet/inventory/${walletAddress}/${nftId}`);
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/wallet/inventory/${walletAddress}/${nftId}`, {timeout: 10000});
       expect(result).toEqual(responseData);
     });
 
-    it('should handle an error thrown by the GET request', async () => {
+    it('should propagate inventory errors so callers can preserve existing inventory', async () => {
       const walletAddress = 'wallet123';
       const nftId = 'nft456';
       const error = new Error('Network Error');
@@ -724,10 +724,10 @@ describe('LooperLandsPlatformClient', () => {
 
       jest.spyOn(client, 'handleError').mockImplementation(() => {});
 
-      await client.getInventory(walletAddress, nftId);
+      await expect(client.getInventory(walletAddress, nftId)).rejects.toBe(error);
 
-      expect(client.client.get).toHaveBeenCalledWith(`/api/game/wallet/inventory/${walletAddress}/${nftId}`);
-      expect(client.handleError).toHaveBeenCalledWith(error);
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/wallet/inventory/${walletAddress}/${nftId}`, {timeout: 10000});
+      expect(client.handleError).not.toHaveBeenCalled();
     });
   });
   describe('setQuestsStatus', () => {

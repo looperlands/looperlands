@@ -29,7 +29,7 @@ function setup() {
     };
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
-    const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, updateAnimatedLightSource, scheduleNextFrame,
+    const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, renderLightOverlay, updateAnimatedLightSource, scheduleNextFrame,
         addToImageCache, clearImageCache, clearTextCache,
         state: () => ({cacheBytes, cacheKeys: cacheKeys.slice(), labels: labelCache.size, labelBytes,
             terrain: terrainCache.size, lightScratch, shadowScratch, gradientScratch}),
@@ -127,6 +127,38 @@ test('terrain bitmaps survive fractional camera scrolling and rebuild on tile ch
     worker.send(frame(1200,800,2));
     expect(worker.canvases.entities).toMatchObject({width:320,height:150});
     expect(worker.state().terrain).toBe(2);
+});
+
+test('the lighting pass clips tint, authored lights, tile lights and the lantern to pixel-aligned scene bounds', () => {
+    const worker = setup(), ctx = worker.canvases.lighting.ctx;
+    const scene = {x: 70, y: 221, width: 10, height: 9, darkness: .8};
+    const left = scene.x * 16, top = scene.y * 16, right = (scene.x + scene.width) * 16, bottom = (scene.y + scene.height) * 16;
+    worker.setPlayer({x: left, y: top});
+    const light = (x, y) => ({x, y, radius: 4, intensity: .8});
+    const sources = [light(left, top), light(right - 1, bottom - 1), light(right, top), light(left, bottom), light(left - 1, top)];
+    const tiles = [light(left, top), light(right - 1, bottom - 1), light(right, top), light(left, bottom)];
+    worker.renderLightOverlay(sources, left - 16.25, top - 32.75, 1, 0, scene, tiles, {shadows: false, playerShadow: false}, 'duckville', 0);
+    expect(ctx.rect).toHaveBeenCalledWith(16, 33, 160, 144);
+    expect(ctx.clip).toHaveBeenCalledTimes(1);
+    expect(ctx.drawImage).toHaveBeenCalledTimes(5); // Two authored lights, two tile lights and the lantern.
+    const methods = worker.operations.filter(row => row.id === 'lighting').map(row => row.method);
+    expect(methods.slice(0, 6)).toEqual(['save', 'clearRect', 'beginPath', 'rect', 'clip', 'fillRect']);
+    expect(methods.at(-1)).toBe('restore');
+
+    worker.setPlayer({x: right, y: bottom});
+    ctx.drawImage.mockClear();
+    worker.renderLightOverlay([], left, top, 1, 0, scene, [], {}, 'duckville', 0);
+    expect(ctx.drawImage).not.toHaveBeenCalled();
+});
+
+test('a frame without scene bounds keeps map lighting and clears the previous frame without a scene mask', () => {
+    const worker = setup(), ctx = worker.canvases.lighting.ctx;
+    worker.setPlayer({x: 32, y: 32});
+    worker.renderLightOverlay([{x: 64, y: 64, radius: 4}], 0, 0, 1, 0, {darkness: .8}, [], {}, 'fixture', 0);
+    expect(ctx.clip).not.toHaveBeenCalled();
+    expect(ctx.drawImage).toHaveBeenCalledTimes(2);
+    expect(ctx.clearRect).toHaveBeenCalledWith(0, 0, 1440, 672);
+    expect(ctx.restore).toHaveBeenCalledTimes(1);
 });
 
 test('text reuses glyphs when positions or opacity change and clears departed labels', () => {

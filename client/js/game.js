@@ -6982,7 +6982,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             index,
                             tileProps
                         );
-                        pos = self.map.tileIndexToGridPosition(tile.index);
+                        // Tile data uses zero-based indices; the map helper takes a one-based tile number.
+                        var pos = m.tileIndexToGridPosition(tile.index + 1);
 
                         tile.x = pos.x;
                         tile.y = pos.y;
