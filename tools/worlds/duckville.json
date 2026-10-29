@@ -27,6 +27,20 @@
       ]
     },
     {
+      "sceneId": "scene_1",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.9,
+      "nightDarkness": 0.9,
+      "color": "#000000",
+      "particles": [
+        {
+          "type": "embers",
+          "count": 7
+        }
+      ]
+    },
+    {
       "sceneId": "1095",
       "music": null,
       "cycle": true,
@@ -278,6 +292,14 @@
       "y": 471,
       "w": 28,
       "h": 10
+    },
+    {
+      "id": "scene_1",
+      "name": "Lava Falls Caverns",
+      "x": 103,
+      "y": 439,
+      "w": 22,
+      "h": 22
     },
     {
       "id": "1095",
