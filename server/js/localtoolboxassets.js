@@ -16,6 +16,9 @@ function install(app, root) {
         '/local/item-effects.js': 'shared/js/itemeffects.js',
         '/local/interaction-templates.js': 'shared/js/interactiontemplates.js',
         '/local/vendor/worldtime.js': 'client/js/worldtime-worker.js',
+        '/local/vendor/sceneenvironment.js': 'client/js/sceneenvironment.js',
+        '/local/vendor/weather.js': 'client/js/weather-worker.js',
+        '/local/vendor/parallax.js': 'client/js/parallax-renderer-worker.js',
         '/local/vendor/particles.js': 'client/js/worldparticles-worker.js',
         '/local/vendor/worldfxconfig.js': 'client/js/worldfxconfig.js'
     };

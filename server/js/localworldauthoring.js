@@ -108,7 +108,7 @@ function validateDialogues(trees, catalog) {
 function validateAtmosphere(entries, catalog) {
     list(entries, 100, 'Atmosphere overrides');const ids = new Set();
     for (const row of entries) {
-        fields(row, ['sceneId','cycle','dayDarkness','nightDarkness','color','music','particles'], 'Atmosphere override');
+        fields(row, ['sceneId','cycle','dayDarkness','nightDarkness','color','music','particles','dayNight','weather','parallax'], 'Atmosphere override');
         if (typeof row.sceneId !== 'string' || !/^(?:\*|[A-Za-z0-9_-]{1,100})$/.test(row.sceneId) || ids.has(row.sceneId)) fail('Choose a unique scene for each atmosphere override.');ids.add(row.sceneId);
         if (catalog && row.sceneId !== '*' && !catalog.scenes.some(s => String(s.id) === row.sceneId)) fail('This scene no longer exists. Reload or remove its override.');
         if (typeof row.cycle !== 'boolean') fail('Day/night cycle must be enabled or disabled.');
@@ -116,6 +116,8 @@ function validateAtmosphere(entries, catalog) {
         if (!/^#[0-9a-f]{6}$/i.test(row.color)) fail('Lighting color must be a six-digit hex color.');
         if (row.music !== null && row.music !== '') reference(row.music, {source:'music',label:'Music'}, catalog);
         require('../../client/js/worldfxconfig').ambient(row.particles);
+        const environment = require('../../client/js/sceneenvironment');
+        for (const key of ['dayNight', 'weather', 'parallax']) if (row[key] !== undefined) environment[key](row[key]);
     }
     return entries;
 }
@@ -200,6 +202,8 @@ function applyAtmosphere(map,entries) {
     }
     for(const scene of scenes){const row=entries.find(r=>r.sceneId===String(scene.id))||entries.find(r=>r.sceneId==='*');if(!row)continue;
         scene.authoringAtmosphere={cycle:row.cycle,dayDarkness:row.dayDarkness,nightDarkness:row.nightDarkness,color:row.color};scene.dn_cycle=row.cycle;scene.darkness=row.dayDarkness;scene.ambience=row.particles;scene.authoringMusic=row.music;
+        for (const key of ['dayNight', 'weather']) if (row[key] !== undefined) scene.authoringAtmosphere[key]=JSON.parse(JSON.stringify(row[key]));
+        scene.parallax=row.parallax ? JSON.parse(JSON.stringify(row.parallax)) : null;
     }
     return {...map,scenes};
 }

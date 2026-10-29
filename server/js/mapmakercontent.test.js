@@ -14,6 +14,9 @@ afterEach(() => fs.rmSync(root, {recursive: true, force: true}));
 
 test('production artifacts include the same scenes, atmosphere and action placements as local transport', () => {
     const doc = {version: 1, rules: [rule], dialogues: [], scenes: [{id: 'clearing', name: 'Clearing', x: 1, y: 1, w: 4, h: 4}], atmosphere: [{sceneId: 'clearing', cycle: true, dayDarkness: 0, nightDarkness: .8, color: '#123456', music: '', particles: []}]};
+    doc.atmosphere[0].weather = require('../../client/js/sceneenvironment').defaults.weather;
+    doc.atmosphere[0].dayNight = require('../../client/js/sceneenvironment').defaults.dayNight;
+    doc.atmosphere[0].parallax = {layers: [{image: '/img/parallax/clouds.png', plane: 'background', width: 384, height: 320, factorX: .6, factorY: .6}], cutoutColors: [[72, 196, 248]]};
     write('tools/worlds/one.json', doc);
     const stage = {id: 'work', name: 'Work', duration: 0, waitSeconds: 0, level: 1, costs: [], rewards: [], xp: 0, tile: 0, successChance: 1};
     write('tools/tiles/one.json', {version: 1, actions: {repair: {type: 'sequence', name: 'Repair', start: 'work', stages: [stage]}}, placements: [{action: 'repair', x: 2, y: 3, width: 1, height: 1}]});

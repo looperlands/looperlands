@@ -128,3 +128,11 @@ test.each([2, 3])('level-up bursts respect reduced motion and originate at the h
     fx.levelUp(game.player, 'Avatar'); fx.levelUp(null, 'Companion');
     expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
 });
+
+test('static weather can respect ambience toggles independently of reduced motion', () => {
+    const {fx, settings} = setup();settings.getReducedMotion = () => true;
+    expect(fx.enabled('ambience')).toBe(false);
+    expect(fx.enabled('ambience', false)).toBe(true);
+    fx.sceneFlags.ambience = false;
+    expect(fx.enabled('ambience', false)).toBe(false);
+});

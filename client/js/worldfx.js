@@ -13,9 +13,9 @@ define(['worldfxconfig'], function (Config) {
             this.sessionId = game.sessionId;
         }
 
-        enabled(id) {
+        enabled(id, animated = true) {
             if (id === 'levelup') return !this.game.app?.settings?.getReducedMotion?.();
-            return (this.sceneFlags[id] ?? this.flags[id]) === true && !this.game.app?.settings?.getReducedMotion?.();
+            return (this.sceneFlags[id] ?? this.flags[id]) === true && (!animated || !this.game.app?.settings?.getReducedMotion?.());
         }
 
         clear() {

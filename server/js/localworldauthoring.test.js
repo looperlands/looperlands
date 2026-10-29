@@ -120,3 +120,22 @@ test('sequence saves preserve other world sections, reject stale writes and load
     const {WorldDefinitions}=require('./worlddefinitions'),registry=new WorldDefinitions(),before=process.env.NODE_ENV;
     try{process.env.NODE_ENV='production';require('./scriptedsequenceloader').register(root,registry);expect(registry.create({id:'world_one'}).get('mapmaker-sequences').definitions[0]).toMatchObject({id:'arrival'});}finally{if(before===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=before;}
 });
+
+test('scene environments survive save/reload and both local client transports, with stale-save protection', async () => {
+    const base=await W.readTool(root,'one','scenes'), E=require('../../client/js/sceneenvironment');
+    const config={...atmosphere('1'),dayNight:E.defaults.dayNight,weather:E.defaults.weather,
+        parallax:{layers:[{image:'/img/parallax/clouds.png',plane:'foreground',width:384,height:320,factorX:1.2,factorY:1.1,driftX:.3}]}};
+    base.entries[1].atmosphere=config;
+    const saved=await W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries});
+    expect((await W.readTool(root,'one','scenes')).entries).toEqual(saved.entries);
+    await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries})).rejects.toHaveProperty('status',409);
+    const app=require('express')();W.installRuntime(app,root);const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+    try {
+        const url='http://127.0.0.1:'+server.address().port+'/maps/world_client_one';
+        const map=await(await fetch(url+'.json')).json(), context={};
+        require('vm').runInNewContext(await(await fetch(url+'.js')).text(),context);
+        expect(map.scenes[0].parallax).toEqual(config.parallax);
+        expect(map.scenes[0].authoringAtmosphere).toMatchObject({weather:config.weather,dayNight:config.dayNight});
+        expect(JSON.parse(JSON.stringify(context.mapData.scenes))).toEqual(map.scenes);
+    } finally {await new Promise(resolve=>server.close(resolve));}
+});

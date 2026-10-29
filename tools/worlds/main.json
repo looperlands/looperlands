@@ -1,0 +1,872 @@
+{
+  "version": 1,
+  "rules": [],
+  "dialogues": [],
+  "atmosphere": [
+    {
+      "sceneId": "627",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/clouds.png",
+            "plane": "ground",
+            "width": 512,
+            "height": 384,
+            "factorX": 0.82,
+            "factorY": 0.88,
+            "opacity": 0.12,
+            "driftX": 0.55,
+            "driftY": 0.12
+          },
+          {
+            "image": "/img/parallax/clouds.png",
+            "plane": "foreground",
+            "width": 384,
+            "height": 320,
+            "factorX": 1.28,
+            "factorY": 1.2,
+            "opacity": 0.38,
+            "driftX": 1.1,
+            "offsetX": 96,
+            "offsetY": 64,
+            "driftY": 0.22
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "weather": {
+        "mode": "fixed",
+        "type": "sunrays",
+        "intensity": 0.4,
+        "wind": 0.15,
+        "transition": 8,
+        "sequence": [
+          {
+            "type": "sunrays",
+            "intensity": 0.5,
+            "duration": 120
+          },
+          {
+            "type": "rain",
+            "intensity": 0.4,
+            "duration": 90
+          },
+          {
+            "type": "clear",
+            "intensity": 0,
+            "duration": 90
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "628",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "ground",
+            "width": 512,
+            "height": 384,
+            "factorX": 0.94,
+            "factorY": 0.92,
+            "opacity": 0.09,
+            "driftX": 0.35,
+            "driftY": -0.12
+          },
+          {
+            "image": "/img/parallax/forest-roots.png",
+            "plane": "ground",
+            "placed": true,
+            "width": 76,
+            "height": 52,
+            "opacity": 1
+          },
+          {
+            "image": "/img/parallax/forest-trunk.png",
+            "plane": "entities",
+            "placed": true,
+            "width": 72,
+            "height": 108,
+            "anchorY": 0.9,
+            "opacity": 1
+          },
+          {
+            "image": "/img/parallax/forest-canopy-lower.png",
+            "plane": "foreground",
+            "placed": true,
+            "width": 136,
+            "height": 112,
+            "offsetY": -70,
+            "factorX": 1.03,
+            "factorY": 1.03,
+            "opacity": 1
+          },
+          {
+            "image": "/img/parallax/forest-canopy-upper.png",
+            "plane": "foreground",
+            "placed": true,
+            "width": 115,
+            "height": 96,
+            "offsetY": -86,
+            "factorX": 1.09,
+            "factorY": 1.09,
+            "opacity": 1
+          },
+          {
+            "image": "/img/parallax/forest-canopy-upper.png",
+            "plane": "foreground",
+            "placed": true,
+            "width": 84,
+            "height": 72,
+            "offsetX": -8,
+            "offsetY": -98,
+            "factorX": 1.17,
+            "factorY": 1.17,
+            "opacity": 1
+          }
+        ],
+        "placements": [
+          {
+            "x": 608,
+            "y": 40.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 528,
+            "y": 72.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 800,
+            "y": 104.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 224,
+            "y": 120.0,
+            "scale": 0.9,
+            "flipX": true
+          },
+          {
+            "x": 1328,
+            "y": 120.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 640,
+            "y": 152.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 576,
+            "y": 184.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 272,
+            "y": 200.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 976,
+            "y": 200.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 112,
+            "y": 216.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 480,
+            "y": 232.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 800,
+            "y": 232.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 1072,
+            "y": 232.0,
+            "scale": 0.9,
+            "flipX": true
+          },
+          {
+            "x": 1264,
+            "y": 232.0,
+            "scale": 0.9,
+            "flipX": true
+          },
+          {
+            "x": 656,
+            "y": 248.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 144,
+            "y": 312.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 752,
+            "y": 344.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 976,
+            "y": 344.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 1296,
+            "y": 344.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 400,
+            "y": 360.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 592,
+            "y": 360.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 1088,
+            "y": 392.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 96,
+            "y": 408.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 816,
+            "y": 408.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 1152,
+            "y": 408.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 528,
+            "y": 440.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 1264,
+            "y": 472.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 208,
+            "y": 488.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 736,
+            "y": 488.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 320,
+            "y": 520.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 624,
+            "y": 520.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 1168,
+            "y": 552.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 144,
+            "y": 568.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 432,
+            "y": 568.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 208,
+            "y": 600.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 656,
+            "y": 600.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 832,
+            "y": 600.0,
+            "scale": 0.99,
+            "flipX": true
+          },
+          {
+            "x": 1280,
+            "y": 600.0,
+            "scale": 0.9,
+            "flipX": true
+          },
+          {
+            "x": 1056,
+            "y": 616.0,
+            "scale": 1.125,
+            "flipX": false
+          },
+          {
+            "x": 528,
+            "y": 648.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 352,
+            "y": 680.0,
+            "scale": 0.945,
+            "flipX": false
+          },
+          {
+            "x": 960,
+            "y": 680.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 848,
+            "y": 696.0,
+            "scale": 1.035,
+            "flipX": false
+          },
+          {
+            "x": 1232,
+            "y": 712.0,
+            "scale": 1.08,
+            "flipX": true
+          },
+          {
+            "x": 1088,
+            "y": 728.0,
+            "scale": 0.99,
+            "flipX": true
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "weather": {
+        "mode": "cycle",
+        "type": "sunrays",
+        "intensity": 0.4,
+        "wind": 0.15,
+        "transition": 8,
+        "sequence": [
+          {
+            "type": "sunrays",
+            "intensity": 0.5,
+            "duration": 120
+          },
+          {
+            "type": "rain",
+            "intensity": 0.4,
+            "duration": 90
+          },
+          {
+            "type": "clear",
+            "intensity": 0,
+            "duration": 90
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "629",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "ground",
+            "width": 448,
+            "height": 320,
+            "factorX": 0.76,
+            "factorY": 0.82,
+            "opacity": 0.26,
+            "driftX": -0.65,
+            "driftY": 0.18
+          },
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "foreground",
+            "width": 320,
+            "height": 256,
+            "factorX": 1.18,
+            "factorY": 1.26,
+            "opacity": 0.34,
+            "driftX": 0.4,
+            "driftY": -0.3,
+            "offsetX": 150,
+            "offsetY": 80
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "weather": {
+        "mode": "cycle",
+        "type": "rain",
+        "intensity": 0.4,
+        "wind": 0.15,
+        "transition": 8,
+        "sequence": [
+          {
+            "type": "rain",
+            "intensity": 0.5,
+            "duration": 120
+          },
+          {
+            "type": "rain",
+            "intensity": 0.6,
+            "duration": 90
+          },
+          {
+            "type": "clear",
+            "intensity": 0,
+            "duration": 90
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "624",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/meadow-seeds.png",
+            "plane": "ground",
+            "width": 512,
+            "height": 384,
+            "factorX": 0.97,
+            "factorY": 0.98,
+            "opacity": 0.3,
+            "driftX": 0.5,
+            "driftY": 0.12
+          },
+          {
+            "image": "/img/parallax/meadow-seeds.png",
+            "plane": "foreground",
+            "width": 384,
+            "height": 320,
+            "factorX": 1.09,
+            "factorY": 1.06,
+            "opacity": 0.55,
+            "driftX": 0.85,
+            "driftY": 0.28,
+            "offsetX": 138,
+            "offsetY": 92
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "weather": {
+        "mode": "cycle",
+        "type": "sunrays",
+        "intensity": 0.4,
+        "wind": 0.15,
+        "transition": 8,
+        "sequence": [
+          {
+            "type": "sunrays",
+            "intensity": 0.5,
+            "duration": 120
+          },
+          {
+            "type": "rain",
+            "intensity": 0.4,
+            "duration": 90
+          },
+          {
+            "type": "clear",
+            "intensity": 0,
+            "duration": 90
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "630",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/desert-dust.png",
+            "plane": "ground",
+            "width": 512,
+            "height": 384,
+            "factorX": 0.96,
+            "factorY": 0.98,
+            "opacity": 0.22,
+            "driftX": 1.2,
+            "driftY": 0.1
+          },
+          {
+            "image": "/img/parallax/desert-dust.png",
+            "plane": "foreground",
+            "width": 416,
+            "height": 320,
+            "factorX": 1.1,
+            "factorY": 1.06,
+            "opacity": 0.27,
+            "driftX": 2.1,
+            "driftY": 0.2,
+            "offsetX": 176,
+            "offsetY": 128
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      }
+    },
+    {
+      "sceneId": "631",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/lava-depth.png",
+            "plane": "background",
+            "width": 384,
+            "height": 384,
+            "factorX": 0.62,
+            "factorY": 0.62,
+            "opacity": 1,
+            "driftX": 0.12,
+            "driftY": 0.04
+          },
+          {
+            "image": "/img/parallax/volcanic-smoke.png",
+            "plane": "ground",
+            "width": 512,
+            "height": 416,
+            "factorX": 0.96,
+            "factorY": 0.97,
+            "opacity": 0.23,
+            "driftX": 0.45,
+            "driftY": -0.28
+          },
+          {
+            "image": "/img/parallax/volcanic-smoke.png",
+            "plane": "foreground",
+            "width": 448,
+            "height": 384,
+            "factorX": 1.09,
+            "factorY": 1.06,
+            "opacity": 0.24,
+            "driftX": 0.75,
+            "driftY": -0.45,
+            "offsetX": 192,
+            "offsetY": 136
+          },
+          {
+            "image": "/img/parallax/embers.png",
+            "plane": "foreground",
+            "width": 320,
+            "height": 288,
+            "factorX": 1.14,
+            "factorY": 1.12,
+            "opacity": 0.62,
+            "driftX": 0.35,
+            "driftY": -1.25,
+            "offsetX": 64,
+            "offsetY": 48
+          }
+        ],
+        "cutoutColors": [
+          [
+            254,
+            173,
+            2
+          ]
+        ],
+        "backgroundColor": "#fead02"
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      }
+    },
+    {
+      "sceneId": "633",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "ground",
+            "width": 576,
+            "height": 384,
+            "factorX": 0.97,
+            "factorY": 0.98,
+            "opacity": 0.1,
+            "driftX": -0.3,
+            "driftY": 0.08
+          },
+          {
+            "image": "/img/parallax/clouds.png",
+            "plane": "foreground",
+            "width": 512,
+            "height": 416,
+            "factorX": 1.1,
+            "factorY": 1.08,
+            "opacity": 0.2,
+            "driftX": 0.65,
+            "driftY": 0.15,
+            "offsetX": 96,
+            "offsetY": 168
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "weather": {
+        "mode": "fixed",
+        "type": "sunrays",
+        "intensity": 0.4,
+        "wind": 0.15,
+        "transition": 8,
+        "sequence": [
+          {
+            "type": "sunrays",
+            "intensity": 0.5,
+            "duration": 120
+          },
+          {
+            "type": "rain",
+            "intensity": 0.4,
+            "duration": 90
+          },
+          {
+            "type": "clear",
+            "intensity": 0,
+            "duration": 90
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "638",
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.82,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/embers.png",
+            "plane": "foreground",
+            "width": 384,
+            "height": 320,
+            "factorX": 1.06,
+            "factorY": 1.04,
+            "opacity": 0.32,
+            "driftX": 0.12,
+            "driftY": -0.65,
+            "offsetX": 48,
+            "offsetY": 24
+          }
+        ]
+      },
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      }
+    },
+    {
+      "sceneId": "639",
+      "cycle": false,
+      "dayDarkness": 0.7,
+      "nightDarkness": 0.7,
+      "color": "#142438",
+      "music": null,
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "ground",
+            "width": 448,
+            "height": 320,
+            "factorX": 0.98,
+            "factorY": 0.98,
+            "opacity": 0.1,
+            "driftX": -0.22,
+            "driftY": 0.08
+          },
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "foreground",
+            "width": 512,
+            "height": 384,
+            "factorX": 1.05,
+            "factorY": 1.04,
+            "opacity": 0.08,
+            "driftX": 0.17,
+            "driftY": -0.1,
+            "offsetX": 160,
+            "offsetY": 96
+          }
+        ]
+      }
+    }
+  ],
+  "sequences": []
+}

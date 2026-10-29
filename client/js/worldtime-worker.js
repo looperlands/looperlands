@@ -27,9 +27,32 @@
         // Equal endpoints mean all day. Overnight windows wrap through midnight.
         return start === end || (start < end ? minute >= start && minute < end : minute >= start || minute < end);
     }
-    function atmosphereDarkness(config, time) {
-        const daylight = config.cycle ? mainDaylight(time) : 1;
-        return config.nightDarkness + daylight * (config.dayDarkness - config.nightDarkness);
+    const smooth = value => (1 - Math.cos(Math.max(0, Math.min(1, value)) * Math.PI)) / 2;
+    function atmosphereLight(config, time) {
+        const cycle = config.dayNight;
+        const hour = ((time % duration) + duration) % duration / duration * 24;
+        let daylight = config.cycle ? mainDaylight(time) : 1, warmth = 0, warmColor;
+        if (config.cycle && cycle) {
+            if (hour < cycle.dawn || hour >= cycle.dusk + cycle.duskDuration) daylight = 0;
+            else if (hour < cycle.dawn + cycle.dawnDuration) {
+                const progress = (hour - cycle.dawn) / cycle.dawnDuration;
+                daylight = smooth(progress); warmth = Math.sin(progress * Math.PI); warmColor = cycle.dawnColor;
+            } else if (hour < cycle.dusk) daylight = 1;
+            else {
+                const progress = (hour - cycle.dusk) / cycle.duskDuration;
+                daylight = 1 - smooth(progress); warmth = Math.sin(progress * Math.PI); warmColor = cycle.duskColor;
+            }
+        }
+        const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+        const mix = (a, b, amount) => a.map((value, i) => value + (b[i] - value) * amount);
+        let tint = rgb(config.color || '#000000');
+        if (cycle && config.cycle) {
+            tint = mix(rgb(cycle.nightColor), rgb(cycle.dayColor), daylight);
+            if (warmColor) tint = mix(tint, rgb(warmColor), warmth * .7);
+        }
+        return {daylight, darkness: config.nightDarkness + daylight * (config.dayDarkness - config.nightDarkness),
+            color: '#' + tint.map(value => Math.round(value).toString(16).padStart(2, '0')).join('')};
     }
-    return {duration, mainDaylight, previewTime, isInRange, atmosphereDarkness};
+    function atmosphereDarkness(config, time) {return atmosphereLight(config, time).darkness;}
+    return {duration, mainDaylight, previewTime, isInRange, atmosphereDarkness, atmosphereLight};
 });

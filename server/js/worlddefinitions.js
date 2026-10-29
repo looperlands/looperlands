@@ -43,11 +43,23 @@ class WorldDefinitions {
 // Scene scripts provide lifecycle and presentation only. Quest progress remains
 // in the existing quest/event consumer and dialogue actions.
 class WorldScenes {
-    constructor(entries) {this.entries = entries;}
+    constructor(entries) {this.entries = entries; this.snapshots = new WeakMap();}
     get(id) {return this.entries.find(entry => entry.id === id)?.scene;}
     tick() {for (const entry of this.entries) entry.scene.tick?.();}
+    // NPC behavior normally sends the combined ambience packet. Maps without
+    // that engine still need scene presentation, including parallax layers.
+    sync(world) {
+        if (!this.entries.length) return;
+        const Messages = require('./message');
+        for (const player of Object.values(world.players || {})) {
+            const packet = this.packet(player), snapshot = JSON.stringify(packet);
+            if (this.snapshots.get(player) === snapshot) continue;
+            world.pushToPlayer(player, new Messages.WorldAmbience({...packet, epoch: 0, serverTime: Date.now()}));
+            this.snapshots.set(player, snapshot);
+        }
+    }
     event(player, type, data) {for (const entry of this.entries) entry.scene.event?.(player, type, data);}
-    forget(player) {for (const entry of this.entries) entry.scene.forget?.(player);}
+    forget(player) {this.snapshots.delete(player); for (const entry of this.entries) entry.scene.forget?.(player);}
     packet(player) {
         const packet = {rendererExtensions: [], musicAreas: []};
         for (const entry of this.entries) {

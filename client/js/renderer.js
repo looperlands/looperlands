@@ -406,7 +406,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
             drawEntity: function(entity) {
                 let textData = undefined;
-                let entityData = {drawData: []};
+                let entityData = {drawData: [], depthY: entity.y + this.tilesize, groundEffect: Types.isFieldEffect(entity.kind)};
     
                 var sprite = entity.sprite,
                     shadow = this.game.shadows["small"],
@@ -1088,6 +1088,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                       'shadows': this.game.app.settings.getRenderShadows(),
                       'playerShadow': this.game.app.settings.getRenderPlayerShadow(),
                       'dynamicLights': this.game.app.settings.getEnableDynamicLights(),
+                      'ambience': this.game.worldFx?.enabled('ambience', false) !== false,
                   }
               };
             },
@@ -1153,6 +1154,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     "entityData": entityDrawData,
                     "healthTime": this.game.currentTime,
                     "reducedMotion": this.game.app.settings.getReducedMotion(),
+                    "ambienceEnabled": this.game.worldFx?.enabled('ambience', false) !== false,
                     "cameraX": this.camera.x,
                     "cameraY": this.camera.y,
                     "scale": this.scale
