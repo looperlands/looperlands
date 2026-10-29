@@ -135,7 +135,7 @@ test('HTTP asset saves share the local origin guard and build lock',async()=>{
     try{
         const body=JSON.stringify(fixture());expect((await fetch(base+'/local/api/assets',{method:'POST',headers:{...headers,Origin:'https://other.example'},body})).status).toBe(403);
         toolbox.job={status:'running'};expect((await fetch(base+'/local/api/assets',{method:'POST',headers,body})).status).toBe(409);toolbox.job=null;
-        const saved=await fetch(base+'/local/api/assets',{method:'POST',headers,body});expect(saved.status).toBe(200);expect(await saved.json()).toMatchObject({id:'moon_shard',requiresBuild:true}, 15000); // Cold Toolbox imports and image processing can exceed Jest's 5s default under coverage.
+        const saved=await fetch(base+'/local/api/assets',{method:'POST',headers,body});expect(saved.status).toBe(200);expect(await saved.json()).toMatchObject({id:'moon_shard',requiresBuild:true});
         expect((await fetch(base+'/local/api/git')).status).toBe(404);
     }finally{await new Promise(resolve=>server.close(resolve));}
 }, 15000); // Cold Toolbox imports and image processing can exceed Jest's 5s default under coverage.
