@@ -267,6 +267,8 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                 area.ambience = scene.ambience;
                 area.authoringAtmosphere = scene.authoringAtmosphere;
                 area.authoringMusic = scene.authoringMusic;
+                area.weather = scene.weather;
+                area.weatherExposure = scene.weatherExposure;
                 area.fx = scene.fx;
                 scenes[scene.id] = area;
             });

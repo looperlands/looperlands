@@ -138,7 +138,7 @@ test('HTTP asset saves share the local origin guard and build lock',async()=>{
         const saved=await fetch(base+'/local/api/assets',{method:'POST',headers,body});expect(saved.status).toBe(200);expect(await saved.json()).toMatchObject({id:'moon_shard',requiresBuild:true});
         expect((await fetch(base+'/local/api/git')).status).toBe(404);
     }finally{await new Promise(resolve=>server.close(resolve));}
-});
+}, 15000); // Cold Toolbox imports and image processing can exceed Jest's 5s default under coverage.
 test('NPC sprite edits preserve unchanged built-in dialogue links while edited or new HTML is rejected',()=>{
     for(const file of ['client/sprites/villager.json', ...[1,2,3].map(scale=>'client/img/'+scale+'/villager.png')])write(file,fs.readFileSync(path.join(source,file)));
     const asset=readAsset(root,'villager');expect(asset.dialogue.some(line=>line.includes('<a '))).toBe(true);

@@ -200,9 +200,9 @@ function clearImageCache() {
     cacheBytes = 0;
 }
 
-function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null) {
+function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null, cutoutColors = []) {
     if (!imageIds.has(image)) imageIds.set(image, ++nextImageId);
-    const cacheKey = imageIds.get(image) + ':' + getCacheKey(x, y, w, h, scale, colorShift);
+    const cacheKey = imageIds.get(image) + ':' + getCacheKey(x, y, w, h, scale, colorShift) + ':' + cutoutColors.join(';');
 
     let dxs = dx * scale;
     let dys = dy * scale;
@@ -226,9 +226,17 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = nul
         offCtx.drawImage(image, x, y, w, h, 0, 0, dw, dh);
 
         // Apply color transition if applicable
-        if (colorShift) {
+        if (colorShift || cutoutColors.length) {
             let imageData = offCtx.getImageData(0, 0, dw, dh);
-            imageData = applyColorShift(imageData, colorShift);
+            // Palette cutouts are sampled once per tile variant, never by reading back a whole frame.
+            // Cliff edges, bridges and collision data remain exactly where the map put them.
+            if (cutoutColors.length) {
+                const pixels = imageData.data;
+                for (let index = 0; index < pixels.length; index += 4) {
+                    if (cutoutColors.some(color => color[0] === pixels[index] && color[1] === pixels[index + 1] && color[2] === pixels[index + 2])) pixels[index + 3] = 0;
+                }
+            }
+            if (colorShift) imageData = applyColorShift(imageData, colorShift);
             offCtx.putImageData(imageData, 0, 0);
         }
 
@@ -253,13 +261,16 @@ function applyColorShift(imageData, colorShift) {
     return imageData;
 }
 
-function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null) {
+function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null, cutouts = []) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
         const tileX = getX(tileid + 1, setW, slideOffsetX) * tilesize;
         const tileY = getY(tileid + 1, setW, setH, slideOffsetY) * tilesize;
         const destX = getX(cellid + 1, gridW) * tilesize;
         const destY = Math.floor(cellid / gridW) * tilesize;
-        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift);
+        const colors = cutouts.filter(area => destX >= area.x && destY >= area.y && destX < area.x + area.w && destY < area.y + area.h &&
+            !(area.exclude || []).some(hole => destX >= hole.x && destY >= hole.y && destX < hole.x + hole.w && destY < hole.y + hole.h))
+            .flatMap(area => area.colors);
+        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift, colors);
     }
 }
 
@@ -267,6 +278,7 @@ const terrainCache = new Map();
 let renderScale = 1;
 let composingWorld = false;
 let frameExtensions;
+let frameCutouts = [], frameCutoutKey = '';
 let framePending = false, nextFrameTime;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
@@ -306,7 +318,7 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
     const ctx = contexes[id], canvas = canvases[id];
     const key = revision === undefined ? JSON.stringify(tiles) : revision;
     let cached = terrainCache.get(id);
-    if (!cached || cached.key !== key || cached.tileset !== tileset ||
+    if (!cached || cached.key !== key || cached.tileset !== tileset || cached.cutoutKey !== frameCutoutKey ||
         cached.width !== canvas.width || cached.height !== canvas.height ||
         cameraX < cached.x || cameraY < cached.y ||
         cameraX + canvas.width > cached.x + cached.canvas.width ||
@@ -322,11 +334,11 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
             const ty = Math.floor(tile.cellid / tile.gridW) * tilesize;
             if (lightEmittingTiles?.[tile.tileid + 1]) tileSources.push({...lightEmittingTiles[tile.tileid + 1], x: tx, y: ty});
             if (tx + 16 > x && ty + 16 > y && tx < x + buffer.width && ty < y + buffer.height) {
-                drawTile(bufferCtx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, 1, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+                drawTile(bufferCtx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, 1, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, id === 'background' ? frameCutouts : []);
             }
         }
         if (cached) cached.canvas.width = cached.canvas.height = 0;
-        cached = {key, tileset, x, y, width: canvas.width, height: canvas.height, canvas: buffer, lights: tileSources};
+        cached = {key, tileset, cutoutKey: frameCutoutKey, x, y, width: canvas.width, height: canvas.height, canvas: buffer, lights: tileSources};
         terrainCache.set(id, cached);
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -357,7 +369,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
             let tile = tiles[i];
             if (tile.id !== -1) {
                 // Render your tile here as usual...
-                drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+                drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, id === 'background' ? frameCutouts : []);
 
                 if (lightEmittingTiles && lightEmittingTiles[String(parseInt(tile.tileid + 1))]) {
                     let lightEmittingTile = Object.assign({}, lightEmittingTiles[tile.tileid + 1]);
@@ -431,6 +443,9 @@ onmessage = (e) => {
         resizeWorkerLayers(scale);
         composingWorld = true;
         frameExtensions = e.data.extensions;
+        frameCutouts = rendererExtensions?.terrainCutouts?.(frameExtensions, {...view,
+            viewportWidth: canvases.background.width, viewportHeight: canvases.background.height}) || [];
+        frameCutoutKey = JSON.stringify(frameCutouts);
         const renderDataLength = e.data.renderData.length;
         let cursorCommand, combatTextCommand;
         for (let i = 0; i < renderDataLength; i++) {
@@ -466,8 +481,9 @@ onmessage = (e) => {
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'source-over';
         composingWorld = false;
-        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
-        drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
+        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY});
+        drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime, e.data.scene);
+        drawSceneWeather(combinedCtx, e.data.scene, view, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
         if (e.data.combatFeedback?.hitFeel?.length) {
             if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');
@@ -644,9 +660,9 @@ function drawEntities(drawEntitiesData) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     if (composingWorld) {
+        rendererExtensions?.draw('background', ctx, frameExtensions, {...drawEntitiesData, scale: 1});
         ctx.drawImage(canvases.background, 0, 0);
         rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1,
-            cameraX: -Math.round(-cameraX), cameraY: -Math.round(-cameraY),
             sources: {background: canvases.background}, fireLights: lights.concat(tileLights)});
         ctx.scale(1 / scale, 1 / scale);
     }
@@ -658,9 +674,17 @@ function drawEntities(drawEntitiesData) {
     }
 
     const entityCount = drawEntitiesData.entityData.length;
+    const scenery = composingWorld ? rendererExtensions?.sorted?.(frameExtensions, {
+        ...drawEntitiesData, viewportWidth: canvas.width, viewportHeight: canvas.height
+    }) || [] : [];
+    let sceneryIndex = 0;
+    const drawSceneryUntil = depth => {
+        while (sceneryIndex < scenery.length && scenery[sceneryIndex].y <= depth) scenery[sceneryIndex++].draw(ctx);
+    };
 
     for (let i = 0; i < entityCount; i++) {
         const entityData = drawEntitiesData.entityData[i];
+        if (!entityData.groundEffect) drawSceneryUntil(entityData.depthY ?? entityData.translateY / scale + 16);
         ctx.save();
         highCtx.save();
 
@@ -730,6 +754,7 @@ function drawEntities(drawEntitiesData) {
         ctx.restore();
         highCtx.restore();
     }
+    drawSceneryUntil(Infinity);
     const healthBars = drawEntitiesData.entityData.map(entity=>entity.healthBar).filter(Boolean);
     if (healthBars.length || mobHealthBars) {
         if (!mobHealthBars) { importScripts('mobhealthbar-worker.js'); mobHealthBars = new self.MobHealthBars.Bars(); }
@@ -765,9 +790,11 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
     OPTION_DYNAMIC_LIGHTS = options?.dynamicLights ?? true;
 
+    let atmosphereLight;
     if (scene.authoringAtmosphere) {
         if (!worldClock) {importScripts('worldtime-worker.js');worldClock = self.WorldTime;}
-        GLOBAL_LIGHT_INTENSITY = 1 - worldClock.atmosphereDarkness(scene.authoringAtmosphere, worldTime ?? serverTime + performance.now());
+        atmosphereLight = worldClock.atmosphereLight(scene.authoringAtmosphere, worldTime ?? serverTime + performance.now());
+        GLOBAL_LIGHT_INTENSITY = 1 - atmosphereLight.darkness;
     } else if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((worldTime ?? serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
         if (mapId === 'main') {
@@ -780,6 +807,11 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         }
     } else {
         GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
+    }
+    const weather = scene.weather !== undefined ? scene.weather : scene.authoringAtmosphere?.weather;
+    if (weather && options?.ambience !== false) {
+        if (!self.SceneWeather) importScripts('weather-worker.js');
+        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now()).darkness);
     }
     // Clear the light canvas
     let canvas = canvases['lighting'];
@@ -800,7 +832,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     }
 
     // Add global light
-    const tint = scene.authoringAtmosphere?.color || '#000000';
+    const tint = atmosphereLight?.color || scene.authoringAtmosphere?.color || '#000000';
     const rgb = [1,3,5].map(i => parseInt(tint.slice(i,i+2),16));
     ctx.fillStyle = `rgba(${rgb.join(',')}, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1152,11 +1184,11 @@ function drawCombatFeedback(ctx, feedback) {
 }
 
 // World particles are composited in the same frame and camera as the map.
-function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
+function drawWorldAmbience(context, ambience, view, width, height, worldTime, scene) {
     if (!ambience || !view || ambience.reducedMotion) return;
     if (!self.WorldParticles) importScripts('worldparticles-worker.js');
     const elapsed = (Date.now() - (ambience.epoch || 0)) / 1000;
-    const daylight = getMainMapCycleIntensity(worldTime / CYCLE_DURATION);
+    const daylight = sceneDaylight(scene, worldTime);
     context.save();
     if (ambience.bounds) {
         const {x, y, width: w, height: h} = ambience.bounds;
@@ -1165,7 +1197,7 @@ function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
     for (const effect of ambience.effects || [{type: ambience.particles, count: ambience.particleCount}]) {
         for (const point of ambienceParticlePositions({particles: effect.type, particleCount: effect.count, design: effect.design}, view, elapsed, width, height)) {
             const reacted = self.WorldParticles.react(point, effect.type, elapsed, view, ambience.fx);
-            self.WorldParticles.draw(context, reacted, effect.type, elapsed, daylight, effect.design);
+            self.WorldParticles.drawEffect(context, reacted, effect, elapsed, daylight);
         }
     }
     context.restore();
@@ -1173,4 +1205,20 @@ function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
 function ambienceParticlePositions(config, view, elapsed, width, height) {
     return self.WorldParticles.positions(config.particles, config.particleCount, elapsed,
         {x: view.cameraX, y: view.cameraY, scale: view.scale}, width, height, config.design);
+}
+
+function sceneDaylight(scene, time) {
+    if (scene?.authoringAtmosphere) {
+        if (!worldClock) {importScripts('worldtime-worker.js'); worldClock = self.WorldTime;}
+        const config = scene.authoringAtmosphere;
+        return config.cycle ? worldClock.atmosphereLight(config, time).daylight : 1 - config.dayDarkness;
+    }
+    return getMainMapCycleIntensity(time / CYCLE_DURATION);
+}
+function drawSceneWeather(context, scene, view, time) {
+    const config = scene?.weather !== undefined ? scene.weather : scene?.authoringAtmosphere?.weather;
+    if (!config || !view || view.ambienceEnabled === false) return;
+    if (!self.SceneWeather) importScripts('weather-worker.js');
+    self.SceneWeather.draw(context, self.SceneWeather.sample(config, time, sceneDaylight(scene, time)), {...view,
+        bounds: {x: scene.x * 16, y: scene.y * 16, w: scene.width * 16, h: scene.height * 16}}, time);
 }

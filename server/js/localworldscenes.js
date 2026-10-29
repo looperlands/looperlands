@@ -4,7 +4,8 @@ function validateScenes(scenes, map) {
     if (!Array.isArray(scenes) || scenes.length > 100) fail('Use at most 100 scenes per map.');
     const ids = new Set();
     for (const scene of scenes) {
-        if (!scene || Object.keys(scene).some(key => !['id', 'name', 'x', 'y', 'w', 'h'].includes(key))) fail('Scene contains unsupported fields.');
+        if (!scene || Object.keys(scene).some(key => !['id', 'name', 'x', 'y', 'w', 'h', 'weatherExposure'].includes(key))) fail('Scene contains unsupported fields.');
+        if (scene.weatherExposure !== undefined && !['auto', 'outdoor', 'indoor'].includes(scene.weatherExposure)) fail('Choose automatic, outdoor or indoor weather exposure.');
         if (!/^[A-Za-z0-9_-]{1,100}$/.test(scene.id) || ['__proto__', 'constructor', 'prototype', 'mapmaker-default'].includes(String(scene.id)) || ids.has(String(scene.id))) fail('Scenes need unique IDs containing letters, numbers, underscores or hyphens.');
         ids.add(String(scene.id));
         if (typeof scene.name !== 'string' || scene.name.length > 120 || /[<>\u0000-\u001f]/.test(scene.name)) fail('Scene names must be plain text, up to 120 characters.');

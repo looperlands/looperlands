@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "rules": [],
+  "dialogues": [],
+  "atmosphere": [
+    {
+      "sceneId": "1943",
+      "cycle": false,
+      "dayDarkness": 0.0,
+      "nightDarkness": 0.0,
+      "color": "#142438",
+      "music": null,
+      "particles": [
+        {
+          "type": "pollen",
+          "count": 6
+        }
+      ],
+      "parallax": {
+        "backgroundColor": "#48c4f8",
+        "cutoutColors": [
+          [
+            72,
+            196,
+            248
+          ]
+        ],
+        "layers": [
+          {
+            "image": "/img/parallax/clouds.png",
+            "plane": "background",
+            "width": 512,
+            "height": 384,
+            "factorX": 0.48,
+            "factorY": 0.48,
+            "opacity": 0.75,
+            "driftX": 0.24,
+            "driftY": 0.06
+          },
+          {
+            "image": "/img/parallax/clouds.png",
+            "plane": "background",
+            "width": 384,
+            "height": 320,
+            "factorX": 0.7,
+            "factorY": 0.7,
+            "opacity": 0.7,
+            "offsetX": 176,
+            "offsetY": 104,
+            "driftX": 0.42,
+            "driftY": -0.08
+          }
+        ]
+      }
+    }
+  ],
+  "sequences": [],
+  "weather": {
+    "mode": "fixed",
+    "type": "sunrays",
+    "intensity": 0.4,
+    "wind": 0.15,
+    "transition": 8,
+    "sequence": [
+      {
+        "type": "sunrays",
+        "intensity": 0.5,
+        "duration": 120
+      },
+      {
+        "type": "rain",
+        "intensity": 0.4,
+        "duration": 90
+      },
+      {
+        "type": "clear",
+        "intensity": 0,
+        "duration": 90
+      }
+    ],
+    "nightOpacity": 0.4
+  },
+  "scenes": [
+    {
+      "id": "1871",
+      "name": "888 Infinity Boulevard",
+      "x": 135,
+      "y": 0,
+      "w": 37,
+      "h": 39,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1879",
+      "name": "88 Infinity Boulevard",
+      "x": 98,
+      "y": 0,
+      "w": 37,
+      "h": 39,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1891",
+      "name": "The Chamber of Secrets",
+      "x": 53,
+      "y": 47,
+      "w": 51,
+      "h": 20,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1892",
+      "name": "An Underwater Cave",
+      "x": 53,
+      "y": 73,
+      "w": 51,
+      "h": 20,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1894",
+      "name": "The Captain's Quarters",
+      "x": 0,
+      "y": 102,
+      "w": 34,
+      "h": 13,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1922",
+      "name": "8888 Infinity Boulevard",
+      "x": 39,
+      "y": 19,
+      "w": 29,
+      "h": 16,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1923",
+      "name": "8 Infinity Boulevard",
+      "x": 69,
+      "y": 35,
+      "w": 29,
+      "h": 12,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1924",
+      "name": "the m88n lab",
+      "x": 39,
+      "y": 0,
+      "w": 59,
+      "h": 19,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1939",
+      "name": "8 Infinity Boulevard",
+      "x": 68,
+      "y": 19,
+      "w": 30,
+      "h": 16,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1940",
+      "name": "8888 Infinity Boulevard",
+      "x": 39,
+      "y": 35,
+      "w": 30,
+      "h": 12,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1943",
+      "name": "DreamLand",
+      "x": 0,
+      "y": 120,
+      "w": 126,
+      "h": 60,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "1944",
+      "name": "The Forbidden City",
+      "x": 0,
+      "y": 181,
+      "w": 172,
+      "h": 36,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "1954",
+      "name": "741 Paradise Point East",
+      "x": 117,
+      "y": 73,
+      "w": 55,
+      "h": 25,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "1955",
+      "name": "420 Paradise Point East",
+      "x": 117,
+      "y": 47,
+      "w": 55,
+      "h": 26,
+      "weatherExposure": "indoor"
+    },
+    {
+      "id": "2020",
+      "name": "Paradise Point East",
+      "x": 0,
+      "y": 218,
+      "w": 172,
+      "h": 86,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2021",
+      "name": "The Deep Blue",
+      "x": 0,
+      "y": 304,
+      "w": 172,
+      "h": 196,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2029",
+      "name": "Apo Island",
+      "x": 0,
+      "y": 0,
+      "w": 39,
+      "h": 17,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2030",
+      "name": "Caro Island",
+      "x": 0,
+      "y": 17,
+      "w": 39,
+      "h": 21,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2031",
+      "name": "Lido Island",
+      "x": 0,
+      "y": 38,
+      "w": 39,
+      "h": 21,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2032",
+      "name": "Oro Island",
+      "x": 0,
+      "y": 59,
+      "w": 39,
+      "h": 21,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2033",
+      "name": "Rico Island",
+      "x": 0,
+      "y": 80,
+      "w": 39,
+      "h": 22,
+      "weatherExposure": "outdoor"
+    },
+    {
+      "id": "2034",
+      "name": "The Champagne Lounge",
+      "x": 72,
+      "y": 100,
+      "w": 35,
+      "h": 16,
+      "weatherExposure": "indoor"
+    }
+  ]
+}

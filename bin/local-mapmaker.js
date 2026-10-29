@@ -292,7 +292,9 @@ function createToolboxApp(toolbox) {
         next();
     });
     app.use('/local/api/assets', express.json({limit: '18mb'}));
+    app.use('/local/api/parallax-images', express.json({limit: '6mb'}));
     app.use(express.json({limit: '256kb'}));
+    require('../server/js/localparallaxassets').install(app, toolbox);
     require('../server/js/localtoolboxassets').install(app, toolbox.root);
     require('../server/js/localassetapi').install(app, toolbox);
     require('../server/js/localassetlookup').install(app, toolbox);
