@@ -13,8 +13,11 @@ beforeEach(() => {
 afterEach(() => fs.rmSync(root, {recursive: true, force: true}));
 
 test('production artifacts include the same scenes, atmosphere and action placements as local transport', () => {
+    fs.mkdirSync(path.join(root,'client/img/parallax'),{recursive:true});
+    fs.copyFileSync(path.join(__dirname,'../../client/img/parallax/clouds.png'),path.join(root,'client/img/parallax/clouds.png'));
     const doc = {version: 1, rules: [rule], dialogues: [], scenes: [{id: 'clearing', name: 'Clearing', x: 1, y: 1, w: 4, h: 4}], atmosphere: [{sceneId: 'clearing', cycle: true, dayDarkness: 0, nightDarkness: .8, color: '#123456', music: '', particles: []}]};
-    doc.atmosphere[0].weather = require('../../client/js/sceneenvironment').defaults.weather;
+    doc.weather = require('../../client/js/sceneenvironment').defaults.weather;
+    doc.scenes[0].weatherExposure='outdoor';
     doc.atmosphere[0].dayNight = require('../../client/js/sceneenvironment').defaults.dayNight;
     doc.atmosphere[0].parallax = {layers: [{image: '/img/parallax/clouds.png', plane: 'background', width: 384, height: 320, factorX: .6, factorY: .6}], cutoutColors: [[72, 196, 248]]};
     write('tools/worlds/one.json', doc);
@@ -25,6 +28,7 @@ test('production artifacts include the same scenes, atmosphere and action placem
     const deployed = JSON.parse(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json')));
     const server = JSON.parse(fs.readFileSync(path.join(root, 'server/maps/world_server_one.json')));
     const context = {}; vm.runInNewContext(fs.readFileSync(path.join(root, 'client/maps/world_client_one.js'), 'utf8'), context);
+    expect(deployed.scenes[0].weather).toEqual(doc.weather);
     expect(deployed).toEqual(local); expect(JSON.parse(JSON.stringify(context.mapData))).toEqual(local);
     expect(server.scenes).toEqual(deployed.scenes); expect(deployed.authoringActions['2.3']).toEqual({action: 'repair'});
     expect(JSON.parse(fs.readFileSync(path.join(root, 'tools/worlds/one.json')))).toEqual(doc);

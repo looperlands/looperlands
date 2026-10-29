@@ -5,6 +5,7 @@
 })(typeof self !== 'undefined' ? self : null, function () {
     const assets = ['clouds', 'mist', 'canopy', 'forest-roots', 'forest-trunk', 'forest-canopy-lower',
         'forest-canopy-upper', 'desert-dust', 'volcanic-smoke', 'embers', 'meadow-seeds', 'lava-depth'];
+    const validImage = image => typeof image === 'string' && /^\/img\/parallax\/[a-z0-9][a-z0-9-]{0,79}\.png$/.test(image);
     const types = ['clear', 'rain', 'sunrays'];
     const planes = ['background', 'ground', 'entities', 'foreground'];
     function fail(message) {throw Object.assign(new Error(message), {status: 400});}
@@ -27,9 +28,10 @@
         return value;
     }
     function weather(value) {
-        fields(value, ['mode', 'type', 'intensity', 'wind', 'transition', 'sequence'], 'Weather');
+        fields(value, ['mode', 'type', 'intensity', 'wind', 'transition', 'sequence', 'nightOpacity'], 'Weather');
         if (!['fixed', 'cycle'].includes(value.mode) || !types.includes(value.type)) fail('Choose fixed or cycling weather and a supported effect.');
         number(value.intensity, 0, 1, 'Weather intensity'); number(value.wind, -1, 1, 'Wind'); number(value.transition, 1, 30, 'Weather transition seconds');
+        optionalNumbers(value, [['nightOpacity', 0, 1]]);
         if (!Array.isArray(value.sequence) || value.sequence.length < 1 || value.sequence.length > 8) fail('Use one to eight weather phases.');
         for (const phase of value.sequence) {
             fields(phase, ['type', 'intensity', 'duration'], 'Weather phase');
@@ -43,15 +45,15 @@
         fields(value, ['layers', 'placements', 'cutoutColors', 'backgroundColor'], 'Parallax');
         if (!Array.isArray(value.layers) || value.layers.length > 8) fail('Use at most eight parallax layers.');
         for (const layer of value.layers) {
-            fields(layer, ['image', 'plane', 'width', 'height', 'factorX', 'factorY', 'opacity', 'driftX', 'driftY', 'offsetX', 'offsetY', 'placed', 'anchorX', 'anchorY', 'repeatX', 'repeatY'], 'Parallax layer');
-            if (!assets.some(asset => layer.image === '/img/parallax/' + asset + '.png')) fail('Choose a registered parallax image.');
+            fields(layer, ['image', 'plane', 'width', 'height', 'factorX', 'factorY', 'opacity', 'nightOpacity', 'nightBrightness', 'swayX', 'swayY', 'swayPeriod', 'driftX', 'driftY', 'offsetX', 'offsetY', 'placed', 'anchorX', 'anchorY', 'repeatX', 'repeatY'], 'Parallax layer');
+            if (!validImage(layer.image)) fail('Choose a registered local parallax PNG image.');
             if (!planes.includes(layer.plane)) fail('Choose a parallax plane.');
             if (layer.plane === 'entities' && !layer.placed) fail('Depth-sorted layers need sprite placements.');
             for (const key of ['placed', 'repeatX', 'repeatY']) if (layer[key] !== undefined && typeof layer[key] !== 'boolean') fail(key + ' must be enabled or disabled.');
             number(layer.width, layer.placed ? 8 : 32, layer.placed ? 512 : 4096, 'Layer width');
             number(layer.height, layer.placed ? 8 : 32, layer.placed ? 512 : 4096, 'Layer height');
             optionalNumbers(layer, [['factorX', layer.placed ? .5 : 0, 2], ['factorY', layer.placed ? .5 : 0, 2], ['opacity', 0, 1],
-                ['driftX', -32, 32], ['driftY', -32, 32], ['offsetX', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096],
+                ['nightOpacity', 0, 1], ['nightBrightness', 0, 1], ['swayX', 0, 12], ['swayY', 0, 12], ['swayPeriod', 1, 30], ['driftX', -32, 32], ['driftY', -32, 32], ['offsetX', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096],
                 ['offsetY', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096], ['anchorX', 0, 1], ['anchorY', 0, 1]]);
         }
         if (value.placements !== undefined) {
@@ -76,8 +78,12 @@
     }
     const defaults = {
         dayNight: {dawn: 5, dawnDuration: 2, dusk: 17, duskDuration: 2, dayColor: '#162a38', nightColor: '#111b38', dawnColor: '#ae7966', duskColor: '#9c5e4c'},
-        weather: {mode: 'fixed', type: 'clear', intensity: .6, wind: .2, transition: 8,
+        weather: {mode: 'fixed', type: 'clear', intensity: .6, wind: .2, transition: 8, nightOpacity: .45,
             sequence: [{type: 'sunrays', intensity: .5, duration: 120}, {type: 'rain', intensity: .55, duration: 90}, {type: 'clear', intensity: 0, duration: 90}]}
     };
-    return {assets, types, planes, dayNight, weather, parallax, defaults};
+    function outdoors(scene) {
+        if (scene?.weatherExposure && scene.weatherExposure !== 'auto') return scene.weatherExposure === 'outdoor';
+        return scene?.dn_cycle === true || scene?.dn_cycle === 'true';
+    }
+    return {assets, types, planes, dayNight, weather, parallax, defaults, outdoors, validImage};
 });

@@ -24,7 +24,8 @@ function mergeFlow(mapId, platformFlow, root = projectRoot) {
 
 function applyMap(root, mapId, map) {
     const document = World.readDocument(root, mapId);
-    return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes), document.atmosphere), Tiles.document(root, mapId));
+    require('./localparallaxassets').validateLayers(root,document.atmosphere);
+    return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes), document.atmosphere, document.weather), Tiles.document(root, mapId));
 }
 
 function validate(root = projectRoot) {
@@ -42,7 +43,7 @@ function validate(root = projectRoot) {
         require('./scriptedsequenceloader').validateDefinitions(root,mapId,doc.sequences,registry);
         World.validateDialogues(doc.dialogues);
         World.validateAtmosphere(doc.atmosphere);
-        if (doc.scenes != null || doc.atmosphere.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
+        if (doc.scenes != null || doc.atmosphere.length || doc.weather || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
             const map = Tiles.readMap(root, mapId);
             applyMap(root, mapId, map);
             Tiles.validate(tileDoc, map, {base: Tiles.base(root, mapId), quests: registry.quests.map(quest => quest.id)});
@@ -60,7 +61,7 @@ function build(root = projectRoot) {
     const outputs = [];
     for (const mapId of Tiles.maps(root)) {
         const doc = World.readDocument(root, mapId), tiles = Tiles.document(root, mapId);
-        if (doc.scenes == null && !doc.atmosphere.length && !tiles.placements.length) continue;
+        if (doc.scenes == null && !doc.atmosphere.length && !doc.weather && !tiles.placements.length) continue;
         const file = path.join(root, 'client/maps/world_client_' + mapId + '.json');
         const map = applyMap(root, mapId, JSON.parse(fs.readFileSync(file, 'utf8')));
         outputs.push([file, JSON.stringify(map)], [file.replace(/\.json$/, '.js'), 'var mapData = ' + JSON.stringify(map) + ';']);

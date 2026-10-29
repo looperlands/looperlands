@@ -67,7 +67,7 @@
                     ctx.restore();
                 }
             } else for (const point of Particles.positions(spec.type, spec.count, seconds, {x: 0,y: 0,scale: 1},480,224,spec.design)) {
-                Particles.draw(ctx,point,spec.type,seconds,night?0:1,spec.design);
+                Particles.drawEffect(ctx,point,spec,seconds,night?0:1);
             }
         };
         previews.add(draw);
@@ -117,6 +117,7 @@
                     effect.type=value;if(value==='custom')effect.design=Config.custom();else delete effect.design;changed();draw();
                 });
                 field(row,'Particle count',effect.count,{min:1,max:24,step:1},value=>{effect.count=value;changed();});
+                field(row,'Particle opacity at night',effect.nightOpacity??Particles.nightOpacity(effect.type),{min:0,max:1,step:'any',hint:'0 hides this effect at night; 1 keeps its daytime opacity.'},value=>{effect.nightOpacity=value;changed();});
                 button(row,'Remove effect '+(index+1),()=>{config.particles.splice(index,1);changed();draw();}, {className: 'destructive'});
                 if(effect.type==='custom') {
                     const designer=el('div','',{className:'particle-designer'});block.append(designer);

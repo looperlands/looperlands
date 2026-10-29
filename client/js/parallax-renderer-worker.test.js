@@ -10,8 +10,11 @@ function setup() {
         canvases.push(canvas); return canvas;
     };
     const renderer = createParallax({loadImage, createCanvas, now: () => time});
-    const ctx = {canvas: {width: 320, height: 240}};
+    const ctx = {canvas: {width: 320, height: 240}, globalAlpha: 1, filter: 'none'};
     for (const name of ['save', 'restore', 'beginPath', 'rect', 'clip', 'drawImage', 'translate', 'scale', 'fillRect']) ctx[name] = jest.fn();
+    const stack=[];
+    ctx.save=jest.fn(()=>stack.push({globalAlpha:ctx.globalAlpha,filter:ctx.filter}));
+    ctx.restore=jest.fn(()=>Object.assign(ctx,stack.pop()));
     const view = {cameraX: 100, cameraY: 200, scale: 1};
     const layer = {image: source, width: 400, height: 400, factorX: 0.5, factorY: 1.5};
     const state = {scenes: [{x: 0, y: 0, w: 100, h: 100, layers: [layer]}]};
@@ -240,4 +243,27 @@ test('overhead trees follow ambient darkness and exclude higher-priority regions
     const filters=[];s.ctx.drawImage.mockImplementation(()=>filters.push(s.ctx.filter));
     s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:.18});
     expect(filters).toContain('brightness(0.18)');expect(s.ctx.clip).toHaveBeenCalledWith('evenodd');
+});
+
+test('sway is bounded, gradual, anchored per tree and disabled by reduced motion', async () => {
+    const s=setup();Object.assign(s.layer,{placed:true,width:80,height:100,factorX:1,factorY:1,swayX:2,swayY:.5,swayPeriod:6});
+    s.state.scenes[0].placements=[{x:250,y:350}];await ready(s);
+    const draw=(time,view=s.view)=>{s.time(time);s.ctx.drawImage.mockClear();s.renderer.foreground(s.ctx,s.state,view);return s.ctx.drawImage.mock.calls[0];};
+    const first=draw(1000),next=draw(1000+1000/60),later=draw(2200);
+    expect(next[1]).not.toBe(first[1]);expect(Math.abs(next[1]-first[1])).toBeLessThan(.1);
+    expect(Math.abs(later[1]-first[1])).toBeLessThanOrEqual(4);
+    const moved=draw(1000,{...s.view,cameraX:s.view.cameraX+10});expect(moved[1]).toBeCloseTo(first[1]-10);
+    expect(draw(1000,{...s.view,reducedMotion:true})).toEqual(draw(4000,{...s.view,reducedMotion:true}));
+    delete s.layer.swayX;delete s.layer.swayY;expect(draw(1000)).toEqual(draw(4000));
+});
+
+test('overhead mist dims at night with configurable opacity and brightness', async () => {
+    const s=setup();s.layer.opacity=.4;await ready(s);
+    const draws=[];s.ctx.drawImage.mockImplementation(()=>draws.push({alpha:s.ctx.globalAlpha,filter:s.ctx.filter}));
+    s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:0});
+    expect(draws[0].alpha).toBeCloseTo(.18);expect(draws[0].filter).toBe('brightness(0.55)');
+    draws.length=0;Object.assign(s.layer,{nightOpacity:1,nightBrightness:1});
+    s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:0});
+    expect(draws[0]).toEqual({alpha:.4,filter:'brightness(1)'});
+    expect(s.ctx.globalAlpha).toBe(1);expect(s.ctx.filter).toBe('none');
 });

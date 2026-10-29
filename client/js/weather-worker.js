@@ -20,6 +20,8 @@
         for (const phase of phases) if (phase.type === 'rain' || phase.type === 'sunrays') result[phase.type] += clamp(phase.intensity) * phase.weight;
         result.sunrays *= clamp(daylight);
         result.darkness = result.rain * .13;
+        const night = Number.isFinite(config.nightOpacity) ? clamp(config.nightOpacity) : .45;
+        result.opacity = night + (1 - night) * clamp(daylight);
         return result;
     }
     function hash(x, y, seed) {
@@ -32,6 +34,7 @@
         const scale = view.scale || 1, width = ctx.canvas.width / scale, height = ctx.canvas.height / scale;
         const time = view.reducedMotion ? 0 : milliseconds / 1000;
         ctx.save();
+        ctx.globalAlpha *= weather.opacity ?? 1;
         if (view.bounds) {
             const b = view.bounds;
             ctx.beginPath(); ctx.rect((b.x - view.cameraX) * scale, (b.y - view.cameraY) * scale, b.w * scale, b.h * scale); ctx.clip();

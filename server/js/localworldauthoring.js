@@ -31,7 +31,8 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences','weather'], 'World authoring source');
+    if (value.weather != null) require('../../client/js/sceneenvironment').weather(value.weather);
     if (value.version !== 1) fail('World authoring source requires version: 1.');
     for (const key of Object.values(tools)) list(value[key] == null && key === 'scenes' ? [] : value[key] === undefined ? [] : value[key], 100, key);
     return {...empty(), ...value};
@@ -147,36 +148,40 @@ async function catalog(root, mapId) {
         scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,collisions:server.collisions||[],music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
 }
 function sectionValue(doc, tool, catalog) {
-    return tool === 'scenes' ? {scenes:doc.scenes ?? null, atmosphere:doc.atmosphere, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
+    return tool === 'scenes' ? {scenes:doc.scenes ?? null, atmosphere:doc.atmosphere, weather:doc.weather ?? null, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
 }
 function sceneEntries(doc, catalog) {
     const orphan = doc.atmosphere.find(row => row.sceneId !== '*' && !catalog.scenes.some(scene => String(scene.id) === row.sceneId));
     if (orphan) fail('Atmosphere refers to missing scene ' + orphan.sceneId + '. Remove its override through the atmosphere API or repair the source before editing scenes.', 422);
-    return [{sceneId:'*'}, ...catalog.scenes.map(({id,name,x,y,w,h}) => ({sceneId:String(id),name:name||'',x,y,w,h}))]
+    return [{sceneId:'*'}, ...catalog.scenes.map(({id,name,x,y,w,h,weatherExposure}) => ({sceneId:String(id),name:name||'',x,y,w,h,...(weatherExposure === undefined ? {} : {weatherExposure})}))]
         .map(scene => ({...scene, atmosphere:doc.atmosphere.find(row => row.sceneId === scene.sceneId) || null}));
 }
 async function readTool(root, mapId, tool, options) {
     if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId);options ||= await catalog(root,mapId);
     const entries=tool==='scenes'?sceneEntries(doc,options):doc[tools[tool]];
-    return {mapId,tool,entries,revision:hash(sectionValue(doc,tool,options)),source:'tools/worlds/'+mapId+'.json',catalog:options};
+    return {mapId,tool,entries,...(tool==='scenes'?{weather:doc.weather ?? null}:{}),revision:hash(sectionValue(doc,tool,options)),source:'tools/worlds/'+mapId+'.json',catalog:options};
 }
 async function saveTool(root, input, beforeWrite = () => {}) {
-    fields(input,['mapId','tool','revision','entries'],'Authoring request');if(!Object.hasOwn(tools,input.tool))fail('Choose a world authoring tool.');
+    fields(input,['mapId','tool','revision','entries','weather'],'Authoring request');if(!Object.hasOwn(tools,input.tool))fail('Choose a world authoring tool.');
     const options=await catalog(root,input.mapId),doc=readDocument(root,input.mapId),section=tools[input.tool];
     if(input.revision!==hash(sectionValue(doc,input.tool,options)))fail('This section changed on disk. Keep your draft, reload, then apply your edits again.',409);
     let changes;
     if(input.tool==='scenes') {
         list(input.entries,101,'Scene manager entries');
-        for(const row of input.entries) fields(row,['sceneId','name','x','y','w','h','atmosphere'],'Scene manager entry');
+        for(const row of input.entries) fields(row,['sceneId','name','x','y','w','h','weatherExposure','atmosphere'],'Scene manager entry');
         if(input.entries.filter(row=>row.sceneId==='*').length!==1)fail('Keep one whole map default.');
-        const scenes=input.entries.filter(row=>row.sceneId!=='*').map(({sceneId,name,x,y,w,h})=>({id:sceneId,name,x,y,w,h}));
+        const scenes=input.entries.filter(row=>row.sceneId!=='*').map(({sceneId,name,x,y,w,h,weatherExposure})=>({id:sceneId,name,x,y,w,h,...(weatherExposure === undefined ? {} : {weatherExposure})}));
         validateScenes(scenes,options);
         const atmosphere=input.entries.filter(row=>row.atmosphere!==null).map(row=>{
             if(!object(row.atmosphere)||row.atmosphere.sceneId!==row.sceneId)fail('Atmosphere must belong to its scene.');
             return row.atmosphere;
         });
-        validateAtmosphere(atmosphere,{...options,scenes});changes={scenes,atmosphere};
-    } else {validate[input.tool](input.entries,options);changes={[section]:input.entries};}
+        validateAtmosphere(atmosphere,{...options,scenes});require('./localparallaxassets').validateLayers(root,atmosphere);changes={scenes,atmosphere};
+        if (Object.hasOwn(input,'weather')) {
+            if (input.weather !== null) require('../../client/js/sceneenvironment').weather(input.weather);
+            changes.weather=input.weather;
+        }
+    } else {validate[input.tool](input.entries,options);if(input.tool==='atmosphere')require('./localparallaxassets').validateLayers(root,input.entries);changes={[section]:input.entries};}
     // Recheck after asynchronous catalog reads so concurrent saves cannot overwrite each other.
     const latest=readDocument(root,input.mapId);
     if(input.tool==='scenes') {
@@ -193,14 +198,19 @@ function loadFlows(root,mapId) {mapId=mapId.replace(/^world_/,'');const rows=rea
 function registerDialogues(root,target) {
     for(const mapId of maps(root)){try{const entries=readDocument(root,mapId).dialogues;validateDialogues(entries);if(entries.length)target.register(mapId,{id:'local-dialogue-builder',dialogues:entries.map(d=>({...d,npc:Number(d.npc),localBuilder:true}))});}catch(error){console.error('Could not load local conversations for '+mapId+': '+error.message);}}
 }
-function applyAtmosphere(map,entries) {
-    if(!entries.length)return map;validateAtmosphere(entries);
+function applyAtmosphere(map,entries,weather) {
+    if(!entries.length&&weather===undefined)return map;validateAtmosphere(entries);
+    const environment=require('../../client/js/sceneenvironment');
+    if(weather)environment.weather(weather);
     const scenes=(map.scenes||[]).map(s=>({...s}));
-    if(entries.some(row=>row.sceneId==='*')) {
+    if(weather||entries.some(row=>row.sceneId==='*')) {
         let id='mapmaker-default';while(scenes.some(s=>String(s.id)===id))id+='-fallback';
-        scenes.push({id,name:'Map atmosphere default',x:0,y:0,w:map.width,h:map.height});
+        scenes.push({id,name:'Map atmosphere default',x:0,y:0,w:map.width,h:map.height,weatherExposure:'outdoor',darkness:0});
     }
-    for(const scene of scenes){const row=entries.find(r=>r.sceneId===String(scene.id))||entries.find(r=>r.sceneId==='*');if(!row)continue;
+    for(const scene of scenes){
+        // Resolve exposure before a lighting override changes the original day/night flag.
+        if(weather!==undefined)scene.weather=weather&&environment.outdoors(scene)?JSON.parse(JSON.stringify(weather)):null;
+        const row=entries.find(r=>r.sceneId===String(scene.id))||entries.find(r=>r.sceneId==='*');if(!row)continue;
         scene.authoringAtmosphere={cycle:row.cycle,dayDarkness:row.dayDarkness,nightDarkness:row.nightDarkness,color:row.color};scene.dn_cycle=row.cycle;scene.darkness=row.dayDarkness;scene.ambience=row.particles;scene.authoringMusic=row.music;
         for (const key of ['dayNight', 'weather']) if (row[key] !== undefined) scene.authoringAtmosphere[key]=JSON.parse(JSON.stringify(row[key]));
         scene.parallax=row.parallax ? JSON.parse(JSON.stringify(row.parallax)) : null;
@@ -209,6 +219,7 @@ function applyAtmosphere(map,entries) {
 }
 
 function installRuntime(app,root,getWorlds=()=>({})) {
+    app.use('/img/parallax',require('express').static(path.join(root,'client/img/parallax')));
     app.use('/maps',(req,res,next)=>{
         const match=req.path.match(/^\/world_client_([A-Za-z0-9_-]+)\.(json|js)$/);
         if(!match)return next();
@@ -220,7 +231,7 @@ function installRuntime(app,root,getWorlds=()=>({})) {
             // area lookup, including when the local layout was removed or restored.
             const worlds=getWorlds()||{},world=worlds[mapId]||worlds['world_'+mapId];
             if(world?.map)world.map.scenes=value.scenes||[];
-            if(doc.scenes==null&&!doc.atmosphere.length&&!tileDoc.placements.length)return next();
+            if(doc.scenes==null&&!doc.atmosphere.length&&!doc.weather&&!tileDoc.placements.length)return next();
             res.setHeader('Cache-Control','no-store');
             if(match[2]==='js')return res.type('application/javascript').send('var mapData = '+JSON.stringify(value)+';');
             res.json(value);

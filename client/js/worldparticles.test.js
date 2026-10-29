@@ -81,3 +81,14 @@ test('fireflies retain their night-only additive glow', () => {
     expect(draw('fireflies', 1)).toHaveLength(0);
     expect(draw('fireflies', 0).at(-1).blend).toBe('lighter');
 });
+
+test('night opacity dims ordinary particles while retaining configurable luminous effects', () => {
+    const alphas=[],stack=[],ctx={globalAlpha:1,translate(){},rotate(){},save(){stack.push(this.globalAlpha);},restore(){this.globalAlpha=stack.pop();},
+        fillRect(){alphas.push(this.globalAlpha);},createRadialGradient:()=>({addColorStop(){}})};
+    const p={x:20,y:30,scale:2,seed:.5};
+    WorldParticles.drawEffect(ctx,p,{type:'leaves'},1,0);expect(alphas[0]).toBe(.45);
+    alphas.length=0;WorldParticles.drawEffect(ctx,p,{type:'fireflies'},1,0);expect(alphas[0]).toBe(1);
+    alphas.length=0;WorldParticles.drawEffect(ctx,p,{type:'fireflies',nightOpacity:.2},1,0);expect(alphas[0]).toBe(.2);
+    alphas.length=0;WorldParticles.drawEffect(ctx,p,{type:'leaves',nightOpacity:0},1,1);expect(alphas[0]).toBe(1);
+    expect(ctx.globalAlpha).toBe(1);
+});

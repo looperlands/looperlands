@@ -122,6 +122,8 @@ test('sequence saves preserve other world sections, reject stale writes and load
 });
 
 test('scene environments survive save/reload and both local client transports, with stale-save protection', async () => {
+    fs.mkdirSync(path.join(root,'client/img/parallax'),{recursive:true});
+    fs.copyFileSync(path.join(__dirname,'../../client/img/parallax/clouds.png'),path.join(root,'client/img/parallax/clouds.png'));
     const base=await W.readTool(root,'one','scenes'), E=require('../../client/js/sceneenvironment');
     const config={...atmosphere('1'),dayNight:E.defaults.dayNight,weather:E.defaults.weather,
         parallax:{layers:[{image:'/img/parallax/clouds.png',plane:'foreground',width:384,height:320,factorX:1.2,factorY:1.1,driftX:.3}]}};
@@ -138,4 +140,44 @@ test('scene environments survive save/reload and both local client transports, w
         expect(map.scenes[0].authoringAtmosphere).toMatchObject({weather:config.weather,dayNight:config.dayNight});
         expect(JSON.parse(JSON.stringify(context.mapData.scenes))).toEqual(map.scenes);
     } finally {await new Promise(resolve=>server.close(resolve));}
+});
+
+test('shared outdoor weather saves separately from lighting and survives both map transports', async () => {
+    const base=await W.readTool(root,'one','scenes'), E=require('../../client/js/sceneenvironment');
+    base.entries[1].weatherExposure='outdoor';
+    base.entries.push({sceneId:'room',name:'Room',x:12,y:1,w:4,h:4,weatherExposure:'indoor',atmosphere:null});
+    const weather={...E.defaults.weather,mode:'cycle',nightOpacity:.3};
+    const saved=await W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries,weather});
+    expect(saved.weather).toEqual(weather);expect(saved.entries).toEqual(base.entries);
+    const app=require('express')();W.installRuntime(app,root);const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+    try {
+        const url='http://127.0.0.1:'+server.address().port+'/maps/world_client_one';
+        const json=await(await fetch(url+'.json')).json(), context={};
+        require('vm').runInNewContext(await(await fetch(url+'.js')).text(),context);
+        expect(JSON.parse(JSON.stringify(context.mapData.scenes))).toEqual(json.scenes);
+        expect(json.scenes[0]).toMatchObject({weather,weatherExposure:'outdoor'});
+        expect(json.scenes[0]).not.toHaveProperty('authoringAtmosphere');
+        expect(json.scenes[1].weather).toBeNull();expect(json.scenes[2].weather).toEqual(weather);
+        const next=await W.saveTool(root,{mapId:'one',tool:'scenes',revision:saved.revision,entries:saved.entries,weather:{...weather,wind:.8}});
+        await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:saved.revision,entries:saved.entries,weather})).rejects.toHaveProperty('status',409);
+        await W.saveTool(root,{mapId:'one',tool:'scenes',revision:next.revision,entries:next.entries,weather:null});
+        expect((await(await fetch(url+'.json')).json()).scenes.every(scene=>scene.weather===null)).toBe(true);
+    }finally{await new Promise(r=>server.close(r));}
+});
+
+test('outdoor weather is identical across lighting overrides and leaves sheltered scenes dry', () => {
+    const weather={...require('../../client/js/sceneenvironment').defaults.weather,mode:'cycle'};
+    const map={width:30,height:30,scenes:[{id:1,dn_cycle:'true'},{id:2,dn_cycle:'true',weatherExposure:'indoor'},{id:3,dn_cycle:'false',weatherExposure:'outdoor'}]};
+    const result=W.applyAtmosphere(map,[{...atmosphere('1'),cycle:false,dayDarkness:.4,weather:{...weather,type:'rain'}}],weather);
+    expect(result.scenes[0].weather).toEqual(result.scenes[2].weather);
+    expect(result.scenes[1].weather).toBeNull();
+    expect(map.scenes.every(scene=>scene.weather===undefined)).toBe(true);
+    expect(W.applyAtmosphere(map,[atmosphere('1')],null).scenes[0].weather).toBeNull();
+});
+
+test('invalid weather exposure and nighttime multipliers cannot be saved', async () => {
+    const base=await W.readTool(root,'one','scenes'), weather=require('../../client/js/sceneenvironment').defaults.weather;
+    await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries,weather:{...weather,nightOpacity:2}})).rejects.toHaveProperty('status',400);
+    base.entries[1].weatherExposure='rain';
+    await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries})).rejects.toThrow('exposure');
 });

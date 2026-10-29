@@ -482,7 +482,7 @@ onmessage = (e) => {
         combinedCtx.globalCompositeOperation = 'source-over';
         composingWorld = false;
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY});
-        drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
+        drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime, e.data.scene);
         drawSceneWeather(combinedCtx, e.data.scene, view, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
         if (e.data.combatFeedback?.hitFeel?.length) {
@@ -794,11 +794,6 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     if (scene.authoringAtmosphere) {
         if (!worldClock) {importScripts('worldtime-worker.js');worldClock = self.WorldTime;}
         atmosphereLight = worldClock.atmosphereLight(scene.authoringAtmosphere, worldTime ?? serverTime + performance.now());
-        const weather = scene.authoringAtmosphere.weather;
-        if (weather && options?.ambience !== false) {
-            if (!self.SceneWeather) importScripts('weather-worker.js');
-            atmosphereLight.darkness = Math.min(1, atmosphereLight.darkness + self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now(), atmosphereLight.daylight).darkness);
-        }
         GLOBAL_LIGHT_INTENSITY = 1 - atmosphereLight.darkness;
     } else if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((worldTime ?? serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
@@ -812,6 +807,11 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         }
     } else {
         GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
+    }
+    const weather = scene.weather !== undefined ? scene.weather : scene.authoringAtmosphere?.weather;
+    if (weather && options?.ambience !== false) {
+        if (!self.SceneWeather) importScripts('weather-worker.js');
+        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now()).darkness);
     }
     // Clear the light canvas
     let canvas = canvases['lighting'];
@@ -1184,11 +1184,11 @@ function drawCombatFeedback(ctx, feedback) {
 }
 
 // World particles are composited in the same frame and camera as the map.
-function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
+function drawWorldAmbience(context, ambience, view, width, height, worldTime, scene) {
     if (!ambience || !view || ambience.reducedMotion) return;
     if (!self.WorldParticles) importScripts('worldparticles-worker.js');
     const elapsed = (Date.now() - (ambience.epoch || 0)) / 1000;
-    const daylight = getMainMapCycleIntensity(worldTime / CYCLE_DURATION);
+    const daylight = sceneDaylight(scene, worldTime);
     context.save();
     if (ambience.bounds) {
         const {x, y, width: w, height: h} = ambience.bounds;
@@ -1197,7 +1197,7 @@ function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
     for (const effect of ambience.effects || [{type: ambience.particles, count: ambience.particleCount}]) {
         for (const point of ambienceParticlePositions({particles: effect.type, particleCount: effect.count, design: effect.design}, view, elapsed, width, height)) {
             const reacted = self.WorldParticles.react(point, effect.type, elapsed, view, ambience.fx);
-            self.WorldParticles.draw(context, reacted, effect.type, elapsed, daylight, effect.design);
+            self.WorldParticles.drawEffect(context, reacted, effect, elapsed, daylight);
         }
     }
     context.restore();
@@ -1207,12 +1207,18 @@ function ambienceParticlePositions(config, view, elapsed, width, height) {
         {x: view.cameraX, y: view.cameraY, scale: view.scale}, width, height, config.design);
 }
 
+function sceneDaylight(scene, time) {
+    if (scene?.authoringAtmosphere) {
+        if (!worldClock) {importScripts('worldtime-worker.js'); worldClock = self.WorldTime;}
+        const config = scene.authoringAtmosphere;
+        return config.cycle ? worldClock.atmosphereLight(config, time).daylight : 1 - config.dayDarkness;
+    }
+    return getMainMapCycleIntensity(time / CYCLE_DURATION);
+}
 function drawSceneWeather(context, scene, view, time) {
-    const config = scene?.authoringAtmosphere;
-    if (!config?.weather || !view || view.ambienceEnabled === false) return;
+    const config = scene?.weather !== undefined ? scene.weather : scene?.authoringAtmosphere?.weather;
+    if (!config || !view || view.ambienceEnabled === false) return;
     if (!self.SceneWeather) importScripts('weather-worker.js');
-    if (!worldClock) {importScripts('worldtime-worker.js'); worldClock = self.WorldTime;}
-    const daylight = worldClock.atmosphereLight(config, time).daylight;
-    self.SceneWeather.draw(context, self.SceneWeather.sample(config.weather, time, daylight), {...view,
+    self.SceneWeather.draw(context, self.SceneWeather.sample(config, time, sceneDaylight(scene, time)), {...view,
         bounds: {x: scene.x * 16, y: scene.y * 16, w: scene.width * 16, h: scene.height * 16}}, time);
 }

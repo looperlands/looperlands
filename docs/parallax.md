@@ -164,3 +164,9 @@ the original map. Masks are cached per tile/color variant, including animated
 tiles, with no per-frame canvas readback. Static terrain caches rebuild when
 cutouts appear, change or disappear, including map transitions. Another map can
 register `createParallaxScene` with its own scene geometry and surface palette.
+
+### Motion and nighttime appearance
+
+Every layer can set `swayX`, `swayY` (0–12 map pixels) and `swayPeriod` (1–30 seconds). Placed trees share a stable phase per root; increasing canopy amplitudes creates gentle wind movement without detaching the tree over time. Reduced motion disables sway. Foreground layers can also set `nightOpacity` and `nightBrightness` (0–1); these blend with ambient light. The Scene manager exposes all of these controls.
+
+Outdoor weather is configured once per map in the Scene manager’s Whole map default. Scene `weatherExposure` selects `outdoor`, `indoor` or `auto`; the latter follows the original Tiled day/night flag. Regional particles remain independently editable and include a per-effect `nightOpacity`.

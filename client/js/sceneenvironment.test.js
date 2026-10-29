@@ -1,9 +1,11 @@
 const E = require('./sceneenvironment');
 const clone = value => JSON.parse(JSON.stringify(value));
 test('all authored examples satisfy the shared contract', () => {
-    for (const id of ['main', 'm88n']) for (const row of require('../../tools/worlds/' + id + '.json').atmosphere) {
+    for (const id of ['main', 'm88n']) {
+        expect(E.weather(require('../../tools/worlds/' + id + '.json').weather)).toBeTruthy();
+        for (const row of require('../../tools/worlds/' + id + '.json').atmosphere) {
         for (const key of ['dayNight', 'weather', 'parallax']) if (row[key]) expect(E[key](row[key])).toBe(row[key]);
-    }
+    }}
 });
 test('invalid timing, image sources and unbounded effects are rejected before saving', () => {
     expect(() => E.dayNight({...E.defaults.dayNight, dawn: 18})).toThrow('Dawn');

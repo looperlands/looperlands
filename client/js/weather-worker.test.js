@@ -40,3 +40,10 @@ test('sunrays remain visible at distant map coordinates', () => {
     const ctx = context();Weather.draw(ctx, {sunrays: .8, rain: 0, wind: .2}, {cameraX: 7000, cameraY: 9000, scale: 2}, 0);
     const xs = ctx.moveTo.mock.calls.map(call => call[0]);expect(xs.some(x => x >= 0 && x < 1280)).toBe(true);
 });
+
+test('night opacity changes weather appearance without changing the shared phase, density or cloud cover', () => {
+    const day=Weather.sample(config,5000,1),night=Weather.sample(config,5000,0);
+    expect(night.rain).toBe(day.rain);expect(night.darkness).toBe(day.darkness);
+    expect(day.opacity).toBe(1);expect(night.opacity).toBe(.45);
+    expect(Weather.sample({...config,nightOpacity:.2},5000,0).opacity).toBe(.2);
+});

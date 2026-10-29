@@ -82,9 +82,16 @@
         return canvas;
     }
 
+    function sway(layer, view, time, phase = 0) {
+        if (view.reducedMotion) return {x: 0, y: 0};
+        const angle = time / 1000 / finite(layer.swayPeriod, 6, 1, 30) * Math.PI * 2 + phase;
+        return {x: finite(layer.swayX, 0, 0, 12) * (Math.sin(angle) * .85 + Math.sin(angle * 2) * .15),
+            y: finite(layer.swayY, 0, 0, 12) * Math.sin(angle + .8)};
+    }
+
     function drawLayer(ctx, layer, scene, view, clip, time) {
         if (layer.placed) {
-            for (const sprite of placedSprites(layer, scene, view, clip)) drawSprite(ctx, sprite, clip, view.scale);
+            for (const sprite of placedSprites(layer, scene, view, clip, time)) drawSprite(ctx, sprite, clip, view.scale);
             return;
         }
         const image = imageFor(layer.image);
@@ -95,13 +102,14 @@
         const factorX = view.reducedMotion ? 1 : finite(layer.factorX, 1, 0, 2);
         const factorY = view.reducedMotion ? 1 : finite(layer.factorY, 1, 0, 2);
         const seconds = view.reducedMotion ? 0 : time / 1000;
-        const x = -(view.cameraX - scene.x * 16) * factorX + finite(layer.offsetX, 0, -4096, 4096) + seconds * finite(layer.driftX, 0, -32, 32);
-        const y = -(view.cameraY - scene.y * 16) * factorY + finite(layer.offsetY, 0, -4096, 4096) + seconds * finite(layer.driftY, 0, -32, 32);
+        const motion = sway(layer, view, time);
+        const x = motion.x - (view.cameraX - scene.x * 16) * factorX + finite(layer.offsetX, 0, -4096, 4096) + seconds * finite(layer.driftX, 0, -32, 32);
+        const y = motion.y - (view.cameraY - scene.y * 16) * factorY + finite(layer.offsetY, 0, -4096, 4096) + seconds * finite(layer.driftY, 0, -32, 32);
         const startX = layer.repeatX === false ? x : x + Math.floor((clip.left - x) / width) * width;
         const startY = layer.repeatY === false ? y : y + Math.floor((clip.top - y) / height) * height;
         const endX = layer.repeatX === false ? startX + width : clip.right;
         const endY = layer.repeatY === false ? startY + height : clip.bottom;
-        ctx.globalAlpha = finite(layer.opacity, 1, 0, 1);
+        ctx.globalAlpha *= finite(layer.opacity, 1, 0, 1);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
         const raster = rasterFor(image, width, height, scale);
@@ -125,7 +133,7 @@
         return clip.right > clip.left && clip.bottom > clip.top ? clip : null;
     }
 
-    function placedSprites(layer, scene, view, clip) {
+    function placedSprites(layer, scene, view, clip, time = now()) {
         const result = [], placements = Array.isArray(scene.placements) ? scene.placements : [];
         const centerX = view.viewportWidth / 2, centerY = view.viewportHeight / 2;
         const factorX = view.reducedMotion ? 1 : finite(layer.factorX, 1, 0.5, 2);
@@ -135,11 +143,12 @@
             const size = finite(placement.scale, 1, 0.5, 2);
             const width = finite(layer.width, 96, 8, 512) * size, height = finite(layer.height, 96, 8, 512) * size;
             const worldX = scene.x * 16 + placement.x, worldY = scene.y * 16 + placement.y;
+            const motion = sway(layer, view, time, worldX * .017 + worldY * .011);
             // Each height projects around the viewport center; roots remain fixed to the world.
             // Unlike scrolling a whole texture, this never separates a crown from its trunk over a long walk.
-            const x = centerX + (worldX - view.cameraX - centerX) * factorX + finite(layer.offsetX, 0, -512, 512) * size
+            const x = motion.x * size + centerX + (worldX - view.cameraX - centerX) * factorX + finite(layer.offsetX, 0, -512, 512) * size
                 - width * finite(layer.anchorX, 0.5, 0, 1);
-            const y = centerY + (worldY - view.cameraY - centerY) * factorY + finite(layer.offsetY, 0, -512, 512) * size
+            const y = motion.y * size + centerY + (worldY - view.cameraY - centerY) * factorY + finite(layer.offsetY, 0, -512, 512) * size
                 - height * finite(layer.anchorY, 0.5, 0, 1);
             if (x >= clip.right || y >= clip.bottom || x + width <= clip.left || y + height <= clip.top) continue;
             const opacity = finite(layer.opacity, 1, 0, 1);
@@ -167,7 +176,7 @@
     function drawSprite(ctx, sprite, clip, scale, rasterScale = scale) {
         ctx.save();
         applyClip(ctx, clip, scale);
-        ctx.globalAlpha = sprite.opacity;
+        ctx.globalAlpha *= sprite.opacity;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
         const x = sprite.x * scale, y = sprite.y * scale;
@@ -228,8 +237,15 @@
             for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
                 if (!layer || (layer.plane || 'foreground') !== plane) continue;
                 ctx.save();
-                // Opaque overhead tree art follows the scene's ambient light too.
-                if (layer.placed && plane === 'foreground' && Number.isFinite(view.lightIntensity)) ctx.filter = 'brightness(' + finite(view.lightIntensity, 1, 0, 1) + ')';
+                // Overhead art is composed after world lighting. Dim it continuously
+                // with ambient light, while luminous effects can opt into brighter nights.
+                if (plane === 'foreground' && Number.isFinite(view.lightIntensity)) {
+                    const light = finite(view.lightIntensity, 1, 0, 1);
+                    const opacity = finite(layer.nightOpacity, layer.placed ? 1 : .45, 0, 1);
+                    const brightness = finite(layer.nightBrightness, layer.placed ? 0 : .55, 0, 1);
+                    ctx.globalAlpha *= opacity + (1 - opacity) * light;
+                    ctx.filter = 'brightness(' + (brightness + (1 - brightness) * light) + ')';
+                }
                 drawLayer(ctx, layer, scene, view, clip, time);
                 ctx.restore();
             }
