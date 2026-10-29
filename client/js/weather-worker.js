@@ -1,13 +1,17 @@
 // Deterministic weather driven by the shared world clock; used in game and Toolkit.
 (function (root, factory) {
-    if (typeof module === 'object' && module.exports) module.exports = factory();
-    else root.SceneWeather = factory();
-})(typeof self !== 'undefined' ? self : null, function () {
+    if (typeof module === 'object' && module.exports) module.exports = factory(() => require('./parallax-renderer-worker')());
+    else root.SceneWeather = factory(() => {
+        if (!root.createSceneParallax && typeof importScripts === 'function') importScripts('parallax-renderer-worker.js');
+        return root.createSceneParallax();
+    });
+})(typeof self !== 'undefined' ? self : null, function (createParallax) {
+    let clouds;
     const mod = (value, divisor) => ((value % divisor) + divisor) % divisor;
     const clamp = value => Math.max(0, Math.min(1, value));
     const smooth = value => {value = clamp(value); return value * value * (3 - 2 * value);};
     function sample(config, milliseconds, daylight = 1) {
-        const result = {rain: 0, sunrays: 0, wind: config?.wind || 0, darkness: 0};
+        const result = {rain: 0, sunrays: 0, cloudy: 0, wind: config?.wind || 0, darkness: 0};
         if (!config) return result;
         let phases = [{type: config.type, intensity: config.intensity, weight: 1}];
         if (config.mode === 'cycle' && config.sequence?.length) {
@@ -17,9 +21,9 @@
             const blend = smooth(seconds / config.transition);
             phases = [{...sequence[mod(index - 1, sequence.length)], weight: 1 - blend}, {...sequence[index], weight: blend}];
         }
-        for (const phase of phases) if (phase.type === 'rain' || phase.type === 'sunrays') result[phase.type] += clamp(phase.intensity) * phase.weight;
+        for (const phase of phases) if (phase.type === 'rain' || phase.type === 'sunrays' || phase.type === 'cloudy') result[phase.type] += clamp(phase.intensity) * phase.weight;
         result.sunrays *= clamp(daylight);
-        result.darkness = result.rain * .13;
+        result.darkness = result.rain * .13 + result.cloudy * .08;
         const night = Number.isFinite(config.nightOpacity) ? clamp(config.nightOpacity) : .45;
         result.opacity = night + (1 - night) * clamp(daylight);
         return result;
@@ -38,6 +42,18 @@
         if (view.bounds) {
             const b = view.bounds;
             ctx.beginPath(); ctx.rect((b.x - view.cameraX) * scale, (b.y - view.cameraY) * scale, b.w * scale, b.h * scale); ctx.clip();
+        }
+        if (weather.cloudy > .001) {
+            clouds ||= createParallax();
+            // Use a shared world origin so crossing outdoor scene boundaries cannot
+            // reposition the cloud field. The enclosing weather pass clips the scene.
+            const wind = weather.wind || 0;
+            const layers = [
+                {width:512,height:384,factorX:.82,factorY:.88,opacity:.12,driftX:.55,driftY:.12},
+                {width:384,height:320,factorX:1.28,factorY:1.2,opacity:.38,driftX:1.1,driftY:.22,offsetX:96,offsetY:64}
+            ].map(layer=>({...layer,image:'/img/parallax/clouds.png',plane:'foreground',nightOpacity:1,
+                opacity:layer.opacity*weather.cloudy,driftX:layer.driftX+wind*2}));
+            clouds.foreground(ctx,{scenes:[{x:0,y:0,w:65536,h:65536,layers}]},view);
         }
         // Long, soft shafts have a stable world origin and a very slow sway.
         if (weather.sunrays > .001) {
