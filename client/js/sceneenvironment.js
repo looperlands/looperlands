@@ -6,7 +6,7 @@
     const assets = ['clouds', 'mist', 'canopy', 'forest-roots', 'forest-trunk', 'forest-canopy-lower',
         'forest-canopy-upper', 'desert-dust', 'volcanic-smoke', 'embers', 'meadow-seeds', 'lava-depth'];
     const validImage = image => typeof image === 'string' && /^\/img\/parallax\/[a-z0-9][a-z0-9-]{0,79}\.png$/.test(image);
-    const types = ['clear', 'rain', 'sunrays'];
+    const types = ['clear', 'rain', 'sunrays', 'cloudy'];
     const planes = ['background', 'ground', 'entities', 'foreground'];
     function fail(message) {throw Object.assign(new Error(message), {status: 400});}
     function fields(value, keys, label) {

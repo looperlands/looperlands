@@ -47,3 +47,37 @@ test('night opacity changes weather appearance without changing the shared phase
     expect(day.opacity).toBe(1);expect(night.opacity).toBe(.45);
     expect(Weather.sample({...config,nightOpacity:.2},5000,0).opacity).toBe(.2);
 });
+
+test('cloudy is an authorable fixed effect and blends through shared weather phases', () => {
+    const cloudy={...E.defaults.weather,type:'cloudy',intensity:.8};
+    expect(E.weather(cloudy)).toBe(cloudy);
+    expect(Weather.sample(cloudy,1000)).toMatchObject({cloudy:.8,rain:0,sunrays:0,darkness:.064});
+    const cycle={...cloudy,mode:'cycle',transition:5,sequence:[{type:'clear',intensity:0,duration:20},{type:'cloudy',intensity:.8,duration:20}]};
+    expect(E.weather(cycle)).toBe(cycle);
+    expect(Weather.sample(cycle,22500).cloudy).toBeCloseTo(.4);
+    expect(Weather.sample(cycle,25000).cloudy).toBe(.8);
+    expect(Weather.sample(cloudy,1000,0).opacity).toBe(.45);
+});
+
+test('cloudy renders both Beach layers with wind, clipping and reduced-motion preferences', () => {
+    const foreground=jest.fn();
+    jest.isolateModules(()=>{
+        jest.doMock('./parallax-renderer-worker',()=>()=>({foreground}));
+        const weather=require('./weather-worker'),ctx=context();ctx.globalAlpha=1;
+        const view={cameraX:100,cameraY:200,scale:2,reducedMotion:true,bounds:{x:0,y:0,w:1000,h:1000}};
+        weather.draw(ctx,weather.sample({...E.defaults.weather,type:'cloudy',intensity:.5,wind:.4},1000),view,1000);
+        expect(ctx.clip).toHaveBeenCalled();
+        const [,state,renderView]=foreground.mock.calls[0];
+        expect(renderView.reducedMotion).toBe(true);
+        expect(state.scenes[0].layers).toEqual([
+            expect.objectContaining({image:'/img/parallax/clouds.png',opacity:.06,factorX:.82,nightOpacity:1}),
+            expect.objectContaining({image:'/img/parallax/clouds.png',opacity:.19,factorX:1.28,nightOpacity:1})
+        ]);
+        expect(state.scenes[0].layers[0].driftX).toBeCloseTo(1.35);
+        expect(state.scenes[0].layers[1].driftX).toBeCloseTo(1.9);
+        foreground.mockClear();weather.draw(ctx,weather.sample(E.defaults.weather,1000),view,1000);
+        weather.draw(ctx,{cloudy:1},{...view,enabled:false},1000);
+        expect(foreground).not.toHaveBeenCalled();
+    });
+    jest.dontMock('./parallax-renderer-worker');
+});
