@@ -8,7 +8,12 @@ const tree=()=>({id:'guard_talk',name:'Gate guard',npc:40,key:'',start:'welcome'
 const atmosphere=(sceneId='*')=>({sceneId,cycle:true,dayDarkness:0,nightDarkness:0.8,color:'#142438',music:'forest',particles:[{type:'fireflies',count:12}]});
 beforeEach(()=>{root=fs.mkdtempSync(path.join(os.tmpdir(),'world-authoring-'));write('server/config.json',{maps:['one','other']});for(const id of ['one','other']){const map={width:20,height:20,tilesize:16,data:Array(400).fill(1),collisions:[],staticEntities:{'42':'guard','43':'boss'},triggers:[],doors:[],scenes:[{id:1,name:'Forest',x:1,y:1,w:10,h:10}],checkpoints:[]};write('server/maps/world_server_'+id+'.json',map);write('client/maps/world_client_'+id+'.json',map);write('tools/maps/tmx/'+id+'.tmx','<map width="20" height="20" tilewidth="16" tileheight="16"><objectgroup name="doors"><object id="7" x="32" y="48"><properties><property name="x" value="3"/><property name="y" value="3"/><property name="tid" value="boss-clear"/></properties></object></objectgroup></map>');}write('client/js/audio.js',"this.musicNames = ['forest'];this.soundNames = ['npc'];");write('client/audio/music/forest.mp3','');write('client/audio/sounds/npc.mp3','');});
 afterEach(()=>fs.rmSync(root,{recursive:true,force:true}));
-test.each(['events','dialogues','atmosphere'])('%s reads local sources with NPC, quest, scene, audio and exact gate catalogues',async(tool)=>{const data=await W.readTool(root,'one',tool);expect(data.entries).toEqual([]);expect(data.catalog).toMatchObject({doors:[{id:'7',trigger:'boss-clear',x:2,y:3}],scenes:[{id:1,name:'Forest'}],music:[{id:'forest'}]});expect(data.source).toBe('tools/worlds/one.json');});
+test.each(['events','dialogues','atmosphere'])('%s reads local sources with NPC, quest, scene, audio and exact gate catalogues',async(tool)=>{
+    const data=await W.readTool(root,'one',tool);
+    expect(data.entries).toEqual([]);
+    expect(data.catalog).toMatchObject({doors:[{id:'7',trigger:'boss-clear',x:2,y:3}],scenes:[{id:1,name:'Forest'}],music:[{id:'forest'}]});
+    expect(data.source).toBe('tools/worlds/one.json');
+},15000); // Cold catalogue imports load bundled quests and NPC behavior; coverage can exceed Jest's 5s default.
 test('saving separate sections preserves the latest other sections and reloads executable flows',async()=>{const events=await W.readTool(root,'one','events'),dialogues=await W.readTool(root,'one','dialogues');await W.saveTool(root,{mapId:'one',tool:'dialogues',revision:dialogues.revision,entries:[tree()]});const saved=await W.saveTool(root,{mapId:'one',tool:'events',revision:events.revision,entries:[rule()]});expect(saved.entries[0].id).toBe('boss_gate');expect(W.readDocument(root,'one').dialogues).toHaveLength(1);const flow=W.loadFlows(root,'world_one');expect(flow.handlers[0]).toMatchObject({type:'player.killed_mob',options:{mob:13}});expect(flow.handlers[0].then[0]).toMatchObject({type:'has.level',true:[{type:'trigger.activate',then:[{type:'send_notification'}]}]});});
 test('stale and concurrent saves do not overwrite a newer section',async()=>{const base=await W.readTool(root,'one','events'),input={mapId:'one',tool:'events',revision:base.revision,entries:[rule()]};const results=await Promise.allSettled([W.saveTool(root,input),W.saveTool(root,{...input,entries:[rule('other_rule')]})]);expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(results.find(r=>r.status==='rejected').reason.status).toBe(409);const before=fs.readFileSync(path.join(root,'tools/worlds/one.json'));await expect(W.saveTool(root,input)).rejects.toMatchObject({status:409});expect(fs.readFileSync(path.join(root,'tools/worlds/one.json'))).toEqual(before);});
 test('build lock is checked immediately before writing after asynchronous catalogue loading',async()=>{const base=await W.readTool(root,'one','events');await expect(W.saveTool(root,{mapId:'one',tool:'events',revision:base.revision,entries:[rule()]},()=>{throw Object.assign(new Error('Build started'),{status:409});})).rejects.toMatchObject({status:409});expect(fs.existsSync(path.join(root,'tools/worlds/one.json'))).toBe(false);});
@@ -180,4 +185,47 @@ test('invalid weather exposure and nighttime multipliers cannot be saved', async
     await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries,weather:{...weather,nightOpacity:2}})).rejects.toHaveProperty('status',400);
     base.entries[1].weatherExposure='rain';
     await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries})).rejects.toThrow('exposure');
+});
+
+test('ambient sounds save independently, reject stale drafts, and reach JSON and worker maps', async () => {
+    const base = await W.readTool(root, 'one', 'ambient');
+    const entry = {id: 'camp', name: 'Camp', preset: 'campfire', x: 3, y: 4, radius: 9, volume: .55};
+    const events = await W.readTool(root, 'one', 'events');
+    await W.saveTool(root, {mapId: 'one', tool: 'events', revision: events.revision, entries: [rule()]});
+    const input = {mapId: 'one', tool: 'ambient', revision: base.revision, entries: [entry]};
+    const saved = await W.saveTool(root, input);
+    expect(saved.entries).toEqual([entry]); expect(W.readDocument(root, 'one').rules).toEqual([rule()]);
+    await expect(W.saveTool(root, {...input, entries: []})).rejects.toHaveProperty('status', 409);
+    await expect(W.saveTool(root, {...input, revision: saved.revision, entries: [{...entry, x: 20}]})).rejects.toThrow('inside the map');
+    const app = require('express')(); W.installRuntime(app, root);
+    const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+    try {
+        const url = 'http://127.0.0.1:' + server.address().port + '/maps/world_client_one';
+        expect((await (await fetch(url + '.json')).json()).ambientSounds).toEqual([entry]);
+        const context = {}; require('vm').runInNewContext(await (await fetch(url + '.js')).text(), context);
+        expect(JSON.parse(JSON.stringify(context.mapData.ambientSounds))).toEqual([entry]);
+        expect(JSON.parse(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'))).ambientSounds).toBeUndefined();
+        const fresh = await W.readTool(root, 'one', 'ambient');
+        await W.saveTool(root, {mapId: 'one', tool: 'ambient', revision: fresh.revision, entries: []});
+        expect(W.readDocument(root, 'one').ambientSounds).toEqual([]);
+    } finally {await new Promise(resolve => server.close(resolve));}
+});
+
+test('fresh local games serve newly uploaded audio without requiring a client build', async () => {
+    const source = fs.readFileSync(path.join(__dirname, '../../client/audio/ambient/campfire.wav'));
+    const asset = require('./localambientassets').upload(root, {name: 'fire.wav', audio: source.toString('base64')});
+    const base = await W.readTool(root, 'one', 'ambient');
+    expect(base.catalog.customSounds).toContainEqual(asset);
+    await W.saveTool(root, {mapId: 'one', tool: 'ambient', revision: base.revision,
+        entries: [{id: 'fire', name: 'Fire', preset: asset.id, x: 3, y: 4, radius: 9, volume: .5}]});
+    const app = require('express')(); W.installRuntime(app, root);
+    const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+    try {
+        const response = await fetch('http://127.0.0.1:' + server.address().port + asset.url);
+        expect(response.status).toBe(200);
+        const hash = bytes => require('crypto').createHash('sha256').update(bytes).digest('hex');
+        expect(hash(Buffer.from(await response.arrayBuffer()))).toBe(hash(source));
+        const map = await (await fetch('http://127.0.0.1:' + server.address().port + '/maps/world_client_one.json')).json();
+        expect(map.ambientSounds[0].preset).toBe(asset.id);
+    } finally {await new Promise(resolve => server.close(resolve));}
 });

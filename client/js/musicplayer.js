@@ -6,6 +6,8 @@ define(function () {
             var self = this;
             this.sound = null;
             this.source = null;
+            this.volume = 1;
+            this.level = 1;
             this.active = false;
             this.pending = null;
             this.attempt = 0;
@@ -24,9 +26,20 @@ define(function () {
                 this.sound = document.createElement('audio');
                 this.sound.preload = 'auto';
                 this.sound.loop = true;
+                this.sound.volume = this.volume * this.level;
                 this.sound.addEventListener('canplay', this.retryPlayback);
             }
             return this.sound;
+        },
+
+        setVolume: function (volume) {
+            this.volume = Math.max(0, Math.min(1, volume));
+            if (this.sound) this.sound.volume = this.volume * this.level;
+        },
+
+        setLevel: function (level) {
+            this.level = Math.max(0, Math.min(1, level));
+            if (this.sound) this.sound.volume = this.volume * this.level;
         },
 
         play: function (source) {

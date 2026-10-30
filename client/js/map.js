@@ -183,6 +183,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.blocking = map.blocking || [];
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
+            this.ambientSounds = map.ambientSounds || [];
             this.pvpZones = map.pvpZones || [];
             this.fishingTiles = map.fishingTiles || {};
             this.collisions = map.collisions;

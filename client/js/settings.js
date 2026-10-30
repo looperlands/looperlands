@@ -4,6 +4,8 @@ const COMBAT_VISUAL_SETTINGS = Object.freeze([
     'finisherShatterEnabled', 'intenseCombatEffectsEnabled'
 ]);
 
+const AUDIO_VOLUME_DEFAULTS = Object.freeze({music: 25, sound: 80, ambient: 80});
+
 class GameSettings {
     constructor(app) {
         this.app = app;
@@ -91,6 +93,18 @@ class GameSettings {
         document.getElementById('renderPlayerShadow').checked = this.getRenderPlayerShadow();
         document.getElementById('enableDynamicLights').checked = this.getEnableDynamicLights();
 
+        for (const key of Object.keys(AUDIO_VOLUME_DEFAULTS)) {
+            const input = document.getElementById(key + 'Volume');
+            input.value = this.getAudioVolumes()[key] * 100;
+            const update = () => {
+                const value = Math.max(0, Math.min(100, Number(input.value)));
+                localStorage.setItem(key + 'Volume', String(value));
+                document.getElementById(key + 'VolumeValue').textContent = value + '%';
+                this.app.game?.audioManager?.setVolumes?.(this.getAudioVolumes());
+            };
+            input.addEventListener('input', update);
+            update();
+        }
         this.bindSections();
 
         // Add event listener to save settings when the form is submitted
@@ -141,6 +155,13 @@ class GameSettings {
         }
         for (const panel of this.sectionPanels) panel.hidden = panel.dataset.settingsPanel !== section;
         document.querySelector('#settings .settings-options').scrollTop = 0;
+    }
+
+    getAudioVolumes() {
+        return Object.fromEntries(Object.entries(AUDIO_VOLUME_DEFAULTS).map(([key, fallback]) => {
+            const stored = localStorage.getItem(key + 'Volume'), value = Number(stored);
+            return [key, (stored !== null && stored !== '' && Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : fallback) / 100];
+        }));
     }
 
     // Methods to get and set each setting
@@ -308,6 +329,7 @@ class GameSettings {
         this.refreshHitFeelOptions();
         this.setCombatEffectsEnabled(document.getElementById('combatEffectsEnabled').checked);
         if (this.getCombatEffectsEnabled()) this.app.game?.combatFeedback?.clear();
+        this.app.game?.audioManager?.setVolumes?.(this.getAudioVolumes());
         this.setMusicEnabled(document.getElementById('musicEnabled').checked);
         this.setStreamMusicEnabled(document.getElementById('streamMusicEnabled').checked);
         this.setCenteredCamera(document.getElementById('centeredCamera').checked);

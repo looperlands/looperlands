@@ -195,3 +195,16 @@ test('fullscreen changes persist before refitting through the shared viewport la
     expect(app.fitGameToViewport).toHaveBeenCalledTimes(2);
     expect(saved).toEqual(['false', 'true']);
 });
+
+test('audio defaults are balanced and a saved zero survives reopening and applying settings', () => {
+    expect(setup().settings.getAudioVolumes()).toEqual({music: .25, sound: .8, ambient: .8});
+    const {settings, elements, values, app} = setup({musicVolume: '0', soundVolume: '45', ambientVolume: '60'});
+    app.game.audioManager.setVolumes = jest.fn();
+    expect(settings.getAudioVolumes()).toEqual({music: 0, sound: .45, ambient: .6});
+    const slider = elements.get('soundVolume'); slider.value = '30';
+    slider.addEventListener.mock.calls.find(([event]) => event === 'input')[1]();
+    expect(elements.get('soundVolumeValue').textContent).toBe('30%');
+    expect(app.game.audioManager.setVolumes).toHaveBeenCalledWith({music: 0, sound: .3, ambient: .6});
+    expect(setup(Object.fromEntries(values)).settings.getAudioVolumes()).toEqual({music: 0, sound: .3, ambient: .6});
+    settings.setSettings(); expect(app.game.audioManager.setVolumes).toHaveBeenLastCalledWith({music: 0, sound: .3, ambient: .6});
+});

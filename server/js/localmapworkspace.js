@@ -17,7 +17,7 @@ function fingerprint(root, mapId) {
         if (recursive && stat.isDirectory()) for (const entry of fs.readdirSync(file).sort()) add(relative + '/' + entry, true);
     }
     for (const relative of ['server/config.json', 'tools/maps/tmx/' + mapId + '.tmx', 'client/maps/world_client_' + mapId + '.json',
-        'shared/js/mapmakerentities.json', 'shared/js/gametypes.js', 'client/js/audio.js', 'client/img/1', 'client/audio/music', 'client/audio/sounds',
+        'shared/js/mapmakerentities.json', 'shared/js/gametypes.js', 'client/js/audio.js', 'client/img/1', 'client/audio/music', 'client/audio/sounds', 'client/audio/ambient',
         'client/img/1/tilesheet_' + (['oadungeon', 'oaoverworld'].includes(mapId) ? 'oa' : mapId) + '.png']) add(relative);
     for (const relative of ['server/maps', 'tools/quests', 'tools/npcs', 'tools/worlds', 'tools/tiles', 'tools/interactions', 'client/sprites', 'client/tileActions']) add(relative, true);
     return hash.digest('hex');
@@ -50,7 +50,7 @@ function readers(root, mapId) {
         ['tile-authoring', 'Interactions and tile actions', () => require('./localtilebuilder').readTool(root, mapId)],
         ['world-authoring', 'Events, dialogue, scenes and sequences', async () => {
             const catalog = await world.catalog(root, mapId), tools = {};
-            for (const tool of ['events', 'dialogues', 'atmosphere', 'scenes', 'sequences']) {
+            for (const tool of ['events', 'dialogues', 'atmosphere', 'scenes', 'sequences', 'ambient']) {
                 const {catalog: _, ...data} = await world.readTool(root, mapId, tool, catalog);
                 tools[tool] = data;
             }

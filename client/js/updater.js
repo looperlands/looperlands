@@ -16,6 +16,7 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
             this.updateAnimatedTiles();
             this.updateChatBubbles();
             this.updateInfos();
+            this.game.audioManager?.updateAmbience();
         },
 
         updateCharacters: function () {

@@ -1,0 +1,41 @@
+{
+  "campfire": {
+    "source": "fire.wav",
+    "offsetSeconds": 2,
+    "excerptSeconds": 22.0,
+    "loopSeconds": 21.0,
+    "crossfadeSeconds": 1.0,
+    "gain": 6.217542294375408,
+    "sha256": "38f4be41ad5842da9a02392e53ef3812f295d56072d7f737759b7b9f3980bd10"
+  },
+  "surf": {
+    "sources": [
+      "wave_01_cc0-18363__jasinski__alkaibeach.flac",
+      "wave_02_cc0-18363__jasinski__alkaibeach.flac",
+      "wave_03_cc0-18363__jasinski__alkaibeach.flac",
+      "wave_04_cc0-18363__jasinski__alkaibeach.flac"
+    ],
+    "loopSeconds": 11.461043083900227,
+    "crossfadeSeconds": 0.2,
+    "gain": 2.582725847535006,
+    "sha256": "08d953fa8999fa2975efd1e5f4cac1fbaad708e405bb0d1c2b8154596b69cae2"
+  },
+  "birds": {
+    "source": "park_ambience_birds.wav",
+    "offsetSeconds": 3,
+    "excerptSeconds": 26.0,
+    "loopSeconds": 25.0,
+    "crossfadeSeconds": 1.0,
+    "gain": 18.41176532743505,
+    "sha256": "658714d95a76aa30812da0ef085f4414fa49deb89d79ef7440fc32efc62181cb"
+  },
+  "water": {
+    "source": "park_ambience_river.wav",
+    "offsetSeconds": 3,
+    "excerptSeconds": 26.0,
+    "loopSeconds": 25.0,
+    "crossfadeSeconds": 1.0,
+    "gain": 11.477045123499531,
+    "sha256": "7207b0ae82bcd0d032152ae42131216f6f1ec5d152b4c9807d6aa0c4f4b75f9d"
+  }
+}

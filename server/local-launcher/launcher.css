@@ -608,6 +608,7 @@ input[readonly] { background: #f7f8fa; color: var(--muted); }
 .particle-controls > button {margin-bottom:16px;}
 @media (max-width:1200px) {.particle-designer {grid-template-columns:minmax(0,1fr);}.particle-preview {position:static;grid-row:1;}}
 .world-section audio {display:block;max-width:100%;margin:12px 0;}
+.ambient-list {max-height:360px;overflow-y:auto;}
 .world-section output {font-variant-numeric:tabular-nums;}
 @media(max-width:1100px) {.world-workspace {grid-template-columns:200px minmax(0,1fr);gap:20px;}}
 @media(max-width:820px) {.world-workspace {grid-template-columns:minmax(0,1fr);} .world-list {max-height:220px;} .world-new {margin-bottom:12px;}}

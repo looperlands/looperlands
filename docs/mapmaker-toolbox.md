@@ -131,3 +131,7 @@ Use **Gameplay → Fishing** to draw fishing areas, override existing lakes, set
 ## Checkpoints and gameplay zones
 
 Use **Gameplay → Checkpoints & zones** to edit spawn and revival areas, trigger zones, PvP, positional music and event-board proximity. Saves retain checkpoint IDs. See the [guide](mapmaker-zones.md).
+
+## Sound design
+
+Use [Ambient sounds](mapmaker-audio.md) to place campfires, water, surf, wind, birds and lava sounds. Preview from a movable listener, adjust radius and volume, then save and playtest. Sources fade and pan relative to the player.
