@@ -13,6 +13,8 @@ function setup() {
         }
         ctx.measureText = jest.fn(text => ({width: text.length * 8, actualBoundingBoxAscent: 12, actualBoundingBoxDescent: 3}));
         ctx.createRadialGradient = ctx.createConicGradient = jest.fn(() => ({addColorStop: jest.fn()}));
+        ctx.getImageData = jest.fn(() => ({data: new Uint8ClampedArray([254,173,2,255, 100,70,40,255, 72,196,248,255])}));
+        ctx.putImageData = jest.fn();
         return ctx;
     }
     class Canvas {
@@ -30,7 +32,7 @@ function setup() {
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
     const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, renderLightOverlay, updateAnimatedLightSource, scheduleNextFrame,
-        addToImageCache, clearImageCache, clearTextCache,
+        addToImageCache, clearImageCache, clearTextCache, drawScaledImage, sceneDaylight, drawSceneWeather,
         state: () => ({cacheBytes, cacheKeys: cacheKeys.slice(), labels: labelCache.size, labelBytes,
             terrain: terrainCache.size, lightScratch, shadowScratch, gradientScratch}),
         options: (shadows, player, dynamic = true) => {OPTION_SHADOWS = shadows; OPTION_PLAYER_SHADOW = player; OPTION_DYNAMIC_LIGHTS = dynamic;},
@@ -111,6 +113,38 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     expect(worker.canvases.combined.ctx.drawImage.mock.calls.map(call => call[0])).toEqual([
         worker.canvases.entities, worker.canvases.text, worker.canvases.highEntities, worker.canvases.lighting
     ]);
+});
+
+test('palette cutouts preserve ledge pixels, reuse masked tiles and keep normal variants intact', () => {
+    const worker = setup(), ctx = worker.canvases.background.ctx, image = {};
+    worker.drawScaledImage(ctx, image, 0, 0, 16, 16, 0, 0, 1, null, [[254,173,2]]);
+    const masked = worker.allocations.at(-1);
+    expect(Array.from(masked.ctx.putImageData.mock.calls[0][0].data)).toEqual([254,173,2,0,100,70,40,255,72,196,248,255]);
+    const warm = worker.allocations.length;
+    worker.drawScaledImage(ctx, image, 0, 0, 16, 16, 16, 0, 1, null, [[254,173,2]]);
+    expect(worker.allocations).toHaveLength(warm);
+    worker.drawScaledImage(ctx, image, 0, 0, 16, 16, 32, 0, 1);
+    expect(worker.allocations).toHaveLength(warm + 1);
+    expect(worker.allocations.at(-1).ctx.putImageData).not.toHaveBeenCalled();
+});
+
+test('recessed layers sit behind terrain and cutout changes invalidate static buffers once', () => {
+    const worker = setup(); let cutouts = [];
+    worker.sandbox.depthRegistry = {terrainCutouts: () => cutouts, draw: (plane, ctx) => {
+        if (plane === 'background') ctx.drawImage('deep-surface', 0, 0);
+    }};
+    vm.runInContext('rendererExtensions = depthRegistry', worker.sandbox);
+    worker.send(frame());
+    expect(worker.canvases.entities.ctx.drawImage.mock.calls.slice(0, 2).map(call => call[0])).toEqual(['deep-surface', worker.canvases.background]);
+    const previous = worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
+    cutouts = [{x: 0, y: 0, w: 480, h: 224, colors: [[254,173,2]]}];
+    worker.send(frame());
+    const prepared = worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
+    expect(prepared).not.toBe(previous);
+    worker.send(frame());
+    expect(worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0]).toBe(prepared);
+    cutouts = []; worker.send(frame());
+    expect(worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0]).not.toBe(prepared);
 });
 
 test('terrain bitmaps survive fractional camera scrolling and rebuild on tile changes, teleports and resize', () => {
@@ -323,4 +357,34 @@ test('combat labels render above foreground overlays every frame without clearin
         expect(ctx.drawImage.mock.invocationCallOrder.at(-1)).toBeGreaterThan(ctx.fillRect.mock.invocationCallOrder.at(-1));
     }
     expect(message.renderData.find(data=>data.type==='entities').cameraX).toBe(0);
+});
+
+test('trunks interleave with actor feet while ground effects remain beneath them', () => {
+    const worker = setup(), message = frame();
+    vm.runInContext(`rendererExtensions = {draw(){}, sorted(){return [
+        {y: 25, draw(ctx){ctx.fillRect(25,0,1,1);}},
+        {y: 45, draw(ctx){ctx.fillRect(45,0,1,1);}}
+    ];}}`, worker.sandbox);
+    const actors = message.renderData.find(row => row.type === 'entities');
+    const base = actors.entityData[0];
+    actors.entityData = [{...base, depthY: 80, groundEffect: true}, {...base, depthY: 20}, {...base, depthY: 30}, {...base, depthY: 50}];
+    worker.send(message);
+    const draws = worker.operations.filter(op => op.id === 'entities' &&
+        (op.method === 'fillRect' || op.method === 'drawImage' && op.args[0]?.avatar));
+    expect(draws.map(op => op.method === 'fillRect' ? op.args[0] : 'actor')).toEqual(['actor', 'actor', 25, 'actor', 45, 'actor']);
+});
+
+test('night particles use the authored daylight window and shared map weather takes precedence', () => {
+    const worker=setup(), E=require('./sceneenvironment');
+    worker.sandbox.importScripts=jest.fn();
+    const scene={x:0,y:0,width:10,height:10,authoringAtmosphere:{cycle:true,dayDarkness:0,nightDarkness:.8,color:'#142438',dayNight:E.defaults.dayNight,weather:{...E.defaults.weather,type:'sunrays'}}};
+    expect(worker.sceneDaylight(scene,2/24*3600000)).toBe(0);
+    expect(worker.sceneDaylight(scene,12/24*3600000)).toBe(1);
+    const draw=jest.fn();worker.sandbox.self.SceneWeather={...require('./weather-worker'),draw};
+    scene.weather={...E.defaults.weather,type:'rain',intensity:.6};
+    worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},12/24*3600000);
+    expect(draw.mock.calls[0][1]).toMatchObject({rain:.6,sunrays:0});
+    draw.mockClear();scene.weather=null;
+    worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},12/24*3600000);
+    expect(draw).not.toHaveBeenCalled();
 });

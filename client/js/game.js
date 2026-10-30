@@ -10145,15 +10145,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              *
              */
             isZoningTile: function (x, y) {
-                var c = this.camera;
-
-                x = x - c.gridX;
-                y = y - c.gridY;
-
-                if (x === 0 || y === 0 || x === c.gridW - 1 || y === c.gridH - 1) {
-                    return true;
-                }
-                return false;
+                return this.getZoningOrientation(x, y) !== "";
             },
 
             /**
@@ -10161,18 +10153,22 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
              */
             getZoningOrientation: function (x, y) {
                 var orientation = "",
-                    c = this.camera;
+                    c = this.camera,
+                    bounds = c.boundsOverride || c.bounds,
+                    ts = this.renderer.tilesize;
 
                 x = x - c.gridX;
                 y = y - c.gridY;
 
-                if (x === 0) {
+                // Walking along a clamped scene edge must not repeatedly start a
+                // scroll, rebuild animated tiles, and request the same server zone.
+                if (x === 0 && (!bounds || c.x > bounds.x * ts)) {
                     orientation = Types.Orientations.LEFT;
-                } else if (y === 0) {
+                } else if (y === 0 && (!bounds || c.y > bounds.y * ts)) {
                     orientation = Types.Orientations.UP;
-                } else if (x === c.gridW - 1) {
+                } else if (x === c.gridW - 1 && (!bounds || c.x + c.gridW * ts < (bounds.x + bounds.w) * ts)) {
                     orientation = Types.Orientations.RIGHT;
-                } else if (y === c.gridH - 1) {
+                } else if (y === c.gridH - 1 && (!bounds || c.y + c.gridH * ts < (bounds.y + bounds.h) * ts)) {
                     orientation = Types.Orientations.DOWN;
                 }
 
@@ -10181,6 +10177,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             startZoningFrom: function (x, y) {
                 this.zoningOrientation = this.getZoningOrientation(x, y);
+                // A queued scroll may have reached the scene bounds by now.
+                if (this.zoningOrientation === "") {
+                    this.endZoning();
+                    return;
+                }
 
                 if (this.renderer.mobile || this.renderer.tablet) {
                     var z = this.zoningOrientation,

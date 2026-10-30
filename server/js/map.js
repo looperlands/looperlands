@@ -32,7 +32,7 @@ module.exports = class Mapx {
                 if (require('./localplaytest').isLocalPlaytest()) {
                     const mapId = path.basename(filepath).replace(/^world_server_/, '').replace(/\.json$/, '');
                     const doc = require('./localworldauthoring').readDocument(root, mapId);
-                    json = require('./localworldscenes').applyScenes(json, doc.scenes);
+                    json = require('./localworldauthoring').applyAtmosphere(require('./localworldscenes').applyScenes(json, doc.scenes), doc.atmosphere, doc.weather);
                 }
                 self.initMap(json);
             });

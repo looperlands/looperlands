@@ -6,7 +6,7 @@ class Npc extends Character {}
 let renderer;
 vm.runInNewContext(fs.readFileSync(require.resolve('./renderer'), 'utf8'), {
     Class: {extend: methods => methods},
-    Types: {Orientations: {UP: 1}, alwaysOnTop: () => false},
+    Types: {Orientations: {UP: 1}, alwaysOnTop: () => false, isFieldEffect: () => false},
     define: (_, factory) => { renderer = factory(null, Item, Character, Character, null, Mob, Npc); },
 });
 test.each([false, true])('body and equipment recoil together with flipped=%s; shadow stays planted', flip => {

@@ -99,3 +99,13 @@ test('authored atmosphere blends exact day and night endpoints, including fixed 
     expect(WorldTime.atmosphereDarkness(config, 50 * minute)).toBeCloseTo(.9);
     expect(WorldTime.atmosphereDarkness({...config, cycle: false}, 50 * minute)).toBeCloseTo(.1);
 });
+
+test('scene daylight hours blend dawn/dusk tints without changing the world clock', () => {
+    const config = {cycle: true, dayDarkness: .05, nightDarkness: .8, color: '#000000', dayNight: require('./sceneenvironment').defaults.dayNight};
+    const at = hour => WorldTime.atmosphereLight(config, hour / 24 * WorldTime.duration);
+    expect(at(0)).toMatchObject({daylight: 0, darkness: .8, color: '#111b38'});
+    expect(at(12).daylight).toBe(1);expect(at(6).daylight).toBeCloseTo(.5);expect(at(18).daylight).toBeCloseTo(.5);
+    expect(at(6).color).not.toBe(at(18).color);
+    for (const hour of [0, 5, 7, 17, 19, 24]) expect(at(hour - .00001).darkness).toBeCloseTo(at(hour + .00001).darkness, 5);
+    expect(WorldTime.atmosphereLight({...config, cycle: false}, 0)).toMatchObject({daylight: 1, darkness: expect.closeTo(.05), color: '#000000'});
+});

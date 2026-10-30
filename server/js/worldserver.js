@@ -309,6 +309,7 @@ module.exports = World = cls.Class.extend({
             }
             if (self.npcBehavior) self.npcBehavior.tick();
             self.scenes?.tick();
+            if (!self.npcBehavior) self.scenes?.sync(self);
             self.server.tileActionsController?.localSequences?.tick(self).catch(error => console.error('Interaction timer failed:', error.message));
             self.combat?.tick();
             self.processGroups();

@@ -8,7 +8,7 @@ function setup({dx = 1, dy = 0, speed = 87, scale = 2, manual = false} = {}) {
     const modules = {};
     const sandbox = {
         console: {debug() {}, log() {}}, self: {},
-        Types: {Orientations: {LEFT: 1, RIGHT: 2, UP: 3, DOWN: 4}, alwaysOnTop: () => false},
+        Types: {Orientations: {LEFT: 1, RIGHT: 2, UP: 3, DOWN: 4}, alwaysOnTop: () => false, isFieldEffect: () => false},
         define(dependencies, factory) {
             modules.current = typeof dependencies === 'function' ? dependencies()
                 : factory(...dependencies.map(name => modules[name] || function () {}));

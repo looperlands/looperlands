@@ -30,11 +30,11 @@ function setup() {
 
 test('picnic ground follows the exact terrain camera on scrolling, teleports and rescaling', () => {
     const {ground, render} = setup();
-    for (const [cameraX, cameraY, scale] of [[640, 3360, 2], [656, 3368, 2], [900, 3400, 2], [640, 3360, 3]]) {
+    for (const [cameraX, cameraY, scale] of [[640, 3360, 2], [656, 3368, 2], [900, 3400, 2], [640, 3360, 3], [640.4, 3360.8, 3]]) {
         ground.fillRect.mockClear();
         render(cameraX, cameraY, scale);
         expect(ground.fillRect.mock.calls[0]).toEqual([
-            42 * 16 - cameraX - 20, 216 * 16 - cameraY - 8, 40, 24
+            42 * 16 + Math.round(-cameraX) - 20, 216 * 16 + Math.round(-cameraY) - 8, 40, 24
         ]);
     }
 });

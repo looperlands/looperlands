@@ -57,6 +57,7 @@
         if (!Array.isArray(value) || value.length > 3 || value.some(effect => !effect || !types.includes(effect.type) ||
             !Number.isInteger(effect.count) || effect.count < 1 || effect.count > 24) || value.reduce((sum, e) => sum + e.count, 0) > 24) throw new Error('Ambience needs up to 3 effects and 24 particles per patch');
         return value.map(effect => ({type: effect.type, count: effect.count,
+            ...(effect.nightOpacity === undefined ? {} : {nightOpacity: number(effect.nightOpacity, 1, 0, 1, 'night opacity')}),
             ...(effect.type === 'custom' ? {design: custom(effect.design)} : {})}));
     }
     function custom(value = {}) {

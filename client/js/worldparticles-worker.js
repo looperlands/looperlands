@@ -70,6 +70,17 @@
         context.restore();
     }
 
+    function nightOpacity(type) {
+        return type === 'fireflies' ? 1 : type === 'embers' ? .8 : .45;
+    }
+    function drawEffect(context, point, effect, elapsed, daylight) {
+        const night = Number.isFinite(effect.nightOpacity) ? Math.max(0, Math.min(1, effect.nightOpacity)) : nightOpacity(effect.type);
+        context.save();
+        context.globalAlpha *= night + (1 - night) * Math.max(0, Math.min(1, daylight));
+        draw(context, point, effect.type, elapsed, daylight, effect.design);
+        context.restore();
+    }
+
     function draw(context, point, type, elapsed, daylight, design) {
         if (type === 'custom') {if (design) drawCustom(context, point, elapsed, design);return;}
         const {x, y, scale, seed} = point;
@@ -158,5 +169,5 @@
         return {...point, x: point.x + (dx / distance * force - dy / distance * swirl) * scale,
             y: point.y + (dy / distance * force + dx / distance * swirl) * scale};
     }
-    return {positions, draw, react};
+    return {positions, draw, drawEffect, nightOpacity, react};
 }));

@@ -6,6 +6,10 @@ function register(target = definitions, options = {}) {
         target.register(map, {id: 'map-quests', quests: require('../js/quests/' + map).quests});
     }
     require('./main').register(target);
+    const root = options.root || require('path').resolve(__dirname, '../..');
+    for (const mapId of require(require('path').join(root, 'server/config.json')).maps) {
+        target.register(mapId, {id: 'scene-parallax', createScene: require('./parallax').createParallaxScene});
+    }
     if (options.authored !== false && options.local !== false) {
         const root = options.root || require('path').resolve(__dirname, '../..');
         require('../js/localquestbuilder').registerLocalQuests(root, target, {strict: process.env.NODE_ENV === 'production'});
