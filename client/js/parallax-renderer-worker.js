@@ -5,7 +5,7 @@
         root.createSceneParallax = factory;
         if (!root.RendererExtensions) return;
         const parallax = factory();
-        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, terrainCutouts: parallax.terrainCutouts});
+        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
         root.RendererExtensions.register('parallax-ground', {layer: 'ground', subpixel: true, draw: parallax.ground});
         root.RendererExtensions.register('parallax-entities', {layer: 'entities', entries: parallax.entries});
         root.RendererExtensions.register('parallax-foreground', {layer: 'foreground', draw: parallax.foreground});
@@ -30,12 +30,12 @@
         let entry = images.get(source);
         if (!entry) {
             // Cache both pending loads and failures; a missing decoration must never retry every frame.
-            entry = {image: null};
+            entry = {image: null, requestedAt: now()};
             images.set(source, entry);
             Promise.resolve().then(() => loadImage(source)).then(image => {
                 if (images.get(source) === entry) {entry.image = image; entry.loadedAt = now();}
                 else image?.close?.();
-            }).catch(error => options.onError?.(error));
+            }).catch(error => {entry.failed = true; options.onError?.(error);});
             while (images.size > 16) {
                 const oldest = images.keys().next().value;
                 images.get(oldest).image?.close?.();
@@ -176,7 +176,7 @@
                 - height * finite(layer.anchorY, 0.5, 0, 1);
             if (x >= clip.right || y >= clip.bottom || x + width <= clip.left || y + height <= clip.top) continue;
             const image = imageFor(layer.image);
-            const opacity = image ? finite(layer.opacity, 1, 0, 1) * loadOpacity(layer.image, view, layer.plane) : 0;
+            const opacity = finite(layer.opacity, 1, 0, 1);
             if (image) result.push({image, x, y, width, height, opacity, worldY, flipX: placement.flipX === true});
         }
         return result;
@@ -229,6 +229,20 @@
         return result;
     }
 
+    function ready(state, view) {
+        let complete = true;
+        for (const scene of (Array.isArray(state?.scenes) ? state.scenes : []).slice(0, 100)) {
+            if (!sceneClip(scene, view, view.viewportWidth, view.viewportHeight)) continue;
+            for (const layer of (scene.layers || []).slice(0, 8)) {
+                if (!layer?.placed || !validSource(layer.image)) continue;
+                imageFor(layer.image);
+                const entry = images.get(layer.image);
+                if (!entry.image && !entry.failed && now() - entry.requestedAt < 3000) complete = false;
+            }
+        }
+        return complete;
+    }
+
     function terrainCutouts(state, view) {
         const result = [];
         if (!state || !view) return result;
@@ -278,6 +292,7 @@
         }
     }
     return {
+        ready,
         entries,
         terrainCutouts,
         background: (ctx, state, view) => draw('background', ctx, state, view),

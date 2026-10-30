@@ -271,9 +271,9 @@ test('overhead mist dims at night with configurable opacity and brightness', asy
 });
 
 
-test.each([false, true])('newly decoded layers fade smoothly without changing their configured opacity (placed=%s)', async placed => {
+test('newly decoded atmospheric layers fade smoothly without changing their configured opacity', async () => {
     const s = setup({fadeDuration: 800});
-    Object.assign(s.layer, {placed, opacity: .8});
+    Object.assign(s.layer, {opacity: .8});
     s.state.scenes[0].placements = [{x: 250, y: 350}];
     await ready(s);
     const alphas = [];
@@ -300,4 +300,34 @@ test('recessed terrain is opaque when its cutout first becomes ready', async () 
     s.renderer.background(s.ctx, s.state, s.view);
     expect(alpha[0]).toBe(1);
     expect(s.renderer.terrainCutouts(s.state, {...s.view, viewportWidth:320, viewportHeight:240})).toHaveLength(1);
+});
+
+
+test('placed trees appear fully opaque immediately after decoding', async () => {
+    const s = setup({fadeDuration: 800});
+    Object.assign(s.layer, {placed:true, opacity:1});
+    s.state.scenes[0].placements = [{x:250,y:350}]; await ready(s);
+    const alpha = []; s.ctx.drawImage.mockImplementation(()=>alpha.push(s.ctx.globalAlpha));
+    s.renderer.foreground(s.ctx,s.state,s.view);
+    expect(alpha[0]).toBe(1);
+});
+
+
+test('visible trees gate frame readiness until decoded, with a bounded wait for stalled loads', async () => {
+    let resolve;
+    const s = setup({loadImage:()=>new Promise(r=>{resolve=r;})}); s.layer.placed=true;
+    const view={...s.view,viewportWidth:320,viewportHeight:240};
+    expect(s.renderer.ready(s.state,view)).toBe(false); await flush();
+    expect(s.renderer.ready(s.state,view)).toBe(false);
+    s.time(3000); expect(s.renderer.ready(s.state,view)).toBe(true);
+    resolve(s.image); await flush(); s.time(0);
+    expect(s.renderer.ready(s.state,view)).toBe(true);
+});
+
+test('failed tree images and offscreen scenes never prevent frame readiness', async () => {
+    const s=setup({loadImage:()=>Promise.reject(new Error('missing'))}); s.layer.placed=true;
+    const view={...s.view,viewportWidth:320,viewportHeight:240};
+    expect(s.renderer.ready(s.state,view)).toBe(false); await flush();
+    expect(s.renderer.ready(s.state,view)).toBe(true);
+    expect(s.renderer.ready(s.state,{...view,cameraX:10000})).toBe(true);
 });

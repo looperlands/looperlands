@@ -441,6 +441,11 @@ onmessage = (e) => {
         const view = e.data.renderData.find(data => data.type === 'entities');
         const scale = view?.scale || 1;
         resizeWorkerLayers(scale);
+        if (rendererExtensions?.ready?.(e.data.extensions, {...view,
+            viewportWidth: canvases.background.width / scale, viewportHeight: canvases.background.height / scale}) === false) {
+            scheduleNextFrame();
+            return;
+        }
         composingWorld = true;
         frameExtensions = e.data.extensions;
         frameCutouts = rendererExtensions?.terrainCutouts?.(frameExtensions, {...view,
