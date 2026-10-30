@@ -81,3 +81,5 @@ Parallax, particle and daylight settings save inside each atmosphere override; s
 ### Reuse a tree assembly on another map
 
 Enable scene parallax and add root, trunk and canopy layers. Upload or select an image for each layer and enable **Use sprite placements**. Use **On terrain** for roots, **Among characters** for trunks, and **Above characters** for canopy. All layers share the **Sprite placements** roots, with independent size and anchors to align the artwork. Start scroll factors at 1 for roots/trunks and approximately 1.03–1.17 for canopy. Keep roots at zero sway, use very small trunk sway, then increase canopy amplitudes; use the same sway period for connected layers. Set placements and save the scene. This works on any configured map without code changes. Art placement does not create collision: author solid tree footprints in Tiled as usual.
+
+Newly loaded decorative parallax images fade in over 0.8 seconds. Reduced motion shows them immediately. Recessed background layers appear fully opaque when ready so terrain cutouts never expose a transparent replacement.

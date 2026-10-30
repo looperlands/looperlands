@@ -33,7 +33,7 @@
             entry = {image: null};
             images.set(source, entry);
             Promise.resolve().then(() => loadImage(source)).then(image => {
-                if (images.get(source) === entry) entry.image = image;
+                if (images.get(source) === entry) {entry.image = image; entry.loadedAt = now();}
                 else image?.close?.();
             }).catch(error => options.onError?.(error));
             while (images.size > 16) {
@@ -46,6 +46,15 @@
             images.set(source, entry);
         }
         return entry.image;
+    }
+
+    function loadOpacity(source, view, plane) {
+        // Recessed terrain must be opaque as soon as its cutout becomes active.
+        if (view.reducedMotion || plane === 'background') return 1;
+        const duration = options.fadeDuration ?? 800;
+        if (duration <= 0) return 1;
+        const progress = Math.max(0, Math.min(1, (now() - images.get(source).loadedAt) / duration));
+        return progress * progress * (3 - 2 * progress);
     }
 
     function rasterFor(image, width, height, scale, brightness = 1) {
@@ -124,7 +133,7 @@
         const startY = layer.repeatY === false ? y : y + Math.floor((clip.top - y) / height) * height;
         const endX = layer.repeatX === false ? startX + width : clip.right;
         const endY = layer.repeatY === false ? startY + height : clip.bottom;
-        ctx.globalAlpha *= finite(layer.opacity, 1, 0, 1);
+        ctx.globalAlpha *= finite(layer.opacity, 1, 0, 1) * loadOpacity(layer.image, view, layer.plane);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
         const raster = rasterFor(image, width, height, scale, brightness);
@@ -166,8 +175,8 @@
             const y = motion.y * size + centerY + (worldY - view.cameraY - centerY) * factorY + finite(layer.offsetY, 0, -512, 512) * size
                 - height * finite(layer.anchorY, 0.5, 0, 1);
             if (x >= clip.right || y >= clip.bottom || x + width <= clip.left || y + height <= clip.top) continue;
-            const opacity = finite(layer.opacity, 1, 0, 1);
             const image = imageFor(layer.image);
+            const opacity = image ? finite(layer.opacity, 1, 0, 1) * loadOpacity(layer.image, view, layer.plane) : 0;
             if (image) result.push({image, x, y, width, height, opacity, worldY, flipX: placement.flipX === true});
         }
         return result;
