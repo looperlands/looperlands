@@ -3614,7 +3614,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Medic Bag",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.FIRSTAIDKIT);
         }
@@ -3627,7 +3627,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Medic Bag 2",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.STRANGEYELLOWLIQUID);
         }
@@ -3640,7 +3640,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Armor Ruck Sack",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NKEVLARARMOR);
         }
@@ -3653,7 +3653,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Melee Ruck Sack",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NBRASSKNUCKLES);
         }
@@ -3666,7 +3666,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Range Ruck Sack",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGRENADE);
         }
