@@ -8491,9 +8491,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                     });
 
-                    self.client.onQuestComplete(function (questName, endText, xpReward, medal) {
+                    self.client.onQuestComplete(function (questName, endText, xpReward, medal, reward) {
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
-                        self.showQuestCompleteNotification(questName, endText, xpReward, medal);
+                        self.showQuestCompleteNotification(questName, endText, xpReward, medal, reward);
                         self.renderStatistics();
                     });
 
@@ -10532,9 +10532,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
-            showQuestCompleteNotification: function (questName, endText, xpReward, medal) {
+            showQuestCompleteNotification: function (questName, endText, xpReward, medal, reward) {
                 if (this.unlock_callback) {
-                    this.unlock_callback(questName, endText, xpReward, medal);
+                    this.unlock_callback(questName, endText, xpReward, medal, reward);
                     this.audioManager.playSound("achievement");
                 }
             },

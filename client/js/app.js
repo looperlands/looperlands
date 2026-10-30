@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
 
     var App = Class.extend({
         init: function () {
@@ -912,23 +912,9 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             }, 3200);
         },
 
-        showAchievementNotification: function (questName, endText, xpReward, medal) {
-            var $notif = $('#achievement-notification'),
-                $name = $notif.find('.name'),
-                $button = $('#achievementsbutton');
-
-            $notif.removeClass().addClass('active achievement' + medal);
-            $name.text(questName);
-
-            if (this.game.storage.getAchievementCount() === 1) {
-                this.blinkInterval = setInterval(function () {
-                    $button.toggleClass('blink');
-                }, 500);
-            }
-            setTimeout(function () {
-                $notif.removeClass('active');
-                $button.removeClass('blink');
-            }, 5000);
+        showAchievementNotification: function (questName, endText, xpReward, medal, reward) {
+            if (!this.questCelebration) this.questCelebration = new QuestCelebration(this);
+            this.questCelebration.show({questName, endText, xpReward, medal, reward});
         },
 
         displayUnlockedAchievement: function (id) {
@@ -941,8 +927,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             $achievement.addClass('unlocked');
         },
 
-        unlockAchievement: function (questName, endText, xpReward, medal) {
-            this.showAchievementNotification(questName, endText, xpReward, medal);
+        unlockAchievement: function (questName, endText, xpReward, medal, reward) {
+            this.showAchievementNotification(questName, endText, xpReward, medal, reward);
         },
 
         initAchievementList: function (achievements) {

@@ -76,6 +76,7 @@ exports.completeQuest = function (cache, sessionId, questID) {
     cache.set(sessionId, sessionData);
 
     let quest = questsByID[questID];
+    PlayerEventBroker.playerEventBrokers[sessionId]?.player.handleCompletedQuests([quest]);
     return quest.endText ?? null;
 }
 

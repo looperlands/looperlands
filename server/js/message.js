@@ -273,18 +273,20 @@ Messages.MobExitCombat = Message.extend({
 });
 
 Messages.QuestComplete = Message.extend({
-    init: function(questName, endText, xpReward, medal) {
+    init: function(questName, endText, xpReward, medal, reward) {
         this.questName = questName;
         this.endText = endText;
         this.xpReward = xpReward;
         this.medal = medal;
+        this.reward = reward;
     },
     serialize: function() {
         return [Types.Messages.QUEST_COMPLETE,
             this.questName,
             this.endText,
             this.xpReward,
-            this.medal
+            this.medal,
+            this.reward
         ];
     }
 });

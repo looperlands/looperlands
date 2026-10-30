@@ -90,3 +90,12 @@ test('collectables, area transitions and recognition use the correct character a
     one.broker.destroy();
     expect(PlayerEventBroker.playerEventBrokers.one).toBeUndefined();
 });
+
+test('dialogue completion dispatches the XP and celebration handler exactly once', () => {
+    const one = setup();
+    registry.newQuest(one.cache, 'one', 'fixture-kill');
+    expect(registry.completeQuest(one.cache, 'one', 'fixture-kill')).toBe('Gate checked.');
+    expect(one.player.handleCompletedQuests).toHaveBeenCalledWith([registry.questsByID['fixture-kill']]);
+    expect(registry.completeQuest(one.cache, 'one', 'fixture-kill')).toBe(false);
+    expect(one.player.handleCompletedQuests).toHaveBeenCalledTimes(1);
+});

@@ -606,11 +606,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         receiveQuestComplete: function(data) {
             let questName = data[1],
                 endText = data[2],
-                xpReward = data[3];
-                medal = data[4];
+                xpReward = data[3],
+                medal = data[4],
+                reward = data[5] || undefined;
 
             if (this.questComplete_callback) {
-                this.questComplete_callback(questName, endText, xpReward, medal);
+                this.questComplete_callback(questName, endText, xpReward, medal, reward);
             }
         },
 
