@@ -347,8 +347,8 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     		    }
     		});
 	
-    		game.onAchievementUnlock(function(questName, endText, xpReward, medal) {
-    		    app.unlockAchievement(questName, endText, xpReward, medal);
+            game.onAchievementUnlock(function(questName, endText, xpReward, medal, reward) {
+                app.unlockAchievement(questName, endText, xpReward, medal, reward);
     		});
 
             game.onQuestHandout(function(questId) {

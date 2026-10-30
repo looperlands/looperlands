@@ -39,7 +39,7 @@ const cases = [
     ['Blink', [actor], 'blink_callback', [81]],
     ['MobDoSpecial', [actor], 'mobDoSpecial_callback', [81]],
     ['MobExitCombat', [actor], 'mobExitCombat_callback', [81]],
-    ['QuestComplete', ['Lantern Picnic', ['Everyone is invited.'], 20, Types.Medals.RAT], 'questComplete_callback', ['Lantern Picnic', ['Everyone is invited.'], 20, Types.Medals.RAT]],
+    ['QuestComplete', ['Lantern Picnic', ['Everyone is invited.'], 20, Types.Medals.RAT], 'questComplete_callback', ['Lantern Picnic', ['Everyone is invited.'], 20, Types.Medals.RAT, undefined]],
     ['Follow', [actor], 'follow_callback', [81]],
     ['Camera', [42, 216], 'camera_callback', [42, 216]],
     ['Sound', ['watersplash'], 'sound_callback', ['watersplash']],
@@ -94,4 +94,13 @@ test('mob damage carries an authoritative HP snapshot without changing legacy fi
     const packet=new Messages.Damage(mob,20,true);mob.hitPoints=10;
     const game=client();game.dmg_callback=jest.fn();game.receiveAction(packet.serialize());
     expect(game.dmg_callback).toHaveBeenCalledWith(actor.id,20,true,{critical:true,hp:30,maxHp:100});
+});
+
+test('quest rewards survive the wire and legacy packets remain readable', () => {
+    const game = client(); game.questComplete_callback = jest.fn();
+    const reward = {item: Types.Entities.FLASK, amount: 3, name: 'Flask'};
+    game.receiveAction(JSON.parse(JSON.stringify(new Messages.QuestComplete('Supplies', ['Thanks!'], 25, 1, reward).serialize())));
+    expect(game.questComplete_callback).toHaveBeenLastCalledWith('Supplies', ['Thanks!'], 25, 1, reward);
+    game.receiveAction([Types.Messages.QUEST_COMPLETE, 'Old quest', [], 10, 1]);
+    expect(game.questComplete_callback).toHaveBeenLastCalledWith('Old quest', [], 10, 1, undefined);
 });

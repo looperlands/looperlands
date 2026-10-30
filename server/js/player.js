@@ -1241,7 +1241,10 @@ module.exports = Player = Character.extend({
                 let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
                 xpReward = Math.ceil(xpReward * this.playerClassModifiers.xp);
                 this.handleExperience(xpReward);
-                let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
+                let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal, quest.reward ? {
+                    item: quest.reward.item, amount: quest.reward.amount,
+                    name: Properties[Types.getKindAsString(quest.reward.item)]?.inventoryDescription
+                } : undefined);
                 this.server.pushToPlayer(this, msg);
                 this.completedQuestsIDs.push(quest.id);
 
