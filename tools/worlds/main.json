@@ -1483,15 +1483,6 @@
       "y": 178,
       "radius": 16,
       "volume": 0.3
-    },
-    {
-      "id": "desert_wind",
-      "name": "Desert wind",
-      "preset": "wind",
-      "x": 43,
-      "y": 83,
-      "radius": 26,
-      "volume": 0.3
     }
   ]
 }

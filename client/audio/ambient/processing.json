@@ -37,14 +37,5 @@
     "crossfadeSeconds": 1.0,
     "gain": 11.477045123499531,
     "sha256": "7207b0ae82bcd0d032152ae42131216f6f1ec5d152b4c9807d6aa0c4f4b75f9d"
-  },
-  "wind": {
-    "source": "park_ambience_wind.wav",
-    "offsetSeconds": 3,
-    "excerptSeconds": 26.0,
-    "loopSeconds": 25.0,
-    "crossfadeSeconds": 1.0,
-    "gain": 15.916078828763053,
-    "sha256": "f99ad5ed1a6e639847ea06bd3046df3909158b5de620f58de79d8f08609eb633"
   }
 }

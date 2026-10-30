@@ -8,7 +8,6 @@
         campfire: {file: 'campfire.wav', name: 'Campfire', radius: 9, volume: .55, description: 'Warm embers with small, irregular crackles.'},
         water: {file: 'water.wav', name: 'Flowing water', radius: 12, volume: .45, description: 'A stream, fountain or waterfall.'},
         surf: {file: 'surf.wav', name: 'Sea shore', radius: 22, volume: .45, description: 'Slow waves washing onto the shore.'},
-        wind: {file: 'wind.wav', name: 'Wind', radius: 18, volume: .3, description: 'Soft gusts around exposed ground and trees.'},
         birds: {file: 'birds.wav', name: 'Birds', radius: 16, volume: .35, description: 'Sparse birdsong around a tree or grove.'},
         lava: {name: 'Lava', radius: 12, volume: .45, description: 'Low rumbling and bubbling near molten rock.'}
     };

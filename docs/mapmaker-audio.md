@@ -2,7 +2,7 @@
 
 Open **Ambient sounds** under **Map & world** in the Mapmaker Toolbox. Choose your map, select a preset, click **Place sound**, then click the source tile. The source is invisible in the game: place matching artwork in Tiled. Campfires and other scenery can use blocked tiles.
 
-The six presets are **Campfire**, **Flowing water**, **Sea shore**, **Wind**, **Birds** and **Lava**. Campfire, water, shore, wind and birds use bundled CC0 field recordings; lava is synthesized. Source links and adaptation details are in `client/audio/ambient/CREDITS.md`. Clips load only when nearby, from the game itself. If a bundled recording cannot load, a synthesized texture is used.
+The five presets are **Campfire**, **Flowing water**, **Sea shore**, **Birds** and **Lava**. Campfire, water, shore and birds use bundled CC0 field recordings; lava is synthesized. Source links and adaptation details are in `client/audio/ambient/CREDITS.md`. Clips load only when nearby, from the game itself. If a bundled recording cannot load, a synthesized texture is used.
 
 ## Upload your own sounds
 
@@ -36,6 +36,6 @@ Start a fresh local session to load saved sources. Build the client after changi
 
 ## Main map and gameplay effects
 
-The main map includes sources at nine campfires, the town fireplace, the forest river, both beach shorelines, three lavafalls, two forest bird locations and an exposed desert location. Edit or remove them using this tool.
+The main map includes sources at nine campfires, the town fireplace, the forest river, both beach shorelines, three lavafalls and two forest bird locations. Edit or remove them using this tool.
 
 Walking adds quiet surface-dependent footsteps. Tool contact frames add water, soil, wood or stone sounds where the tool's impact is configured; nearby actors' tool effects fade and pan from their target tile. These cues remain independent of reduced-motion and particle settings, and respect the audio switch.
