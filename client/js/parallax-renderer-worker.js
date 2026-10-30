@@ -25,6 +25,8 @@
     const finite = (value, fallback, min, max) => Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
     const validSource = source => typeof source === 'string' && /^\/img\/parallax\/[a-z0-9][a-z0-9-]*\.(png|webp)$/.test(source);
 
+    const visibleLayer = (layer, scene, view) => !layer?.activeSceneOnly || String(view.sceneId) === String(scene.id);
+
     function imageFor(source) {
         if (!validSource(source)) return null;
         let entry = images.get(source);
@@ -113,6 +115,34 @@
             y: finite(layer.swayY, 0, 0, 12) * Math.sin(angle + .8)};
     }
 
+    // Stable samples keep each repeated sprite's motion independent of frame rate and camera position.
+    function unit(seed) {
+        const value = Math.sin(seed * 12.9898) * 43758.5453;
+        return value - Math.floor(value);
+    }
+
+    function orbitMotion(layer, seconds, column, row) {
+        const phase = column * 1.7 + row * 2.3;
+        const seed = column * 127.1 + row * 311.7 + finite(layer.orbitPeriod, 8, 2, 60) * 17;
+        const variation = finite(layer.orbitVariation, 0, 0, 1);
+        const direction = variation && unit(seed + 3) < .5 ? -1 : 1;
+        const speed = 1 + (unit(seed + 7) * 2 - 1) * .45 * variation;
+        const omega = Math.PI * 2 / finite(layer.orbitPeriod, 8, 2, 60) * speed;
+        const pulse = seconds * omega * .63 + phase;
+        const angle = phase + direction * (seconds * omega + variation * .28 * Math.sin(pulse));
+        const angularSpeed = direction * omega * (1 + variation * .1764 * Math.cos(pulse));
+        const radius = finite(layer.orbitRadius, 0, 0, 256);
+        const orientation = unit(seed + 11) * Math.PI * 2 * variation;
+        const cos = Math.cos(orientation), sin = Math.sin(orientation);
+        const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius * .65;
+        const vx = -Math.sin(angle) * radius * angularSpeed, vy = Math.cos(angle) * radius * .65 * angularSpeed;
+        const scaleVariation = finite(layer.scaleVariation, 0, 0, .75);
+        return {x: x * cos - y * sin, y: x * sin + y * cos,
+            rotation: Math.atan2(vx * sin + vy * cos + finite(layer.driftY, 0, -32, 32),
+                vx * cos - vy * sin + finite(layer.driftX, 0, -32, 32)) + Math.PI / 2,
+            scale: 1 + scaleVariation * (.65 * (unit(seed + 19) * 2 - 1) + .35 * Math.sin(seconds * .32 + unit(seed + 23) * Math.PI * 2))};
+    }
+
     function drawLayer(ctx, layer, scene, view, clip, time, brightness) {
         if (layer.placed) {
             for (const sprite of placedSprites(layer, scene, view, clip, time)) drawSprite(ctx, sprite, clip, view.scale, view.scale, brightness);
@@ -129,21 +159,39 @@
         const motion = sway(layer, view, time);
         const x = motion.x - (view.cameraX - scene.x * 16) * factorX + finite(layer.offsetX, 0, -4096, 4096) + seconds * finite(layer.driftX, 0, -32, 32);
         const y = motion.y - (view.cameraY - scene.y * 16) * factorY + finite(layer.offsetY, 0, -4096, 4096) + seconds * finite(layer.driftY, 0, -32, 32);
-        const startX = layer.repeatX === false ? x : x + Math.floor((clip.left - x) / width) * width;
-        const startY = layer.repeatY === false ? y : y + Math.floor((clip.top - y) / height) * height;
-        const endX = layer.repeatX === false ? startX + width : clip.right;
-        const endY = layer.repeatY === false ? startY + height : clip.bottom;
+        // Repeat distance is independent of sprite size, leaving quiet gaps between passes.
+        const spacingX = finite(layer.spacingX, width, width, 4096);
+        const spacingY = finite(layer.spacingY, height, height, 4096);
+        const radius = finite(layer.orbitRadius, 0, 0, 256);
+        const maxSize = 1 + finite(layer.scaleVariation, 0, 0, .75);
+        const margin = radius || maxSize > 1 ? radius + Math.hypot(width, height) * maxSize / 2 : 0;
+        const startX = layer.repeatX === false ? x : x + Math.floor((clip.left - margin - x) / spacingX) * spacingX;
+        const startY = layer.repeatY === false ? y : y + Math.floor((clip.top - margin - y) / spacingY) * spacingY;
+        const endX = layer.repeatX === false ? startX + width : clip.right + margin;
+        const endY = layer.repeatY === false ? startY + height : clip.bottom + margin;
         ctx.globalAlpha *= finite(layer.opacity, 1, 0, 1) * loadOpacity(layer.image, view, layer.plane);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
         const raster = rasterFor(image, width, height, scale, brightness);
+        const edge = layer.rotateToPath && radius ? Math.hypot(width, height) * maxSize / 2 : 0;
         let count = 0;
-        for (let dy = startY; dy < endY; dy += height) {
-            for (let dx = startX; dx < endX; dx += width) {
+        for (let dy = startY; dy < endY; dy += spacingY) {
+            for (let dx = startX; dx < endX; dx += spacingX) {
                 if (++count > 256) return;
-                if (dx >= clip.right || dy >= clip.bottom || dx + width <= clip.left || dy + height <= clip.top) continue;
-                // Keep fractional positions: slow drift must advance every frame, not every art pixel.
-                ctx.drawImage(raster, dx * scale, dy * scale, width * scale, height * scale);
+                const flight = radius || maxSize > 1 ? orbitMotion(layer, seconds,
+                    Math.round((dx - x) / spacingX), Math.round((dy - y) / spacingY)) : {x: 0, y: 0, scale: 1};
+                const spriteWidth = width * flight.scale, spriteHeight = height * flight.scale;
+                const px = dx + flight.x + (width - spriteWidth) / 2;
+                const py = dy + flight.y + (height - spriteHeight) / 2;
+                if (px - edge >= clip.right || py - edge >= clip.bottom || px + spriteWidth + edge <= clip.left || py + spriteHeight + edge <= clip.top) continue;
+                // Cache one raster; gradual height changes scale it without allocating new buffers.
+                if (layer.rotateToPath && radius) {
+                    ctx.save();
+                    ctx.translate((px + spriteWidth / 2) * scale, (py + spriteHeight / 2) * scale);
+                    ctx.rotate(flight.rotation);
+                    ctx.drawImage(raster, -spriteWidth * scale / 2, -spriteHeight * scale / 2, spriteWidth * scale, spriteHeight * scale);
+                    ctx.restore();
+                } else ctx.drawImage(raster, px * scale, py * scale, spriteWidth * scale, spriteHeight * scale);
             }
         }
     }
@@ -220,7 +268,7 @@
             const clip = sceneClip(scene, view, view.viewportWidth, view.viewportHeight);
             if (!clip) continue;
             for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
-                if (!layer?.placed || layer.plane !== 'entities') continue;
+                if (!layer?.placed || layer.plane !== 'entities' || !visibleLayer(layer, scene, view)) continue;
                 for (const sprite of placedSprites(layer, scene, view, clip)) {
                     result.push({y: sprite.worldY, draw: ctx => drawSprite(ctx, sprite, clip, view.scale, 1)});
                 }
@@ -234,7 +282,7 @@
         for (const scene of (Array.isArray(state?.scenes) ? state.scenes : []).slice(0, 100)) {
             if (!sceneClip(scene, view, view.viewportWidth, view.viewportHeight)) continue;
             for (const layer of (scene.layers || []).slice(0, 8)) {
-                if (!layer?.placed || !validSource(layer.image)) continue;
+                if (!layer?.placed || !validSource(layer.image) || !visibleLayer(layer, scene, view)) continue;
                 imageFor(layer.image);
                 const entry = images.get(layer.image);
                 if (!entry.image && !entry.failed && now() - entry.requestedAt < 3000) complete = false;
@@ -250,7 +298,7 @@
             if (!sceneClip(scene, view, view.viewportWidth, view.viewportHeight)) continue;
             const colors = (Array.isArray(scene.cutoutColors) ? scene.cutoutColors : []).slice(0, 8)
                 .filter(color => Array.isArray(color) && color.length === 3 && color.every(value => Number.isInteger(value) && value >= 0 && value <= 255));
-            const layers = (scene.layers || []).filter(layer => layer?.plane === 'background');
+            const layers = (scene.layers || []).filter(layer => layer?.plane === 'background' && visibleLayer(layer, scene, view));
             // Keep the original map intact while its replacement is loading or unavailable.
             if (!colors.length || !layers.length || !layers.every(layer => imageFor(layer.image))) continue;
             result.push({x: scene.x * 16, y: scene.y * 16, w: scene.w * 16, h: scene.h * 16, colors, ...(scene.exclude?.length ? {exclude: scene.exclude} : {})});
@@ -274,6 +322,8 @@
             }
             for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
                 if (!layer || (layer.plane || 'foreground') !== plane) continue;
+                // Do not show neighboring outdoor layers while the viewer is in an interior.
+                if (!visibleLayer(layer, scene, view)) continue;
                 ctx.save();
                 // Overhead art is composed after world lighting. Dim it continuously
                 // with ambient light, while luminous effects can opt into brighter nights.

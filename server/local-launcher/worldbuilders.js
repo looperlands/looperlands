@@ -191,8 +191,8 @@
                 const weatherConfig=state.data.weather?(outside?state.data.weather:null):config.weather;
                 const daylight=config.cycle?light.daylight:1-config.dayDarkness;
                 const weather=window.SceneWeather.sample(weatherConfig,weatherTime,daylight);
-                const view={cameraX:(point.x-6)*16,cameraY:(point.y-6)*16,scale:2,viewportWidth:208,viewportHeight:208,reducedMotion:reduced};
-                const parallaxState={scenes:[{...scene,...config.parallax}]}, cuts=parallax.terrainCutouts(parallaxState,view);
+                const view={sceneId:scene.sceneId,cameraX:(point.x-6)*16,cameraY:(point.y-6)*16,scale:2,viewportWidth:208,viewportHeight:208,reducedMotion:reduced};
+                const parallaxState={scenes:[{...scene,id:scene.sceneId,...config.parallax}]}, cuts=parallax.terrainCutouts(parallaxState,view);
                 const key=JSON.stringify([crop?.revision,point.x,point.y,cuts]);
                 if(key!==terrainKey&&crop&&image){
                     terrainKey=key;const tc=terrain.getContext('2d');tc.clearRect(0,0,416,416);tc.imageSmoothingEnabled=false;

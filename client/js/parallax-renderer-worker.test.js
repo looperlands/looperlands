@@ -11,7 +11,7 @@ function setup(options = {}) {
     };
     const renderer = createParallax({loadImage, createCanvas, now: () => time, fadeDuration: 0, ...options});
     const ctx = {canvas: {width: 320, height: 240}, globalAlpha: 1, filter: 'none'};
-    for (const name of ['save', 'restore', 'beginPath', 'rect', 'clip', 'drawImage', 'translate', 'scale', 'fillRect']) ctx[name] = jest.fn();
+    for (const name of ['save', 'restore', 'beginPath', 'rect', 'clip', 'drawImage', 'translate', 'rotate', 'scale', 'fillRect']) ctx[name] = jest.fn();
     const stack=[];
     ctx.save=jest.fn(()=>stack.push({globalAlpha:ctx.globalAlpha,filter:ctx.filter}));
     ctx.restore=jest.fn(()=>Object.assign(ctx,stack.pop()));
@@ -330,4 +330,105 @@ test('failed tree images and offscreen scenes never prevent frame readiness', as
     expect(s.renderer.ready(s.state,view)).toBe(false); await flush();
     expect(s.renderer.ready(s.state,view)).toBe(true);
     expect(s.renderer.ready(s.state,{...view,cameraX:10000})).toBe(true);
+});
+
+test('spaced shadows leave quiet gaps, move continuously, and follow ground camera motion', async () => {
+    const s = setup();
+    Object.assign(s.view, {cameraX: 0, cameraY: 0});
+    Object.assign(s.layer, {plane: 'ground', width: 64, height: 64, factorX: 1, factorY: 1,
+        spacingX: 256, spacingY: 512, driftY: -30, opacity: .27});
+    s.renderer.ground(s.ctx, s.state, s.view); await flush(); s.ctx.drawImage.mockClear();
+    s.renderer.ground(s.ctx, s.state, s.view);
+    expect(s.ctx.drawImage.mock.calls.map(call => call.slice(1))).toEqual([[0, 0, 64, 64], [256, 0, 64, 64]]);
+    s.time(1000 / 60); s.ctx.drawImage.mockClear(); s.renderer.ground(s.ctx, s.state, s.view);
+    expect(s.ctx.drawImage.mock.calls[0][2]).toBeCloseTo(-.5);
+    s.ctx.drawImage.mockClear(); s.renderer.ground(s.ctx, s.state, {...s.view, cameraX: 10, cameraY: 12});
+    expect(s.ctx.drawImage.mock.calls[0].slice(1, 3)).toEqual([-10, -12.5]);
+    s.ctx.drawImage.mockClear(); s.time(6000); s.renderer.ground(s.ctx, s.state, s.view);
+    expect(s.ctx.drawImage).not.toHaveBeenCalled(); // Entire viewport lies in the gap between flyovers.
+    s.renderer.ground(s.ctx, s.state, {...s.view, reducedMotion: true});
+    expect(s.ctx.drawImage.mock.calls[0].slice(1, 3)).toEqual([0, 0]);
+});
+
+
+test('current-scene-only layers disappear inside caves even when the outdoor scene remains in view', async () => {
+    const s = setup(); s.state.scenes[0].id = 'outside';
+    Object.assign(s.layer, {plane: 'ground', activeSceneOnly: true});
+    s.renderer.ground(s.ctx, s.state, {...s.view, sceneId: 'cave'}); await flush();
+    expect(s.loadImage).not.toHaveBeenCalled();
+    s.renderer.ground(s.ctx, s.state, {...s.view, sceneId: 'outside'}); await flush();
+    s.renderer.ground(s.ctx, s.state, {...s.view, sceneId: 'outside'});
+    expect(s.ctx.drawImage).toHaveBeenCalled();
+    s.ctx.drawImage.mockClear();
+    s.renderer.ground(s.ctx, s.state, {...s.view, sceneId: 'cave'});
+    expect(s.ctx.drawImage).not.toHaveBeenCalled();
+});
+
+test('curved flight follows an ellipse, turns along its tangent, and freezes under reduced motion', async () => {
+    const s = setup(); Object.assign(s.view, {cameraX: 0, cameraY: 0});
+    Object.assign(s.layer, {width: 40, height: 40, factorX: 1, factorY: 1, offsetX: 100, offsetY: 80,
+        repeatX: false, repeatY: false, orbitRadius: 60, orbitPeriod: 4, rotateToPath: true});
+    await ready(s); s.renderer.foreground(s.ctx, s.state, s.view);
+    expect(s.ctx.translate).toHaveBeenLastCalledWith(180, 100);
+    expect(s.ctx.rotate).toHaveBeenLastCalledWith(Math.PI);
+    s.time(1000); s.renderer.foreground(s.ctx, s.state, s.view);
+    const [x,y] = s.ctx.translate.mock.calls.at(-1);
+    expect(x).toBeCloseTo(120); expect(y).toBeCloseTo(139);
+    expect(s.ctx.rotate).toHaveBeenLastCalledWith(Math.PI * 1.5);
+    s.renderer.foreground(s.ctx, s.state, {...s.view, reducedMotion: true});
+    expect(s.ctx.translate).toHaveBeenLastCalledWith(180, 100);
+    s.time(2000); s.renderer.foreground(s.ctx, s.state, {...s.view, reducedMotion: true});
+    expect(s.ctx.translate).toHaveBeenLastCalledWith(180, 100);
+});
+
+test('repeated curved sprites have different headings rather than rotating as one flock', async () => {
+    const s = setup(); Object.assign(s.view, {cameraX: 0, cameraY: 0});
+    Object.assign(s.layer, {width: 40, height: 40, factorX: 1, factorY: 1,
+        spacingX: 160, spacingY: 400, orbitRadius: 24, orbitPeriod: 7, rotateToPath: true});
+    await ready(s); s.ctx.rotate.mockClear(); s.renderer.foreground(s.ctx, s.state, s.view);
+    expect(new Set(s.ctx.rotate.mock.calls.map(([angle]) => angle)).size).toBeGreaterThan(1);
+});
+
+test('individual flight varies speed, turn direction and scale smoothly without changing identities on camera motion', async () => {
+    const s = setup(); Object.assign(s.ctx.canvas, {width: 1200, height: 1200});
+    Object.assign(s.view, {cameraX: 0, cameraY: 0});
+    Object.assign(s.layer, {width: 40, height: 40, factorX: 1, factorY: 1, offsetX: 140, offsetY: 140,
+        spacingX: 300, spacingY: 300, orbitRadius: 50, orbitPeriod: 7, orbitVariation: 1,
+        scaleVariation: .5, rotateToPath: true});
+    await ready(s);
+    const frame = (time, view = s.view) => {
+        s.time(time); s.ctx.translate.mockClear(); s.ctx.rotate.mockClear(); s.ctx.drawImage.mockClear();
+        s.renderer.foreground(s.ctx, s.state, view);
+        return s.ctx.translate.mock.calls.map(([x,y], index) => ({x,y,
+            angle: s.ctx.rotate.mock.calls[index][0], size: s.ctx.drawImage.mock.calls[index][3]}));
+    };
+    const first = frame(0), next = frame(16);
+    expect(first.length).toBe(next.length);
+    const velocities = first.map((entry, index) => Math.hypot(next[index].x - entry.x, next[index].y - entry.y) / .016);
+    expect(Math.max(...velocities) / Math.min(...velocities)).toBeGreaterThan(1.5);
+    const turns = first.map((entry, index) => Math.atan2(Math.sin(next[index].angle - entry.angle), Math.cos(next[index].angle - entry.angle)));
+    expect(turns.some(turn => turn > 0)).toBe(true);
+    expect(turns.some(turn => turn < 0)).toBe(true);
+    expect(new Set(first.map(entry => entry.size)).size).toBeGreaterThan(2);
+    const later = frame(5000);
+    expect(later.some((entry, index) => Math.abs(entry.size - first[index].size) > 1)).toBe(true);
+    expect(later.every(entry => entry.size >= 20 && entry.size <= 60)).toBe(true);
+    first.forEach((entry, index) => {
+        const dx = next[index].x - entry.x, dy = next[index].y - entry.y;
+        const alignment = (Math.sin(entry.angle) * dx - Math.cos(entry.angle) * dy) / Math.hypot(dx, dy);
+        expect(alignment).toBeGreaterThan(.99);
+    });
+    expect(first.every((entry, index) => Math.abs(next[index].size - entry.size) < .1)).toBe(true);
+    const moved = frame(16, {...s.view, cameraX: 2, cameraY: 3});
+    first.forEach((entry, index) => {
+        expect(moved[index].x).toBeCloseTo(next[index].x - 2);
+        expect(moved[index].y).toBeCloseTo(next[index].y - 3);
+        expect(moved[index].size).toBe(next[index].size);
+        expect(moved[index].angle).toBe(next[index].angle);
+    });
+    const reduced = {...s.view, reducedMotion: true};
+    expect(frame(1000, reduced)).toEqual(frame(10000, reduced));
+    const buffers = s.canvases.length;
+    for (let time = 0; time < 1000; time += 16) frame(time);
+    expect(s.canvases).toHaveLength(buffers); // Height changes reuse the original raster.
 });

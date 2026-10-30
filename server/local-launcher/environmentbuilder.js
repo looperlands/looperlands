@@ -54,6 +54,8 @@
             };
             field(row, 'Layer plane', layer, 'plane', {choices: [{id: 'background', name: 'Below terrain'}, {id: 'ground', name: 'On terrain'}, {id: 'entities', name: 'Among characters'}, {id: 'foreground', name: 'Above characters'}],change:refresh});
             check(block, 'Use sprite placements', layer, 'placed', refresh);
+            check(block, 'Show only inside the current scene', layer, 'activeSceneOnly');
+            if (!layer.placed) check(block, 'Turn with curved movement', layer, 'rotateToPath');
             if(layer.plane==='foreground') {
                 const night=grid(block);
                 for(const [key,label,fallback] of [['nightOpacity','Layer opacity at night',layer.placed?1:.45],['nightBrightness','Layer brightness at night',layer.placed?.35:.55]]) {
@@ -71,7 +73,11 @@
                 ['opacity', 'Opacity', 0, 1, .05, 1], ['offsetX', 'Horizontal offset', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096, 1, 0], ['offsetY', 'Vertical offset', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096, 1, 0]];
             fields.push(['swayX','Horizontal sway amplitude',0,12,.1,0],['swayY','Vertical sway amplitude',0,12,.1,0],['swayPeriod','Sway cycle in seconds',1,30,.1,6]);
             if (layer.placed) fields.push(['anchorX', 'Horizontal anchor', 0, 1, .05, .5], ['anchorY', 'Vertical anchor', 0, 1, .05, .5]);
-            else fields.push(['driftX', 'Horizontal drift per second', -32, 32, .05, 0], ['driftY', 'Vertical drift per second', -32, 32, .05, 0]);
+            else fields.push(['driftX', 'Horizontal drift per second', -32, 32, .05, 0], ['driftY', 'Vertical drift per second', -32, 32, .05, 0],
+                ['spacingX', 'Horizontal repeat distance', layer.width, 4096, 1, layer.width],
+                ['spacingY', 'Vertical repeat distance', layer.height, 4096, 1, layer.height],
+                ['orbitRadius', 'Curved path radius', 0, 256, 1, 0], ['orbitPeriod', 'Curved path cycle in seconds', 2, 60, .1, 8],
+                ['orbitVariation', 'Individual speed and turning variation', 0, 1, .05, 0], ['scaleVariation', 'Height variation through scale', 0, .75, .05, 0]);
             for (const [key, label, min, max, , fallback] of fields) {
                 // Display defaults without silently modifying the saved draft.
                 const input = field(row, label, layer, key, {type: 'number', min, max, step: 'any'});

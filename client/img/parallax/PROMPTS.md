@@ -144,3 +144,37 @@ Style/medium: chunky low-resolution pixel art, large deliberate square pixel clu
 Composition/framing: one asymmetrical tree crown centered in square canvas, covering about 75 percent width and 65 percent height, with real transparent openings between branches and transparent border around all edges. No floating detached leaf confetti.
 Constraints: actual alpha transparency, foliage only, no ground or sky, no horizon, no text, no watermark, no checkerboard. Individual game sprite, not a complete scene.
 ```
+
+
+## Flying cast shadows
+
+Final project assets generated using the built-in imagegen tool with transparent_background: true. Original PNG alpha preserved. A subtle feathered penumbra is baked into the artwork, so no per-frame blur is needed.
+
+### dragon-shadow.png
+
+Generation:
+```text
+Use case: stylized-concept
+Asset type: transparent cast-shadow sprite for a top-down 16-pixel-tile fantasy RPG.
+Primary request: the single broad dark shadow silhouette of a huge flying dragon as seen projected straight down onto the ground. Head points toward the top of the canvas, long curved tapering tail downward, two widely outstretched bat-like wings with clearly scalloped trailing edges, small legs tucked near the body. Wings feel organic and powerful, recognizable as a dragon passing high overhead.
+Style/medium: simple monochrome near-black silhouette, no interior detail, subtly softened translucent edge appropriate to a shadow; readable reduced to 200 pixels wide. Not a rendered creature, only its cast shadow.
+Composition/framing: exactly one centered silhouette, wings span about 85 percent of a square canvas, fully contained inside transparent margins.
+Constraints: genuine alpha-transparent background, only the dragon's shadow, no ground, scenery, lighting, color, outlines, texture, text, watermark or checkerboard. No eyes or scales. No oval shadow beneath a visible dragon.
+```
+
+Final soft-edge edit:
+```text
+Use case: lighting-weather
+Asset type: transparent top-down dragon cast-shadow game sprite.
+Edit target: the referenced dragon-shadow PNG. Change only its edge softness: give the silhouette a subtle but clearly visible Gaussian-like penumbra about 12 pixels wide at this 1280 pixel source resolution, feathering out to transparent. It must feel like a cast shadow of a dragon high overhead, not a sharp sticker. Keep the exact existing dragon silhouette, placement, proportions, wing and tail shape, monochrome near-black color, and genuine alpha-transparent background. No new elements, no ground, no backdrop, no checkerboard, text or watermark. Preserve transparent margins. This remains a shadow-only sprite.
+```
+
+### bird-shadow.png
+
+```text
+Use case: stylized-concept
+Asset type: ONE transparent bird cast-shadow sprite for a top-down pixel-art RPG.
+Primary request: exactly one small bird silhouette seen straight down, head pointing straight up, wings outstretched in a natural gliding pose, small tapered tail. A flat near-black SHADOW ONLY, without eyes, shading, body highlights, feather detail or a visible animal. Centered in a square image, wings span 70 percent of the canvas and every edge has generous transparent margins.
+Edge treatment: slightly defocused soft shadow edge with a modest smooth alpha penumbra, like a bird casting its shadow from high overhead. Keep the outline clearly recognizable at 40 game pixels wide.
+Constraints: real alpha-transparent background; exactly ONE bird, no flock, no other objects, ground, sky, text, checkerboard or watermark.
+```

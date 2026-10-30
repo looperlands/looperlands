@@ -4,7 +4,7 @@
     else root.SceneEnvironment = factory();
 })(typeof self !== 'undefined' ? self : null, function () {
     const assets = ['clouds', 'mist', 'canopy', 'forest-roots', 'forest-trunk', 'forest-canopy-lower',
-        'forest-canopy-upper', 'desert-dust', 'volcanic-smoke', 'embers', 'meadow-seeds', 'lava-depth'];
+        'forest-canopy-upper', 'desert-dust', 'volcanic-smoke', 'embers', 'meadow-seeds', 'lava-depth', 'dragon-shadow', 'bird-shadow'];
     const validImage = image => typeof image === 'string' && /^\/img\/parallax\/[a-z0-9][a-z0-9-]{0,79}\.png$/.test(image);
     const types = ['clear', 'rain', 'sunrays', 'cloudy'];
     const planes = ['background', 'ground', 'entities', 'foreground'];
@@ -45,16 +45,16 @@
         fields(value, ['layers', 'placements', 'cutoutColors', 'backgroundColor'], 'Parallax');
         if (!Array.isArray(value.layers) || value.layers.length > 8) fail('Use at most eight parallax layers.');
         for (const layer of value.layers) {
-            fields(layer, ['image', 'plane', 'width', 'height', 'factorX', 'factorY', 'opacity', 'nightOpacity', 'nightBrightness', 'swayX', 'swayY', 'swayPeriod', 'driftX', 'driftY', 'offsetX', 'offsetY', 'placed', 'anchorX', 'anchorY', 'repeatX', 'repeatY'], 'Parallax layer');
+            fields(layer, ['image', 'plane', 'width', 'height', 'factorX', 'factorY', 'opacity', 'nightOpacity', 'nightBrightness', 'swayX', 'swayY', 'swayPeriod', 'driftX', 'driftY', 'offsetX', 'offsetY', 'placed', 'anchorX', 'anchorY', 'repeatX', 'repeatY', 'spacingX', 'spacingY', 'orbitRadius', 'orbitPeriod', 'orbitVariation', 'scaleVariation', 'rotateToPath', 'activeSceneOnly'], 'Parallax layer');
             if (!validImage(layer.image)) fail('Choose a registered local parallax PNG image.');
             if (!planes.includes(layer.plane)) fail('Choose a parallax plane.');
             if (layer.plane === 'entities' && !layer.placed) fail('Depth-sorted layers need sprite placements.');
-            for (const key of ['placed', 'repeatX', 'repeatY']) if (layer[key] !== undefined && typeof layer[key] !== 'boolean') fail(key + ' must be enabled or disabled.');
+            for (const key of ['placed', 'repeatX', 'repeatY', 'rotateToPath', 'activeSceneOnly']) if (layer[key] !== undefined && typeof layer[key] !== 'boolean') fail(key + ' must be enabled or disabled.');
             number(layer.width, layer.placed ? 8 : 32, layer.placed ? 512 : 4096, 'Layer width');
             number(layer.height, layer.placed ? 8 : 32, layer.placed ? 512 : 4096, 'Layer height');
             optionalNumbers(layer, [['factorX', layer.placed ? .5 : 0, 2], ['factorY', layer.placed ? .5 : 0, 2], ['opacity', 0, 1],
                 ['nightOpacity', 0, 1], ['nightBrightness', 0, 1], ['swayX', 0, 12], ['swayY', 0, 12], ['swayPeriod', 1, 30], ['driftX', -32, 32], ['driftY', -32, 32], ['offsetX', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096],
-                ['offsetY', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096], ['anchorX', 0, 1], ['anchorY', 0, 1]]);
+                ['offsetY', layer.placed ? -512 : -4096, layer.placed ? 512 : 4096], ['anchorX', 0, 1], ['anchorY', 0, 1], ['spacingX', layer.width, 4096], ['spacingY', layer.height, 4096], ['orbitRadius', 0, 256], ['orbitPeriod', 2, 60], ['orbitVariation', 0, 1], ['scaleVariation', 0, .75]]);
         }
         if (value.placements !== undefined) {
             if (!Array.isArray(value.placements) || value.placements.length > 256) fail('Use at most 256 sprite placements.');

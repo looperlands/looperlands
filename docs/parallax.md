@@ -28,7 +28,7 @@ node bin/local-parallax-preview.js
 ```
 
 Open http://127.0.0.1:8064/parallax/ and choose a scene. This runs the real game
-client and server with `main` and `m88n`, local ownership, and isolated progress under
+client and server with `main`, `m88n` and `duckville`, local ownership, and isolated progress under
 `$TMPDIR/looperlands-parallax-preview` (or the system temporary directory).
 Use `PARALLAX_PREVIEW_PORT` and `PARALLAX_PREVIEW_DATA_DIR` to override these.
 Walk horizontally and vertically with WASD / arrow keys. Return to the preview
@@ -170,3 +170,39 @@ register `createParallaxScene` with its own scene geometry and surface palette.
 Every layer can set `swayX`, `swayY` (0–12 map pixels) and `swayPeriod` (1–30 seconds). Placed trees share a stable phase per root; increasing canopy amplitudes creates gentle wind movement without detaching the tree over time. Reduced motion disables sway. Foreground layers can also set `nightOpacity` and `nightBrightness` (0–1); these blend with ambient light. The Scene manager exposes all of these controls.
 
 Outdoor weather is configured once per map in the Scene manager’s Whole map default. Scene `weatherExposure` selects `outdoor`, `indoor` or `auto`; the latter follows the original Tiled day/night flag. Regional particles remain independently editable and include a per-effect `nightOpacity`.
+
+## Flying cast shadows
+
+Duckville's outdoor regions have a large translucent dragon shadow following broad, varied curves.
+Caverns, houses, shops, the greenhouse and underwater areas have no dragon layer.
+The main map's outdoor Town, Beach, Forest, Graveyard, Desert, Lavaland and Party
+beach regions have individual bird shadows with varied headings. Shadows render
+on the ground before characters and lighting; they remain attached to the terrain
+when the camera moves. Reduced motion pauses their flight like other drift layers.
+Both assets have a subtle feathered penumbra baked into their alpha by imagegen,
+so no blur filter runs every frame.
+
+`spacingX` and `spacingY` set repeat distance independently of image size, in
+native world pixels (image size through 4096; omitted means image size). The dragon
+uses a 288-pixel sprite with 1024 × 1280 spacing. Its 224-pixel turning radius
+and 30-second base cycle make broader, slower turns than the birds. Drift is
+3 pixels/second east and 18 north; motion variation is 0.55 and scale variation
+is 0.22, for gentler speed and apparent-height changes. The sprite turns along
+its actual travel direction, including drift. Birds use 40- and 48-pixel sprites on staggered repeat grids. Their paths have
+88- and 112-pixel radii and 7- and 9-second cycles, with each sprite turned along
+its tangent. The resulting curved flight has speeds around 50–80 native pixels/second,
+with gently moving orbit centers. Reduced motion freezes both
+position and heading.
+
+`orbitRadius` (0–256) and `orbitPeriod` (2–60 seconds) define a rounded elliptical
+path. `rotateToPath` turns the image to follow the path, assuming artwork faces up.
+Repeating cells have different phases. `orbitVariation` (0–1) adds stable individual
+speeds, both turning directions, differently oriented ellipses and gentle changes
+in angular speed. `scaleVariation` (0–0.75) gives sprites different apparent heights
+and slow changes in scale. Position, heading and scale all freeze under reduced
+motion. Bird layers use 0.9–1 motion variation and 0.4–0.5 scale variation. `activeSceneOnly` hides the entire layer
+when the active scene ID differs, including outdoor strips visible beside a cave.
+Edit repeat distances in the Mapmaker parallax layer controls.
+
+Preview links: `/parallax/play/duckville`, `/parallax/play/duckville-cave`, and
+`/parallax/play/birds`. The cave viewpoint is included to check the exclusion.

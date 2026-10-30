@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The real game, with main/DreamLand maps and isolated local progress. No Platform account needed.
+// The real game, with main/DreamLand/Duckville maps and isolated local progress. No Platform account needed.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -23,7 +23,7 @@ const WS = require('../server/js/ws');
 const World = require('../server/js/worldserver');
 const server = new WS.socketIOServer();
 server.worldsMap = {};
-for (const mapId of ['main', 'm88n']) {
+for (const mapId of ['main', 'm88n', 'duckville']) {
     const world = new World('world_' + mapId, 20, server);
     new (require('../server/js/combatcontroller'))(world);
     server.worldsMap[mapId] = world;
@@ -39,6 +39,9 @@ server.onConnect(connection => {
 server.onRequestStatus(() => JSON.stringify(Object.values(server.worldsMap).map(world => world.playerCount)));
 server.onError(error => console.error(error));
 const destinations = {
+    duckville: {label: 'Duckville · dragon shadow', mapId: 'duckville', x: 58, y: 444},
+    'duckville-cave': {label: 'Duckville cave · no shadows', mapId: 'duckville', x: 112, y: 428},
+    birds: {label: 'Main · bird shadows', x: 42, y: 216},
     town: {label: 'Town · garden breeze', x: 42, y: 216},
     beach: {label: 'Beach · clouds', x: 44, y: 272},
     forest: {label: 'Forest · layered trees', x: 42, y: 166},
@@ -85,8 +88,8 @@ server.app.get('/parallax/', (req, res) => res.type('html').send(`<!doctype html
 <title>LooperLands · Parallax preview</title>
 <style>
 body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-serif}main{max-width:780px;margin:10vh auto;padding:24px}h1{font-size:40px;line-height:1.1;letter-spacing:-1px}p{color:#acb9ad}nav{display:flex;gap:16px;flex-wrap:wrap;margin:32px 0}a{color:#e7e6d5}nav a{border:1px solid #57765b;background:#23392b;padding:22px;border-radius:6px;text-decoration:none}nav a:hover{background:#38543e}.label{color:#b6d487;font-size:13px;letter-spacing:2px;text-transform:uppercase}small{color:#acb9ad}
-</style><main><div class="label">Main &amp; DreamLand / local preview</div><h1>A little more depth.</h1>
-<p>A breeze through town, sand across the desert, smoke above lava, and a deep sky beneath DreamLand. Explore ten viewpoints, each with its own gentle movement and depth.</p>
+</style><main><div class="label">Main, Duckville &amp; DreamLand / local preview</div><h1>A little more depth.</h1>
+<p>A breeze through town, sand across the desert, smoke above lava, and a deep sky beneath DreamLand. Explore the viewpoints, each with its own gentle movement and depth.</p>
 <nav>${Object.entries(destinations).map(([id, destination]) => `<a href="/parallax/play/${id}">${destination.label}</a>`).join('')}</nav>
 <p>Move with WASD or the arrow keys. Walk in both directions to compare the terrain and overhead layers, or stand still to watch the weather drift. Settings → Reduced motion anchors the layers to the map and pauses the drift.</p>
 <p><a href="/parallax/play/forest?time=12:55">Forest rain</a> · <a href="/parallax/play/forest?time=18:00">Forest dusk</a> · <a href="/parallax/play/forest?time=20:55">Forest night rain</a></p>

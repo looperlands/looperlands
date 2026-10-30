@@ -1155,6 +1155,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     "healthTime": this.game.currentTime,
                     "reducedMotion": this.game.app.settings.getReducedMotion(),
                     "ambienceEnabled": this.game.worldFx?.enabled('ambience', false) !== false,
+                    "sceneId": this.game.getViewScene()?.id,
                     "cameraX": this.camera.x,
                     "cameraY": this.camera.y,
                     "scale": this.scale

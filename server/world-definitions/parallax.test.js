@@ -61,8 +61,8 @@ test('forest replaces tiled trees with rooted, depth-sorted assemblies and three
 });
 
 test('clouds and mist have gentle, distinct autonomous drift even with a stationary camera', () => {
-    const cloud = definitions.find(scene => scene.sceneId === 627).layers;
-    const mist = definitions.find(scene => scene.sceneId === 629).layers;
+    const cloud = definitions.find(scene => scene.sceneId === 627).layers.filter(layer => layer.image.endsWith('clouds.png'));
+    const mist = definitions.find(scene => scene.sceneId === 629).layers.filter(layer => layer.image.endsWith('mist.png'));
     expect(cloud.every(layer => layer.driftX > 0 && layer.driftY > 0)).toBe(true);
     expect(mist[0].driftX).toBeLessThan(0);
     expect(mist[1].driftY).toBeLessThan(0);
@@ -93,4 +93,28 @@ test('overlapping scenes exclude earlier regions even when they have no parallax
     expect(scene.exclude).toEqual([{x:32,y:32,w:48,h:48}]);
     world.map.scenes.reverse();
     expect(createParallaxScene(world).packet().rendererExtensions[0].data.scenes[0].exclude).toEqual([]);
+});
+
+test('flying shadows belong only to authored outdoor regions, never caves or interiors', () => {
+    for (const [mapId, asset, expected] of [
+        ['main', 'bird-shadow', [624,627,628,629,630,631,633]],
+        ['duckville', 'dragon-shadow', [740,742,743,748,788,876,970]]
+    ]) {
+        const doc = require('../../tools/worlds/' + mapId + '.json');
+        const {applyScenes} = require('../js/localworldscenes');
+        const map = require('../js/localworldauthoring').applyAtmosphere(
+            applyScenes(require('../maps/world_server_' + mapId + '.json'), doc.scenes), doc.atmosphere);
+        const scenes = createParallaxScene({map}).packet().rendererExtensions[0].data.scenes;
+        const shadows = scenes.filter(scene => scene.layers.some(layer => layer.image.endsWith(asset + '.png')));
+        expect(shadows.map(scene => Number(scene.id)).sort((a,b) => a-b)).toEqual(expected.slice().sort((a,b) => a-b));
+        for (const scene of shadows) {
+            const layer = scene.layers.find(layer => layer.image.endsWith(asset + '.png'));
+            expect(layer).toMatchObject({plane: 'ground', factorX: 1, factorY: 1, activeSceneOnly: true});
+            expect(layer.spacingY).toBeGreaterThan(layer.height * 4);
+            for (const kind of ['client','server']) {
+                expect(require('../../' + kind + '/maps/world_' + kind + '_' + mapId + '.json').scenes.find(s => String(s.id) === String(scene.id)).parallax).toEqual(doc.atmosphere.find(row => row.sceneId === String(scene.id)).parallax);
+            }
+        }
+        expect(shadows.some(scene => /cave|cavern|house|shop|gauntlet/i.test(map.scenes.find(s => String(s.id) === String(scene.id)).name))).toBe(false);
+    }
 });
