@@ -9,6 +9,15 @@
                 typeof (extension.layer === 'entities' ? extension.entries : extension.draw) !== 'function') throw new Error('Invalid render extension');
             extensions.set(id, extension);
         },
+        ready(data = {}, view) {
+            let ready = true;
+            for (const [id, extension] of extensions) {
+                if (!extension.ready || data[id] == null) continue;
+                try {if (!extension.ready(data[id], view)) ready = false;}
+                catch (error) {extensions.delete(id); console.error('Disabled render extension ' + id + ': ' + error.message);}
+            }
+            return ready;
+        },
         terrainCutouts(data = {}, view) {
             const cutouts = [];
             for (const [id, extension] of extensions) {

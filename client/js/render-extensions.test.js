@@ -59,3 +59,18 @@ test('entity scenery is sorted by world depth and drawing failures are isolated'
     expect(context.save).toHaveBeenCalledTimes(3); expect(context.restore).toHaveBeenCalledTimes(3);
     log.mockRestore();
 });
+
+test('readiness checks start all active loads and isolate failures', () => {
+    const registry = createRegistry(), first=jest.fn(()=>false), second=jest.fn(()=>true);
+    registry.register('first',{layer:'background',draw(){},ready:first});
+    registry.register('second',{layer:'background',draw(){},ready:second});
+    expect(registry.ready({first:{},second:{}},{})).toBe(false);
+    expect(second).toHaveBeenCalledTimes(1);
+    first.mockReturnValue(true);
+    expect(registry.ready({first:{},second:{}},{})).toBe(true);
+    expect(registry.ready({},{})).toBe(true);
+    first.mockImplementation(()=>{throw new Error('bad image');});
+    const log=jest.spyOn(console,'error').mockImplementation(()=>{});
+    expect(registry.ready({first:{},second:{}},{})).toBe(true);
+    expect(log).toHaveBeenCalledTimes(1);log.mockRestore();
+});

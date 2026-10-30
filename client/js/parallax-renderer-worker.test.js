@@ -1,7 +1,7 @@
 const createParallax = require('./parallax-renderer-worker');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const source = '/img/parallax/clouds.png';
-function setup() {
+function setup(options = {}) {
     let time = 0;
     const image = {close: jest.fn()}, loadImage = jest.fn().mockResolvedValue(image);
     const canvases = [];
@@ -9,7 +9,7 @@ function setup() {
         const ctx = {drawImage: jest.fn(), fillRect: jest.fn()}, canvas = {width, height, getContext: () => ctx};
         canvases.push(canvas); return canvas;
     };
-    const renderer = createParallax({loadImage, createCanvas, now: () => time});
+    const renderer = createParallax({loadImage, createCanvas, now: () => time, fadeDuration: 0, ...options});
     const ctx = {canvas: {width: 320, height: 240}, globalAlpha: 1, filter: 'none'};
     for (const name of ['save', 'restore', 'beginPath', 'rect', 'clip', 'drawImage', 'translate', 'scale', 'fillRect']) ctx[name] = jest.fn();
     const stack=[];
@@ -268,4 +268,66 @@ test('overhead mist dims at night with configurable opacity and brightness', asy
     s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:0});
     expect(draws[0]).toEqual({alpha:.4,filter:'none'});
     expect(s.ctx.globalAlpha).toBe(1);expect(s.ctx.filter).toBe('none');
+});
+
+
+test('newly decoded atmospheric layers fade smoothly without changing their configured opacity', async () => {
+    const s = setup({fadeDuration: 800});
+    Object.assign(s.layer, {opacity: .8});
+    s.state.scenes[0].placements = [{x: 250, y: 350}];
+    await ready(s);
+    const alphas = [];
+    s.ctx.drawImage.mockImplementation(() => alphas.push(s.ctx.globalAlpha));
+    const draw = (time, view = s.view) => {
+        s.time(time); alphas.length = 0;
+        s.renderer.foreground(s.ctx, s.state, view);
+        return alphas[0];
+    };
+    expect(draw(0)).toBe(0);
+    expect(draw(400)).toBeCloseTo(.4);
+    expect(draw(800)).toBeCloseTo(.8);
+    expect(draw(1600)).toBeCloseTo(.8);
+    expect(draw(0, {...s.view, reducedMotion: true})).toBeCloseTo(.8);
+    expect(s.loadImage).toHaveBeenCalledTimes(1);
+    expect(s.layer.opacity).toBe(.8);
+});
+
+test('recessed terrain is opaque when its cutout first becomes ready', async () => {
+    const s = setup({fadeDuration: 800}); s.layer.plane = 'background';
+    s.state.scenes[0].cutoutColors = [[0, 0, 0]];
+    s.renderer.background(s.ctx, s.state, s.view); await flush();
+    const alpha = []; s.ctx.drawImage.mockImplementation(() => alpha.push(s.ctx.globalAlpha));
+    s.renderer.background(s.ctx, s.state, s.view);
+    expect(alpha[0]).toBe(1);
+    expect(s.renderer.terrainCutouts(s.state, {...s.view, viewportWidth:320, viewportHeight:240})).toHaveLength(1);
+});
+
+
+test('placed trees appear fully opaque immediately after decoding', async () => {
+    const s = setup({fadeDuration: 800});
+    Object.assign(s.layer, {placed:true, opacity:1});
+    s.state.scenes[0].placements = [{x:250,y:350}]; await ready(s);
+    const alpha = []; s.ctx.drawImage.mockImplementation(()=>alpha.push(s.ctx.globalAlpha));
+    s.renderer.foreground(s.ctx,s.state,s.view);
+    expect(alpha[0]).toBe(1);
+});
+
+
+test('visible trees gate frame readiness until decoded, with a bounded wait for stalled loads', async () => {
+    let resolve;
+    const s = setup({loadImage:()=>new Promise(r=>{resolve=r;})}); s.layer.placed=true;
+    const view={...s.view,viewportWidth:320,viewportHeight:240};
+    expect(s.renderer.ready(s.state,view)).toBe(false); await flush();
+    expect(s.renderer.ready(s.state,view)).toBe(false);
+    s.time(3000); expect(s.renderer.ready(s.state,view)).toBe(true);
+    resolve(s.image); await flush(); s.time(0);
+    expect(s.renderer.ready(s.state,view)).toBe(true);
+});
+
+test('failed tree images and offscreen scenes never prevent frame readiness', async () => {
+    const s=setup({loadImage:()=>Promise.reject(new Error('missing'))}); s.layer.placed=true;
+    const view={...s.view,viewportWidth:320,viewportHeight:240};
+    expect(s.renderer.ready(s.state,view)).toBe(false); await flush();
+    expect(s.renderer.ready(s.state,view)).toBe(true);
+    expect(s.renderer.ready(s.state,{...view,cameraX:10000})).toBe(true);
 });
