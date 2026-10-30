@@ -98,7 +98,7 @@ test('overlapping scenes exclude earlier regions even when they have no parallax
 test('flying shadows belong only to authored outdoor regions, never caves or interiors', () => {
     for (const [mapId, asset, expected] of [
         ['main', 'bird-shadow', [624,627,628,629,630,631,633]],
-        ['duckville', 'dragon-shadow', [740,742,743,748,788,876,970]]
+        ['duckville', 'dragon-shadow', [740]]
     ]) {
         const doc = require('../../tools/worlds/' + mapId + '.json');
         const {applyScenes} = require('../js/localworldscenes');

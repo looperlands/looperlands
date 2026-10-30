@@ -173,8 +173,10 @@ Outdoor weather is configured once per map in the Scene manager’s Whole map de
 
 ## Flying cast shadows
 
-Duckville's outdoor regions have a large translucent dragon shadow following broad, varied curves.
-Caverns, houses, shops, the greenhouse and underwater areas have no dragon layer.
+Only Duckville's outdoor lava area (scene 740) has the large translucent dragon
+shadow following broad, varied curves. The garden, Santa's Island, Laser Tag,
+Zombie Town, tree tops, caverns, houses, shops, greenhouse and underwater areas
+have no dragon layer.
 The main map's outdoor Town, Beach, Forest, Graveyard, Desert, Lavaland and Party
 beach regions have individual bird shadows with varied headings. Shadows render
 on the ground before characters and lighting; they remain attached to the terrain
