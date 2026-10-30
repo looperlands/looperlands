@@ -140,7 +140,7 @@ test('game ticks render every worker animation frame at 60 Hz', () => {
 });
 
 
-test('the centered camera eases during ticks but explicit focus still snaps', () => {
+test('the centered camera follows during ticks and supports explicit focus', () => {
     const {modules, sandbox} = loadMovement();
     sandbox.Date = class { getTime() { return 100; } };
     const player = {};
@@ -153,7 +153,7 @@ test('the centered camera eases during ticks but explicit focus still snaps', ()
         toolImpactFeedback: {render: jest.fn()}, gamepadListener: {update: jest.fn()},
     });
     game.tick();
-    expect(camera.follow).toHaveBeenCalledWith(player, 100);
+    expect(camera.follow).toHaveBeenCalledWith(player);
     expect(camera.lookAt).not.toHaveBeenCalled();
     game.focusPlayer();
     expect(camera.lookAt).toHaveBeenCalledWith(player);

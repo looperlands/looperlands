@@ -7198,7 +7198,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.footstepFeedback?.render(this.renderer, this.currentTime);
                     this.scriptedSequence?.tick(this.currentTime);
                     if (this.canUseCenteredCamera() && !this.scriptedSequence?.cameraActive) {
-                        this.renderer.camera.follow(this.player, this.currentTime);
+                        this.renderer.camera.follow(this.player);
                     }
                     // Cutscenes and camera snaps can reveal tiles while the player is stationary.
                     // Refresh after all camera movement, before any frame is rendered.

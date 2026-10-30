@@ -16,15 +16,15 @@ function setup() {
     renderer.createCamera();
     const camera = renderer.camera;
     camera.setBoundingBox(0, 193, 93, 61);
-    camera.follow({x: 800, y: 3600}, 1000);
-    camera.follow({x: 804, y: 3600}, 1016);
+    camera.follow({x: 800, y: 3600});
+    camera.follow({x: 804, y: 3600});
     renderer.worker.postMessage.mockClear();
     return {renderer, camera, sandbox};
 }
 
-test('same-size resize retains town bounds and camera easing without clearing canvas layers', () => {
+test('same-size resize retains town bounds and camera position without clearing canvas layers', () => {
     const {renderer, camera} = setup();
-    const state = {x: camera.x, y: camera.y, followTime: camera.followTime, followX: camera.followX};
+    const state = {x: camera.x, y: camera.y, gridX: camera.gridX, gridY: camera.gridY};
     const bounds = camera.bounds;
     renderer.createCamera();
     expect(renderer.camera).toBe(camera);
