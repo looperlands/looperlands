@@ -1,5 +1,26 @@
 ## LooperLands
 
+## Local quality checks
+
+Use the Node.js version in `.nvmrc` (`nvm install && nvm use`), then install
+dependencies with `npm ci`.
+
+- `npm run lint` runs the same ESLint check as CI.
+- `npm run lint:fix` fixes lint errors that ESLint can repair automatically.
+- `npm run check` runs lint, all unit tests and the coverage thresholds before
+  opening or updating a PR, including after exporting a map.
+- `npm test -- --runInBand --coverage=false <test-path>` runs focused tests.
+  Run the full check before pushing; focused runs do not verify global coverage.
+
+Run `npm run hooks:install` once per clone to enable the tracked pre-push hook.
+It blocks a push when `npm run check` fails. This sets the clone's
+`core.hooksPath` to `.githooks`; integrate the hook with any existing custom hooks
+instead of replacing them. Hook installation is explicit so Docker builds and
+CI dependency installation do not modify Git configuration.
+
+The Quality Check job is named `lint`, but it also runs unit tests and Docker
+runtime checks. Use its failed step and logs to identify which check failed.
+
 ## Event toolkit documentation
 
 - [Organizer and player guide](docs/event-toolkit-guide.md): templates, scoring, teams, rentals, prizes and announcements.

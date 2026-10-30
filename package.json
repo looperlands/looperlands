@@ -6,8 +6,12 @@
         "node": ">=24.22.1 <25"
     },
     "scripts": {
+        "lint": "eslint client server shared --ext .js,.jsx,.ts,.tsx --quiet",
+        "lint:fix": "npm run lint -- --fix",
         "test": "jest",
-        "coverage": "jest --coverage"
+        "coverage": "jest --coverage",
+        "check": "npm run lint && npm run coverage -- --runInBand",
+        "hooks:install": "git config --local core.hooksPath .githooks"
     },
     "dependencies": {
         "acorn": "^8.19.0",
