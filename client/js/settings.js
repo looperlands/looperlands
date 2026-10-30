@@ -4,7 +4,7 @@ const COMBAT_VISUAL_SETTINGS = Object.freeze([
     'finisherShatterEnabled', 'intenseCombatEffectsEnabled'
 ]);
 
-const AUDIO_VOLUME_DEFAULTS = Object.freeze({music: 25, sound: 80, ambient: 80});
+const AUDIO_VOLUME_DEFAULTS = Object.freeze({music: 100, sound: 100, ambient: 100});
 
 class GameSettings {
     constructor(app) {

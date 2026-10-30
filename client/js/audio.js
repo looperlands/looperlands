@@ -1,6 +1,9 @@
 
 define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, MusicPlayer, AmbientConfig, Soundscape) {
 
+    // At full sliders, reproduce the reference mix without changing spatial attenuation.
+    const BASE_MIX = Object.freeze({music: .13, sound: .09, ambient: .88});
+
     var AudioManager = Class.extend({
         init: function (game) {
             var self = this;
@@ -15,7 +18,8 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
             this.musicPlayer = new MusicPlayer();
             this.streamMusic = new MusicPlayer();
             this.areas = [];
-            this.volumes = {music: .25, sound: .8, ambient: .8};
+            this.volumes = {music: 1, sound: 1, ambient: 1};
+            this.outputVolumes = {};
             this.setVolumes(this.volumes);
             this.musicNames = [
                 // MAIN MUSIC    
@@ -63,13 +67,14 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
         setVolumes: function (values) {
             for (const key of ['music', 'sound', 'ambient']) {
                 if (Number.isFinite(values[key])) this.volumes[key] = Math.max(0, Math.min(1, values[key]));
+                this.outputVolumes[key] = this.volumes[key] * BASE_MIX[key];
             }
-            this.musicPlayer.setVolume(this.volumes.music);
-            this.streamMusic.setVolume(this.volumes.music);
-            this.soundscape.setVolumes(this.volumes.sound, this.volumes.ambient);
-            for (const channels of Object.values(this.sounds)) for (const sound of channels || []) sound.volume = this.volumes.sound;
-            for (const sound of Object.values(this.soundEffects)) sound.volume?.(this.volumes.sound);
-            if (this.impactGain) this.impactGain.gain.value = this.enabled ? this.volumes.sound : 0;
+            this.musicPlayer.setVolume(this.outputVolumes.music);
+            this.streamMusic.setVolume(this.outputVolumes.music);
+            this.soundscape.setVolumes(this.outputVolumes.sound, this.outputVolumes.ambient);
+            for (const channels of Object.values(this.sounds)) for (const sound of channels || []) sound.volume = this.outputVolumes.sound;
+            for (const sound of Object.values(this.soundEffects)) sound.volume?.(this.outputVolumes.sound);
+            if (this.impactGain) this.impactGain.gain.value = this.enabled ? this.outputVolumes.sound : 0;
         },
 
         disable: function () {
@@ -105,7 +110,7 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
         enable: function () {
             this.enabled = true;
             this.soundscape.setEnabled(true);
-            if (this.impactGain) this.impactGain.gain.value = this.volumes.sound;
+            if (this.impactGain) this.impactGain.gain.value = this.outputVolumes.sound;
             this.soundscape.unlock();
 
             if (this.currentMusic) {
@@ -174,7 +179,7 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
             }, false);
 
             sound.preload = "auto";
-            sound.volume = this.volumes.sound;
+            sound.volume = this.outputVolumes.sound;
             sound.autobuffer = true;
             sound.src = path;
             sound.load();
@@ -194,7 +199,7 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
                     src: [this.getAudioPath("audio/sounds/", name)],
                     preload: false,
                     pool: 4,
-                    volume: this.volumes.sound,
+                    volume: this.outputVolumes.sound,
                     onload: handleLoaded,
                     onloaderror: function () {
                         effect.unload();
@@ -268,7 +273,7 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
             gain.gain.exponentialRampToValueAtTime(.001, now + .12);
             if (!this.impactGain) {
                 this.impactGain = context.createGain();
-                this.impactGain.gain.value = this.volumes.sound;
+                this.impactGain.gain.value = this.outputVolumes.sound;
                 this.impactGain.connect(context.destination);
             }
             bass.connect(gain); gain.connect(this.impactGain);
@@ -313,7 +318,7 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
                     const id = effect.play();
                     if (varied) effect.rate?.(rate, id);
                 } else {
-                    sound.volume = this.volumes.sound;
+                    sound.volume = this.outputVolumes.sound;
                     sound.playbackRate = rate;
                     if (varied) {
                         sound.preservesPitch = false;

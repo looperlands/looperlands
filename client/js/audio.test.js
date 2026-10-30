@@ -211,7 +211,7 @@ test('area changes reuse the permitted media element and cancel an old fade', as
     expect(media[0].src).toBe('audio/music/forest.mp3');
     expect(media[0].play).toHaveBeenCalledTimes(2);
     expect(intervals.size).toBe(0);
-    expect(media[0].volume).toBe(.25);
+    expect(media[0].volume).toBe(.13);
 });
 
 test('a blocked area track retries on interaction without requiring player movement', async () => {
@@ -383,30 +383,30 @@ test('zero-based achievement sound IDs work and mute stops native samples too', 
 
 test('separate volumes apply to existing and future effects, regular music and streams', () => {
     const {manager} = setup({safari: false}); manager.playMusicByName('village');
-    expect(manager.musicPlayer.sound.volume).toBe(.25);
+    expect(manager.musicPlayer.sound.volume).toBe(.13);
     manager.setVolumes({music: .12, sound: 0, ambient: .6});
     manager.playSound('hit1'); expect(manager.sounds.hit1[0].volume).toBe(0);
-    expect(manager.soundscape.effectsVolume).toBe(0); expect(manager.soundscape.ambientVolume).toBe(.6);
-    manager.playStreamMusic('https://example.com/music.mp3'); expect(manager.streamMusic.sound.volume).toBe(.12);
+    expect(manager.soundscape.effectsVolume).toBe(0); expect(manager.soundscape.ambientVolume).toBeCloseTo(.6 * .88);
+    manager.playStreamMusic('https://example.com/music.mp3'); expect(manager.streamMusic.sound.volume).toBeCloseTo(.12 * .13);
     manager.setVolumes({music: 0}); expect(manager.streamMusic.sound.volume).toBe(0);
 });
 test('Safari effects follow the effects volume independently of music', () => {
     const {manager} = setup(); manager.setVolumes({sound: .35, music: .1});
-    expect(manager.soundEffects.hit1.volume).toHaveBeenCalledWith(.35);
+    expect(manager.soundEffects.hit1.volume).toHaveBeenCalledWith(.35 * .09);
 });
 test('music fades use normalized levels and cannot restore full volume or get stuck at mute', () => {
     const {manager, intervals} = setup(); manager.playMusicByName('village');
     manager.setVolumes({music: .2}); manager.lowerCurrentMusicVolume();
     for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
-    expect(manager.musicPlayer.sound.volume).toBeLessThan(.06);
+    expect(manager.musicPlayer.sound.volume).toBeLessThan(.2 * .13 * .3);
     manager.setVolumes({music: .1}); manager.raiseCurrentMusicVolume();
     for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
-    expect(manager.musicPlayer.sound.volume).toBe(.1);
+    expect(manager.musicPlayer.sound.volume).toBeCloseTo(.1 * .13);
     manager.setVolumes({music: 0}); manager.fadeOutCurrentMusic();
     for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
     expect(intervals.size).toBe(0); expect(manager.musicPlayer.active).toBe(false);
     manager.playMusicByName('forest'); expect(manager.musicPlayer.sound.volume).toBe(0);
-    manager.setVolumes({music: .15}); expect(manager.musicPlayer.sound.volume).toBe(.15);
+    manager.setVolumes({music: .15}); expect(manager.musicPlayer.sound.volume).toBeCloseTo(.15 * .13);
 });
 
 test('confirmed impact bass follows the effects slider and mute even on a shared context', () => {
@@ -417,8 +417,29 @@ test('confirmed impact bass follows the effects slider and mute even on a shared
         createOscillator: () => ({frequency: param(), connect: jest.fn(), disconnect: jest.fn(), start: jest.fn(), stop: jest.fn()})};
     sandbox.window.Howler.ctx = context;
     manager.setVolumes({sound: .2}); manager.playConfirmedImpact(1, true);
-    expect(manager.impactGain.gain.value).toBe(.2);
+    expect(manager.impactGain.gain.value).toBeCloseTo(.2 * .09);
     manager.setVolumes({sound: 0}); expect(manager.impactGain.gain.value).toBe(0);
     manager.setVolumes({sound: .4}); manager.disable(); expect(manager.impactGain.gain.value).toBe(0);
-    manager.enable(); expect(manager.impactGain.gain.value).toBe(.4);
+    manager.enable(); expect(manager.impactGain.gain.value).toBeCloseTo(.4 * .09);
+});
+test('full sliders reproduce the reference mix across native and Web Audio channels', () => {
+    const {manager} = setup({safari: false});
+    expect(manager.volumes).toEqual({music: 1, sound: 1, ambient: 1});
+    manager.playMusicByName('village');
+    manager.playStreamMusic('https://example.com/music.mp3');
+    expect(manager.musicPlayer.sound.volume).toBe(.13);
+    expect(manager.streamMusic.sound.volume).toBe(.13);
+    expect(manager.sounds.hit1[0].volume).toBe(.09);
+    expect(manager.soundscape.effectsVolume).toBe(.09);
+    expect(manager.soundscape.ambientVolume).toBe(.88);
+    manager.setVolumes({sound: .5, ambient: .5});
+    manager.loadSound('new-effect');
+    expect(manager.sounds['new-effect'][0].volume).toBeCloseTo(.045);
+    expect(manager.sounds.hit1[0].volume).toBeCloseTo(.045);
+    expect(manager.soundscape.effectsVolume).toBeCloseTo(.045);
+    expect(manager.soundscape.ambientVolume).toBe(.44);
+    manager.setVolumes({music: 2, sound: -1, ambient: NaN});
+    expect(manager.musicPlayer.sound.volume).toBe(.13);
+    expect(manager.sounds.hit1[0].volume).toBe(0);
+    expect(manager.soundscape.ambientVolume).toBe(.44);
 });

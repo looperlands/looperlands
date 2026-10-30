@@ -197,7 +197,7 @@ test('fullscreen changes persist before refitting through the shared viewport la
 });
 
 test('audio defaults are balanced and a saved zero survives reopening and applying settings', () => {
-    expect(setup().settings.getAudioVolumes()).toEqual({music: .25, sound: .8, ambient: .8});
+    expect(setup().settings.getAudioVolumes()).toEqual({music: 1, sound: 1, ambient: 1});
     const {settings, elements, values, app} = setup({musicVolume: '0', soundVolume: '45', ambientVolume: '60'});
     app.game.audioManager.setVolumes = jest.fn();
     expect(settings.getAudioVolumes()).toEqual({music: 0, sound: .45, ambient: .6});

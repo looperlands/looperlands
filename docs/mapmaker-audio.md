@@ -32,7 +32,7 @@ The preview plays the same sound engine as the game. **Stop preview**, leaving t
 
 Start a fresh local session to load saved sources. Build the client after changing sound-engine code. Normal production builds include the same source definitions in both client map formats. Tiled map exports and visual artwork remain separate.
 
-**Settings → Audio** has independent Music, Sound effects and Ambience sliders. Changes apply and save immediately in this browser. Defaults are 25% music, 80% effects and 80% ambience; music also controls streams. The Game audio switch controls regular music, effects and ambience, while Stream music retains its separate switch. Audio begins after a click, key press or touch gesture. Sources stop on death, disconnect, pause, hidden tabs and map transitions. Browsers without Web Audio keep the existing sampled effects but cannot play positional ambience.
+**Settings → Audio** has independent Music, Sound effects and Ambience sliders. Changes apply and save immediately in this browser. All sliders default to 100%, balanced to the previous 13% music, 9% effects and 88% ambience. Music also controls streams. Previously saved slider settings are retained; set all three to 100% to use the new base mix. The Game audio switch controls regular music, effects and ambience, while Stream music retains its separate switch. Audio begins after a click, key press or touch gesture. Sources stop on death, disconnect, pause, hidden tabs and map transitions. Browsers without Web Audio keep the existing sampled effects but cannot play positional ambience.
 
 ## Main map and gameplay effects
 
