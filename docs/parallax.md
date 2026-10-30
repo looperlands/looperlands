@@ -127,6 +127,10 @@ Trunks use the `entities` plane. Renderer extensions may provide sorted world
 `y` entries with a drawing callback for this plane. The worker interleaves these
 with actors, preserves the early ground-effect pass, and applies normal lighting.
 Roots stay on `ground`; canopy layers stay above the lit world.
+The centered camera follows the actor directly, retaining fractional world
+coordinates. It does not ease after the actor stops: that trailing motion makes
+pixel-snapped terrain and actors shift against continuously projected parallax.
+
 Ground extensions use the terrain's rounded camera by default. The parallax
 extension opts into `subpixel: true` so floor mist and roots receive the original
 fractional camera without changing the projection of other ground effects.

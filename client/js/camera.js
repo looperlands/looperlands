@@ -9,8 +9,6 @@ define(function() {
             this.gridX = 0;
             this.gridY = 0;
             this.offset = 0.5;
-            this.followSmoothing = 70; // milliseconds; keeps the follow delay below one tile
-            this.followTime = undefined;
             this.rescale();
             this.checkBounds();
         },
@@ -40,7 +38,6 @@ define(function() {
         },
 
         setPosition: function(x, y) {
-            this.followTime = undefined;
             this.x = x;
             this.y = y;
     
@@ -51,7 +48,6 @@ define(function() {
         },
 
         setGridPosition: function(x, y) {
-            this.followTime = undefined;
             this.gridX = x;
             this.gridY = y;
         
@@ -103,37 +99,11 @@ define(function() {
             }
         },
 
-        follow: function(entity, currentTime) {
-            if (!entity) return;
-
-            var ts = this.renderer.tilesize,
-                targetX = entity.x - Math.floor(this.gridW / 2) * ts,
-                targetY = entity.y - Math.floor(this.gridH / 2) * ts,
-                elapsed = currentTime - this.followTime;
-
-            // Snap on initial focus, teleports, or a resumed tab instead of panning
-            // through the world. Explicit camera positioning also resets the follow.
-            if (this.followTime === undefined || elapsed > 250 || elapsed < 0 ||
-                Math.abs(targetX - this.followTargetX) > ts * 4 ||
-                Math.abs(targetY - this.followTargetY) > ts * 4) {
-                this.lookAt(entity);
-                this.followX = this.x;
-                this.followY = this.y;
-            } else {
-                // Exponential easing depends on elapsed time rather than frame count.
-                // Preserve fractional camera and actor positions until projection.
-                // Rounding them separately makes a steady walk shake by one art pixel.
-                var amount = 1 - Math.exp(-elapsed / this.followSmoothing),
-                    x = this.followX + (targetX - this.followX) * amount,
-                    y = this.followY + (targetY - this.followY) * amount;
-                this.setPosition(x, y);
-                // Bounds may clamp the rendered position: do not accumulate lag outside them.
-                this.followX = this.x;
-                this.followY = this.y;
-            }
-            this.followTargetX = targetX;
-            this.followTargetY = targetY;
-            this.followTime = currentTime;
+        follow: function(entity) {
+            // Track the actor without a trailing camera animation. Easing after a
+            // stop makes pixel-snapped terrain/actors shift against subpixel parallax.
+            // lookAt preserves fractional world coordinates and applies scene bounds.
+            this.lookAt(entity);
         },
 
         forEachVisiblePosition: function(callback, extra) {
