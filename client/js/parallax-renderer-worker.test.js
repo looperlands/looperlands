@@ -6,7 +6,7 @@ function setup() {
     const image = {close: jest.fn()}, loadImage = jest.fn().mockResolvedValue(image);
     const canvases = [];
     const createCanvas = (width, height) => {
-        const ctx = {drawImage: jest.fn()}, canvas = {width, height, getContext: () => ctx};
+        const ctx = {drawImage: jest.fn(), fillRect: jest.fn()}, canvas = {width, height, getContext: () => ctx};
         canvases.push(canvas); return canvas;
     };
     const renderer = createParallax({loadImage, createCanvas, now: () => time});
@@ -242,7 +242,8 @@ test('overhead trees follow ambient darkness and exclude higher-priority regions
     await ready(s);
     const filters=[];s.ctx.drawImage.mockImplementation(()=>filters.push(s.ctx.filter));
     s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:.18});
-    expect(filters).toContain('brightness(0.18)');expect(s.ctx.clip).toHaveBeenCalledWith('evenodd');
+    expect(filters).toContain('none');
+    expect(s.canvases.some(c=>c.getContext().fillRect.mock.calls.length>0)).toBe(true);expect(s.ctx.clip).toHaveBeenCalledWith('evenodd');
 });
 
 test('sway is bounded, gradual, anchored per tree and disabled by reduced motion', async () => {
@@ -261,9 +262,10 @@ test('overhead mist dims at night with configurable opacity and brightness', asy
     const s=setup();s.layer.opacity=.4;await ready(s);
     const draws=[];s.ctx.drawImage.mockImplementation(()=>draws.push({alpha:s.ctx.globalAlpha,filter:s.ctx.filter}));
     s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:0});
-    expect(draws[0].alpha).toBeCloseTo(.18);expect(draws[0].filter).toBe('brightness(0.55)');
+    expect(draws[0].alpha).toBeCloseTo(.18);expect(draws[0].filter).toBe('none');
+    expect(s.canvases.some(c=>c.getContext().fillStyle==='rgba(0,0,0,0.453125)')).toBe(true);
     draws.length=0;Object.assign(s.layer,{nightOpacity:1,nightBrightness:1});
     s.renderer.foreground(s.ctx,s.state,{...s.view,lightIntensity:0});
-    expect(draws[0]).toEqual({alpha:.4,filter:'brightness(1)'});
+    expect(draws[0]).toEqual({alpha:.4,filter:'none'});
     expect(s.ctx.globalAlpha).toBe(1);expect(s.ctx.filter).toBe('none');
 });

@@ -56,7 +56,7 @@
             check(block, 'Use sprite placements', layer, 'placed', refresh);
             if(layer.plane==='foreground') {
                 const night=grid(block);
-                for(const [key,label,fallback] of [['nightOpacity','Layer opacity at night',layer.placed?1:.45],['nightBrightness','Layer brightness at night',layer.placed?0:.55]]) {
+                for(const [key,label,fallback] of [['nightOpacity','Layer opacity at night',layer.placed?1:.45],['nightBrightness','Layer brightness at night',layer.placed?.35:.55]]) {
                     const input=field(night,label,layer,key,{type:'number',min:0,max:1,step:'any',hint:key==='nightBrightness'?'0 follows ambient darkness; 1 stays fully bright.':'Multiplier on the layer opacity in darkness.'});
                     if(layer[key]===undefined)input.value=fallback;
                 }

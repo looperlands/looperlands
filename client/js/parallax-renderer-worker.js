@@ -48,12 +48,19 @@
         return entry.image;
     }
 
-    function rasterFor(image, width, height, scale) {
-        const w = Math.max(1, Math.round(width)), h = Math.max(1, Math.round(height));
-        const zoom = Math.max(1, Math.ceil(scale)), bytes = w * h * zoom * zoom * 4;
-        if (bytes > maxRasterBytes / 2) return image;
+    function rasterFor(image, width, height, scale, brightness = 1) {
+        let w = Math.max(1, Math.round(width)), h = Math.max(1, Math.round(height));
+        let zoom = Math.max(1, Math.ceil(scale));
+        if (w * h * zoom * zoom * 4 > maxRasterBytes / 2) {
+            zoom = 1;
+            const ratio = Math.min(1, Math.sqrt(maxRasterBytes / 8 / (w * h)));
+            w = Math.max(1, Math.floor(w * ratio)); h = Math.max(1, Math.floor(h * ratio));
+        }
+        const bytes = w * h * zoom * zoom * 4;
+        // Bound cache variants while keeping day/night changes visually gradual.
+        brightness = Math.round(brightness * 128) / 128;
         if (!imageIds.has(image)) imageIds.set(image, ++nextImageId);
-        const key = imageIds.get(image) + ':' + w + 'x' + h + '@' + zoom;
+        const key = imageIds.get(image) + ':' + w + 'x' + h + '@' + zoom + ':' + brightness;
         let entry = rasters.get(key);
         if (entry) {
             rasters.delete(key); rasters.set(key, entry);
@@ -70,6 +77,14 @@
         const native = createCanvas(w, h), nativeCtx = native.getContext('2d');
         nativeCtx.imageSmoothingEnabled = false;
         nativeCtx.drawImage(image, 0, 0, w, h);
+        // Canvas filters are not implemented consistently in Safari. Composite onto
+        // the artwork itself so transparent edges keep their alpha in every browser.
+        if (brightness < 1) {
+            nativeCtx.globalCompositeOperation = 'source-atop';
+            nativeCtx.fillStyle = 'rgba(0,0,0,' + (1 - brightness) + ')';
+            nativeCtx.fillRect(0, 0, w, h);
+            nativeCtx.globalCompositeOperation = 'source-over';
+        }
         let canvas = native;
         if (zoom > 1) {
             canvas = createCanvas(w * zoom, h * zoom);
@@ -89,9 +104,9 @@
             y: finite(layer.swayY, 0, 0, 12) * Math.sin(angle + .8)};
     }
 
-    function drawLayer(ctx, layer, scene, view, clip, time) {
+    function drawLayer(ctx, layer, scene, view, clip, time, brightness) {
         if (layer.placed) {
-            for (const sprite of placedSprites(layer, scene, view, clip, time)) drawSprite(ctx, sprite, clip, view.scale);
+            for (const sprite of placedSprites(layer, scene, view, clip, time)) drawSprite(ctx, sprite, clip, view.scale, view.scale, brightness);
             return;
         }
         const image = imageFor(layer.image);
@@ -112,7 +127,7 @@
         ctx.globalAlpha *= finite(layer.opacity, 1, 0, 1);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
-        const raster = rasterFor(image, width, height, scale);
+        const raster = rasterFor(image, width, height, scale, brightness);
         let count = 0;
         for (let dy = startY; dy < endY; dy += height) {
             for (let dx = startX; dx < endX; dx += width) {
@@ -173,7 +188,7 @@
         }
     }
 
-    function drawSprite(ctx, sprite, clip, scale, rasterScale = scale) {
+    function drawSprite(ctx, sprite, clip, scale, rasterScale = scale, brightness = 1) {
         ctx.save();
         applyClip(ctx, clip, scale);
         ctx.globalAlpha *= sprite.opacity;
@@ -181,7 +196,7 @@
         ctx.imageSmoothingQuality = 'low';
         const x = sprite.x * scale, y = sprite.y * scale;
         const width = Math.round(sprite.width) * scale, height = Math.round(sprite.height) * scale;
-        const raster = rasterFor(sprite.image, sprite.width, sprite.height, rasterScale);
+        const raster = rasterFor(sprite.image, sprite.width, sprite.height, rasterScale, brightness);
         if (sprite.flipX) {
             ctx.translate(x + width, y); ctx.scale(-1, 1);
             ctx.drawImage(raster, 0, 0, width, height);
@@ -239,14 +254,15 @@
                 ctx.save();
                 // Overhead art is composed after world lighting. Dim it continuously
                 // with ambient light, while luminous effects can opt into brighter nights.
+                let layerBrightness = 1;
                 if (plane === 'foreground' && Number.isFinite(view.lightIntensity)) {
                     const light = finite(view.lightIntensity, 1, 0, 1);
                     const opacity = finite(layer.nightOpacity, layer.placed ? 1 : .45, 0, 1);
-                    const brightness = finite(layer.nightBrightness, layer.placed ? 0 : .55, 0, 1);
+                    const brightness = finite(layer.nightBrightness, layer.placed ? .35 : .55, 0, 1);
                     ctx.globalAlpha *= opacity + (1 - opacity) * light;
-                    ctx.filter = 'brightness(' + (brightness + (1 - brightness) * light) + ')';
+                    layerBrightness = brightness + (1 - brightness) * light;
                 }
-                drawLayer(ctx, layer, scene, view, clip, time);
+                drawLayer(ctx, layer, scene, view, clip, time, layerBrightness);
                 ctx.restore();
             }
             ctx.restore();
