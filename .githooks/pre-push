@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+echo "Checking lint, unit tests and coverage before pushing..."
+exec npm run check

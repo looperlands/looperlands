@@ -65,10 +65,12 @@ test('Tiled cabinet trigger and all three shipped exports agree on a walkable en
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     try {
         for (const mode of ['client','server']) {
-            // Existing shipped maps omit the editor metadata added by newer exports.
+            // Older exports omit editor metadata; compare the runtime contract in both formats.
             const {objectId, name, ...expected} = processMap(input, {mode}).triggers.find(t => t.minigame === 'spaceowls');
             const map = JSON.parse(fs.readFileSync(path.join(root, `${mode}/maps/world_${mode}_m88n2.json`), 'utf8'));
-            expect(map.triggers.filter(t => t.minigame === 'spaceowls')).toEqual([expected]);
+            const triggers = map.triggers.filter(t => t.minigame === 'spaceowls')
+                .map(({objectId, name, ...trigger}) => trigger);
+            expect(triggers).toEqual([expected]);
             for (let y=expected.y;y<expected.y+expected.h;y++) expect(map.collisions).not.toContain(y*map.width+expected.x);
             if (mode === 'client') {
                 const js = fs.readFileSync(path.join(root,'client/maps/world_client_m88n2.js'),'utf8');
