@@ -36,7 +36,9 @@ define(function () {
                 ? Math.max(min, Math.min(max, value)) : fallback;
             const frames = animation?.length || 5;
             const material = state.animationSprite === 'tool-watering-can' ? 'water'
-                : state.animationSprite === 'tool-shovel' ? 'soil' : 'generic';
+                : state.animationSprite === 'tool-shovel' ? 'soil'
+                    : /axe/.test(state.animationSprite) && !/pick/.test(state.animationSprite) ? 'wood'
+                        : /pick|hammer/.test(state.animationSprite) ? 'stone' : 'ground';
             const config = {
                 colors,
                 material,
@@ -89,7 +91,10 @@ define(function () {
                     continue;
                 }
                 const index = animation?.currentFrame?.index;
-                if (enabled && index === config.impactFrame && index !== action.previousFrame) this.emit(action, time);
+                if (index === config.impactFrame && index !== action.previousFrame) {
+                    if (enabled) this.emit(action, time);
+                    this.game.audioManager?.playToolImpact(config.material, action.x, action.y);
+                }
                 // Consume contact frames even while disabled, so enabling effects cannot replay a hit.
                 action.previousFrame = index;
             }

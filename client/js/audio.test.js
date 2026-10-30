@@ -24,6 +24,7 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
         this.unload = jest.fn();
         this.play = jest.fn();
         this.rate = jest.fn();
+        this.volume = jest.fn();
         this.stop = jest.fn();
         this.duration = jest.fn(() => 3);
         effects.push(this);
@@ -63,7 +64,11 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
     vm.runInContext(fs.readFileSync(require.resolve('./area'), 'utf8'), sandbox);
     sandbox.define = factory => {sandbox.MusicPlayer = factory();};
     vm.runInContext(fs.readFileSync(require.resolve('./musicplayer'), 'utf8'), sandbox);
-    sandbox.define = (dependencies, factory) => {sandbox.AudioManager = factory(sandbox.Area, sandbox.MusicPlayer);};
+    sandbox.define = Object.assign(factory => {sandbox.AmbientConfig = factory();}, {amd: true});
+    vm.runInContext(fs.readFileSync(require.resolve('./ambientconfig'), 'utf8'), sandbox);
+    sandbox.define = Object.assign((deps, factory) => {sandbox.Soundscape = factory(sandbox.AmbientConfig);}, {amd: true});
+    vm.runInContext(fs.readFileSync(require.resolve('./soundscape'), 'utf8'), sandbox);
+    sandbox.define = (dependencies, factory) => {sandbox.AudioManager = factory(sandbox.Area, sandbox.MusicPlayer, sandbox.AmbientConfig, sandbox.Soundscape);};
     vm.runInContext(fs.readFileSync(require.resolve('./audio'), 'utf8'), sandbox);
     const manager = new sandbox.AudioManager({renderer: {mobile}, player: {gridX: 1, gridY: 1}});
     const dispatch = event => documentListeners.get(event)?.forEach(callback => callback());
@@ -206,7 +211,7 @@ test('area changes reuse the permitted media element and cancel an old fade', as
     expect(media[0].src).toBe('audio/music/forest.mp3');
     expect(media[0].play).toHaveBeenCalledTimes(2);
     expect(intervals.size).toBe(0);
-    expect(media[0].volume).toBe(1);
+    expect(media[0].volume).toBe(.25);
 });
 
 test('a blocked area track retries on interaction without requiring player movement', async () => {
@@ -354,4 +359,66 @@ test('scene music overrides ordinary areas, supports silence/inheritance and pre
     scene.authoringMusic = 'forest';
     manager.game.worldMusicAreas = [ordinary];
     expect(manager.getSurroundingMusic(entity)).toEqual({name: 'ordinary'});
+});
+
+test('ambience uses interpolated player tiles, clears map changes, and respects pause and mute', () => {
+    const {manager} = setup();
+    const update = jest.spyOn(manager.soundscape, 'update'), clear = jest.spyOn(manager.soundscape, 'clear');
+    manager.game.started = true; manager.game.player = {x: 168, y: 320};
+    manager.game.map = {tilesize: 16, isLoaded: true, ambientSounds: [{id: 'fire'}]};
+    manager.updateAmbience();
+    expect(update).toHaveBeenLastCalledWith([{id: 'fire'}], {x: 10.5, y: 20}, true);
+    expect(clear).toHaveBeenCalledTimes(1);
+    manager.updateAmbience(); expect(clear).toHaveBeenCalledTimes(1);
+    manager.game.map = {isLoaded: true}; manager.updateAmbience(); expect(clear).toHaveBeenCalledTimes(2);
+    manager.game.isStopped = true; manager.updateAmbience(); expect(update.mock.calls.at(-1)[2]).toBe(false);
+    manager.game.isStopped = false; manager.disable(); manager.updateAmbience(); expect(update.mock.calls.at(-1)[2]).toBe(false);
+});
+
+test('zero-based achievement sound IDs work and mute stops native samples too', () => {
+    const {manager} = setup({safari: false});
+    manager.playSound('0'); expect(manager.sounds.achievement[0].play).toHaveBeenCalled();
+    manager.disable(); expect(manager.sounds.achievement[0].pause).toHaveBeenCalled();
+});
+
+test('separate volumes apply to existing and future effects, regular music and streams', () => {
+    const {manager} = setup({safari: false}); manager.playMusicByName('village');
+    expect(manager.musicPlayer.sound.volume).toBe(.25);
+    manager.setVolumes({music: .12, sound: 0, ambient: .6});
+    manager.playSound('hit1'); expect(manager.sounds.hit1[0].volume).toBe(0);
+    expect(manager.soundscape.effectsVolume).toBe(0); expect(manager.soundscape.ambientVolume).toBe(.6);
+    manager.playStreamMusic('https://example.com/music.mp3'); expect(manager.streamMusic.sound.volume).toBe(.12);
+    manager.setVolumes({music: 0}); expect(manager.streamMusic.sound.volume).toBe(0);
+});
+test('Safari effects follow the effects volume independently of music', () => {
+    const {manager} = setup(); manager.setVolumes({sound: .35, music: .1});
+    expect(manager.soundEffects.hit1.volume).toHaveBeenCalledWith(.35);
+});
+test('music fades use normalized levels and cannot restore full volume or get stuck at mute', () => {
+    const {manager, intervals} = setup(); manager.playMusicByName('village');
+    manager.setVolumes({music: .2}); manager.lowerCurrentMusicVolume();
+    for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
+    expect(manager.musicPlayer.sound.volume).toBeLessThan(.06);
+    manager.setVolumes({music: .1}); manager.raiseCurrentMusicVolume();
+    for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
+    expect(manager.musicPlayer.sound.volume).toBe(.1);
+    manager.setVolumes({music: 0}); manager.fadeOutCurrentMusic();
+    for (let i = 0; i < 60; i++) for (const interval of [...intervals]) interval.callback();
+    expect(intervals.size).toBe(0); expect(manager.musicPlayer.active).toBe(false);
+    manager.playMusicByName('forest'); expect(manager.musicPlayer.sound.volume).toBe(0);
+    manager.setVolumes({music: .15}); expect(manager.musicPlayer.sound.volume).toBe(.15);
+});
+
+test('confirmed impact bass follows the effects slider and mute even on a shared context', () => {
+    const {manager, sandbox} = setup();
+    const param = () => ({value: 0, setValueAtTime: jest.fn(), linearRampToValueAtTime: jest.fn(), exponentialRampToValueAtTime: jest.fn()});
+    const context = {state: 'running', currentTime: 1, destination: {},
+        createGain: () => ({gain: param(), connect: jest.fn(), disconnect: jest.fn()}),
+        createOscillator: () => ({frequency: param(), connect: jest.fn(), disconnect: jest.fn(), start: jest.fn(), stop: jest.fn()})};
+    sandbox.window.Howler.ctx = context;
+    manager.setVolumes({sound: .2}); manager.playConfirmedImpact(1, true);
+    expect(manager.impactGain.gain.value).toBe(.2);
+    manager.setVolumes({sound: 0}); expect(manager.impactGain.gain.value).toBe(0);
+    manager.setVolumes({sound: .4}); manager.disable(); expect(manager.impactGain.gain.value).toBe(0);
+    manager.enable(); expect(manager.impactGain.gain.value).toBe(.4);
 });

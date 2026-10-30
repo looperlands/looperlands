@@ -6328,6 +6328,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.infoManager.clear();
                 this.footstepFeedback?.clear();
 
+                this.audioManager?.soundscape?.clear();
                 if (this.map) this.map.stopStreamCheck();
                 if (this.audioManager) this.audioManager.playStreamMusic(null);
                 var map = this.map = preparedMap || new Mapx(!this.renderer.upscaledRendering, this, mapId);
@@ -6356,6 +6357,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.app.hideChat();
                 this.started = false;
                 this.isStopped = true;
+                this.audioManager?.soundscape?.clear();
                 this.client.disable();
                 this.client.isReloading = true;
                 this.playerPositionReady = false;
@@ -7232,6 +7234,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.scriptedSequence?.reset();
                 console.log("Game stopped.");
                 this.isStopped = true;
+                this.audioManager?.soundscape?.clear();
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
                 this.worldFx?.clear?.();
@@ -8446,6 +8449,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.disconnected = true;
+                        self.audioManager?.soundscape?.clear();
                         self.reviving = false;
                         clearTimeout(self.reviveTimer);
                         clearTimeout(self.playerDeathTimer);
@@ -10328,6 +10332,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             beginPlayerDeath: function () {
+                this.audioManager?.soundscape?.clear();
                 const player = this.player;
                 const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
                 clearTimeout(this.playerDeathTimer);

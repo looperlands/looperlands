@@ -181,3 +181,46 @@ test('invalid weather exposure and nighttime multipliers cannot be saved', async
     base.entries[1].weatherExposure='rain';
     await expect(W.saveTool(root,{mapId:'one',tool:'scenes',revision:base.revision,entries:base.entries})).rejects.toThrow('exposure');
 });
+
+test('ambient sounds save independently, reject stale drafts, and reach JSON and worker maps', async () => {
+    const base = await W.readTool(root, 'one', 'ambient');
+    const entry = {id: 'camp', name: 'Camp', preset: 'campfire', x: 3, y: 4, radius: 9, volume: .55};
+    const events = await W.readTool(root, 'one', 'events');
+    await W.saveTool(root, {mapId: 'one', tool: 'events', revision: events.revision, entries: [rule()]});
+    const input = {mapId: 'one', tool: 'ambient', revision: base.revision, entries: [entry]};
+    const saved = await W.saveTool(root, input);
+    expect(saved.entries).toEqual([entry]); expect(W.readDocument(root, 'one').rules).toEqual([rule()]);
+    await expect(W.saveTool(root, {...input, entries: []})).rejects.toHaveProperty('status', 409);
+    await expect(W.saveTool(root, {...input, revision: saved.revision, entries: [{...entry, x: 20}]})).rejects.toThrow('inside the map');
+    const app = require('express')(); W.installRuntime(app, root);
+    const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+    try {
+        const url = 'http://127.0.0.1:' + server.address().port + '/maps/world_client_one';
+        expect((await (await fetch(url + '.json')).json()).ambientSounds).toEqual([entry]);
+        const context = {}; require('vm').runInNewContext(await (await fetch(url + '.js')).text(), context);
+        expect(JSON.parse(JSON.stringify(context.mapData.ambientSounds))).toEqual([entry]);
+        expect(JSON.parse(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'))).ambientSounds).toBeUndefined();
+        const fresh = await W.readTool(root, 'one', 'ambient');
+        await W.saveTool(root, {mapId: 'one', tool: 'ambient', revision: fresh.revision, entries: []});
+        expect(W.readDocument(root, 'one').ambientSounds).toEqual([]);
+    } finally {await new Promise(resolve => server.close(resolve));}
+});
+
+test('fresh local games serve newly uploaded audio without requiring a client build', async () => {
+    const source = fs.readFileSync(path.join(__dirname, '../../client/audio/ambient/campfire.wav'));
+    const asset = require('./localambientassets').upload(root, {name: 'fire.wav', audio: source.toString('base64')});
+    const base = await W.readTool(root, 'one', 'ambient');
+    expect(base.catalog.customSounds).toContainEqual(asset);
+    await W.saveTool(root, {mapId: 'one', tool: 'ambient', revision: base.revision,
+        entries: [{id: 'fire', name: 'Fire', preset: asset.id, x: 3, y: 4, radius: 9, volume: .5}]});
+    const app = require('express')(); W.installRuntime(app, root);
+    const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+    try {
+        const response = await fetch('http://127.0.0.1:' + server.address().port + asset.url);
+        expect(response.status).toBe(200);
+        const hash = bytes => require('crypto').createHash('sha256').update(bytes).digest('hex');
+        expect(hash(Buffer.from(await response.arrayBuffer()))).toBe(hash(source));
+        const map = await (await fetch('http://127.0.0.1:' + server.address().port + '/maps/world_client_one.json')).json();
+        expect(map.ambientSounds[0].preset).toBe(asset.id);
+    } finally {await new Promise(resolve => server.close(resolve));}
+});

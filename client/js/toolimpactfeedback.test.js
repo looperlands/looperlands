@@ -110,3 +110,11 @@ test('water falls sooner than a generic burst and expires on the existing budget
     expect(feedback.getFrame(1200)[0].y).toBeGreaterThan(332);
     expect(feedback.getFrame(1450)).toHaveLength(0);
 });
+
+test('tool audio follows contact frames and world position even when particles are disabled', () => {
+    const {feedback, animation, game, settings} = setup();
+    game.audioManager = {playToolImpact: jest.fn()}; settings.getCombatEffectsEnabled = () => false;
+    animation.currentFrame.index = 3; feedback.getFrame(100); feedback.getFrame(120);
+    expect(game.audioManager.playToolImpact).toHaveBeenCalledTimes(1);
+    expect(game.audioManager.playToolImpact).toHaveBeenCalledWith('ground', 168, 332);
+});

@@ -6,7 +6,7 @@
     const title = document.getElementById('map-data-title'), detail = document.getElementById('map-data-detail');
     const progress = document.getElementById('map-data-progress'), reload = document.getElementById('map-data-reload');
     const resources = new Set(['map-canvas', 'map-inspector', 'map-validation', 'doors', 'lighting', 'encounters', 'fishing', 'zones', 'npcs', 'quests', 'tile-authoring', 'world-authoring']);
-    const bindings = {inspector:['inspector-map','.analysis-refresh'],validator:['validator-map','.analysis-refresh'],doors:['door-map','#door-reload'],
+    const bindings = {ambient:['ambient-map','.ambient-reload'],inspector:['inspector-map','.analysis-refresh'],validator:['validator-map','.analysis-refresh'],doors:['door-map','#door-reload'],
         zones:['zones-map','.zones-reload'],fishing:['fishing-map','.fishing-reload'],lighting:['lighting-map','.lighting-reload'],encounters:['encounter-map','.encounter-reload'],npcs:['npc-map','#npc-reload'],
         quests:['quest-map','#quest-retry'],tiles:['tiles-map','#tiles-reload'],events:['events-map','.world-reload'],
         dialogues:['dialogues-map','.world-reload'],scenes:['scenes-map','.world-reload'],sequences:['sequence-map','.sequence-reload']};

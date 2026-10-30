@@ -452,14 +452,23 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 							</section>
 							<section class="settings-panel" role="tabpanel" id="settings-panel-audio" data-settings-panel="audio" aria-labelledby="settings-tab-audio" tabindex="0" hidden>
 								<h2>Audio</h2>
+								<div class="audio-volumes">
+									<label for="musicVolume">Music <output id="musicVolumeValue" for="musicVolume">25%</output></label>
+									<input id="musicVolume" type="range" min="0" max="100" step="1" value="25">
+									<label for="soundVolume">Sound effects <output id="soundVolumeValue" for="soundVolume">80%</output></label>
+									<input id="soundVolume" type="range" min="0" max="100" step="1" value="80">
+									<label for="ambientVolume">Ambience <output id="ambientVolumeValue" for="ambientVolume">80%</output></label>
+									<input id="ambientVolume" type="range" min="0" max="100" step="1" value="80">
+									<p class="settings-hint">Changes are heard and saved immediately. Music also controls streams.</p>
+								</div>
 								<ul class="settings-list">
 									<li>
 										<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
-										<label for="musicEnabled">Game Music Enabled</label>
+										<label for="musicEnabled">Game audio enabled</label>
 									</li>
 									<li>
 										<input type="checkbox" id="streamMusicEnabled" name="streamMusicEnabled" value="true">
-										<label for="streamMusicEnabled">Stream Music Enabled</label>
+										<label for="streamMusicEnabled">Stream music enabled</label>
 									</li>
 								</ul>
 							</section>

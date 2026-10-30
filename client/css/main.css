@@ -3096,3 +3096,8 @@ footer div  {display:inline-block;}
 @media (max-width: 1000px) {
     #settings .settings-list { grid-template-columns: minmax(0, 1fr); }
 }
+
+#settings .audio-volumes {display:grid;gap:8px;margin:0 0 16px;}
+#settings .audio-volumes label {display:flex;justify-content:space-between;}
+#settings .audio-volumes input[type="range"] {width:100%;margin:0;accent-color:#e0bb70;cursor:pointer;}
+#settings .audio-volumes output {font-variant-numeric:tabular-nums;color:#e0bb70;}

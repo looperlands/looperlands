@@ -293,6 +293,7 @@ function createToolboxApp(toolbox) {
     });
     app.use('/local/api/assets', express.json({limit: '18mb'}));
     app.use('/local/api/parallax-images', express.json({limit: '6mb'}));
+    app.use('/local/api/ambient-assets', express.json({limit: '2mb'}));
     app.use(express.json({limit: '256kb'}));
     require('../server/js/localparallaxassets').install(app, toolbox);
     require('../server/js/localtoolboxassets').install(app, toolbox.root);
@@ -308,6 +309,7 @@ function createToolboxApp(toolbox) {
     require('../server/js/localzonebuilder').install(app, toolbox);
     require('../server/js/localmappreview').install(app, toolbox);
     require('../server/js/localworldauthoring').install(app, toolbox);
+    require('../server/js/localambientassets').install(app, toolbox);
     require('../server/js/localtilebuilder').install(app, toolbox);
     require('../server/js/localworldconnections').install(app, toolbox);
     require('../server/js/localmapworkspace').install(app, toolbox);
@@ -322,7 +324,7 @@ function createToolboxApp(toolbox) {
             res.json(require('../server/js/localquestbuilder').saveQuests(toolbox.root, req.body));
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
-    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-sequences', 'mapmaker-lighting', 'mapmaker-encounters', 'mapmaker-fishing', 'mapmaker-zones', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
+    const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-sequences', 'mapmaker-lighting', 'mapmaker-audio', 'mapmaker-encounters', 'mapmaker-fishing', 'mapmaker-zones', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));

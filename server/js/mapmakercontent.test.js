@@ -64,3 +64,17 @@ test('invalid exported fishing tables fail production validation without world o
 test('production validation rejects duplicate checkpoint IDs before writing exports',()=>{
     const file=path.join(root,'server/maps/world_server_one.json'),map=JSON.parse(fs.readFileSync(file));map.checkpoints=[{id:3},{id:3}];fs.writeFileSync(file,JSON.stringify(map));const before=fs.readFileSync(file);expect(()=>Content.build(root)).toThrow(/Checkpoint IDs/);expect(fs.readFileSync(file)).toEqual(before);
 });
+
+test('ambient-only maps are included in production artifacts and invalid placement fails before writing', () => {
+    const entry = {id: 'camp', name: 'Camp', preset: 'campfire', x: 3, y: 4, radius: 9, volume: .55};
+    const doc = {version: 1, ambientSounds: [entry]};
+    write('tools/worlds/one.json', doc);
+    expect(Content.build(root)).toBe(3);
+    expect(JSON.parse(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'))).ambientSounds).toEqual([entry]);
+    const context = {}; vm.runInNewContext(fs.readFileSync(path.join(root, 'client/maps/world_client_one.js'), 'utf8'), context);
+    expect(JSON.parse(JSON.stringify(context.mapData.ambientSounds))).toEqual([entry]);
+    const before = fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'));
+    write('tools/worlds/one.json', {...doc, ambientSounds: [{...entry, x: 99}]});
+    expect(() => Content.build(root)).toThrow('inside the map');
+    expect(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'))).toEqual(before);
+});

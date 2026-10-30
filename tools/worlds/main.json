@@ -1257,5 +1257,241 @@
       "h": 14,
       "weatherExposure": "indoor"
     }
+  ],
+  "ambientSounds": [
+    {
+      "id": "campfire_4_78",
+      "name": "Campfire · 4, 78",
+      "preset": "campfire",
+      "x": 4,
+      "y": 78,
+      "radius": 9,
+      "volume": 1
+    },
+    {
+      "id": "campfire_11_97",
+      "name": "Campfire · 11, 97",
+      "preset": "campfire",
+      "x": 11,
+      "y": 97,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "campfire_49_104",
+      "name": "Campfire · 49, 104",
+      "preset": "campfire",
+      "x": 49,
+      "y": 104,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "campfire_56_123",
+      "name": "Campfire · 56, 123",
+      "preset": "campfire",
+      "x": 56,
+      "y": 123,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "campfire_75_139",
+      "name": "Campfire · 75, 139",
+      "preset": "campfire",
+      "x": 75,
+      "y": 139,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "campfire_78_223",
+      "name": "Campfire · 78, 223",
+      "preset": "campfire",
+      "x": 78,
+      "y": 223,
+      "radius": 18,
+      "volume": 1
+    },
+    {
+      "id": "campfire_12_235",
+      "name": "Campfire · 12, 235",
+      "preset": "upload:campfire--38f4be41ad5842da9a02392e53ef3812f295d56072d7f737759b7b9f3980bd10.wav",
+      "x": 12,
+      "y": 235,
+      "radius": 15,
+      "volume": 1
+    },
+    {
+      "id": "campfire_16_163",
+      "name": "Campfire · 16, 163",
+      "preset": "campfire",
+      "x": 16,
+      "y": 163,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "campfire_40_163",
+      "name": "Campfire · 40, 163",
+      "preset": "campfire",
+      "x": 40,
+      "y": 163,
+      "radius": 9,
+      "volume": 0.55
+    },
+    {
+      "id": "town_fireplace",
+      "name": "Town fireplace",
+      "preset": "campfire",
+      "x": 66,
+      "y": 202,
+      "radius": 6,
+      "volume": 0.35
+    },
+    {
+      "id": "river_14",
+      "name": "Forest river · 14",
+      "preset": "water",
+      "x": 14,
+      "y": 192,
+      "radius": 15,
+      "volume": 0.4
+    },
+    {
+      "id": "river_34",
+      "name": "Forest river · 34",
+      "preset": "water",
+      "x": 34,
+      "y": 192,
+      "radius": 15,
+      "volume": 0.4
+    },
+    {
+      "id": "river_60",
+      "name": "Forest river · 60",
+      "preset": "water",
+      "x": 60,
+      "y": 192,
+      "radius": 15,
+      "volume": 0.4
+    },
+    {
+      "id": "river_80",
+      "name": "Forest river · 80",
+      "preset": "water",
+      "x": 80,
+      "y": 192,
+      "radius": 15,
+      "volume": 0.4
+    },
+    {
+      "id": "shore_16",
+      "name": "Beach surf · 16",
+      "preset": "surf",
+      "x": 16,
+      "y": 300,
+      "radius": 22,
+      "volume": 0.45
+    },
+    {
+      "id": "shore_44",
+      "name": "Beach surf · 44",
+      "preset": "surf",
+      "x": 44,
+      "y": 300,
+      "radius": 22,
+      "volume": 0.45
+    },
+    {
+      "id": "shore_72",
+      "name": "Beach surf · 72",
+      "preset": "surf",
+      "x": 72,
+      "y": 300,
+      "radius": 22,
+      "volume": 0.45
+    },
+    {
+      "id": "party_shore_28",
+      "name": "Party beach surf · 28",
+      "preset": "surf",
+      "x": 28,
+      "y": 468,
+      "radius": 20,
+      "volume": 0.35
+    },
+    {
+      "id": "party_shore_62",
+      "name": "Party beach surf · 62",
+      "preset": "surf",
+      "x": 62,
+      "y": 468,
+      "radius": 20,
+      "volume": 0.35
+    },
+    {
+      "id": "party_shore_92",
+      "name": "Party beach surf · 92",
+      "preset": "surf",
+      "x": 92,
+      "y": 468,
+      "radius": 20,
+      "volume": 0.35
+    },
+    {
+      "id": "lavafall_52",
+      "name": "Lavafall · 52, 1",
+      "preset": "lava",
+      "x": 52,
+      "y": 1,
+      "radius": 13,
+      "volume": 0.5
+    },
+    {
+      "id": "lavafall_88",
+      "name": "Lavafall · 88, 1",
+      "preset": "lava",
+      "x": 88,
+      "y": 1,
+      "radius": 13,
+      "volume": 0.5
+    },
+    {
+      "id": "lavafall_36",
+      "name": "Lavafall · 36, 52",
+      "preset": "lava",
+      "x": 36,
+      "y": 52,
+      "radius": 13,
+      "volume": 0.5
+    },
+    {
+      "id": "birds_22",
+      "name": "Forest birds · 22, 151",
+      "preset": "birds",
+      "x": 22,
+      "y": 151,
+      "radius": 16,
+      "volume": 0.3
+    },
+    {
+      "id": "birds_65",
+      "name": "Forest birds · 65, 178",
+      "preset": "birds",
+      "x": 65,
+      "y": 178,
+      "radius": 16,
+      "volume": 0.3
+    },
+    {
+      "id": "desert_wind",
+      "name": "Desert wind",
+      "preset": "wind",
+      "x": 43,
+      "y": 83,
+      "radius": 26,
+      "volume": 0.3
+    }
   ]
 }

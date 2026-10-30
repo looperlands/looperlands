@@ -3,6 +3,8 @@ const path = require('path');
 // Both local entry points serve the same editor shell and its shared scripts.
 function install(app, root) {
     const assets = {
+        '/local/vendor/ambientconfig.js': 'client/js/ambientconfig.js',
+        '/local/vendor/soundscape.js': 'client/js/soundscape.js',
         '/local/dialogue-format.js': 'shared/js/dialogueformat.js',
         '/local/dialogue-text.js': 'client/js/dialoguetext.js',
         '/local/dialogue-presentation.css': 'client/css/dialogue.css',

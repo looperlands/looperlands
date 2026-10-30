@@ -12,16 +12,16 @@ function setup() {
         audioManager: {playFootstep: jest.fn()}};
     return {feedback: new Feedback(game), game, settings, document, Feedback};
 }
-test('walking leaves marks by distance without playing audio', () => {
+test('walking plays one quiet step per distance interval alongside marks', () => {
     const {feedback, game} = setup();
     feedback.getFrame(1000);
     game.player.x += 6; feedback.getFrame(1050);
     expect(game.audioManager.playFootstep).not.toHaveBeenCalled();
     game.player.x += 6;
     expect(feedback.getFrame(1100)).toHaveLength(1);
-    expect(game.audioManager.playFootstep).not.toHaveBeenCalled();
+    expect(game.audioManager.playFootstep).toHaveBeenCalledWith('sand');
     feedback.getFrame(1200);
-    expect(game.audioManager.playFootstep).not.toHaveBeenCalled();
+    expect(game.audioManager.playFootstep).toHaveBeenCalledTimes(1);
     expect(feedback.getFrame(1750)).toHaveLength(0);
 });
 test.each(['teleport', 'tab gap', 'stop', 'map', 'session', 'hidden', 'death'])('%s does not leave stray footprints', reason => {
@@ -37,13 +37,13 @@ test.each(['teleport', 'tab gap', 'stop', 'map', 'session', 'hidden', 'death'])(
     expect(feedback.getFrame(reason === 'tab gap' ? 60000 : 1100)).toHaveLength(0);
     expect(game.audioManager.playFootstep).not.toHaveBeenCalled();
 });
-test.each(['reduced', 'disabled'])('%s suppresses marks', reason => {
+test.each(['reduced', 'disabled'])('%s suppresses marks while keeping audio independent', reason => {
     const {feedback, game, settings} = setup();
     if (reason === 'reduced') settings.getReducedMotion = () => true;
     else settings.getCombatEffectsEnabled = () => false;
     feedback.getFrame(1000); game.player.x += 12;
     expect(feedback.getFrame(1100)).toHaveLength(0);
-    expect(game.audioManager.playFootstep).not.toHaveBeenCalled();
+    expect(game.audioManager.playFootstep).toHaveBeenCalledWith('sand');
 });
 test('region names select materials and marks follow camera/scale', () => {
     const {Feedback} = setup();

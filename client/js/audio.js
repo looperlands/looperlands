@@ -1,11 +1,12 @@
 
-define(['area', 'musicplayer'], function (Area, MusicPlayer) {
+define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, MusicPlayer, AmbientConfig, Soundscape) {
 
     var AudioManager = Class.extend({
         init: function (game) {
             var self = this;
 
             this.enabled = true;
+            this.soundscape = new Soundscape();
             this.extension = Detect.canPlayMP3() ? "mp3" : "ogg";
             this.sounds = {};
             this.soundEffects = {};
@@ -14,6 +15,8 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             this.musicPlayer = new MusicPlayer();
             this.streamMusic = new MusicPlayer();
             this.areas = [];
+            this.volumes = {music: .25, sound: .8, ambient: .8};
+            this.setVolumes(this.volumes);
             this.musicNames = [
                 // MAIN MUSIC    
                 "village", "full", "fluteguitar", "guitar", "exploration", "beach", "forest", "cave", "desert", "lavaland", "boss",
@@ -57,8 +60,25 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             }
         },
 
+        setVolumes: function (values) {
+            for (const key of ['music', 'sound', 'ambient']) {
+                if (Number.isFinite(values[key])) this.volumes[key] = Math.max(0, Math.min(1, values[key]));
+            }
+            this.musicPlayer.setVolume(this.volumes.music);
+            this.streamMusic.setVolume(this.volumes.music);
+            this.soundscape.setVolumes(this.volumes.sound, this.volumes.ambient);
+            for (const channels of Object.values(this.sounds)) for (const sound of channels || []) sound.volume = this.volumes.sound;
+            for (const sound of Object.values(this.soundEffects)) sound.volume?.(this.volumes.sound);
+            if (this.impactGain) this.impactGain.gain.value = this.enabled ? this.volumes.sound : 0;
+        },
+
         disable: function () {
             this.enabled = false;
+            this.soundscape.setEnabled(false);
+            if (this.impactGain) this.impactGain.gain.value = 0;
+            _.each(this.sounds, function (channels) {
+                _.each(channels || [], function (sound) {sound.pause();});
+            });
             this.impactContext?.suspend()?.catch?.(() => {});
 
             _.each(this.soundEffects, function (sound) {
@@ -71,8 +91,10 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
         destroy: function () {
             this.disable();
+            this.soundscape.destroy();
             this.impactContext?.close()?.catch?.(() => {});
             this.impactContext = null;
+            this.impactGain?.disconnect(); this.impactGain = null;
             this.musicPlayer.destroy();
             this.streamMusic.destroy();
             _.each(this.soundEffects, function (sound) {
@@ -82,6 +104,9 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
         enable: function () {
             this.enabled = true;
+            this.soundscape.setEnabled(true);
+            if (this.impactGain) this.impactGain.gain.value = this.volumes.sound;
+            this.soundscape.unlock();
 
             if (this.currentMusic) {
                 this.currentMusic = null;
@@ -95,6 +120,31 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             } else {
                 this.enable();
             }
+        },
+
+        updateAmbience: function () {
+            const game = this.game, player = game.player, map = game.map;
+            if (this.ambientMap !== map) {this.soundscape.clear(); this.ambientMap = map;}
+            this.soundscape.update(map?.ambientSounds || [], this.listenerPosition(),
+                !!(this.enabled && game.started && !game.isStopped && !game.disconnected && !game.minigameLoaded &&
+                    map?.isLoaded && player && !player.isDead));
+        },
+
+        listenerPosition: function () {
+            const player = this.game.player, size = this.game.map?.tilesize || 16;
+            return {x: Number.isFinite(player?.x) ? player.x / size : player?.gridX || 0,
+                y: Number.isFinite(player?.y) ? player.y / size : player?.gridY || 0};
+        },
+
+        playFootstep: function (surface) {
+            if (this.enabled) this.soundscape.cue(surface, {gain: 1, pan: 0}, true);
+        },
+
+        playToolImpact: function (material, x, y) {
+            if (!this.enabled || !this.game.started || this.game.isStopped || this.game.disconnected || this.game.minigameLoaded || this.game.player?.isDead) return;
+            const size = this.game.map?.tilesize || 16;
+            this.soundscape.cue(material, AmbientConfig.spatial({x: x / size - .5, y: y / size - .75,
+                radius: 12, volume: .75}, this.listenerPosition()));
         },
 
         getAudioPath: function (basePath, name) {
@@ -124,6 +174,7 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             }, false);
 
             sound.preload = "auto";
+            sound.volume = this.volumes.sound;
             sound.autobuffer = true;
             sound.src = path;
             sound.load();
@@ -143,6 +194,7 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                     src: [this.getAudioPath("audio/sounds/", name)],
                     preload: false,
                     pool: 4,
+                    volume: this.volumes.sound,
                     onload: handleLoaded,
                     onloaderror: function () {
                         effect.unload();
@@ -214,7 +266,12 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             gain.gain.setValueAtTime(0, now);
             gain.gain.linearRampToValueAtTime(.18, now + .004);
             gain.gain.exponentialRampToValueAtTime(.001, now + .12);
-            bass.connect(gain); gain.connect(context.destination);
+            if (!this.impactGain) {
+                this.impactGain = context.createGain();
+                this.impactGain.gain.value = this.volumes.sound;
+                this.impactGain.connect(context.destination);
+            }
+            bass.connect(gain); gain.connect(this.impactGain);
             bass.onended = () => { bass.disconnect(); gain.disconnect(); };
             bass.start(now); bass.stop(now + .13);
         },
@@ -225,8 +282,8 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
             }
 
 
-            if(parseInt(name) > 0) {
-                name = this.soundNames[parseInt(name)];
+            if (/^\d+$/.test(String(name))) {
+                name = this.soundNames[Number(name)];
             }
 
             var effect = this.soundEffects[name];
@@ -256,13 +313,14 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                     const id = effect.play();
                     if (varied) effect.rate?.(rate, id);
                 } else {
+                    sound.volume = this.volumes.sound;
                     sound.playbackRate = rate;
                     if (varied) {
                         sound.preservesPitch = false;
                         if ('webkitPreservesPitch' in sound) sound.webkitPreservesPitch = false;
                         if ('mozPreservesPitch' in sound) sound.mozPreservesPitch = false;
                     }
-                    sound.play();
+                    sound.play()?.catch?.(() => {});
                 }
             }
         },
@@ -321,7 +379,7 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 var fadeIn = music.sound.fadingOut && this.musicPlayer.source === music.src;
                 this.clearFadeIn(music);
                 this.clearFadeOut(music);
-                if (!fadeIn) music.sound.volume = 1;
+                if (!fadeIn) this.musicPlayer.setLevel(1);
                 this.currentMusic = music;
                 this.musicPlayer.play(music.src);
                 if (fadeIn) this.fadeInMusic(music);
@@ -342,12 +400,12 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 this.clearFadeOut(music);
                 this.clearFadeIn(music);
                 music.sound.fadingOut = setInterval(function () {
-                    var volume = music.sound.volume - step;
+                    var volume = self.musicPlayer.level - step;
 
                     if (self.enabled && volume >= step) {
-                        music.sound.volume = volume;
+                        self.musicPlayer.setLevel(volume);
                     } else {
-                        music.sound.volume = 0;
+                        self.musicPlayer.setLevel(0);
                         self.clearFadeOut(music);
                         ended_callback(music);
                     }
@@ -361,12 +419,12 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 this.clearFadeOut(music);
                 music.sound.fadingIn = setInterval(function () {
                     var step = 0.01;
-                    var volume = music.sound.volume + step;
+                    var volume = self.musicPlayer.level + step;
 
                     if (self.enabled && volume < 1 - step) {
-                        music.sound.volume = volume;
+                        self.musicPlayer.setLevel(volume);
                     } else {
-                        music.sound.volume = 1;
+                        self.musicPlayer.setLevel(1);
                         self.clearFadeIn(music);
                     }
                 }, 30);
@@ -404,9 +462,9 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 this.clearFadeIn(music);
                 this.clearFadeOut(music);
                 music.sound.fadingOut = setInterval(function () {
-                    var volume = music.sound.volume - 0.02;
+                    var volume = self.musicPlayer.level - 0.02;
                     if (self.enabled && volume >= 0.25) {
-                        music.sound.volume = volume;
+                        self.musicPlayer.setLevel(volume);
                     } else {
                         self.clearFadeOut(music);
                     }
@@ -421,11 +479,11 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 this.clearFadeOut(music);
                 this.clearFadeIn(music);
                 music.sound.fadingIn = setInterval(function () {
-                    var volume = music.sound.volume + 0.02;
+                    var volume = self.musicPlayer.level + 0.02;
                     if (self.enabled && volume < 1) {
-                        music.sound.volume = volume;
+                        self.musicPlayer.setLevel(volume);
                     } else {
-                        music.sound.volume = 1;
+                        self.musicPlayer.setLevel(1);
                         self.clearFadeIn(music);
                     }
                 }, 50);
