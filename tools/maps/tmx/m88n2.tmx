@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2091">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="211" nextobjectid="2093">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_m88n2.png" width="2208" height="2512"/>
   <tile id="0">
@@ -7343670,7 +7343670,7 @@
     <property name="y" value="15"/>
    </properties>
   </object>
-  <object id="2029" name="Zombie Town" x="2192" y="3600" width="16" height="16">
+  <object id="2029" name="Zombie Town" x="2192" y="3584" width="16" height="16">
    <properties>
     <property name="collection" value="Zombie Townies"/>
     <property name="collection_message" value="Looks like a Zombie Town up that way..."/>
@@ -7343680,7 +7343680,7 @@
     <property name="y" value="200"/>
    </properties>
   </object>
-  <object id="2030" name="Zombie Town" x="2208" y="3600" width="16" height="16">
+  <object id="2030" name="Zombie Town" x="2208" y="3584" width="16" height="16">
    <properties>
     <property name="collection" value="zombie townies"/>
     <property name="collection_message" value="Looks like a Zombie Town up that way..."/>
@@ -7343870,6 +7343870,22 @@
     <property name="o" value="d"/>
     <property name="x" value="18"/>
     <property name="y" value="290"/>
+   </properties>
+  </object>
+  <object id="2091" name="Zombie Town" x="2192" y="3600" width="16" height="16">
+   <properties>
+    <property name="map" value="duckville"/>
+    <property name="o" value="u"/>
+    <property name="x" value="155"/>
+    <property name="y" value="200"/>
+   </properties>
+  </object>
+  <object id="2092" name="Zombie Town" x="2208" y="3600" width="16" height="16">
+   <properties>
+    <property name="map" value="duckville"/>
+    <property name="o" value="u"/>
+    <property name="x" value="155"/>
+    <property name="y" value="200"/>
    </properties>
   </object>
  </objectgroup>
