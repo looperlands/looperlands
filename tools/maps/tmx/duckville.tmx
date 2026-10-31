@@ -3081608,7 +3081608,7 @@
   <object id="1133" name="Torch" x="1752" y="6776" width="128" height="128">
    <properties>
     <property name="animation" value="fire" />
-    <property name="color" value="55,249,1" />
+    <property name="color" value="255,180,90" />
     <property name="intensity" value="0.8" />
     <property name="shadow" value="0.8" />
    </properties>
