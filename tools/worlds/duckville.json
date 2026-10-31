@@ -4,6 +4,85 @@
   "dialogues": [],
   "atmosphere": [
     {
+      "sceneId": "740",
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/dragon-shadow.png",
+            "plane": "ground",
+            "width": 288,
+            "height": 288,
+            "factorX": 1,
+            "factorY": 1,
+            "opacity": 0.27,
+            "driftX": 3,
+            "driftY": -18,
+            "spacingX": 1024,
+            "spacingY": 1280,
+            "offsetX": 496,
+            "offsetY": 464,
+            "activeSceneOnly": true,
+            "orbitRadius": 224,
+            "orbitPeriod": 30,
+            "orbitVariation": 0.55,
+            "scaleVariation": 0.22,
+            "rotateToPath": true
+          }
+        ]
+      },
+      "cycle": false,
+      "dayDarkness": 0,
+      "nightDarkness": 0,
+      "color": "#000000",
+      "music": null,
+      "particles": []
+    },
+    {
+      "sceneId": "876",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.05,
+      "nightDarkness": 0.85,
+      "color": "#000000",
+      "particles": [],
+      "dayNight": {
+        "dawn": 5,
+        "dawnDuration": 2,
+        "dusk": 17,
+        "duskDuration": 2,
+        "dayColor": "#162a38",
+        "nightColor": "#111b38",
+        "dawnColor": "#ae7966",
+        "duskColor": "#9c5e4c"
+      },
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "ground",
+            "width": 384,
+            "height": 320,
+            "factorX": 1.15,
+            "factorY": 1.15,
+            "opacity": 0.25,
+            "driftX": 0.5,
+            "driftY": 0.1
+          },
+          {
+            "image": "/img/parallax/mist.png",
+            "plane": "foreground",
+            "width": 384,
+            "height": 320,
+            "factorX": 1.15,
+            "factorY": 1.15,
+            "opacity": 0.25,
+            "driftX": 0.5,
+            "driftY": 0.1
+          }
+        ]
+      }
+    },
+    {
       "sceneId": "1002",
       "music": null,
       "cycle": true,
@@ -81,43 +160,10 @@
           "count": 7
         }
       ]
-    },
-    {
-      "sceneId": "740",
-      "parallax": {
-        "layers": [
-          {
-            "image": "/img/parallax/dragon-shadow.png",
-            "plane": "ground",
-            "width": 288,
-            "height": 288,
-            "factorX": 1,
-            "factorY": 1,
-            "opacity": 0.27,
-            "driftX": 3,
-            "driftY": -18,
-            "spacingX": 1024,
-            "spacingY": 1280,
-            "offsetX": 496,
-            "offsetY": 464,
-            "activeSceneOnly": true,
-            "orbitRadius": 224,
-            "orbitPeriod": 30,
-            "orbitVariation": 0.55,
-            "scaleVariation": 0.22,
-            "rotateToPath": true
-          }
-        ]
-      },
-      "cycle": false,
-      "dayDarkness": 0,
-      "nightDarkness": 0,
-      "color": "#000000",
-      "music": null,
-      "particles": []
     }
   ],
   "sequences": [],
+  "ambientSounds": [],
   "scenes": [
     {
       "id": "740",
@@ -359,5 +405,6 @@
       "w": 6,
       "h": 42
     }
-  ]
+  ],
+  "weather": null
 }
