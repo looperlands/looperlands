@@ -6,9 +6,9 @@ const placements = [
     {key: 'halloween:pumpkin', kind: 'halloween_pumpkin', label: 'The Whispering Pumpkin', x: 29, y: 213},
     {key: 'halloween:gravedigger-left', kind: 'halloween_ghost', label: 'Mara, the Gravedigger', x: 51, y: 225},
     {key: 'halloween:gravedigger-right', kind: 'halloween_ghost', label: 'Rowan, the Gravedigger', x: 54, y: 225},
-    {key: 'halloween:memorial', kind: 'halloween_memorial', label: 'The Gravedigger Memorial', x: 52, y: 222},
+    {key: 'halloween:memorial', kind: 'halloween_memorial', label: 'The Burial Register', x: 52, y: 222},
     {key: 'halloween:well', kind: 'halloween_well', label: 'The Whispering Well', x: 16, y: 241},
-    {key: 'halloween:keepsake', kind: 'halloween_keepsake', label: 'A Lost Locket', x: 32, y: 234}
+    {key: 'halloween:keepsake', kind: 'halloween_keepsake', label: 'A Lost Ring', x: 32, y: 234}
 ];
 
 // A compact loop on the market paths. Each ghost begins at a different stop;

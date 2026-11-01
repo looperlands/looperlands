@@ -23,7 +23,7 @@ Open [Mapmaker Toolbox](http://127.0.0.1:8010/local/) and select **Playtest**. U
 | Starting progress | Leave inventory and finished quests empty for the first story run |
 | Spawn → Set a custom spawn position | X `44`, Y `214` |
 
-Click **Start game**. Whispy is two tiles east, at **46, 214**. Each coordinate below is a map tile; click an actor from an adjacent walkable tile. Objects described as shoes, a pumpkin, a ledger, a basin or a locket are clickable clues.
+Click **Start game**. Whispy is two tiles east, at **46, 214**. Each coordinate below is a map tile; click an actor from an adjacent walkable tile. If **Talk [E]** appears, press **E** to open the conversation. The red shoes, Whispering Pumpkin, purple Burial Register, green basin and blue-stoned ring are clickable clues.
 
 **The two clocks are separate.** `LOOPERLANDS_CONTENT_DATE` selects a fixed UTC calendar date for seasonal availability. **Time of day** selects the advancing in-game clock for lighting and NPC schedules; setting it to evening does not activate Halloween. Both settings affect all local players. Production ignores the local calendar override.
 
@@ -31,50 +31,66 @@ Click **Start game**. Whispy is two tiles east, at **46, 214**. Each coordinate 
 
 ## Complete the personal story
 
+### Find clues before accepting their mystery
+
+Use a fresh avatar for this check, before speaking to Whispy or accepting the relevant mystery.
+
+- [ ] Inspect the red shoes, pumpkin, either gravedigger, Burial Register, basin and ring. Each gives guidance toward Whispy or the missing prerequisite instead of implying that you have already accepted the investigation.
+- [ ] Check the Journal and inventory: an early clue visit must not grant a quest reward or silently resolve a haunting.
+- [ ] Accept the relevant mystery, then return to the clue. Its normal investigation dialogue should now be available.
+
 ### Introduction
 
 - [ ] Click Whispy at **46, 214**. Choose **I will help settle the hauntings.** → **Let us begin.** → **Show me the mysteries.**
 - [ ] Confirm **Halloween: Something Is Wrong With the Village** completes and gold increases by **10**.
 - [ ] Confirm the hub offers all three mysteries and **Browse the cauldron recipes.** No combat or higher level is required.
+- [ ] Close and reopen Whispy's dialogue. It returns to the hub without repeating the ten-gold payment or presenting that payment as a new reward.
 
 ### The Missing Shadow
 
 1. At Whispy, choose **Ordinary Adam's missing shadow.** → **I will follow the shadow.**
-2. Walk west to the **Abandoned Shoes, 36, 211**, and inspect them.
-3. Continue west to the **Whispering Pumpkin, 29, 213**. Choose **Turn the pumpkin away from the lantern.**
+2. Walk west to the red **Abandoned Shoes, 36, 211**, and inspect them. Their dialogue gives the next direction; there is no visible footprint trail.
+3. Continue farther west to the **Whispering Pumpkin, 29, 213**, north-west of the purple-roofed house. Choose **Turn the pumpkin away from the lantern.**
 4. Return to Whispy. Choose **Ordinary Adam's missing shadow.** → **I freed the shadow from the pumpkin.**
 
 - [ ] Receive **3 pumpkins** (`m88npumpkin`) once; the quest appears in completed history.
-- [ ] Revisit the pumpkin and Whispy: the dialogue remembers your solution and grants no second reward.
-- [ ] On a fresh run, inspect the pumpkin before the shoes: the release choice should be absent. Merely visiting both clues should not complete the quest; you must free the shadow and report back.
+- [ ] Revisit the pumpkin and Whispy: the dialogue remembers your solution, grants no second reward and does not repeat the payout promise.
+- [ ] On a fresh run, accept the shadow mystery and inspect the pumpkin before the shoes: it should guide you to the red shoes, and the release choice should be absent.
+- [ ] After inspecting the shoes, choose **Leave it for now.** at the pumpkin. The shadow objective remains unfinished; merely visiting both clues must not complete it. Free the shadow, then check that the Journal directs you back to Whispy.
 - [ ] Choose **Show me the recipes.** to reach the first souvenir immediately: **1 pumpkin + 5 gold → Bottled Midnight**.
 
 ### The Second Gravedigger
 
 1. At Whispy, choose **The two gravediggers.** → **I will compare their stories.**
-2. Near the notice board east of the market, speak to **Mara at 51, 225** and **Rowan at 54, 225**.
-3. Inspect the **memorial/old town ledger at 52, 222**. These three clues can be visited in any order.
+2. South of the Town notice board, speak to **Mara at 51, 225** and **Rowan at 54, 225**. Their matching ghost sheets are intentional: appearance alone does not identify the ghost.
+3. Read the purple **Burial Register at 52, 222**, between the notice board and the two figures. These three clues can be visited in any order. Mara says she put up the board last spring; Rowan denies that a board ever stood there; the register records Rowan's burial a hundred winters ago.
 4. Return to Whispy. Choose **The two gravediggers.** → **I have read the evidence. Let me decide.**
 5. To test a wrong answer, choose **Mara, on the left. She looks very pale.** Then choose **Let me reconsider.**
-6. Choose the correct answer: **Rowan, on the right. His name is on the memorial.**
+6. Choose the correct answer: **Rowan, on the right. The register records his burial.**
 
 - [ ] The decision option appears only after all three clues have been read.
+- [ ] Reading the register alone does not finish its combined investigation-and-decision objective. The Journal should still direct you to identify the ghost to Whispy.
 - [ ] A wrong answer gives a hint without completing the quest, consuming resources or blocking a retry.
 - [ ] The correct answer grants **6 wood** once. Rowan's later dialogue acknowledges the discovery.
+- [ ] Reopen Whispy's dialogue after the correct answer. She returns to the hub without another payout or a repeated reward promise.
 
 ### The Whispering Well
 
 1. At Whispy, choose **The whispering well.** → **I will listen to the well.**
-2. Visit the **well/basin beside the south-west fountain, 16, 241**. Choose **Listen without giving it another name.**
-3. Walk north-east to the **locket on the southern market path, 32, 234**. Choose **Wrap the locket in a cloth and take it to the well.**
-4. Return to the well at **16, 241**. Choose **Lower the locket gently into the well.**
-5. Return to Whispy. Choose **The whispering well.** → **I returned the locket to the spirit.**
+2. Visit the small green **basin beside the south-west fountain, 16, 241**. The well's voice speaks through it. Choose **Listen without giving it another name.**
+3. Walk north-east to **A Lost Ring on the southern market path, 32, 234**, recognizable by its blue stone. Choose **Wrap the ring in a cloth and take it to the well.**
+4. Return to the basin at **16, 241**. Choose **Lower the ring gently into the basin.**
+5. Return to Whispy. Choose **The whispering well.** → **I returned the ring to the spirit.**
 
 - [ ] Receive **3 ore** once. Revisit the well to hear its peaceful response.
-- [ ] The locket is a personal story choice; it does not add or consume an inventory item. Its visible clue stays available to other players.
-- [ ] Visiting well → locket → well without taking and returning the locket is insufficient: the completion option remains unavailable.
+- [ ] The ring is a personal story choice; it does not add or consume an inventory item. Its visible clue stays available to other players.
+- [ ] Visiting basin → ring → basin without choosing to listen, take the ring and return it must not produce **3/3** progress or unlock the completion option. Each required action must be recorded.
+- [ ] On a fresh run, accept the well mystery and inspect the ring before listening to the basin: it should direct you to the basin, and the take choice should be absent.
+- [ ] Choose **Step away.** at the basin before listening: progress remains **0/3**. Listen, then choose **Leave it where it is.** at the ring: progress remains **1/3**. Take the ring, then choose **Hold on to it a little longer.** at the basin: progress remains **2/3**, and the spirit is not yet settled.
+- [ ] Lower the ring: progress becomes **3/3** and the Journal directs you back to Whispy. Only reporting back grants the ore and completes the quest.
+- [ ] Reopen Whispy's dialogue after reporting back. The hub remains available without repeating the payout or its promise.
 
-After all three mysteries, the Journal should contain **four completed Halloween quests** including the introduction. When clue objectives are checked off but a decision or report is still needed, the active Journal should explain that remaining step rather than claim the haunting is already settled.
+After all three mysteries, the Journal should contain **four completed Halloween quests** including the introduction. A missing dialogue choice keeps its objective unfinished. Once the shadow is freed or the ring is returned, the active Journal should direct you to report back to Whispy; the reward is still pending until that report.
 
 ## Brew and use all three recipes
 

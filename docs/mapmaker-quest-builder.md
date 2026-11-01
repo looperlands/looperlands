@@ -43,6 +43,8 @@ Choose targets from the map's exported NPCs, mobs and areas, or the game's item 
 
 With **Complete objectives in order** checked, quests progress from top to bottom. **Move up** and **Move down** change that order. An event before its objective becomes active does not count toward a later step. Clear the checkbox for objectives that can be completed independently; delivery objectives require ordering.
 
+An objective in the quest JSON can also include `"requiredChoices": ["mystery:heard-the-spirit"]`. Its progress stays at zero until the player's dialogue records every listed choice **and** the objective's normal event has happened. This is useful when clicking an NPC opens a conversation but a particular answer actually completes the step. In an ordered quest, later objectives remain blocked until both conditions are met. Earlier saved event counts are retained and become visible when the choices are recorded; a repeated click does not rewrite an already satisfied event count. The builder preserves this optional field when editing other objective settings. Choice IDs follow the same rules as quest-level `requiredChoices` below.
+
 An optional **Return NPC** adds a final reporting interaction after the objectives. Choose **Complete without a final report** for automatic completion after the last objective. For a delivery quest with a reporting step, the engine checks and removes the items when the player completes that final report. Keep the required items until completion.
 
 Leave **Placed NPC key (optional)** and **Recipient NPC key (optional)** blank to accept any NPC of the selected kind on this map. Use a known behavior key to target a specific actor. Static `placed:<entityId>` keys can change after map edits.

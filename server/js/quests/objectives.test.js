@@ -143,3 +143,63 @@ test('tile-stage objectives match action/stage and count successful output witho
     expect(await objective.consume(q,event({action:'farm',stage:'harvest',quantity:3}))).toBe(true);
     expect(objective.progress(playerCache.gameData,q)[0].count).toBe(5);
 });
+
+test('a required dialogue choice keeps a recorded visit incomplete and blocks later ordered objectives', async () => {
+    const quest = {id: 'choice-well', objectives: [
+        {id: 'listen', eventType: 'NPC_TALKED', target: 41, requiredChoices: ['well:listened']},
+        {id: 'locket', eventType: 'NPC_TALKED', target: 42}
+    ]};
+    const playerCache = {nftId: 'choice-player', gameData: {choices: [], items: {}}};
+    const event = npc => ({eventType: 'NPC_TALKED', playerCache, data: {npc}});
+    objective.validate(quest);
+    expect(await objective.consume(quest, event(41))).toBe(false);
+    expect(objective.progress(playerCache.gameData, quest).map(({count, done}) => ({count, done}))).toEqual([
+        {count: 0, done: false}, {count: 0, done: false}
+    ]);
+    await objective.consume(quest, event(42));
+    await objective.consume(quest, event(41));
+    await objective.consume(quest, event(41));
+    expect(dao.registerChoice).toHaveBeenCalledTimes(1);
+    expect(playerCache.gameData.choices).toEqual(['quest-progress:choice-well:listen:1']);
+
+    playerCache.gameData.choices.push('well:listened');
+    expect(objective.progress(playerCache.gameData, quest).map(o => o.done)).toEqual([true, false]);
+    expect(objective.progress(playerCache.gameData, quest)[0].count).toBe(1);
+    expect(await objective.consume(quest, event(42))).toBe(true);
+    expect(dao.registerChoice).toHaveBeenCalledTimes(2);
+});
+
+test('saved event counts stay preserved but do not bypass newly required choices', async () => {
+    const quest = {id: 'choice-legacy', ordered: false, objectives: [
+        {id: 'first', eventType: 'NPC_TALKED', target: 41, requiredChoices: ['mystery:heard', 'mystery:agreed']},
+        {id: 'second', eventType: 'NPC_TALKED', target: 42}
+    ]};
+    const playerCache = {nftId: 'legacy-choice-player', gameData: {choices: ['quest-progress:choice-legacy:first:1', 'mystery:heard'], items: {}}};
+    const event = npc => ({eventType: 'NPC_TALKED', playerCache, data: {npc}});
+    expect(objective.progress(playerCache.gameData, quest)[0]).toMatchObject({count: 0, done: false});
+    await objective.consume(quest, event(41));
+    expect(dao.registerChoice).not.toHaveBeenCalled();
+    await objective.consume(quest, event(42));
+    expect(objective.progress(playerCache.gameData, quest).map(o => o.done)).toEqual([false, true]);
+    expect(objective.ready(playerCache.gameData, quest)).toBe(false);
+    playerCache.gameData.choices.push('mystery:agreed');
+    expect(objective.ready(playerCache.gameData, quest)).toBe(true);
+    expect(playerCache.gameData.choices).toContain('quest-progress:choice-legacy:first:1');
+});
+
+test('choices alone cannot complete an objective without its event, and hidden counts accumulate without duplicate writes', async () => {
+    const quest = {id: 'choice-count', objectives: [{id: 'talk', eventType: 'NPC_TALKED', target: 41, amount: 2, requiredChoices: ['mystery:solved']}]};
+    const playerCache = {nftId: 'count-choice-player', gameData: {choices: ['mystery:solved'], items: {}}};
+    const event = {eventType: 'NPC_TALKED', playerCache, data: {npc: 41}};
+    expect(objective.progress(playerCache.gameData, quest)[0]).toMatchObject({count: 0, done: false});
+    playerCache.gameData.choices = [];
+    await objective.consume(quest, event); await objective.consume(quest, event); await objective.consume(quest, event);
+    expect(dao.registerChoice).toHaveBeenCalledTimes(2);
+    expect(objective.progress(playerCache.gameData, quest)[0]).toMatchObject({count: 0, done: false});
+    playerCache.gameData.choices.push('mystery:solved');
+    expect(objective.progress(playerCache.gameData, quest)[0]).toMatchObject({count: 2, done: true});
+});
+
+test.each([null, 'choice', ['duplicate', 'duplicate'], ['bad choice']])('objective validation rejects invalid required choices: %j', requiredChoices => {
+    expect(() => objective.validate({id: 'invalid-choices', objectives: [{id: 'talk', eventType: 'NPC_TALKED', target: 41, requiredChoices}]})).toThrow('choice IDs');
+});

@@ -149,7 +149,8 @@ function validateQuests(quests, catalog, availableIds = new Set(), reservedIds =
         if (!Array.isArray(quest.objectives) || !quest.objectives.length || quest.objectives.length > 20) fail('Each quest needs between 1 and 20 objectives.');
         const objectiveIds = new Set();
         for (const [index, objective] of quest.objectives.entries()) {
-            fields(objective, ['id', 'label', 'eventType', 'target', 'amount', 'npcKey', 'recipient', 'stage', 'countBy'], 'Objective');
+            fields(objective, ['id', 'label', 'eventType', 'target', 'amount', 'npcKey', 'recipient', 'stage', 'countBy', 'requiredChoices'], 'Objective');
+            try {require('./quests/queststate').validateRequiredChoices(objective.requiredChoices);} catch (error) {fail(error.message);}
             identifier(objective.id, 'Objective ID');
             if (objectiveIds.has(objective.id)) fail('Objective IDs must be unique within a quest.');
             objectiveIds.add(objective.id);

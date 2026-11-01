@@ -108,6 +108,16 @@ test('scripted completion choices are preserved and reject ambiguous or unsafe I
     }
 });
 
+test('objective-level dialogue choices survive saves and use the same choice ID validation', () => {
+    const quest = fixture(); quest.objectives[0].requiredChoices = ['mystery:accepted', 'mystery:solved'];
+    const saved = saveQuests(root, {mapId: 'one', revision: readQuests(root, 'one').revision, quests: [quest]});
+    expect(saved.quests[0].objectives[0].requiredChoices).toEqual(quest.objectives[0].requiredChoices);
+    expect(readQuests(root, 'one').quests[0].objectives[0].requiredChoices).toEqual(quest.objectives[0].requiredChoices);
+    for (const requiredChoices of [null, 'solution', ['duplicate', 'duplicate'], ['bad choice']]) {
+        expect(() => validateQuests([{...quest, objectives: [{...quest.objectives[0], requiredChoices}]}], saved.catalog)).toThrow('choice IDs');
+    }
+});
+
 test('delivery requires an ordered final step, actual item kind and exactly one valid recipient', () => {
     const catalog = readQuests(root, 'one').catalog;
     const delivery = {id: 'deliver', eventType: 'DELIVER_ITEM', target: Types.Entities.GOLD, amount: 2, recipient: {npc: Types.Entities.GUARD}};

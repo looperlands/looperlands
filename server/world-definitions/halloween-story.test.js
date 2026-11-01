@@ -61,13 +61,17 @@ test('three distinct mysteries can be solved through real dialogue transitions a
 
     await s.choose('witch', 'hub'); await accept(s, 'grave');
     await s.talk('gravedigger-right'); await s.talk('memorial'); await s.talk('gravedigger-left');
+    expect(objective.progress(s.data().gameData, quests.questsByID[story.GRAVEDIGGER]).map(o => o.done)).toEqual([true, true, false]);
     await s.talk('witch'); await s.choose('witch', 'grave-case'); await s.choose('witch', 'grave-decision');
     await s.choose('witch', 'wrong-grave');
     expect(quests.hasCompletedQuest(story.GRAVEDIGGER, s.data())).toBe(false);
+    expect(objective.ready(s.data().gameData, quests.questsByID[story.GRAVEDIGGER])).toBe(false);
     await s.choose('witch', 'grave-decision'); await s.choose('witch', 'finish-grave');
     expect(s.data().gameData.items[Types.Entities.WOOD]).toBe(6);
+    expect((await s.talk('gravedigger-left')).text).toMatch(/Thank you for helping Rowan/);
+    expect((await s.talk('gravedigger-right')).text).toMatch(/watch the lanterns from here/);
 
-    await s.choose('witch', 'hub'); await accept(s, 'well');
+    await accept(s, 'well');
     await s.talk('well'); await s.choose('well', 'listen'); await s.talk('keepsake'); await s.choose('keepsake', 'take');
     await s.talk('well'); await s.choose('well', 'restore'); await report(s, 'well');
     expect(s.data().gameData.items[Types.Entities.ORE]).toBe(3);
@@ -87,21 +91,67 @@ test('talking to evidence is not enough: completion also requires the authored s
     expect(objective.progress(s.data().gameData, quests.questsByID[story.SHADOW]).every(o => !o.done)).toBe(true);
     expect(s.controller.goto('main', s.actor('pumpkin').kind, 'release', cache, s.id, s.actor('pumpkin').key)).toBe(false);
     await s.talk('footprints'); await s.talk('pumpkin');
-    expect(objective.ready(s.data().gameData, quests.questsByID[story.SHADOW])).toBe(true);
+    expect(objective.progress(s.data().gameData, quests.questsByID[story.SHADOW]).map(o => o.done)).toEqual([true, false]);
     expect(quests.completeQuest(cache, s.id, story.SHADOW)).toBe(false);
     expect(s.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBeUndefined();
     await s.choose('pumpkin', 'release'); await report(s, 'shadow');
     expect(quests.hasCompletedQuest(story.SHADOW, s.data())).toBe(true);
 });
 
-test('the well needs its locket returned, not merely visits to all three objective locations', async () => {
+test('the well Journal follows listening, taking and returning the ring rather than visits', async () => {
     const s = fixture(); await intro(s); await accept(s, 'well');
-    await s.talk('well'); await s.choose('well', 'listen'); await s.talk('keepsake'); await s.talk('well');
-    expect(objective.ready(s.data().gameData, quests.questsByID[story.WELL])).toBe(true);
+    const progress = () => objective.progress(s.data().gameData, quests.questsByID[story.WELL]).map(o => o.done);
+    await s.talk('well'); await s.choose('well', 'leave'); await s.talk('keepsake');
+    expect(progress()).toEqual([false, false, false]);
+    expect(s.controller.goto('main', s.actor('keepsake').kind, 'take', cache, s.id, s.actor('keepsake').key)).toBe(false);
+    const reminder = await s.talk('keepsake');
+    expect(reminder.text).toMatch(/choose to listen/);
+    await s.talk('well'); await s.choose('well', 'listen');
+    expect(progress()).toEqual([true, false, false]);
+    await s.talk('keepsake'); await s.choose('keepsake', 'leave'); await s.talk('well');
+    expect(progress()).toEqual([true, false, false]);
     expect(quests.completeQuest(cache, s.id, story.WELL)).toBe(false);
-    await s.talk('keepsake'); await s.choose('keepsake', 'take'); await s.talk('well'); await s.choose('well', 'restore'); await report(s, 'well');
+    await s.talk('keepsake'); await s.choose('keepsake', 'take');
+    expect(progress()).toEqual([true, true, false]);
+    const waiting = await s.talk('well');
+    expect(waiting.text).toMatch(/waiting for you to lower/);
+    await s.choose('well', 'leave');
+    expect(progress()).toEqual([true, true, false]);
+    await s.talk('well'); await s.choose('well', 'restore');
+    expect(progress()).toEqual([true, true, true]);
+    expect(quests.questsByID[story.WELL].inProgressText).toMatch(/Return to Whispy/);
+    const returned = await s.talk('keepsake');
+    expect(returned.text).toMatch(/returned the ring/);
+    await report(s, 'well');
     expect(quests.hasCompletedQuest(story.WELL, s.data())).toBe(true);
     expect(s.data().gameData.items[Types.Entities.ORE]).toBe(3);
+});
+
+test('finding evidence before accepting its mystery explains who can start it without saving progress', async () => {
+    const s = fixture();
+    for (const key of ['footprints', 'pumpkin', 'gravedigger-left', 'gravedigger-right', 'memorial', 'well', 'keepsake']) {
+        const clue = await s.talk(key);
+        expect(clue.text).toMatch(/Whispy/);
+        expect(clue.text).toMatch(/Town notice board/);
+    }
+    expect(s.data().gameData.choices).toEqual([]);
+    expect(dao.registerChoice).not.toHaveBeenCalled();
+    expect(dao.updateResourceBalance).not.toHaveBeenCalled();
+});
+
+test('returning to reward conversations resumes the hub without repeating a payment promise', async () => {
+    const s = fixture();
+    await s.talk('witch'); await s.choose('witch', 'accept-intro'); await s.choose('witch', 'finish-intro');
+    const hub = story.dialogues.find(d => d.key === 'halloween:witch').nodes.hub.text;
+    expect((await s.talk('witch')).text).toBe(hub);
+    expect(dao.updateResourceBalance).toHaveBeenCalledTimes(1);
+    await accept(s, 'shadow'); await freeShadow(s);
+    await s.talk('witch');
+    expect((await s.choose('witch', 'shadow-case')).text).toMatch(/You freed Adam/);
+    const reward = await s.choose('witch', 'finish-shadow');
+    expect(reward.options.some(o => o.goto === 'cauldron')).toBe(true);
+    expect((await s.talk('witch')).text).toBe(hub);
+    expect(dao.updateResourceBalance).toHaveBeenCalledTimes(2);
 });
 
 test('one player solving a haunting leaves the evidence and rewards available to another', async () => {
