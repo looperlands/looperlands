@@ -8545,7 +8545,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
-                        let projectile = new Projectile(projectileType, shooter, target);
+                        if (!shooter || !target) return;
+                        let projectile = new Projectile(projectileType, shooter, self.sprites);
                         if (projectile.shooter.id === self.player.id) {
                             self.player.currentProjectileType = projectileType;
                         }
