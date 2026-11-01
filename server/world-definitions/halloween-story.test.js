@@ -35,7 +35,7 @@ async function intro(s) {
     await s.talk('witch'); await s.choose('witch', 'accept-intro'); await s.choose('witch', 'finish-intro'); await s.choose('witch', 'hub');
 }
 async function accept(s, mystery) {
-    await s.talk('witch'); await s.choose('witch', mystery + '-case'); await s.choose('witch', 'accept-' + mystery);
+    await s.talk('witch'); await s.choose('witch', mystery + '-case'); return s.choose('witch', 'accept-' + mystery);
 }
 async function report(s, mystery) {
     await s.talk('witch'); await s.choose('witch', mystery + '-case'); return s.choose('witch', 'finish-' + mystery);
@@ -137,6 +137,40 @@ test('finding evidence before accepting its mystery explains who can start it wi
     expect(s.data().gameData.choices).toEqual([]);
     expect(dao.registerChoice).not.toHaveBeenCalled();
     expect(dao.updateResourceBalance).not.toHaveBeenCalled();
+});
+
+test('accepted and resumed clues guide players through the Forest, Graveyard and Beach', async () => {
+    const s = fixture();
+    expect((await s.talk('witch')).text).toMatch(/Forest.*Graveyard.*Beach/);
+    await intro(s);
+    const shadowRoute = await accept(s, 'shadow');
+    expect(shadowRoute.text).toMatch(/northern river bridge into the Forest/);
+    expect(shadowRoute.text).toMatch(/fork.*west.*campfire south of the tent/);
+    const pumpkinFirst = await s.talk('pumpkin');
+    expect(pumpkinFirst.text).toMatch(/east to the main road.*south toward the river bridge/);
+    const shoes = await s.talk('footprints');
+    expect(shoes.text).toMatch(/note.*campfire.*south of the tent/);
+    expect(shoes.text).toMatch(/north to the fork.*west/);
+
+    const graveRoute = await accept(s, 'grave');
+    expect(graveRoute.text).toMatch(/north through the Forest into the Graveyard/);
+    expect(graveRoute.text).toMatch(/northern wooden crypts, west of the main road/);
+    expect((await s.talk('gravedigger-left')).text).toMatch(/Town notice board last spring/);
+    expect((await s.talk('gravedigger-right')).text).toMatch(/notice board in Town.*Town has never had one/);
+    expect((await s.talk('memorial')).text).toMatch(/Town notice board going up last spring/);
+
+    const beachRoute = await accept(s, 'well');
+    expect(beachRoute.text).toMatch(/south from Town to the Beach shoreline/);
+    expect(beachRoute.text).toMatch(/basin just east.*central palm/);
+    expect((await s.talk('keepsake')).text).toMatch(/First choose to listen.*shoreline east.*central palm/);
+    await s.talk('well');
+    expect((await s.choose('well', 'listen')).text).toMatch(/sea washed my ring ashore beneath the western palm.*shoreline west/);
+    await s.talk('keepsake');
+    expect((await s.talk('well')).text).toMatch(/shoreline west.*western palm.*east.*back here/);
+    await s.talk('keepsake');
+    expect((await s.choose('keepsake', 'take')).text).toMatch(/shoreline east.*basin beside the central palm/);
+    await s.talk('well');
+    expect((await s.talk('keepsake')).text).toMatch(/shoreline east.*basin beside the central palm/);
 });
 
 test('returning to reward conversations resumes the hub without repeating a payment promise', async () => {

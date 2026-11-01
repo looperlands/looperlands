@@ -18,12 +18,14 @@ Open [Mapmaker Toolbox](http://127.0.0.1:8010/local/) and select **Playtest**. U
 | Checkpoint | `2` |
 | Time of day | `18:00` |
 | Avatar | A bundled avatar you have not used for these quests |
-| Avatar level | `1` is enough for every mystery |
+| Avatar level | `1` meets every mystery's quest requirement |
 | Access mode | **Local progress** |
 | Starting progress | Leave inventory and finished quests empty for the first story run |
 | Spawn → Set a custom spawn position | X `44`, Y `214` |
 
 Click **Start game**. Whispy is two tiles east, at **46, 214**. Each coordinate below is a map tile; click an actor from an adjacent walkable tile. If **Talk [E]** appears, press **E** to open the conversation. The red shoes, Whispering Pumpkin, purple Burial Register, green basin and blue-stoned ring are clickable clues.
+
+The investigations take you beyond Town: **Forest** for the shadow, **Graveyard** for the gravediggers and procession, and **Beach** for the well's keepsake. Ordinary regional enemies remain active. Accept any or all three mysteries before leaving Town, then return to Whispy for decisions and rewards. The shortcut spawn table below lets you revisit a clue without repeating the whole journey during testing.
 
 **The two clocks are separate.** `LOOPERLANDS_CONTENT_DATE` selects a fixed UTC calendar date for seasonal availability. **Time of day** selects the advancing in-game clock for lighting and NPC schedules; setting it to evening does not activate Halloween. Both settings affect all local players. Production ignores the local calendar override.
 
@@ -43,15 +45,15 @@ Use a fresh avatar for this check, before speaking to Whispy or accepting the re
 
 - [ ] Click Whispy at **46, 214**. Choose **I will help settle the hauntings.** → **Let us begin.** → **Show me the mysteries.**
 - [ ] Confirm **Halloween: Something Is Wrong With the Village** completes and gold increases by **10**.
-- [ ] Confirm the hub offers all three mysteries and **Browse the cauldron recipes.** No combat or higher level is required.
+- [ ] Confirm the hub offers all three mysteries and **Browse the cauldron recipes.** All three accept level 1; none has a kill objective, although travel crosses regions with existing enemies.
 - [ ] Close and reopen Whispy's dialogue. It returns to the hub without repeating the ten-gold payment or presenting that payment as a new reward.
 
 ### The Missing Shadow
 
 1. At Whispy, choose **Ordinary Adam's missing shadow.** → **I will follow the shadow.**
-2. Walk west to the red **Abandoned Shoes, 36, 211**, and inspect them. Their dialogue gives the next direction; there is no visible footprint trail.
-3. Continue farther west to the **Whispering Pumpkin, 29, 213**, north-west of the purple-roofed house. Choose **Turn the pumpkin away from the lantern.**
-4. Return to Whispy. Choose **Ordinary Adam's missing shadow.** → **I freed the shadow from the pumpkin.**
+2. Follow the main road north from Town into the **Forest**. Just north of the river bridge, inspect the red **Abandoned Shoes, 46, 181**, beside the road. Their dialogue gives the next direction; there is no visible footprint trail.
+3. Continue north to the fork and take the west branch. Inspect the **Whispering Pumpkin, 19, 164**, beside the campfire south of the tent. Choose **Turn the pumpkin away from the campfire.**
+4. Return south to Whispy in Town at **46, 214**. Choose **Ordinary Adam's missing shadow.** → **I freed the shadow from the pumpkin.**
 
 - [ ] Receive **3 pumpkins** (`m88npumpkin`) once; the quest appears in completed history.
 - [ ] Revisit the pumpkin and Whispy: the dialogue remembers your solution, grants no second reward and does not repeat the payout promise.
@@ -62,9 +64,9 @@ Use a fresh avatar for this check, before speaking to Whispy or accepting the re
 ### The Second Gravedigger
 
 1. At Whispy, choose **The two gravediggers.** → **I will compare their stories.**
-2. South of the Town notice board, speak to **Mara at 51, 225** and **Rowan at 54, 225**. Their matching ghost sheets are intentional: appearance alone does not identify the ghost.
-3. Read the purple **Burial Register at 52, 222**, between the notice board and the two figures. These three clues can be visited in any order. Mara says she put up the board last spring; Rowan denies that a board ever stood there; the register records Rowan's burial a hundred winters ago.
-4. Return to Whispy. Choose **The two gravediggers.** → **I have read the evidence. Let me decide.**
+2. Follow the main road north through the Forest into the **Graveyard**, then head west toward the two northern wooden crypts. Speak to **Mara at 23, 118** and **Rowan at 26, 118**. Their matching ghost sheets are intentional: appearance alone does not identify the ghost.
+3. Read the purple **Burial Register at 25, 115**, between the crypts and just north of the two figures. These three clues can be visited in any order. Mara says she put up the **Town** notice board last spring; Rowan denies that a board ever stood there; the register records Rowan's burial a hundred winters ago.
+4. Return south to Whispy in Town at **46, 214**. Choose **The two gravediggers.** → **I have read the evidence. Let me decide.**
 5. To test a wrong answer, choose **Mara, on the left. She looks very pale.** Then choose **Let me reconsider.**
 6. Choose the correct answer: **Rowan, on the right. The register records his burial.**
 
@@ -77,10 +79,10 @@ Use a fresh avatar for this check, before speaking to Whispy or accepting the re
 ### The Whispering Well
 
 1. At Whispy, choose **The whispering well.** → **I will listen to the well.**
-2. Visit the small green **basin beside the south-west fountain, 16, 241**. The well's voice speaks through it. Choose **Listen without giving it another name.**
-3. Walk north-east to **A Lost Ring on the southern market path, 32, 234**, recognizable by its blue stone. Choose **Wrap the ring in a cloth and take it to the well.**
-4. Return to the basin at **16, 241**. Choose **Lower the ring gently into the basin.**
-5. Return to Whispy. Choose **The whispering well.** → **I returned the ring to the spirit.**
+2. Head south from Town to the **Beach** and continue to the sea. Visit the small green **basin at 46, 297**, just east (right) of the central shoreline palm at **44, 295**. The well's voice speaks through it. Choose **Listen without giving it another name.**
+3. Follow the shoreline west (left) to **A Lost Ring at 19, 297**, below the western palm at **20, 295**. Its blue stone identifies it. Choose **Wrap the ring in a cloth and take it to the well.**
+4. Return east along the shore to the basin at **46, 297**. Choose **Lower the ring gently into the basin.**
+5. Return north to Whispy in Town at **46, 214**. Choose **The whispering well.** → **I returned the ring to the spirit.**
 
 - [ ] Receive **3 ore** once. Revisit the well to hear its peaceful response.
 - [ ] The ring is a personal story choice; it does not add or consume an inventory item. Its visible clue stays available to other players.
@@ -123,30 +125,30 @@ The automated exchange tests cover lost responses and uncertain readback. These 
 
 - [ ] Finish a haunting with avatar A. Start avatar B on the same server and solve it independently. The clue objects remain usable and B receives its own reward.
 - [ ] Partway through a quest, close the game and create a new session for the same avatar. Its accepted quest, read clues and recorded decisions should persist.
-- [ ] Follow the **Late Fisherman**, **Wandering Musician** and **Very Convincing Ghost** through the repeating stops: **41, 211 → 45, 223 → 29, 214 → repeat**. Each starts at a different stop and waits about eight seconds at a stop. Pathfinding and conversations can delay its movement.
-- [ ] Watch until a ghost returns to a previously visited stop. Talk to all three for their short stories. They should remain friendly and keep returning after your mysteries are completed.
+- [ ] In the western **Graveyard**, follow the **Late Fisherman**, **Wandering Musician** and **Very Convincing Ghost** around the repeating circuit: near **22, 123 → 29, 130 → 30, 120 → repeat**. All three start together near the first landmark. Each uses distinct stopping tiles within one tile of these coordinates and waits about eight seconds at each stop. Pathfinding and conversations can delay movement.
+- [ ] Check that **all three ghosts move**, complete the circuit and return to their own first stopping tiles. Talk to all three for their short stories. They should remain friendly and keep returning after your mysteries are completed.
 - [ ] Walk past ordinary residents, shops, the notice board and doors. Their existing services and routes should remain usable.
 
 ## Scenery, floating ghosts and sound
 
-- [ ] Look for pumpkins along the market paths and the cauldron beside Whispy at **47, 214**.
+- [ ] Look for pumpkins near the Town market, Forest clues, Graveyard investigation and Beach shoreline clues. The cauldron remains beside Whispy at **47, 214**.
 - [ ] Check the recolored tree canopies beginning at **33, 202** and **51, 208**, and the roof beginning at **33, 216**. Walk past their edges: no holes, misplaced tiles or new invisible walls should appear.
 - [ ] Observe ground mist and floating ghosts while standing still and while walking. They should drift smoothly while leaving paths, actors and dialogue readable. These floating images are scenery; the three walking procession NPCs are the ghosts you can talk to.
 - [ ] Move between scenes, use a door to another map and return. Scenery should follow its configured area without carrying the Halloween overlay or sounds onto unrelated maps.
-- [ ] In **Settings → Audio**, enable **Game audio enabled** and use the **Ambience** slider. Approach and move around the cauldron and well: bubbling/water should fade with distance and shift between stereo channels.
+- [ ] In **Settings → Audio**, enable **Game audio enabled** and use the **Ambience** slider. Approach and move around the Town cauldron at **47, 214** and Beach basin at **46, 297**: bubbling/water should fade with distance and shift between stereo channels.
 - [ ] Set **Ambience** to zero, then restore it. These sounds should mute and return immediately without requiring a new quest or session. Music and Sound effects have separate sliders.
 - [ ] Enable your operating system's reduced-motion preference, or emulate `prefers-reduced-motion: reduce` in your browser. The floating-ghost and mist drift should stop. Restore the preference afterwards; the ordinary walking NPC procession should still function.
 
-### Tour the floating-ghost scenes
+### Tour the clue locations and floating-ghost scenes
 
-All of these locations are on **main**. Keep checkpoint **2** and change the custom spawn coordinates in the Toolbox, then click **Start game** for each stop. Reuse the same avatar to preserve story progress. These spawn tiles are walkable and clear of static entities and doors; existing enemies remain active.
+All of these locations are on **main**. Keep checkpoint **2** and change the custom spawn coordinates in the Toolbox, then click **Start game** for each stop. Reuse the same avatar to preserve accepted quests and recorded choices. The Town, Forest, Graveyard and Beach entries also provide shortcuts beside the investigation actors. These spawn tiles are walkable and clear of static entities and doors; existing enemies remain active.
 
 | Scene | Custom spawn X, Y | What to compare |
 | --- | --- | --- |
-| Town | **46, 223**, or **44, 214** beside Whispy | Denser floating ghosts at three depths, plus the ground mist and market decorations |
-| Beach | **46, 283** | More widely spaced ghosts over the beach scenery |
-| Forest | **47, 167** | Ghosts remain readable among the trees without hiding routes |
-| Graveyard | **46, 124** | The densest ghost treatment; graves and enemies should still be readable |
+| Town | **44, 214**, beside Whispy | Denser floating ghosts at three depths, plus the ground mist, market decorations and cauldron |
+| Forest | **45, 181**, beside the shoes; **20, 164**, beside the pumpkin | Ghosts and pumpkins around the Forest investigation; campfire, tent and paths remain readable |
+| Graveyard | **25, 120**, just south of the gravediggers and register | The walking procession, investigation and densest floating-ghost treatment; graves and enemies should still be readable |
+| Beach | **47, 297**, beside the basin; **18, 297**, beside the ring | Shoreline clues and pumpkins, basin audio and more widely spaced floating ghosts |
 | Desert | **46, 82** | Fewer, fainter ghosts against the lighter terrain |
 | Lavaland | **57, 30** | The sparsest, faintest treatment, leaving hazards readable |
 | Party Beach | **52, 453** | Spaced ghosts over the existing beach atmosphere |

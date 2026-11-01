@@ -1,4 +1,10 @@
 global.Types = {};
+// The real message classes use this legacy helper's sloppy-mode arguments.callee.
+jest.mock('./lib/class', () => {
+    const exports = {};
+    require('vm').runInNewContext(require('fs').readFileSync(require.resolve('./lib/class'), 'utf8'), {exports});
+    return exports;
+});
 const fs = require('fs');
 const path = require('path');
 const {HalloweenScene, placements} = require('./halloween');
@@ -35,6 +41,7 @@ test.each([
     scene.tick();
     expect(world.npcs).toEqual(original);
     expect(world.npcBehavior.registerRoutine).toHaveBeenCalledTimes(3);
+    for (const actor of placements.filter(p => p.route)) expect(world.npcBehavior.registerRoutine).toHaveBeenCalledWith(expect.objectContaining({key: actor.key, area: actor.area}));
     expect(scene.packet().rendererExtensions).toHaveLength(3);
     expect(scene.packet().ambientSounds).toHaveLength(2);
     const ordinary = {id: 99, x: 10, y: 10};
@@ -88,7 +95,9 @@ test('authored actors, routes and visual substitutions match the checked-in main
                 const p = queue[i];
                 for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
                     const next = {x: p.x + dx, y: p.y + dy}, key = next.x + ',' + next.y;
-                    if (!walkable(next) || next.x < 25 || next.x >= 49 || next.y < 207 || next.y >= 227 || visited.has(key)) continue;
+                    const area = actor.area;
+                    if (!walkable(next) || occupied.has(next.y * server.width + next.x) || next.x < area.x || next.x >= area.x + area.width ||
+                        next.y < area.y || next.y >= area.y + area.height || visited.has(key)) continue;
                     visited.add(key); queue.push(next);
                 }
             }
@@ -97,13 +106,114 @@ test('authored actors, routes and visual substitutions match the checked-in main
         }
     }
     for (const tile of scenery.tiles) expect([client.data[tile.y * client.width + tile.x]].flat()).toContain(tile.from);
-    for (const decoration of scenery.decorations) expect(fs.existsSync(path.join(root, 'client', decoration.image))).toBe(true);
+    for (const decoration of scenery.decorations) {
+        expect(fs.existsSync(path.join(root, 'client', decoration.image))).toBe(true);
+        expect(walkable(decoration)).toBe(true);
+        expect(occupied.has(decoration.y * server.width + decoration.x)).toBe(false);
+    }
     const parallax = createParallax(server.scenes);
     for (const scene of parallax.scenes) {
         const {id, x, y, w, h} = scene;
         expect(client.scenes.find(candidate => candidate.id === id)).toMatchObject({x, y, w, h});
         for (const layer of scene.layers) expect(fs.existsSync(path.join(root, 'client', layer.image))).toBe(true);
     }
+});
+
+test('all three procession ghosts walk and repeat every stop without overlapping main-map occupants', () => {
+    const ServerMap = require('./map');
+    const {NpcBehavior} = require('./npcbehavior');
+    const {NpcMemory} = require('./npcmemory');
+    const map = Object.create(ServerMap.prototype);
+    map.initMap(require('../maps/world_server_main.json'));
+    map.generateCollisionGrid();
+    let now = 1000000;
+    const player = {id: 'observer', type: 'player', x: 19, y: 132, hasEnteredGame: true, isBot: () => false};
+    const world = {id: 'world_main', map, npcs: {}, entities: {observer: player}, players: {observer: player},
+        server: {cache: {get: () => ({gameData: {}})}},
+        pushToAdjacentGroups: jest.fn(), pushToGroup: jest.fn(), pushToPlayer: jest.fn(),
+        isValidPosition: (x, y) => !map.isOutOfBounds(x, y) && !map.isColliding(x, y),
+        addEntity(npc) {this.entities[npc.id] = npc;},
+        moveNpc: jest.fn((npc, x, y) => {
+            expect(Math.abs(npc.x - x) + Math.abs(npc.y - y)).toBe(1);
+            expect(world.npcBehavior.walkable({x, y})).toBe(true);
+            expect(world.npcBehavior.occupied({x, y}, npc)).toBe(false);
+            npc.x = x; npc.y = y;
+        })};
+    // Match worldserver's static spawn coordinates and blocking entity types.
+    for (const [tile, name] of Object.entries(map.staticEntities)) {
+        const kind = Types.getKindFromString(name), point = map.tileIndexToGridPosition(Number(tile));
+        const id = 'static-' + tile;
+        world.entities[id] = {id, kind, x: point.x + 1, y: point.y,
+            type: Types.isNpc(kind) ? 'npc' : Types.isMob(kind) ? 'mob' : 'item'};
+    }
+    for (const [index, chest] of map.staticChests.entries()) {
+        const id = 'chest-' + index;
+        world.entities[id] = {id, type: 'chest', x: chest.x, y: chest.y};
+    }
+    world.npcBehavior = new NpcBehavior(world, {enabled: true, npcs: []}, new NpcMemory(), () => now);
+    const scene = new HalloweenScene(world, {isAvailable: () => true,
+        createNpc: (id, kind, x, y) => ({id, kind, type: 'npc', x, y, group: 'graveyard'})});
+    expect(scene.actors.size).toBe(placements.length);
+    const routines = [...world.npcBehavior.routines.values()];
+    expect(routines).toHaveLength(3);
+    const arrivals = new Map(routines.map(routine => [routine.definition.key, []]));
+    // Tick the real controller: nextStep, stop waits and occupied paths remain active.
+    for (const end = now + 180000; now < end; now += 200) {
+        const targets = routines.map(routine => ({waypoint: routine.waypoint, target: routine.definition.route[routine.waypoint]}));
+        world.npcBehavior.tick();
+        routines.forEach((routine, index) => {
+            const {waypoint, target} = targets[index];
+            if (routine.waypoint !== waypoint && routine.npc.x === target.x && routine.npc.y === target.y) {
+                arrivals.get(routine.definition.key).push({x: target.x, y: target.y});
+            }
+        });
+        expect(new Set([...scene.actors.values()].map(npc => npc.x + ',' + npc.y)).size).toBe(placements.length);
+    }
+    for (const routine of routines) {
+        const route = routine.definition.route.map(({x, y}) => ({x, y}));
+        expect(route.at(-1)).toEqual(routine.definition.origin);
+        expect(arrivals.get(routine.definition.key).slice(0, route.length * 2)).toEqual([...route, ...route]);
+        expect(world.moveNpc.mock.calls.some(([npc]) => npc === routine.npc)).toBe(true);
+    }
+});
+
+test('the Halloween adventure spans four connected main-map regions with audio at its relocated source', () => {
+    const map = require('../maps/world_server_main.json');
+    const regions = {
+        Town: ['witch'], Forest: ['footprints', 'pumpkin'],
+        Graveyard: ['gravedigger-left', 'gravedigger-right', 'memorial', 'procession-1', 'procession-2', 'procession-3'],
+        Beach: ['well', 'keepsake']
+    };
+    const inside = (point, area) => point.x >= area.x && point.x < area.x + (area.w ?? area.width) &&
+        point.y >= area.y && point.y < area.y + (area.h ?? area.height);
+    const blocked = new Set(map.collisions), occupied = new Set(Object.keys(map.staticEntities).map(Number));
+    const doors = new Set(map.doors.map(door => door.y * map.width + door.x));
+    const start = placements.find(actor => actor.key === 'halloween:witch');
+    const queue = [start], reachable = new Set([start.y * map.width + start.x]);
+    for (let i = 0; i < queue.length; i++) {
+        const point = queue[i];
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const next = {x: point.x + dx, y: point.y + dy}, index = next.y * map.width + next.x;
+            if (next.x < 0 || next.x >= map.width || next.y < 0 || next.y >= map.height || blocked.has(index) ||
+                occupied.has(index) || doors.has(index) || reachable.has(index)) continue;
+            reachable.add(index); queue.push(next);
+        }
+    }
+    expect(new Set(placements.map(p => p.x + ',' + p.y)).size).toBe(placements.length);
+    for (const [name, keys] of Object.entries(regions)) {
+        const region = map.scenes.find(scene => scene.name === name);
+        for (const key of keys) {
+            const actor = placements.find(p => p.key === 'halloween:' + key);
+            expect(inside(actor, region)).toBe(true);
+            expect(reachable.has(actor.y * map.width + actor.x)).toBe(true);
+            // Keep relocated investigations outside authored enemy spawn areas;
+            // Whispy retains her existing place in Town's rat area.
+            if (key !== 'witch') expect(map.roamingAreas.some(area => inside(actor, area))).toBe(false);
+        }
+        expect(scenery.decorations.some(point => inside(point, region))).toBe(true);
+    }
+    const well = placements.find(actor => actor.key === 'halloween:well');
+    expect(scenery.ambientSounds.find(sound => sound.id === 'well')).toMatchObject({x: well.x, y: well.y});
 });
 
 test('seasonal NPC animation frames fit their spritesheets at every supported scale', () => {

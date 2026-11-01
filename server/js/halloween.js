@@ -42,8 +42,8 @@ class HalloweenScene {
             this.actors.set(placement.key, npc);
             if (placement.route && this.world.npcBehavior) this.world.npcBehavior.registerRoutine({
                 key: placement.key, kind: placement.kind, label: placement.label, preset: 'patrol',
-                origin: {x: placement.x, y: placement.y}, area: {x: 25, y: 207, width: 24, height: 20},
-                stepMs: 850, route: placement.route, lines: {greeting: ['Follow our lantern road. Whispy knows why the village is haunted.']}
+                origin: {x: placement.x, y: placement.y}, area: placement.area,
+                stepMs: 850, route: placement.route, lines: {greeting: ['Follow our lantern road through the graves. Whispy waits beside the Town notice board.']}
             });
         }
     }
