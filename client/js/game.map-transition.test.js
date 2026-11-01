@@ -312,7 +312,7 @@ test('a delayed projectile cleanup from the source cannot access destination coo
     game.pauseForMapTransition();
     game.resetForMapTransition(next.map, next.storage);
     game.player.setWeaponName('sword1');
-    const replacement = new modules.projectile('short', game.player);
+    const replacement = new modules.projectile('short', game.player, game.sprites);
     replacement.id = oldProjectile.id;
     game.addEntity(replacement);
     expect(() => jest.advanceTimersByTime(5001)).not.toThrow();
