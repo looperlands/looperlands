@@ -2,11 +2,13 @@ const Types = require('../../shared/js/gametypes');
 const Availability = require('./contentavailability');
 const {availability} = require('../world-definitions/halloween-season');
 const scenery = require('../world-definitions/halloween-scenery');
+const {createParallax} = require('../world-definitions/halloween-parallax');
 const {placements} = require('../world-definitions/halloween-actors');
 
 class HalloweenScene {
     constructor(world, options = {}) {
         this.world = world;
+        this.parallax = createParallax(world.map.scenes);
         this.availability = options.availability || availability;
         this.isAvailable = options.isAvailable || Availability.isAvailable;
         this.createNpc = options.createNpc || ((...args) => new (require('./npc'))(...args));
@@ -60,7 +62,7 @@ class HalloweenScene {
         if (!this.isAvailable(this.availability)) return {rendererExtensions: [], ambientSounds: []};
         return {rendererExtensions: [
             {id: 'seasonal-decorations', script: 'seasonal-decorations-worker.js', data: {decorations: scenery.decorations, tiles: scenery.tiles}},
-            ...['ground', 'foreground'].map(plane => ({id: 'halloween-' + plane, script: 'halloween-parallax-worker.js', data: scenery.parallax}))
+            ...['ground', 'foreground'].map(plane => ({id: 'halloween-' + plane, script: 'halloween-parallax-worker.js', data: this.parallax}))
         ], ambientSounds: scenery.ambientSounds};
     }
 }

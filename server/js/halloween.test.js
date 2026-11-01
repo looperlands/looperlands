@@ -4,6 +4,7 @@ const path = require('path');
 const {HalloweenScene, placements} = require('./halloween');
 const Availability = require('./contentavailability');
 const scenery = require('../world-definitions/halloween-scenery');
+const {createParallax} = require('../world-definitions/halloween-parallax');
 const story = require('../world-definitions/halloween-story');
 const Types = require('../../shared/js/gametypes');
 
@@ -97,7 +98,12 @@ test('authored actors, routes and visual substitutions match the checked-in main
     }
     for (const tile of scenery.tiles) expect([client.data[tile.y * client.width + tile.x]].flat()).toContain(tile.from);
     for (const decoration of scenery.decorations) expect(fs.existsSync(path.join(root, 'client', decoration.image))).toBe(true);
-    for (const layer of scenery.parallax.scenes[0].layers) expect(fs.existsSync(path.join(root, 'client', layer.image))).toBe(true);
+    const parallax = createParallax(server.scenes);
+    for (const scene of parallax.scenes) {
+        const {id, x, y, w, h} = scene;
+        expect(client.scenes.find(candidate => candidate.id === id)).toMatchObject({x, y, w, h});
+        for (const layer of scene.layers) expect(fs.existsSync(path.join(root, 'client', layer.image))).toBe(true);
+    }
 });
 
 test('seasonal NPC animation frames fit their spritesheets at every supported scale', () => {

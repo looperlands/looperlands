@@ -10,7 +10,7 @@ Speak to Whispy to receive ten gold and choose a mystery:
 
 Three friendly ghosts follow a repeating route between the market, southern road and western path. They remain present after players solve the mysteries. Clues and decisions are personal; inspecting an object never consumes it for somebody else. All quests require only level 1. Clue dialogue, rather than combat, resolves the hauntings. The [cauldron guide](halloween-cauldron.md) describes recipes, effects and inventory failure handling.
 
-The season adds pumpkins and a cauldron, temporarily recolors two existing tree canopies and the roof south of the market, and overlays sparse drifting ghosts and ground mist. Bubbling at the cauldron and water at the well use positional audio with distance fade, stereo pan and the existing ambient-volume setting. Reduced motion stops the parallax motion. These changes arrive in the world-scene packet; no Halloween copy of the TMX or permanent map export is needed.
+The season adds pumpkins and a cauldron, temporarily recolors two existing tree canopies and the roof south of the market, and overlays ground mist in Town. Drifting ghosts appear throughout **Town, Forest, Graveyard, Beach, Desert, Lavaland and Party Beach**, using three depths with different sizes and movement. The Graveyard is most densely haunted; Desert and Lavaland use fewer, fainter ghosts to preserve combat readability. The ghosts stay luminous at night and follow the map's scene boundaries. Bubbling at the cauldron and water at the well use positional audio with distance fade, stereo pan and the existing ambient-volume setting. Reduced motion stops the parallax motion. These changes arrive in the world-scene packet; no Halloween copy of the TMX or permanent map export is needed.
 
 ## Annual and one-off content windows
 
@@ -36,6 +36,8 @@ The one-off version does not reopen the following year. Ordinary content with no
 In-progress quests pause outside their window and disappear from the active Journal; they resume with the same progress next season. Completed quests and souvenirs remain saved. Annual availability does **not** reset completion or grant another annual reward. A separate replay/reset policy is deliberately not part of this event.
 
 ## Local playtest
+
+Use the [complete Halloween test checklist](halloween-testing.md) for the quest walkthroughs, visual tour, recipes, audio and availability checks.
 
 Start the normal Mapmaker Toolbox with `./start-local.command`. Choose `main`, checkpoint 2 and a custom spawn of **44, 214**, then start a fresh game. A game time around **18:00** shows the evening ambience while keeping the clues readable. Walk two tiles east to Whispy. Use a different bundled avatar to test a fresh quest path; local quest progress belongs to the avatar.
 
