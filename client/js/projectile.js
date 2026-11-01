@@ -5,14 +5,14 @@ define(['entity', 'transition'], function(Entity, Transition) {
     var projectileCounter = 0;
 
     var Projectile = Entity.extend({
-        init: function(projectileKind, shooter) {
+        init: function(projectileKind, shooter, sprites) {
             // if 5 seconds have passed since the last projectile was created, reset the counter
             if (new Date().getTime() - resetTime > 5000) {
                 projectileCounter = 0;
                 resetTime = new Date().getTime();
             }
 
-            let projectileId = self.sprites[shooter.weaponName].projectiles[projectileKind];
+            let projectileId = sprites[shooter.weaponName].projectiles[projectileKind];
             this._super('projectile_' + projectileCounter++, Types.getTypeFromString(projectileId));
 
             this.flySpeed = 100;
@@ -21,7 +21,7 @@ define(['entity', 'transition'], function(Entity, Transition) {
             this.sourceX = shooter.gridX;
             this.sourceY = shooter.gridY;
             this.setGridPosition(this.sourceX, this.sourceY);
-            this.setSprite(self.sprites[projectileId]);
+            this.setSprite(sprites[projectileId]);
             this.movement = new Transition();
             this.moving = false;
             this.nameless = true;
