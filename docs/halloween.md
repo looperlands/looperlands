@@ -10,25 +10,27 @@ Speak to Whispy to receive ten gold and choose a mystery:
 
 Three friendly ghosts follow a repeating route through the western Graveyard. They remain present after players solve the mysteries. Clues and decisions are personal; inspecting an object never consumes it for somebody else. All quests accept level 1, and the mysteries are resolved through dialogue choices; ordinary regional enemies remain active along the journey. Visiting a prop alone does not free the shadow or take and return the ring. The Journal tracks those choices and directs you back to Whispy in Town for the reward. You can accept all three mysteries before leaving Town. The [cauldron guide](halloween-cauldron.md) describes recipes, effects and inventory failure handling.
 
-The season adds pumpkins around Town, Forest, Graveyard and Beach, with a cauldron beside Whispy. It temporarily recolors two existing Town tree canopies and the roof south of the market, and overlays ground mist in Town. Drifting ghosts appear throughout **Town, Forest, Graveyard, Beach, Desert, Lavaland and Party Beach**, using three depths with different sizes and movement. The Graveyard is most densely haunted; Desert and Lavaland use fewer, fainter ghosts to preserve combat readability. The ghosts stay luminous at night and follow the map's scene boundaries. Bubbling at the Town cauldron and water at the Beach basin use positional audio with distance fade, stereo pan and the existing ambient-volume setting. Reduced motion stops the parallax motion. These changes arrive in the world-scene packet; no Halloween copy of the TMX or permanent map export is needed.
+The season adds pumpkins around Town, Forest, Graveyard and Beach, with a cauldron beside Whispy. It overlays ground mist in Town; the saved Halloween definition has no tile recolors or positional sound sources. Drifting ghosts appear throughout **Town, Forest, Graveyard, Beach, Desert, Lavaland and Party Beach**, using three depths with different sizes and movement. The Graveyard is most densely haunted; Desert and Lavaland use fewer, fainter ghosts to preserve combat readability. The ghosts stay luminous at night and follow the map's scene boundaries. Reduced motion stops the parallax motion. These changes arrive in the world-scene packet; no Halloween copy of the TMX or permanent map export is needed.
 
 ## Annual and one-off content windows
 
-`server/world-definitions/halloween-season.js` is the single schedule for these quests, dialogues, recipes, actors, tile appearance, parallax and audio. The server checks the window during play, including already-open dialogue and shop requests. Connected players receive the restored map when it closes; no restart at the boundary is necessary.
+Use **Map & world → Temporary content** in the Mapmaker Toolbox to edit Halloween's schedule, actors, decorations, tile appearance, parallax and positional audio. The editor shows its placements even outside the season. Save, build main and start a fresh playtest to use your edits. See [Temporary content](mapmaker-temporary-content.md).
+
+`tools/seasons/main.json` is the source for these settings. The feature's `halloween-season.js` adapter supplies the same schedule to quests, dialogues and recipes. The server checks the window during play, including already-open dialogue and shop requests. Connected players receive the restored map when it closes; no restart at the boundary is necessary. Changing a saved definition requires a build/restart.
 
 Annual example (inclusive start, exclusive end):
 
-```js
-const availability = {annual: {start: '10-15', end: '11-09'}};
+```json
+{"annual": {"start": "10-15", "end": "11-09"}}
 ```
 
 For a regular, non-recurring content window, replace that value with UTC timestamps:
 
-```js
-const availability = {
-    startsAt: '2026-10-30T18:00:00Z',
-    endsAt: '2026-11-09T00:00:00Z'
-};
+```json
+{
+    "startsAt": "2026-10-30T18:00:00Z",
+    "endsAt": "2026-11-09T00:00:00Z"
+}
 ```
 
 The one-off version does not reopen the following year. Ordinary content with no `availability` remains available. Invalid schedules are rejected; they never silently enable content. Individual authored quests can also use either form in their `availability` field. This is calendar time, separate from the accelerated in-game day/night clock.
@@ -49,4 +51,4 @@ LOOPERLANDS_CONTENT_DATE=2026-10-31T18:00:00Z ./start-local.command
 
 Use `2026-11-09T00:00:00Z` to check the restored off-season world. This optional environment value is accepted only with `NODE_ENV=development` and `LOOPERLANDS_LOCAL_PLAYTEST=1`. Production always uses the real clock. Leave it empty to use the actual date. Changing a preview date requires restarting the local service; ordinary production boundaries are detected while it runs.
 
-The artwork, actor placements and appearance overrides live in the Halloween world definition and scene. The generic availability, renderer and audio hooks have no Halloween dates or coordinates. Existing bundled sprites were copied under independent NPC/item IDs; their original meaning and behavior remain unchanged.
+The editable actor placements and appearance overrides live in the seasonal source. The Halloween world definition and scene supply the story and its runtime integration. The generic availability, renderer and audio hooks have no Halloween dates or coordinates. Existing bundled sprites were copied under independent NPC/item IDs; their original meaning and behavior remain unchanged.

@@ -294,6 +294,7 @@ function createToolboxApp(toolbox) {
     app.use('/local/api/assets', express.json({limit: '18mb'}));
     app.use('/local/api/parallax-images', express.json({limit: '6mb'}));
     app.use('/local/api/ambient-assets', express.json({limit: '2mb'}));
+    app.use('/local/api/seasons', express.json({limit: '1mb'}));
     app.use(express.json({limit: '256kb'}));
     require('../server/js/localparallaxassets').install(app, toolbox);
     require('../server/js/localtoolboxassets').install(app, toolbox.root);
@@ -309,6 +310,7 @@ function createToolboxApp(toolbox) {
     require('../server/js/localzonebuilder').install(app, toolbox);
     require('../server/js/localmappreview').install(app, toolbox);
     require('../server/js/localworldauthoring').install(app, toolbox);
+    require('../server/js/localseasonbuilder').install(app, toolbox);
     require('../server/js/localambientassets').install(app, toolbox);
     require('../server/js/localtilebuilder').install(app, toolbox);
     require('../server/js/localworldconnections').install(app, toolbox);
@@ -325,6 +327,7 @@ function createToolboxApp(toolbox) {
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
     const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-sequences', 'mapmaker-lighting', 'mapmaker-audio', 'mapmaker-encounters', 'mapmaker-fishing', 'mapmaker-zones', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
+    guides.add('mapmaker-temporary-content');
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));
@@ -370,7 +373,9 @@ function createToolboxApp(toolbox) {
     app.use('/local', express.static(path.join(toolbox.root, 'server/local-launcher')));
     app.get('/', (req, res) => res.redirect('/local/'));
     app.use((error, req, res, next) => res.status(error.status || 500).json({error: error.type === 'entity.too.large' ?
-        (req.path.startsWith('/local/api/assets') ? 'These spritesheets exceed the 18 MB request limit. Use a smaller sheet.' : 'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.') : 'The toolbox could not read the request.'}));
+        (req.path.startsWith('/local/api/assets') ? 'These spritesheets exceed the 18 MB request limit. Use a smaller sheet.' :
+            req.path.startsWith('/local/api/seasons') ? 'Temporary content exceeds the 1 MB request limit. Remove entries before saving.' :
+                'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.') : 'The toolbox could not read the request.'}));
     return app;
 }
 

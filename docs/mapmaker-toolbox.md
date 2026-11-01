@@ -23,6 +23,7 @@ Expand a group to find its tools. **Map & world** starts open; opening a tool fr
 - **Doors & portals:** find entrances and edit access rules, opening hours and player messages. See [Doors & portals](mapmaker-doors.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
 - **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
+- **Temporary content:** create seasonal events on any map; edit their schedules, actors, decorations, tile appearance, parallax and positional sounds, even outside the active dates. Link custom quests to an event's dates in Quest builder. See [Temporary content](mapmaker-temporary-content.md).
 - **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
 
 ### Gameplay
@@ -88,6 +89,7 @@ Saving updates your checkout. Local playtesting and production use the same save
 
 - `tools/quests`: custom quests and bundled quest overrides.
 - `tools/worlds`: event rules, dialogue trees, scenes and atmosphere.
+- `tools/seasons`: temporary event schedules, placements and appearance.
 - `tools/tiles`: farming overrides, generic stage sequences and action placements.
 - `tools/npcs`: NPC routines and schedules.
 - Shared entity definitions, sprite metadata and PNG artwork from the asset editors.

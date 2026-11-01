@@ -22,8 +22,12 @@
             for (const [key, label] of [['dayColor', 'Day tint'], ['nightColor', 'Night tint'], ['dawnColor', 'Dawn tint'], ['duskColor', 'Dusk tint']]) field(row, label, day, key, {type: 'color'});
             cycle.append(Object.assign(document.createElement('p'), {className: 'field-hint', textContent: 'Enable the day/night cycle above to use these settings. Dawn must end before dusk; dusk must end by midnight.'}));
         }
+        renderParallax(form, config, ui);
+    }
+    function renderParallax(form, config, ui, options = {}) {
+        const {section, grid, field, check, button, touch, refresh} = ui;
         const parallax = section(form, 'Parallax layers', 'Layer images above or below the terrain. Scroll factor 1 follows the map; lower values look deeper and higher values look closer. Sizes, drift and offsets use map pixels.');
-        check(parallax, 'Enable scene parallax', {enabled: !!config.parallax}, 'enabled', () => {
+        if (options.allowDisable !== false) check(parallax, 'Enable scene parallax', {enabled: !!config.parallax}, 'enabled', () => {
             if (config.parallax) delete config.parallax; else config.parallax = {layers: []};
             refresh();
         });
@@ -52,8 +56,8 @@
                     layer.image=result.image;touch();await loadImages();refresh();
                 }catch(error){note.textContent=error.message;upload.disabled=false;}
             };
-            field(row, 'Layer plane', layer, 'plane', {choices: [{id: 'background', name: 'Below terrain'}, {id: 'ground', name: 'On terrain'}, {id: 'entities', name: 'Among characters'}, {id: 'foreground', name: 'Above characters'}],change:refresh});
-            check(block, 'Use sprite placements', layer, 'placed', refresh);
+            field(row, 'Layer plane', layer, 'plane', {choices: [{id: 'background', name: 'Below terrain'}, {id: 'ground', name: 'On terrain'}, {id: 'entities', name: 'Among characters'}, {id: 'foreground', name: 'Above characters'}].filter(plane => !options.planes || options.planes.includes(plane.id)),change:refresh});
+            if (options.allowPlaced !== false) check(block, 'Use sprite placements', layer, 'placed', refresh);
             check(block, 'Show only inside the current scene', layer, 'activeSceneOnly');
             if (!layer.placed) check(block, 'Turn with curved movement', layer, 'rotateToPath');
             if(layer.plane==='foreground') {
@@ -147,5 +151,5 @@
             }
         }
     }
-    window.ToolboxEnvironment = {render, renderWeather, loadImages};
+    window.ToolboxEnvironment = {render, renderParallax, renderWeather, loadImages};
 })();

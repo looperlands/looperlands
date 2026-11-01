@@ -75,7 +75,7 @@ function bundledDefinitions() {
     if (!bundled) bundled = require('../world-definitions').register(new WorldDefinitions(), {local: false});
     return bundled;
 }
-function buildCatalog(root, mapId, registry = bundledDefinitions()) {
+function buildCatalog(root, mapId, registry = bundledDefinitions(), seasonalEvents = require('./seasonalcontent').readDocument(root, mapId).events) {
     mapAt(root, mapId);
     const Types = require('../../shared/js/gametypes');
     const authored = path.join(root, 'shared/js/mapmakerentities.json');
@@ -107,6 +107,10 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
         const id = kindId(npc.kind);
         if (Types.isNpc(id)) npcs.add(id);
     }
+    for (const actor of seasonalEvents.flatMap(event => event.actors)) {
+        const id = kindId(actor.kind);
+        if (Types.isNpc(id)) npcs.add(id);
+    }
     const row = id => ({id, name: names.getName(Types.getKindAsString(id))});
     const sorted = values => [...values].map(row).sort((a, b) => a.name.localeCompare(b.name));
     const items = new Set(Object.values(Types.Entities).filter(id => {
@@ -121,15 +125,22 @@ function buildCatalog(root, mapId, registry = bundledDefinitions()) {
     }
     const tileActions=Object.entries(require('./localtilebuilder').definitions(root,mapId)).map(([id,a])=>({id,name:a.name||id,
         stages:a.stages?.map(s=>({id:s.id,name:s.name}))||['prepare','plant','water','boost','harvest'].map(id=>({id,name:id}))}));
-    return {tileActions,npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name))};
+    return {tileActions,npcs: sorted(npcs), mobs: sorted(mobs), items: sorted(items), areas: [...areas.values()].sort((a, b) => a.name.localeCompare(b.name)),
+        seasonalEvents: seasonalEvents.map(({id, name, enabled, availability}) => ({id, name, enabled, availability}))};
 }
 function validateQuests(quests, catalog, availableIds = new Set(), reservedIds = new Set()) {
     if (!Array.isArray(quests) || quests.length > 50) fail('A map may have at most 50 builder quests.');
     const ids = new Set();
     const has = (type, id, label) => {if (!catalog[type].some(row => row.id === id)) fail('Choose ' + label + ' from this map\'s ' + type + ' list.');};
     for (const quest of quests) {
-        fields(quest, ['id', 'name', 'npc', 'startText', 'inProgressText', 'endText', 'ordered', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'objectives', 'availability', 'requiredChoices'], 'Quest');
+        fields(quest, ['id', 'name', 'npc', 'startText', 'inProgressText', 'endText', 'ordered', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'objectives', 'availability', 'availabilityEvent', 'requiredChoices'], 'Quest');
         try {availability.validate(quest.availability);} catch (error) {fail(error.message);}
+        if (quest.availabilityEvent !== undefined) {
+            if (quest.availability !== undefined) fail('Choose either an event schedule or an explicit quest availability window.');
+            if (typeof quest.availabilityEvent !== 'string' || !(catalog.seasonalEvents || []).some(event => event.id === quest.availabilityEvent)) {
+                fail('Choose an existing temporary event from this map for quest availability.');
+            }
+        }
         try {require('./quests/queststate').validateRequiredChoices(quest.requiredChoices);} catch (error) {fail(error.message);}
         identifier(quest.id, 'Quest ID');
         if (ids.has(quest.id) || reservedIds.has(quest.id)) fail('Quest ID ' + quest.id + ' is already used. Choose a unique ID.');
@@ -251,6 +262,34 @@ function saveQuests(root, input) {
     } finally {fs.rmSync(temporary, {force: true});}
     return readQuests(root, input.mapId);
 }
+
+// The seasonal editor checks only dependencies affected by its proposed change.
+// Other quest validation stays owned by the Quest builder and runtime loader.
+function validateSeasonalDependencies(root, mapId, events) {
+    const quests = readDocument(root, mapId).quests;
+    if (!quests.length) return;
+    const previous = require('./seasonalcontent').readDocument(root, mapId).events;
+    const oldActors = new Map(previous.flatMap(event => event.actors).map(actor => [actor.key, actor.kind]));
+    const nextActors = new Map(events.flatMap(event => event.actors).map(actor => [actor.key, actor.kind]));
+    const Types = require('../../shared/js/gametypes');
+    const removedKinds = new Set([...oldActors.values()].map(kind => Types.getKindFromString(kind)));
+    for (const npc of buildCatalog(root, mapId, bundledDefinitions(), events).npcs) removedKinds.delete(npc.id);
+    const checkKey = (quest, key) => {
+        if (key && oldActors.has(key) && nextActors.get(key) !== oldActors.get(key)) fail('Quest ' + quest.id + ' still refers to actor ' + key + '. Update the quest before removing or changing this actor.');
+    };
+    for (const quest of quests) {
+        if (quest.availabilityEvent !== undefined && !events.some(event => event.id === quest.availabilityEvent)) {
+            fail('Quest ' + quest.id + ' still uses event ' + quest.availabilityEvent + '. Unlink or remove the quest before deleting its event.');
+        }
+        const npcKinds = [quest.npc, quest.returnToNpc];
+        for (const objective of quest.objectives) {
+            if (objective.eventType === 'NPC_TALKED') {npcKinds.push(objective.target); checkKey(quest, objective.npcKey);}
+            if (objective.recipient?.npc !== undefined) {npcKinds.push(objective.recipient.npc); checkKey(quest, objective.recipient.npcKey);}
+        }
+        if (npcKinds.some(kind => removedKinds.has(kind))) fail('Quest ' + quest.id + ' still needs this seasonal NPC kind. Update its giver, target or return NPC before removing the last actor of that kind.');
+    }
+}
+
 function registerLocalQuests(root, registry, options = {}) {
     const Types = require('../../shared/js/gametypes');
     const baseline = new WorldDefinitions();
@@ -269,7 +308,7 @@ function registerLocalQuests(root, registry, options = {}) {
             const {document, catalog, existingQuests, reserved} = context(root, mapId, baseline, true);
             validateQuests(document.quests, catalog, new Set(existingQuests.map(quest => quest.id)), reserved);
             validateOverrides(document.overrides, {mapId, catalog, registry: baseline, quests: document.quests});
-            valid.push({mapId, document});
+            valid.push({mapId, document, seasonalEvents: catalog.seasonalEvents});
         } catch (error) {
             warn(mapId, error);
         }
@@ -291,9 +330,11 @@ function registerLocalQuests(root, registry, options = {}) {
         const original = baseline.quests.find(quest => quest.id === override.id);
         registry.replaceQuest(override.id, applyChanges(original, override.changes));
     }
-    for (const {mapId, document} of valid) if (document.quests.length) registry.register(mapId, {id: 'local-quest-builder', quests: document.quests.map(quest => ({
-        level: 1, medal: Types.Medals.TALK, ...quest, mapId, localBuilder: true
-    }))});
+    for (const {mapId, document, seasonalEvents} of valid) if (document.quests.length) registry.register(mapId, {id: 'local-quest-builder', quests: document.quests.map(quest => {
+        const event = seasonalEvents.find(event => event.id === quest.availabilityEvent);
+        return {level: 1, medal: Types.Medals.TALK, ...quest, mapId, localBuilder: true,
+            ...(event ? {availability: {...event.availability, enabled: event.enabled}} : {})};
+    })});
     return errors;
 }
-module.exports = {readQuests, saveQuests, validateQuests, buildCatalog, registerLocalQuests};
+module.exports = {readQuests, saveQuests, validateQuests, buildCatalog, registerLocalQuests, validateSeasonalDependencies};

@@ -2,6 +2,8 @@
 
 Start with the full story on a fresh avatar, then use a separate avatar for inventory and calendar checks. The [event guide](halloween.md) describes the content; this checklist includes the solutions.
 
+To edit the event, open **Map & world → Temporary content → main**. Its map shows the seasonal layout even outside the active dates. Save changes, build main and start a fresh session. The [Temporary content guide](mapmaker-temporary-content.md) covers schedule, actor, decoration, layer and sound editing.
+
 ## Start beside the witch
 
 From the repository root, with Docker Desktop running:
@@ -132,11 +134,11 @@ The automated exchange tests cover lost responses and uncertain readback. These 
 ## Scenery, floating ghosts and sound
 
 - [ ] Look for pumpkins near the Town market, Forest clues, Graveyard investigation and Beach shoreline clues. The cauldron remains beside Whispy at **47, 214**.
-- [ ] Check the recolored tree canopies beginning at **33, 202** and **51, 208**, and the roof beginning at **33, 216**. Walk past their edges: no holes, misplaced tiles or new invisible walls should appear.
+- [ ] Town tree canopies and roofs keep their original appearance: the saved Halloween event has no tile recolors. If you add an override in Temporary content, compare that tile inside and outside the event window.
 - [ ] Observe ground mist and floating ghosts while standing still and while walking. They should drift smoothly while leaving paths, actors and dialogue readable. These floating images are scenery; the three walking procession NPCs are the ghosts you can talk to.
 - [ ] Move between scenes, use a door to another map and return. Scenery should follow its configured area without carrying the Halloween overlay or sounds onto unrelated maps.
-- [ ] In **Settings → Audio**, enable **Game audio enabled** and use the **Ambience** slider. Approach and move around the Town cauldron at **47, 214** and Beach basin at **46, 297**: bubbling/water should fade with distance and shift between stereo channels.
-- [ ] Set **Ambience** to zero, then restore it. These sounds should mute and return immediately without requiring a new quest or session. Music and Sound effects have separate sliders.
+- [ ] The saved Halloween event has no positional sounds. To test seasonal audio, add a sound source to a test event in Temporary content, save/build, then enable **Settings → Audio → Game audio enabled** and approach it. Its volume should fade with distance and shift between stereo channels.
+- [ ] With a test sound source present, set **Ambience** to zero, then restore it. It should mute and return immediately. Music and Sound effects have separate sliders.
 - [ ] Enable your operating system's reduced-motion preference, or emulate `prefers-reduced-motion: reduce` in your browser. The floating-ghost and mist drift should stop. Restore the preference afterwards; the ordinary walking NPC procession should still function.
 
 ### Tour the clue locations and floating-ghost scenes
@@ -148,7 +150,7 @@ All of these locations are on **main**. Keep checkpoint **2** and change the cus
 | Town | **44, 214**, beside Whispy | Denser floating ghosts at three depths, plus the ground mist, market decorations and cauldron |
 | Forest | **45, 181**, beside the shoes; **20, 164**, beside the pumpkin | Ghosts and pumpkins around the Forest investigation; campfire, tent and paths remain readable |
 | Graveyard | **25, 120**, just south of the gravediggers and register | The walking procession, investigation and densest floating-ghost treatment; graves and enemies should still be readable |
-| Beach | **47, 297**, beside the basin; **18, 297**, beside the ring | Shoreline clues and pumpkins, basin audio and more widely spaced floating ghosts |
+| Beach | **47, 297**, beside the basin; **18, 297**, beside the ring | Shoreline clues and pumpkins, and more widely spaced floating ghosts |
 | Desert | **46, 82** | Fewer, fainter ghosts against the lighter terrain |
 | Lavaland | **57, 30** | The sparsest, faintest treatment, leaving hazards readable |
 | Party Beach | **52, 453** | Spaced ghosts over the existing beach atmosphere |
@@ -177,7 +179,7 @@ LOOPERLANDS_CONTENT_DATE=2026-11-09T00:00:00Z ./start-local.command
 When closed:
 
 - [ ] Seasonal actors, clue objects, pumpkins, cauldron, floating ghosts, mist and positional Halloween sounds are absent.
-- [ ] The recolored trees and roof have their original appearance and ordinary map access still works.
+- [ ] Trees and roofs retain their original appearance and ordinary map access still works.
 - [ ] No new Halloween quest can be accepted or completed. Unfinished Halloween quests disappear from the active Journal without losing progress.
 - [ ] Completed quests remain in history. Bottled Midnight, other inventory rewards and unused consumables remain owned.
 

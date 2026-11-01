@@ -33,9 +33,10 @@ function applyMap(root, mapId, map) {
 
 function validate(root = projectRoot) {
     const {WorldDefinitions} = require('./worlddefinitions');
-    const registry = require('../world-definitions').register(new WorldDefinitions(), {authored: false});
+    const registry = require('../world-definitions').register(new WorldDefinitions(), {authored: false, root});
     require('./localquestbuilder').registerLocalQuests(root, registry, {strict: true});
     for (const mapId of Tiles.maps(root)) {
+        require('./seasonalcontent').validate(root, mapId);
         const fishingMap = JSON.parse(fs.readFileSync(path.join(root, 'server/maps/world_server_' + mapId + '.json'), 'utf8'));
         require('./fishingareas').validate(fishingMap.fishingAreas || [], fishingMap);
         const checkpointIds=new Set();

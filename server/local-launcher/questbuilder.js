@@ -113,6 +113,7 @@
             else $(id).value = current[key] ?? (['level', 'requiredLevel'].includes(key) ? 1 : '');
         }
         $('quest-return').disabled = isBundled && bundled().lockedObjective;
+        renderAvailability(current, isBundled);
         $('quest-ordered').checked = current.ordered !== false;
         populate($('quest-reward'), data.catalog.items, current.reward?.item, 'No item reward');
         $('quest-reward-amount').value = current.reward?.amount || 1;
@@ -123,6 +124,19 @@
         renderProgressHelp();
         renderPreview();
         dialogueEditors.forEach(editor => editor.reset());
+    }
+    function renderAvailability(current, isBundled) {
+        const select = $('quest-availability'), events = data.catalog.seasonalEvents || [];
+        $('quest-availability-field').hidden = isBundled; select.disabled = isBundled;
+        select.replaceChildren(option('', 'Always available'),
+            ...(current.availability !== undefined ? [option('__explicit__', 'Custom UTC schedule from source')] : []),
+            ...events.map(event => option(event.id, event.name + (event.enabled ? '' : ' (disabled)'))));
+        if (current.availabilityEvent !== undefined && !events.some(event => event.id === current.availabilityEvent)) {
+            select.append(option(current.availabilityEvent, current.availabilityEvent + ' · missing event'));
+        }
+        select.value = current.availabilityEvent ?? (current.availability !== undefined ? '__explicit__' : '');
+        $('quest-availability-hint').textContent = current.availabilityEvent ? 'This quest follows the selected event’s enabled setting and UTC window. Edit its schedule in Temporary content.' :
+            current.availability !== undefined ? 'The existing custom UTC schedule is preserved. Choose an event to follow its schedule instead.' : 'No calendar restriction. Select a temporary event to limit when this quest can be accepted, progressed and completed.';
     }
     function renderProgressHelp() {
         const current = quest();
@@ -351,6 +365,13 @@
         else if (bundledId && Array.isArray(bundled().original[key])) quest()[key] = value.split('\n').filter(line => line.trim());
         else quest()[key] = numeric.has(key) ? value === '' ? undefined : Number(value) : value;
         changed();
+    });
+    $('quest-availability').addEventListener('change', () => {
+        const current = quest(), value = $('quest-availability').value;
+        if (!current || bundledId || value === '__explicit__') return;
+        delete current.availability;
+        if (value) current.availabilityEvent = value; else delete current.availabilityEvent;
+        renderAvailability(current, false); changed();
     });
     $('quest-ordered').addEventListener('change', () => {quest().ordered = $('quest-ordered').checked; changed();});
     $('quest-legacy-action').addEventListener('change', () => {

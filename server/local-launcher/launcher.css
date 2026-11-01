@@ -837,4 +837,40 @@ input[readonly] { background: #f7f8fa; color: var(--muted); }
 
 .zones-form .zones-checkbox {display:flex;align-items:center;gap:9px;}
 .zones-form .zones-checkbox input[type=checkbox] {width:17px;height:17px;min-height:17px;flex:0 0 17px;margin:0;padding:0;accent-color:var(--accent);}
+
+/* Temporary content keeps its complete draft visible outside the event window. */
+.seasons-toolbar {position:sticky;top:88px;z-index:6;background:var(--background);padding:10px 0;border-bottom:1px solid var(--line);}
+.seasons-toolbar .seasons-status {flex-basis:100%;margin:0;overflow-wrap:anywhere;}
+.seasons-workspace {display:grid;grid-template-columns:175px minmax(0,1fr);gap:24px;align-items:start;}
+.seasons-workspace[hidden],.seasons-map-column[hidden],.seasons-items[hidden] {display:none;}
+.seasons-library,.seasons-main,.seasons-map-column,.seasons-editor {min-width:0;}
+.seasons-library h3 {margin-top:0;}
+.seasons-tabs {display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.seasons-tabs button[aria-pressed=true],.seasons-events button[aria-pressed=true],.seasons-items button[aria-pressed=true] {background:var(--selected);border-color:var(--accent);color:var(--selected-text);}
+.seasons-columns {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(330px,1fr);gap:24px;align-items:start;}
+.seasons-columns.seasons-text-layout {grid-template-columns:minmax(0,1fr);}
+.seasons-map-column>.world-toolbar {flex-wrap:wrap;gap:8px;}
+.seasons-items {max-height:360px;overflow:auto;margin-top:20px;}
+.seasons-items button,.seasons-events button {text-align:left;white-space:normal;overflow-wrap:anywhere;}
+.seasons-form {display:grid;gap:16px;}
+.seasons-form .world-section {margin:0;padding-top:16px;}
+.seasons-form .field {min-width:0;}
+.seasons-form input,.seasons-form select,.seasons-form textarea {max-width:100%;}
+.seasons-form .world-section>button,.seasons-form>button {margin-top:8px;margin-right:8px;justify-self:start;}
+.seasons-form details {border:1px solid var(--line);padding:12px;margin-bottom:12px;}
+.seasons-form details summary {cursor:pointer;font-weight:600;margin-bottom:12px;overflow-wrap:anywhere;}
+.seasons-check {display:flex;align-items:center;gap:8px;font-size:14px;}
+.seasons-check input[type=checkbox] {width:18px;height:18px;min-height:18px;flex:0 0 18px;margin:0;padding:0;}
+.seasons-thumbnail {display:flex;align-items:center;gap:14px;overflow-wrap:anywhere;}
+.seasons-thumbnail canvas {width:96px;height:96px;flex:0 0 96px;image-rendering:pixelated;background:var(--panel);border:1px solid var(--line);}
+.seasons-story-link {display:block;margin:8px 0;overflow-wrap:anywhere;}
+.seasons-story-fields {display:grid;gap:24px;}
+.seasons-story-warning {padding:12px 14px;border-left:3px solid #ab7927;background:var(--panel);font-size:14px;line-height:1.6;}
+.seasons-story-warning p {margin:0 0 8px;}
+.seasons-effective-text {white-space:pre-wrap;overflow-wrap:anywhere;font-style:italic;}
+.seasons-form code {overflow-wrap:anywhere;font-size:12px;}
+.seasons-form textarea {min-height:90px;resize:vertical;}
+@media(max-width:1250px){.seasons-columns{grid-template-columns:minmax(0,1fr);}.seasons-editor{max-width:760px;}}
+@media(max-width:820px){.seasons-toolbar{position:static;}.seasons-workspace{grid-template-columns:minmax(0,1fr);}.seasons-library .world-list{display:flex;gap:8px;flex-wrap:wrap;}.seasons-library .world-list button{width:auto;}}
+@media(max-width:540px){.seasons-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;}.seasons-toolbar>.field,.seasons-toolbar>.seasons-status{grid-column:1/-1;}.seasons-tabs button{flex:1 1 40%;}.seasons-form .asset-field-grid{grid-template-columns:minmax(0,1fr);}}
 .zones-form .zones-checkbox label {margin:0;font-size:14px;font-weight:400;}

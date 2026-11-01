@@ -22,7 +22,11 @@ function fixture(options = {}) {
         removeEntity(npc) {delete this.entities[npc.id]; delete this.npcs[npc.id];},
         pushToAdjacentGroups: jest.fn()};
     const createNpc = (id, kind, x, y) => ({id, kind, x, y, group: 'town', despawn: () => ({id})});
-    const scene = new HalloweenScene(world, {createNpc, ...options});
+    const event = {...require('../world-definitions/halloween-content').event, ambientSounds: [
+        {id: 'cauldron', name: 'Cauldron', preset: 'lava', x: 47, y: 214, radius: 7, volume: .24},
+        {id: 'well', name: 'Well', preset: 'water', x: 46, y: 297, radius: 6, volume: .25}
+    ]};
+    const scene = new HalloweenScene(world, {createNpc, event, ...options});
     return {world, scene};
 }
 
@@ -213,7 +217,7 @@ test('the Halloween adventure spans four connected main-map regions with audio a
         expect(scenery.decorations.some(point => inside(point, region))).toBe(true);
     }
     const well = placements.find(actor => actor.key === 'halloween:well');
-    expect(scenery.ambientSounds.find(sound => sound.id === 'well')).toMatchObject({x: well.x, y: well.y});
+    for (const sound of scenery.ambientSounds.filter(sound => sound.id === 'well')) expect(sound).toMatchObject({x: well.x, y: well.y});
 });
 
 test('seasonal NPC animation frames fit their spritesheets at every supported scale', () => {

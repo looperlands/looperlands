@@ -19,7 +19,7 @@ function fingerprint(root, mapId) {
     for (const relative of ['server/config.json', 'tools/maps/tmx/' + mapId + '.tmx', 'client/maps/world_client_' + mapId + '.json',
         'shared/js/mapmakerentities.json', 'shared/js/gametypes.js', 'client/js/audio.js', 'client/img/1', 'client/audio/music', 'client/audio/sounds', 'client/audio/ambient',
         'client/img/1/tilesheet_' + (['oadungeon', 'oaoverworld'].includes(mapId) ? 'oa' : mapId) + '.png']) add(relative);
-    for (const relative of ['server/maps', 'tools/quests', 'tools/npcs', 'tools/worlds', 'tools/tiles', 'tools/interactions', 'client/sprites', 'client/tileActions']) add(relative, true);
+    for (const relative of ['server/maps', 'tools/quests', 'tools/npcs', 'tools/worlds', 'tools/seasons', 'tools/tiles', 'tools/interactions', 'client/sprites', 'client/tileActions']) add(relative, true);
     return hash.digest('hex');
 }
 
@@ -47,6 +47,7 @@ function readers(root, mapId) {
         ['fishing', 'Fishing areas and catches', () => require('./localfishingbuilder').readFishing(root, mapId)],
         ['npcs', 'NPC routines', () => require('./localnpcbuilder').readBehavior(root, mapId)],
         ['quests', 'Quests and progression', () => require('./localquestbuilder').readQuests(root, mapId)],
+        ['seasons', 'Temporary content and schedules', () => require('./localseasonbuilder').readTool(root, mapId)],
         ['tile-authoring', 'Interactions and tile actions', () => require('./localtilebuilder').readTool(root, mapId)],
         ['world-authoring', 'Events, dialogue, scenes and sequences', async () => {
             const catalog = await world.catalog(root, mapId), tools = {};

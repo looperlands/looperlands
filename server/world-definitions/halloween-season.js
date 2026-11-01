@@ -1,5 +1,3 @@
-// One calendar owns access to the stories, cauldron and temporary map dressing.
-// End is exclusive: Halloween remains available throughout November 8 (UTC).
-const availability = {annual: {start: '10-15', end: '11-09'}};
-
+// The editable event owns the calendar for its stories, cauldron and scenery.
+const {availability} = require('./halloween-content');
 module.exports = {availability};
