@@ -74,3 +74,15 @@ test('readiness checks start all active loads and isolate failures', () => {
     expect(registry.ready({first:{},second:{}},{})).toBe(true);
     expect(log).toHaveBeenCalledTimes(1);log.mockRestore();
 });
+
+test('temporary tile appearances disappear with their scene and isolate broken extensions', () => {
+    const registry = createRegistry(), tile = {x: 38, y: 206, from: 11, to: 92};
+    registry.register('season', {layer: 'entities', entries: () => [], tileAppearance: state => state.tiles});
+    registry.register('broken', {layer: 'ground', draw() {}, tileAppearance() {throw new Error('invalid appearance');}});
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    expect(registry.tileAppearance({season: {tiles: [tile]}, broken: {}})).toEqual([tile]);
+    expect(registry.tileAppearance({season: null})).toEqual([]);
+    expect(registry.tileAppearance({})).toEqual([]);
+    expect(log).toHaveBeenCalledTimes(1); log.mockRestore();
+    expect(registry.tileAppearance({season: {tiles: Array(600).fill(tile)}})).toHaveLength(512);
+});

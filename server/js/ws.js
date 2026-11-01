@@ -207,6 +207,7 @@ WS.socketIOServer = Server.extend({
 
         require('./fishingareas').installDefinitions(path.resolve(__dirname, '../..'), Lakes);
         this.cache = cache;
+        this.inventoryExchanges = new (require('./inventoryexchanges'))(dao, cache);
         this.activity = new ActivityTracker(platformClient);
         this.fieldGuide = new FieldGuide(cache, () => this.worldsMap || {}, platformClient);
         const closeFieldGuide = () => this.fieldGuide.close().catch(error => console.error('[field-guide]', error.message));
@@ -256,6 +257,8 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        require('./worlddefinitions').definitions.installHttp(app, {cache, inventoryExchanges: this.inventoryExchanges,
+            worlds: () => self.worldsMap, fieldGuide: this.fieldGuide});
         if (updates?.clients) {
             this.clientReloads = new (require('./clientreloadcontroller').ClientReloadController)(this, () => dao.flushPendingWrites());
             this.clientReloads.attach(app, updates.clients);
@@ -344,6 +347,7 @@ WS.socketIOServer = Server.extend({
             }
             ;
 
+            if (this.inventoryExchanges?.isPending(body.nftId)) return res.status(503).json({status: false, error: 'An inventory exchange is finishing. Please retry shortly.'});
             await platformClient.prepareSession?.(body);
 
             let nftId = body.nftId.replace("0x", "NFT_");
@@ -357,6 +361,9 @@ WS.socketIOServer = Server.extend({
                     return res.status(503).json({status: false, error: 'Game data unavailable. Please try again.', user: null});
                 }
             } else {
+                // Keep the reserved session until its exchange has settled. A
+                // new session must not reload the unreserved pre-trade balance.
+                if (this.inventoryExchanges?.isPending(body.nftId)) return res.status(503).json({status: false, error: 'An inventory exchange is finishing. Please retry shortly.'});
                 try {this.clientReloads?.revokeWallet(body.walletId);}
                 catch (error) {return res.status(503).json({status: false, error: 'Session recovery is unavailable'});}
                 let cacheKeys = cache.keys();
@@ -713,6 +720,7 @@ WS.socketIOServer = Server.extend({
                     }
                 });
                 _.each(quests?.questsByID, function (quest) {
+                    if (!require('./contentavailability').isAvailable(quest.availability)) return;
                     if (_.findIndex(questStatus.COMPLETED, {questKey: quest.id}) !== -1) {
                         return;
                     }
@@ -760,7 +768,7 @@ WS.socketIOServer = Server.extend({
                 const progress = require('./quests/objectives').progress(sessionData.gameData, definition);
                 entry.objectives = progress.map(o => ({id: o.id, label: o.label || o.id, count: o.count, amount: o.amount || 1, done: o.done}));
                 entry.amount = progress.length; entry.progressCount = progress.filter(o => o.done).length;
-                entry.desc = progress.find(o => !o.done)?.label || definition.endText || definition.startText;
+                entry.desc = progress.find(o => !o.done)?.label || (entry.status === 'COMPLETED' ? definition.endText : definition.inProgressText) || definition.startText;
             }
             res.status(200).json(availableQuests);
         });
@@ -1237,7 +1245,7 @@ WS.socketIOServer = Server.extend({
 
         app.get("/session/:sessionId/shop/:shopId/buy/:itemId", async (req, res) => {
             const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
+            let sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
@@ -1252,14 +1260,19 @@ WS.socketIOServer = Server.extend({
                 res.status(400).json({status: false, error: 'Quantity must be a whole number from 1 to 99.'});
                 return;
             }
-            const player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+            let player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
             if (!player) {
                 res.status(404).json({status: false, error: 'Player is no longer connected.'});
                 return;
             }
-            const gameData = sessionData.gameData;
             const nftId = sessionData.nftId;
             const shopInventory = await dao.getShopInventory(req.params.shopId);
+            // Catalog lookup can yield while another action reserves or spends
+            // inventory. NodeCache returns clones, so use current balances.
+            sessionData = cache.get(sessionId);
+            player = sessionData && self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+            if (!player || sessionData.nftId !== nftId) return res.status(404).json({status: false, error: 'Player is no longer connected.'});
+            const gameData = sessionData.gameData;
             const item = shopInventory.find(item => String(item.id) === req.params.itemId);
             if (!item) {
                 res.status(404).json({status: false, error: 'Shop item not found.'});

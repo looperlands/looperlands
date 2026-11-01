@@ -91,6 +91,33 @@ test('custom quest dialogue saves supported game styling and counters while labe
     }
 });
 
+test('custom quests preserve a validated annual availability window when saved and reloaded', () => {
+    const quest = {...fixture(), availability: {annual: {start: '10-15', end: '11-09'}}};
+    const saved = saveQuests(root, {mapId: 'one', revision: readQuests(root, 'one').revision, quests: [quest]});
+    expect(saved.quests[0].availability).toEqual(quest.availability);
+    expect(readQuests(root, 'one').quests[0].availability).toEqual(quest.availability);
+    expect(() => validateQuests([{...quest, availability: {annual: {start: '10-15', end: '11-31'}}}], saved.catalog)).toThrow('MM-DD');
+});
+
+test('scripted completion choices are preserved and reject ambiguous or unsafe IDs', () => {
+    const quest = {...fixture(), requiredChoices: ['mystery:evidence', 'mystery:solution']};
+    const saved = saveQuests(root, {mapId: 'one', revision: readQuests(root, 'one').revision, quests: [quest]});
+    expect(saved.quests[0].requiredChoices).toEqual(quest.requiredChoices);
+    for (const requiredChoices of [null, 'solution', ['duplicate', 'duplicate'], [''], ['bad choice'], ['a'.repeat(101)], Array.from({length: 21}, (_, i) => 'choice-' + i)]) {
+        expect(() => validateQuests([{...quest, requiredChoices}], saved.catalog)).toThrow('choice IDs');
+    }
+});
+
+test('objective-level dialogue choices survive saves and use the same choice ID validation', () => {
+    const quest = fixture(); quest.objectives[0].requiredChoices = ['mystery:accepted', 'mystery:solved'];
+    const saved = saveQuests(root, {mapId: 'one', revision: readQuests(root, 'one').revision, quests: [quest]});
+    expect(saved.quests[0].objectives[0].requiredChoices).toEqual(quest.objectives[0].requiredChoices);
+    expect(readQuests(root, 'one').quests[0].objectives[0].requiredChoices).toEqual(quest.objectives[0].requiredChoices);
+    for (const requiredChoices of [null, 'solution', ['duplicate', 'duplicate'], ['bad choice']]) {
+        expect(() => validateQuests([{...quest, objectives: [{...quest.objectives[0], requiredChoices}]}], saved.catalog)).toThrow('choice IDs');
+    }
+});
+
 test('delivery requires an ordered final step, actual item kind and exactly one valid recipient', () => {
     const catalog = readQuests(root, 'one').catalog;
     const delivery = {id: 'deliver', eventType: 'DELIVER_ITEM', target: Types.Entities.GOLD, amount: 2, recipient: {npc: Types.Entities.GUARD}};

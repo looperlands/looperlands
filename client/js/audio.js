@@ -130,7 +130,8 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
         updateAmbience: function () {
             const game = this.game, player = game.player, map = game.map;
             if (this.ambientMap !== map) {this.soundscape.clear(); this.ambientMap = map;}
-            this.soundscape.update(map?.ambientSounds || [], this.listenerPosition(),
+            const sceneSounds = game.worldAmbience?.config?.ambientSounds || [];
+            this.soundscape.update([...(map?.ambientSounds || []), ...sceneSounds], this.listenerPosition(),
                 !!(this.enabled && game.started && !game.isStopped && !game.disconnected && !game.minigameLoaded &&
                     map?.isLoaded && player && !player.isDead));
         },

@@ -34,6 +34,11 @@ class WorldDefinitions {
         return {...sources[0], npcs: sources.flatMap(source => source.npcs || []),
             conversations: sources.flatMap(source => source.conversations || [])};
     }
+    installHttp(app, services) {
+        for (const definitions of this.maps.values()) {
+            for (const definition of definitions) definition.installHttp?.(app, services);
+        }
+    }
     create(world) {
         const entries = (this.maps.get(world.id.replace(/^world_/, '')) || []).map(entry =>
             ({id: entry.id, scene: entry.createScene?.(world)})).filter(entry => entry.scene);
@@ -61,12 +66,15 @@ class WorldScenes {
     event(player, type, data) {for (const entry of this.entries) entry.scene.event?.(player, type, data);}
     forget(player) {this.snapshots.delete(player); for (const entry of this.entries) entry.scene.forget?.(player);}
     packet(player) {
-        const packet = {rendererExtensions: [], musicAreas: []};
+        const packet = {rendererExtensions: [], musicAreas: [], ambientSounds: []};
         for (const entry of this.entries) {
             const next = entry.scene.packet?.(player);
             if (!next) continue;
-            const {rendererExtensions = [], musicAreas = [], ...data} = next;
+            const {rendererExtensions = [], musicAreas = [], ambientSounds = [], ...data} = next;
             Object.assign(packet, data); packet.rendererExtensions.push(...rendererExtensions); packet.musicAreas.push(...musicAreas);
+            // Sources are owned by their scene. Their IDs cannot replace another
+            // scene's voice or an authored map source with the same local name.
+            packet.ambientSounds.push(...ambientSounds.map(source => ({...source, id: 'scene:' + entry.id + ':' + source.id})));
         }
         return packet;
     }

@@ -463,6 +463,32 @@ test('a removed NPC response cannot open dialogue on another actor with the same
     expect(game.createBubble).not.toHaveBeenCalled();
 });
 
+test('a current server dialogue can open a shop without rendering a command as text', async () => {
+    const state = setup(), {game, app, http} = state, npc = npcFixture(state);
+    app.openShop = jest.fn();
+    http.get.mockResolvedValue({data: {shop: {id: 'halloween-cauldron', name: 'The Unreliable Cauldron'}}});
+    game.checkForQuests(npc); await flush();
+    expect(app.openShop).toHaveBeenCalledWith('halloween-cauldron', 'The Unreliable Cauldron');
+    expect(game.createBubble).not.toHaveBeenCalled();
+});
+
+test('a late seasonal shop response cannot reopen a popup after map travel', async () => {
+    const state = setup(), {game, app, http} = state, npc = npcFixture(state), response = deferred();
+    app.openShop = jest.fn(); http.get.mockReturnValue(response.promise);
+    game.checkForQuests(npc); leaveSource(state);
+    response.resolve({data: {shop: {id: 'halloween-cauldron', name: 'The Unreliable Cauldron'}}});
+    await flush();
+    expect(app.openShop).not.toHaveBeenCalled();
+});
+
+test.each([{id: '../bad', name: 'Cauldron'}, {id: 'cauldron', name: '<b>Cauldron</b>'}])('malformed dialogue shop references do not open a popup: %j', async shop => {
+    const state = setup(), {game, app, http} = state, npc = npcFixture(state);
+    app.openShop = jest.fn(); http.get.mockResolvedValue({data: {shop, text: 'Hello.'}});
+    game.checkForQuests(npc); await flush();
+    expect(app.openShop).not.toHaveBeenCalled();
+    expect(game.createBubble).toHaveBeenCalledTimes(1);
+});
+
 test('the fishing bite timer cannot restart fishing when map travel has begun', async () => {
     const state = setup(), {game, http} = state;
     game.castFloat = jest.fn();

@@ -1,6 +1,8 @@
 // Declarative objective evaluation inside the existing quest/event consumer.
 // Durable facts use the existing choice store; item ownership uses normal balances.
 const dao = require('../dao');
+const availability = require('../contentavailability');
+const questState = require('./queststate');
 const types = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM', 'TILE_ACTION'];
 const flag = (q, o, count) => 'quest-progress:' + encodeURIComponent(q.id) + ':' + encodeURIComponent(o.id) + ':' + count;
 const amount = o => o.amount ?? 1;
@@ -9,6 +11,7 @@ function validate(quest) {
     const ids = new Set();
     if (!Array.isArray(quest.objectives) || !quest.objectives.length) throw new Error('Quest objectives must be nonempty');
     for (const [index, o] of quest.objectives.entries()) {
+        questState.validateRequiredChoices(o.requiredChoices);
         if (!o.id || ids.has(o.id) || !types.includes(o.eventType) || !Number.isInteger(amount(o)) || amount(o) < 1 || o.target === undefined ||
             (o.area && !['x', 'y', 'width', 'height'].every(key => Number.isInteger(o.area[key]))) ||
             (o.area && (o.area.width < 1 || o.area.height < 1)) ||
@@ -17,13 +20,16 @@ function validate(quest) {
         ids.add(o.id);
     }
 }
-function count(data, quest, objective) {
+function recordedCount(data, quest, objective) {
     const choices = new Set(data.choices || []);
     for (let n = amount(objective); n > 0; n--) if (choices.has(flag(quest, objective, n))) return n;
     return 0;
 }
 function progress(data, quest) {
-    return quest.objectives.map(o => ({...o, count: count(data, quest, o), done: count(data, quest, o) >= amount(o)}));
+    return quest.objectives.map(o => {
+        const count = questState.hasChoices(data, o.requiredChoices) ? recordedCount(data, quest, o) : 0;
+        return {...o, count, done: count >= amount(o)};
+    });
 }
 function ready(data, quest) {
     return progress(data, quest).every(o => o.done && (o.eventType !== 'DELIVER_ITEM' || (data.items?.[o.target] || 0) >= amount(o)));
@@ -48,6 +54,7 @@ function matches(o, event) {
     }
 }
 async function consume(quest, event) {
+    if (!availability.isAvailable(quest.availability)) return false;
     const objectives = progress(event.playerCache.gameData, quest);
     for (const o of objectives) {
         if (o.done) continue;
@@ -55,7 +62,16 @@ async function consume(quest, event) {
         if (matches(o, event)) {
             const increment = o.eventType === 'TILE_ACTION' ? (o.countBy === 'quantity' ? event.data.activity.quantity ?? 1 : 1) : o.eventType === 'LOOT_ITEM' ? (event.data.amount || 1) : o.eventType === 'DELIVER_ITEM' ? amount(o) : 1;
             if (increment <= 0) continue;
-            const next = Math.min(amount(o), o.count + increment), key = flag(quest, o, next);
+            // A visit can precede the dialogue choice made during that visit.
+            // Keep its durable count without rewriting a satisfied event target
+            // while the choice blocks visible and ordered progression.
+            const recorded = recordedCount(event.playerCache.gameData, quest, o);
+            const next = Math.min(amount(o), recorded + increment);
+            if (next === recorded) {
+                if (quest.ordered !== false) break;
+                continue;
+            }
+            const key = flag(quest, o, next);
             const response = await dao.registerChoice(event.playerCache.nftId, key);
             if (response === undefined || response === false || response?.status === false) throw new Error('Could not save quest progress. Please try again.');
             const sessionId = event.data.player?.sessionId;

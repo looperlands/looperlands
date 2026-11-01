@@ -263,6 +263,11 @@ function applyColorShift(imageData, colorShift) {
 
 function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null, cutouts = []) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
+        const appearance = frameTileAppearance.get((cellid % gridW) + ',' + Math.floor(cellid / gridW) + ',' + (tileid + 1));
+        if (appearance) {
+            if (appearance.to != null && appearance.to <= setW * setH) tileid = appearance.to - 1;
+            if (appearance.colorShift) colorShift = appearance.colorShift;
+        }
         const tileX = getX(tileid + 1, setW, slideOffsetX) * tilesize;
         const tileY = getY(tileid + 1, setW, setH, slideOffsetY) * tilesize;
         const destX = getX(cellid + 1, gridW) * tilesize;
@@ -279,6 +284,7 @@ let renderScale = 1;
 let composingWorld = false;
 let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
+let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
 let framePending = false, nextFrameTime;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
@@ -318,7 +324,7 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
     const ctx = contexes[id], canvas = canvases[id];
     const key = revision === undefined ? JSON.stringify(tiles) : revision;
     let cached = terrainCache.get(id);
-    if (!cached || cached.key !== key || cached.tileset !== tileset || cached.cutoutKey !== frameCutoutKey ||
+    if (!cached || cached.key !== key || cached.tileset !== tileset || cached.cutoutKey !== frameCutoutKey || cached.appearanceKey !== frameTileAppearanceKey ||
         cached.width !== canvas.width || cached.height !== canvas.height ||
         cameraX < cached.x || cameraY < cached.y ||
         cameraX + canvas.width > cached.x + cached.canvas.width ||
@@ -338,7 +344,7 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
             }
         }
         if (cached) cached.canvas.width = cached.canvas.height = 0;
-        cached = {key, tileset, cutoutKey: frameCutoutKey, x, y, width: canvas.width, height: canvas.height, canvas: buffer, lights: tileSources};
+        cached = {key, tileset, cutoutKey: frameCutoutKey, appearanceKey: frameTileAppearanceKey, x, y, width: canvas.width, height: canvas.height, canvas: buffer, lights: tileSources};
         terrainCache.set(id, cached);
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -448,6 +454,12 @@ onmessage = (e) => {
         }
         composingWorld = true;
         frameExtensions = e.data.extensions;
+        const tileAppearance = rendererExtensions?.tileAppearance?.(frameExtensions) || [];
+        const appearanceKey = JSON.stringify(tileAppearance);
+        if (appearanceKey !== frameTileAppearanceKey) {
+            frameTileAppearance = new Map(tileAppearance.map(tile => [tile.x + ',' + tile.y + ',' + tile.from, tile]));
+            frameTileAppearanceKey = appearanceKey;
+        }
         frameCutouts = rendererExtensions?.terrainCutouts?.(frameExtensions, {...view,
             viewportWidth: canvases.background.width, viewportHeight: canvases.background.height}) || [];
         frameCutoutKey = JSON.stringify(frameCutouts);

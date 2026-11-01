@@ -169,6 +169,19 @@ Asset type: transparent top-down dragon cast-shadow game sprite.
 Edit target: the referenced dragon-shadow PNG. Change only its edge softness: give the silhouette a subtle but clearly visible Gaussian-like penumbra about 12 pixels wide at this 1280 pixel source resolution, feathering out to transparent. It must feel like a cast shadow of a dragon high overhead, not a sharp sticker. Keep the exact existing dragon silhouette, placement, proportions, wing and tail shape, monochrome near-black color, and genuine alpha-transparent background. No new elements, no ground, no backdrop, no checkerboard, text or watermark. Preserve transparent margins. This remains a shadow-only sprite.
 ```
 
+### halloween-drifting-ghost.png
+
+Generated with the built-in imagegen tool, transparent alpha preserved. Used only by the seasonal Halloween parallax layers.
+
+```text
+Use case: stylized-concept
+Asset type: transparent pixel-art parallax sprite for the top-down 16-pixel-tile RPG LooperLands.
+Primary request: One small friendly but eerie drifting Halloween ghost, with a long soft curling tail of spectral mist, floating sideways. Two simple dark eyes, asymmetrical tattered sheet silhouette, pale ivory and desaturated moonlit lavender. It will be displayed very small at 48 by 48 game pixels as a sparse atmospheric layer above an existing medieval village.
+Style/medium: authentic restrained 16-bit pixel art with deliberate blocky pixel clusters, limited palette, crisp silhouette, no vector look, no glossy 3D, no painterly texture.
+Composition/framing: square canvas, exactly one isolated ghost fully visible and centered, large transparent margin on all sides. Make subject occupy roughly half the canvas. Ghost body and wispy tail are the only elements.
+Constraints: actual transparent alpha background; no ground, backdrop, border, text, logo, checkerboard, fog covering the canvas, or other characters. Keep visible details simple enough to read after tiny in-game scaling.
+```
+
 ### bird-shadow.png
 
 ```text

@@ -43,6 +43,8 @@ Choose targets from the map's exported NPCs, mobs and areas, or the game's item 
 
 With **Complete objectives in order** checked, quests progress from top to bottom. **Move up** and **Move down** change that order. An event before its objective becomes active does not count toward a later step. Clear the checkbox for objectives that can be completed independently; delivery objectives require ordering.
 
+An objective in the quest JSON can also include `"requiredChoices": ["mystery:heard-the-spirit"]`. Its progress stays at zero until the player's dialogue records every listed choice **and** the objective's normal event has happened. This is useful when clicking an NPC opens a conversation but a particular answer actually completes the step. In an ordered quest, later objectives remain blocked until both conditions are met. Earlier saved event counts are retained and become visible when the choices are recorded; a repeated click does not rewrite an already satisfied event count. The builder preserves this optional field when editing other objective settings. Choice IDs follow the same rules as quest-level `requiredChoices` below.
+
 An optional **Return NPC** adds a final reporting interaction after the objectives. Choose **Complete without a final report** for automatic completion after the last objective. For a delivery quest with a reporting step, the engine checks and removes the items when the player completes that final report. Keep the required items until completion.
 
 Leave **Placed NPC key (optional)** and **Recipient NPC key (optional)** blank to accept any NPC of the selected kind on this map. Use a known behavior key to target a specific actor. Static `placed:<entityId>` keys can change after map edits.
@@ -56,6 +58,28 @@ Keep IDs stable when fixing wording or adjusting an existing quest. IDs connect 
 The quest level controls the existing quest XP reward. Required player level controls who can accept the quest; use 1 to allow every level. An optional prerequisite requires completion of that quest first. An item reward adds the chosen item quantity when the quest completes.
 
 Quest names and objective labels use plain text. Dialogue supports the style spans described below; unsupported tags, attributes and template expressions are rejected.
+
+## Limited availability
+
+Custom quest JSON can optionally include an `availability` window. The builder preserves this field when editing other quest settings. For a recurring season, use UTC month/day boundaries:
+
+```json
+"availability": {"annual": {"start": "10-15", "end": "11-09"}}
+```
+
+This makes the quest available every year from October 15 through November 8. The start is inclusive and the end exclusive. Windows can cross New Year. For a single event, use UTC timestamps instead:
+
+```json
+"availability": {"startsAt": "2026-10-15T00:00:00Z", "endsAt": "2026-11-09T00:00:00Z"}
+```
+
+The server checks the window when accepting, advancing and completing a quest. Outside it, quest indicators and active Journal entries disappear; saved progress and completed history remain. Recurring availability does not reset rewards or completion: unfinished quests resume next season, and completed quests stay completed. Ordinary quests without a window keep their existing behavior.
+
+For a mystery whose completion also depends on an authored dialogue decision, add `"requiredChoices": ["mystery:correct-solution"]` to its quest JSON. The existing dialogue `record_choice` action records that decision for the player. Completion checks both the normal objectives and every required choice, including completion triggered by scripts. The builder preserves this list; choice IDs must be unique, contain letters, numbers, colons, underscores or hyphens, and have at most 100 characters. A quest may require at most 20 choices.
+
+Seasonal dialogue definitions can use the same `availability` field. Closing a seasonal dialogue restores an ordinary dialogue for the same NPC when one exists. The calendar is independent of the game's accelerated day/night clock.
+
+For local calendar previews, set `LOOPERLANDS_CONTENT_DATE=2026-10-31T12:00:00Z` in the game server environment. This override only applies with `NODE_ENV=development` and `LOOPERLANDS_LOCAL_PLAYTEST=1`; production always uses actual UTC time. It affects all local players and seasonal content, so restart the local server after changing it. The selected date stays fixed until the override is removed or changed.
 
 ## Style dialogue
 

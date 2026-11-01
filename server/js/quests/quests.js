@@ -5,6 +5,7 @@ const Formulas = require('../formulas.js');
 const {definitions} = require('../worlddefinitions');
 const _ = require('underscore');
 const objectives = require('./objectives');
+const availability = require('../contentavailability');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 const {PlayerEventBroker} = require("./playereventbroker");
 
@@ -42,7 +43,7 @@ function onMap(quest, sessionData) {
 
 function handleNPCQuests(source, cache, sessionId, npcId) {
     const sessionData = cache.get(sessionId);
-    const available = source.filter(quest => !quest.dialogueOnly && onMap(quest, sessionData));
+    const available = source.filter(quest => !quest.dialogueOnly && onMap(quest, sessionData) && availability.isAvailable(quest.availability));
     const npcQuests = available.filter(quest => quest.npc === npcId);
     const broker = PlayerEventBroker.playerEventBrokers[sessionId];
 
@@ -70,9 +71,10 @@ exports.completeQuest = function (cache, sessionId, questID) {
     }
 
     let sessionData = cache.get(sessionId);
-    if (!questsByID[questID] || !onMap(questsByID[questID], sessionData)) return false;
+    if (!questsByID[questID] || !onMap(questsByID[questID], sessionData) || !availability.isAvailable(questsByID[questID].availability)) return false;
+    if (!questState.hasChoices(sessionData.gameData, questsByID[questID].requiredChoices)) return false;
     if (questsByID[questID]?.objectives && !objectives.ready(sessionData.gameData, questsByID[questID])) return false;
-    completeQuest(questID, sessionData);
+    if (!completeQuest(questID, sessionData)) return false;
     cache.set(sessionId, sessionData);
 
     let quest = questsByID[questID];
@@ -103,8 +105,7 @@ function handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId
                 quest.amount = progress.length; quest.done = progress.filter(o => o.done).length; quest.remaining = quest.amount - quest.done;
             }
             const isCompleted = quest.objectives ? objectives.ready(sessionData.gameData, quest) : eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
-            if (isCompleted && (!quest.returnToNpc || quest.returnToNpc === quest.npc)) {
-                completeQuest(questID, sessionData);
+            if (isCompleted && (!quest.returnToNpc || quest.returnToNpc === quest.npc) && completeQuest(questID, sessionData)) {
                 broker.player.handleCompletedQuests([quest]);
                 cache.set(sessionId, sessionData);
                 return { text: quest.endText };
@@ -151,8 +152,7 @@ function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, b
                 quest.amount = progress.length; quest.done = progress.filter(o => o.done).length; quest.remaining = quest.amount - quest.done;
             }
             const isCompleted = quest.objectives ? objectives.ready(sessionData.gameData, quest) : eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
-                if (isCompleted) {
-                    completeQuest(questID, sessionData);
+                if (isCompleted && completeQuest(questID, sessionData)) {
                     broker.player.handleCompletedQuests([quest]);
                     cache.set(sessionId, sessionData);
                     return { text: quest.endText };
@@ -166,7 +166,7 @@ function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, b
 function handoutQuest(questID, sessionData) {
     let newQuest = questsByID[questID];
 
-    if (_.isEmpty(newQuest) || !onMap(newQuest, sessionData)) {
+    if (_.isEmpty(newQuest) || !onMap(newQuest, sessionData) || !availability.isAvailable(newQuest.availability)) {
         return "";
     }
 
@@ -216,17 +216,18 @@ function startQuest(sessionData, questID) {
 
 function completeQuest(questID, sessionData) {
     if (_.isEmpty(sessionData?.gameData?.quests)) {
-        return;
+        return false;
     }
 
     if (!avatarHasQuest(questID, sessionData.gameData.quests ?? {})) {
-        return;
+        return false;
     }
 
     const definition = questsByID[questID];
-    if (!onMap(definition, sessionData)) return;
-    if (definition.objectives && !objectives.ready(sessionData.gameData, definition)) return;
-    eventConsumer.completeQuest(sessionData, questID, definition);
+    if (!onMap(definition, sessionData) || !availability.isAvailable(definition.availability)) return false;
+    if (!questState.hasChoices(sessionData.gameData, definition.requiredChoices)) return false;
+    if (definition.objectives && !objectives.ready(sessionData.gameData, definition)) return false;
+    return eventConsumer.completeQuest(sessionData, questID, definition);
 }
 
 
@@ -245,6 +246,8 @@ function groupBy(array, key, isSingleValue = false) {
 }
 
 function validateQuest(quest) {
+    availability.validate(quest.availability);
+    questState.validateRequiredChoices(quest.requiredChoices);
     objectives.validate(quest);
     if (quest.id.length > 100) {
         console.error("Quest ID is too long: ", quest);
@@ -270,7 +273,7 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
-            if (!onMap(quest, sessionData)) continue;
+            if (!onMap(quest, sessionData) || !availability.isAvailable(quest.availability)) continue;
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData?.quests)) {
                 continue;
             }
@@ -297,39 +300,7 @@ exports.npcHasOpenQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
-            if (!onMap(quest, sessionData)) continue;
-            if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
-                continue;
-            }
-
-            if (quest.requiredLevel && Formulas.level(sessionData.xp) < quest.requiredLevel) {
-                continue;
-            }
-
-            if(!avatarHasQuest(quest.id, sessionData.gameData.quests)) {
-                continue
-            }
-
-            if (avatarHasCompletedQuest(quest.id, sessionData.gameData.quests)) {
-                continue;
-            }
-
-            if (quest.showIndicator !== false) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-};
-
-
-exports.npcHasOpenQuest = function (cache, sessionId, npcId) {
-    if (questsByNPC[npcId] !== undefined) {
-        let sessionData = cache.get(sessionId);
-
-        for (const quest of questsByNPC[npcId]) {
-            if (!onMap(quest, sessionData)) continue;
+            if (!onMap(quest, sessionData) || !availability.isAvailable(quest.availability)) continue;
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
                 continue;
             }
