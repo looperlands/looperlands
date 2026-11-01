@@ -1028,3 +1028,23 @@ test('a routine-scoped conversation never captures an NPC without that routine k
     expect(controller.findDialogueTree('main',40,'other_guard')).toBe(general);
     expect(controller.findDialogueTree('main',40,'night_guard')).toBe(specific);
 });
+
+test('seasonal dialogue closes at its end and ordinary NPC dialogue remains usable', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-11-08T23:59:59Z'));
+    try {
+        const cache = new Map([['seasonal', {nftId: 'avatar', gameData: {items: {}, choices: []}}]]);
+        const controller = new DialogueController(cache, {});
+        const seasonal = {npc: 40, key: 'merchant', availability: {annual: {start: '10-15', end: '11-09'}}, start: 'haunted',
+            nodes: {haunted: {text: 'My shadow escaped.', options: [{text: 'Investigate', goto: 'answer'}]}, answer: {text: 'Found it.'}}};
+        const ordinary = {npc: 40, key: 'merchant', start: 'shop', nodes: {shop: {text: 'The shop is open.'}}};
+        controller.dialogueTrees.main = [seasonal, ordinary];
+        expect(controller.processDialogueTree('main', 40, cache, 'seasonal', 'merchant').text).toBe('My shadow escaped.');
+        jest.setSystemTime(new Date('2026-11-09T00:00:00Z'));
+        expect(controller.goto('main', 40, 'answer', cache, 'seasonal', 'merchant')).toBeUndefined();
+        expect(controller.findDialogueTree('main', 40, 'merchant')).toBe(ordinary);
+        expect(controller.processDialogueTree('main', 40, cache, 'seasonal', 'merchant').text).toBe('The shop is open.');
+        controller.dialogueTrees.main = [seasonal];
+        expect(controller.hasDialogueTree('main', 40, 'merchant')).toBe(false);
+        expect(controller.processDialogueTree('main', 40, cache, 'seasonal', 'merchant')).toBeNull();
+    } finally {jest.useRealTimers();}
+});

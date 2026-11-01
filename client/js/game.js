@@ -9065,6 +9065,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 axios.get(url).then(function (response) {
                     if (!isCurrent()) return;
                     if (response.data !== "") {
+                        const shop = response.data?.shop;
+                        if (shop && typeof shop.id === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(shop.id) &&
+                            typeof shop.name === 'string' && shop.name.trim() && shop.name.length <= 120 && !/[<>\u0000-\u001f]/.test(shop.name)) {
+                            self.conversationHold.stop();
+                            self.app.openShop(shop.id, shop.name);
+                            if (!response.data.text) return;
+                        }
                         if (response.data.options) {
                             self.handleInputOptions(npc.id, response.data);
                             return;

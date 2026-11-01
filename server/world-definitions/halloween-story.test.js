@@ -1,0 +1,144 @@
+global.Types = {};
+jest.mock('../js/dao', () => ({setQuestStatus: jest.fn(), updateResourceBalance: jest.fn(), registerChoice: jest.fn(async () => ({}))}));
+jest.mock('../js/discord', () => ({sendToDevChannel: jest.fn()}));
+jest.mock('../js/formulas', () => ({level: () => 1}));
+jest.mock('../js/message', () => ({}));
+jest.mock('../js/looperlandsplatformclient', () => ({LooperLandsPlatformClient: class {}}));
+const Types = require('../../shared/js/gametypes');
+const story = require('./halloween-story');
+const {definitions} = require('../js/worlddefinitions');
+definitions.register('main', {id: 'halloween-test-story', quests: story.quests, dialogues: story.dialogues});
+const quests = require('../js/quests/quests');
+const objective = require('../js/quests/objectives');
+const {PlayerEventBroker} = require('../js/quests/playereventbroker');
+const DialogueController = require('../js/dialoguecontroller');
+const dao = require('../js/dao');
+let cache;
+function fixture(id = 'one') {
+    cache.set(id, {nftId: id, mapId: 'main', xp: 1, gameData: {quests: {}, choices: [], items: {}, mobKills: {}}});
+    const player = {nftId: id, sessionId: id, server: {server: {cache}, npcBehavior: {react: jest.fn()}}, handleCompletedQuests: jest.fn()};
+    const broker = new PlayerEventBroker(player); broker.setPlayer(player);
+    const controller = new DialogueController(cache, {});
+    const actor = key => story.actors.find(actor => actor.key === 'halloween:' + key);
+    const talk = async key => {
+        const npc = actor(key); await broker.npcTalked(npc.kind, '', npc.key);
+        return controller.processDialogueTree('main', npc.kind, cache, id, npc.key);
+    };
+    const choose = async (key, node) => {
+        const npc = actor(key);
+        expect(controller.goto('main', npc.kind, node, cache, id, npc.key)).toBe(true);
+        return talk(key);
+    };
+    return {id, player, broker, controller, actor, talk, choose, data: () => cache.get(id)};
+}
+async function intro(s) {
+    await s.talk('witch'); await s.choose('witch', 'accept-intro'); await s.choose('witch', 'finish-intro'); await s.choose('witch', 'hub');
+}
+async function accept(s, mystery) {
+    await s.talk('witch'); await s.choose('witch', mystery + '-case'); await s.choose('witch', 'accept-' + mystery);
+}
+async function report(s, mystery) {
+    await s.talk('witch'); await s.choose('witch', mystery + '-case'); return s.choose('witch', 'finish-' + mystery);
+}
+async function freeShadow(s) {
+    await s.talk('footprints'); await s.talk('pumpkin'); await s.choose('pumpkin', 'release');
+}
+beforeEach(() => {
+    jest.clearAllMocks(); jest.useFakeTimers().setSystemTime(new Date('2026-10-31T18:00:00Z'));
+    const store = new Map();
+    // NodeCache clones sessions in production; exercise that boundary here too.
+    cache = {get: id => structuredClone(store.get(id)), set: (id, data) => store.set(id, structuredClone(data))};
+    PlayerEventBroker.playerEventBrokers = {}; PlayerEventBroker.pending.clear();
+});
+afterEach(() => {jest.useRealTimers();});
+
+test('three distinct mysteries can be solved through real dialogue transitions and award each reward once', async () => {
+    const s = fixture(); await intro(s);
+    expect(s.data().gameData.items[Types.Entities.GOLD]).toBe(10);
+    await accept(s, 'shadow'); await freeShadow(s); await report(s, 'shadow');
+    expect(quests.hasCompletedQuest(story.SHADOW, s.data())).toBe(true);
+    expect(s.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBe(3);
+
+    await s.choose('witch', 'hub'); await accept(s, 'grave');
+    await s.talk('gravedigger-right'); await s.talk('memorial'); await s.talk('gravedigger-left');
+    await s.talk('witch'); await s.choose('witch', 'grave-case'); await s.choose('witch', 'grave-decision');
+    await s.choose('witch', 'wrong-grave');
+    expect(quests.hasCompletedQuest(story.GRAVEDIGGER, s.data())).toBe(false);
+    await s.choose('witch', 'grave-decision'); await s.choose('witch', 'finish-grave');
+    expect(s.data().gameData.items[Types.Entities.WOOD]).toBe(6);
+
+    await s.choose('witch', 'hub'); await accept(s, 'well');
+    await s.talk('well'); await s.choose('well', 'listen'); await s.talk('keepsake'); await s.choose('keepsake', 'take');
+    await s.talk('well'); await s.choose('well', 'restore'); await report(s, 'well');
+    expect(s.data().gameData.items[Types.Entities.ORE]).toBe(3);
+    expect(s.data().gameData.quests.COMPLETED.map(quest => quest.questKey)).toEqual([story.INTRO, story.SHADOW, story.GRAVEDIGGER, story.WELL]);
+    expect(s.player.handleCompletedQuests).toHaveBeenCalledTimes(4);
+    expect(dao.updateResourceBalance).toHaveBeenCalledTimes(4);
+
+    const shop = await s.choose('witch', 'cauldron');
+    expect(shop.shop).toEqual({id: 'halloween-cauldron', name: 'The Unreliable Cauldron'});
+    for (const quest of story.quests) expect(quests.completeQuest(cache, s.id, quest.id)).toBe(false);
+    expect(dao.updateResourceBalance).toHaveBeenCalledTimes(4);
+});
+
+test('talking to evidence is not enough: completion also requires the authored solution choices', async () => {
+    const s = fixture(); await intro(s); await accept(s, 'shadow');
+    await s.talk('pumpkin');
+    expect(objective.progress(s.data().gameData, quests.questsByID[story.SHADOW]).every(o => !o.done)).toBe(true);
+    expect(s.controller.goto('main', s.actor('pumpkin').kind, 'release', cache, s.id, s.actor('pumpkin').key)).toBe(false);
+    await s.talk('footprints'); await s.talk('pumpkin');
+    expect(objective.ready(s.data().gameData, quests.questsByID[story.SHADOW])).toBe(true);
+    expect(quests.completeQuest(cache, s.id, story.SHADOW)).toBe(false);
+    expect(s.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBeUndefined();
+    await s.choose('pumpkin', 'release'); await report(s, 'shadow');
+    expect(quests.hasCompletedQuest(story.SHADOW, s.data())).toBe(true);
+});
+
+test('the well needs its locket returned, not merely visits to all three objective locations', async () => {
+    const s = fixture(); await intro(s); await accept(s, 'well');
+    await s.talk('well'); await s.choose('well', 'listen'); await s.talk('keepsake'); await s.talk('well');
+    expect(objective.ready(s.data().gameData, quests.questsByID[story.WELL])).toBe(true);
+    expect(quests.completeQuest(cache, s.id, story.WELL)).toBe(false);
+    await s.talk('keepsake'); await s.choose('keepsake', 'take'); await s.talk('well'); await s.choose('well', 'restore'); await report(s, 'well');
+    expect(quests.hasCompletedQuest(story.WELL, s.data())).toBe(true);
+    expect(s.data().gameData.items[Types.Entities.ORE]).toBe(3);
+});
+
+test('one player solving a haunting leaves the evidence and rewards available to another', async () => {
+    const one = fixture('one'), two = fixture('two');
+    await intro(one); await intro(two); await accept(one, 'shadow'); await freeShadow(one); await report(one, 'shadow');
+    expect(two.data().gameData.choices).not.toContain(story.choices.shadow);
+    await accept(two, 'shadow'); await freeShadow(two); await report(two, 'shadow');
+    expect(one.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBe(3);
+    expect(two.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBe(3);
+    expect(story.dialogues.find(dialogue => dialogue.key === 'halloween:pumpkin').nodes.pumpkin.options).toHaveLength(3);
+});
+
+test('the annual closing boundary rejects an already offered turn-in and preserves progress for next year', async () => {
+    const s = fixture(); await intro(s); await accept(s, 'shadow'); await freeShadow(s);
+    await s.talk('witch'); await s.choose('witch', 'shadow-case');
+    jest.setSystemTime(new Date('2026-11-09T00:00:00Z'));
+    expect(s.controller.goto('main', s.actor('witch').kind, 'finish-shadow', cache, s.id, s.actor('witch').key)).toBeUndefined();
+    expect(quests.completeQuest(cache, s.id, story.SHADOW)).toBe(false);
+    expect(await s.talk('witch')).toBeNull();
+    expect(s.data().gameData.choices).toContain(story.choices.shadow);
+    jest.setSystemTime(new Date('2027-10-15T00:00:00Z'));
+    await s.talk('footprints'); await report(s, 'shadow');
+    expect(s.data().gameData.items[Types.Entities.M88NPUMPKIN]).toBe(3);
+});
+
+test('authored actors, objectives and choices are registered and all menu transitions exist', () => {
+    for (const actor of story.actors) expect(Types.isNpc(actor.kind)).toBe(true);
+    for (const quest of story.quests) {
+        expect(quest.availability).toBe(require('./halloween-season').availability);
+        require('../js/quests/queststate').validateRequiredChoices(quest.requiredChoices);
+        objective.validate(quest);
+        for (const step of quest.objectives || []) expect(story.actors.some(actor => actor.key === step.npcKey && actor.kind === step.target)).toBe(true);
+    }
+    for (const dialogue of story.dialogues) {
+        for (const node of Object.values(dialogue.nodes)) {
+            expect(node.options?.length || 0).toBeLessThanOrEqual(6);
+            for (const option of node.options || []) expect(dialogue.nodes[option.goto]).toBeDefined();
+        }
+    }
+});

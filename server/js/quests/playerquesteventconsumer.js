@@ -1,6 +1,8 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
 const objectives = require('./objectives');
+const availability = require('../contentavailability');
+const questState = require('./queststate');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 const platform = require('../looperlandsplatformclient.js');
@@ -67,7 +69,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             const questKey = saved.questKey || saved.id;
             const definition = quests.questsByID[questKey];
             const quest = definition && {...definition, ...(saved.completed === true ? {completed: true} : {})};
-            if(!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId)) {
+            if(!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId) || !availability.isAvailable(quest.availability)) {
                 continue;
             }
             if(quest.eventType !== event.eventType) {
@@ -76,8 +78,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
             if (completionCheckerFN(quest, event.playerCache, event)) {
                 if(!quest.needToReturn && !quest.returnToNpc) {
-                    this.completeQuest(event.playerCache, questKey, quest);
-                    changedQuests.push(quest);
+                    if (this.completeQuest(event.playerCache, questKey, quest)) changedQuests.push(quest);
                 } else {
                     saved.completed = true;
                 }
@@ -90,27 +91,28 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         const changedQuests = [];
         for (const saved of [...event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]]) {
             const key = saved.questKey || saved.id, quest = quests.questsByID[key];
-            if (!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId)) continue;
+            if (!quest || (quest.mapId && quest.mapId !== event.playerCache.mapId) || !availability.isAvailable(quest.availability)) continue;
             const checker = this.completionCheckers[event.eventType];
             const done = quest.objectives ? await objectives.consume(quest, event) :
                 quest.eventType === event.eventType && checker?.({...quest}, event.playerCache, event);
-            if (!done) continue;
+            if (!done || !availability.isAvailable(quest.availability)) continue;
             if (quest.needToReturn || quest.returnToNpc) {
                 const active = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].find(row => (row.questKey || row.id) === key);
                 if (active) active.completed = true;
             }
-            else {this.completeQuest(event.playerCache, key, quest); changedQuests.push(quest);}
+            else if (this.completeQuest(event.playerCache, key, quest)) changedQuests.push(quest);
         }
         return {changedQuests, quests: event.playerCache.gameData.quests, objectiveProgress: true};
     }
 
     completeQuest(playerCache, questKey, quest) {
-        if (quest.mapId && quest.mapId !== playerCache.mapId) return;
+        if (!availability.isAvailable(quest.availability) || quest.mapId && quest.mapId !== playerCache.mapId) return false;
+        if (!questState.hasChoices(playerCache.gameData, quest.requiredChoices)) return false;
         if(quests.hasCompletedQuest(questKey, playerCache)) {
-            return;
+            return false;
         }
 
-        if (quest.objectives && !objectives.ready(playerCache.gameData, quest)) return;
+        if (quest.objectives && !objectives.ready(playerCache.gameData, quest)) return false;
 
         dao.setQuestStatus(playerCache.nftId, questKey, quests.STATES.COMPLETED);
         let completedQuests = playerCache.gameData.quests[quests.STATES.COMPLETED];
@@ -159,6 +161,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             gameData.items[quest.reward.item] = itemCount + quest.reward.amount;
         }
         playerCache.gameData = gameData;
+        return true;
     }
 }
 

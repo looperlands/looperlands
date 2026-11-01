@@ -300,6 +300,22 @@ const refreshInventoryItems = async function (items) {
   return inventoryWritePromise;
 };
 
+// Inventory exchanges use the same inventory writer as loot, consumption and gifts.
+// The exchange adapter confirms balances and never queues an uncertain batch.
+const exchangeInventory = async function (exchange) {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('inventory_unavailable');
+  }
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const receipt = await require('./inventoryexchange').exchange(platformClient, exchange);
+    return {...receipt, quantities: Object.fromEntries(Object.entries(receipt.quantities).map(([item, quantity]) => [item,
+      quantity + pendingQueue.filter(event => event.nftId === exchange.nftId && event.item === item).reduce((sum, event) => sum + event.amount, 0)
+    ]))};
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
 // Process a single transaction
 const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
   if (processingQueue) {
@@ -796,6 +812,7 @@ module.exports = {
   transferResourceFromTo,
   transferItems,
   refreshInventoryItems,
+  exchangeInventory,
   completePartnerTask,
   getPartnerTask,
   getInventory,

@@ -163,6 +163,42 @@ test('terrain bitmaps survive fractional camera scrolling and rebuild on tile ch
     expect(worker.state().terrain).toBe(2);
 });
 
+test('temporary tile replacements guard the current cell and restore cached baseline terrain on expiry', () => {
+    const worker = setup(); let appearances = [];
+    worker.sandbox.appearanceRegistry = {tileAppearance: () => appearances, draw() {}};
+    vm.runInContext('rendererExtensions = appearanceRegistry', worker.sandbox);
+    const packet = frame(), original = JSON.stringify(packet);
+    const terrain = () => worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
+    const tileAt = (buffer, x) => buffer.ctx.drawImage.mock.calls.find(call => call[1] === x * 16)[0];
+    worker.send(packet);
+    const baseline = terrain(), originalTile = tileAt(baseline, 3);
+    expect(originalTile.ctx.drawImage.mock.calls[0].slice(1, 3)).toEqual([0, 0]);
+    appearances = [{x: 3, y: 0, from: 1, to: 2}, {x: 4, y: 0, from: 2, to: 3}];
+    worker.send(packet);
+    const seasonal = terrain();
+    expect(seasonal).not.toBe(baseline);
+    expect(tileAt(seasonal, 3).ctx.drawImage.mock.calls[0].slice(1, 3)).toEqual([16, 0]);
+    expect(tileAt(seasonal, 4)).toBe(originalTile); // Changed map content does not match the authored guard.
+    worker.send(packet); expect(terrain()).toBe(seasonal);
+    appearances = []; worker.send(packet);
+    expect(terrain()).not.toBe(seasonal);
+    expect(tileAt(terrain(), 3)).toBe(originalTile);
+    expect(JSON.stringify(packet)).toBe(original);
+});
+
+test('temporary palette changes recolor only the selected existing detail', () => {
+    const worker = setup();
+    worker.sandbox.appearanceRegistry = {tileAppearance: () => [{x: 3, y: 0, from: 1,
+        colorShift: {colorDifference: {r: 35, g: -25, b: 5}, progress: 1}}], draw() {}};
+    vm.runInContext('rendererExtensions = appearanceRegistry', worker.sandbox);
+    worker.send(frame());
+    const buffer = worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
+    const tinted = buffer.ctx.drawImage.mock.calls.find(call => call[1] === 48)[0];
+    const ordinary = buffer.ctx.drawImage.mock.calls.find(call => call[1] === 64)[0];
+    expect(Array.from(tinted.ctx.putImageData.mock.calls[0][0].data)).toEqual([255,148,7,255,135,45,45,255,107,171,253,255]);
+    expect(ordinary.ctx.putImageData).not.toHaveBeenCalled();
+});
+
 test('the lighting pass clips tint, authored lights, tile lights and the lantern to pixel-aligned scene bounds', () => {
     const worker = setup(), ctx = worker.canvases.lighting.ctx;
     const scene = {x: 70, y: 221, width: 10, height: 9, darkness: .8};

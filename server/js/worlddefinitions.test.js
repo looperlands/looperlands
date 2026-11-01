@@ -27,9 +27,24 @@ test('scene lifecycle and presentation are registered and merged without quest h
     registry.register('one', {id: 'inactive', createScene: () => null}); registry.register('one', {id: 'content-only'});
     const scenes = registry.create({id: 'world_one'}), player = {id: 7}; scenes.tick(); scenes.forget(player);
     expect(tick).toHaveBeenCalledTimes(1); expect(forget).toHaveBeenCalledWith(player); expect(scenes.get('a')).toBeTruthy(); expect(scenes.get('absent')).toBeUndefined();
-    expect(scenes.packet(player)).toEqual({rendererExtensions: [{id: 'a', data: 7}, {id: 'b'}], musicAreas: [{track: 'a'}, {track: 'b'}], value: 1});
-    expect(registry.create({id: 'unknown'}).packet(player)).toEqual({rendererExtensions: [], musicAreas: []});
+    expect(scenes.packet(player)).toEqual({rendererExtensions: [{id: 'a', data: 7}, {id: 'b'}], musicAreas: [{track: 'a'}, {track: 'b'}], ambientSounds: [], value: 1});
+    expect(registry.create({id: 'unknown'}).packet(player)).toEqual({rendererExtensions: [], musicAreas: [], ambientSounds: []});
     expect(new WorldScenes([{id: 'none', scene: {}}]).packet(player).rendererExtensions).toEqual([]);
+});
+
+test('scene ambience composes with isolated source IDs and disappears independently when a scene expires', () => {
+    const fire = {id: 'fire', name: 'Fire', preset: 'campfire', x: 12, y: 14, radius: 7, volume: .3};
+    let active = true;
+    const registry = new WorldDefinitions();
+    registry.register('main', {id: 'village', createScene: () => ({packet: () => ({ambientSounds: [fire]})})});
+    registry.register('main', {id: 'halloween', createScene: () => ({packet: () => active ? {ambientSounds: [fire]} : null})});
+    const scenes = registry.create({id: 'world_main'});
+    expect(scenes.packet({}).ambientSounds).toEqual([
+        {...fire, id: 'scene:village:fire'}, {...fire, id: 'scene:halloween:fire'}
+    ]);
+    active = false;
+    expect(scenes.packet({}).ambientSounds).toEqual([{...fire, id: 'scene:village:fire'}]);
+    expect(fire.id).toBe('fire');
 });
 
 test('replacing an existing quest preserves indexes, map registration, source objects and listener updates', () => {

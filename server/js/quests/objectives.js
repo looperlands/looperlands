@@ -1,6 +1,7 @@
 // Declarative objective evaluation inside the existing quest/event consumer.
 // Durable facts use the existing choice store; item ownership uses normal balances.
 const dao = require('../dao');
+const availability = require('../contentavailability');
 const types = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM', 'TILE_ACTION'];
 const flag = (q, o, count) => 'quest-progress:' + encodeURIComponent(q.id) + ':' + encodeURIComponent(o.id) + ':' + count;
 const amount = o => o.amount ?? 1;
@@ -48,6 +49,7 @@ function matches(o, event) {
     }
 }
 async function consume(quest, event) {
+    if (!availability.isAvailable(quest.availability)) return false;
     const objectives = progress(event.playerCache.gameData, quest);
     for (const o of objectives) {
         if (o.done) continue;

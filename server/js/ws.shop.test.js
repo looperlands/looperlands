@@ -10,7 +10,7 @@ function shop({balance = 100, quantity, level = 10, session = true, itemFound = 
     const data = {mapId: 'main', entityId: 1, nftId: 'avatar', gameData: {items: {gold: balance}}};
     const item = {id: 1, item: 'potion', price: {gold: 5}, amount: 2, minPlayerLevel: 3};
     const dao = {getShopInventory: jest.fn().mockResolvedValue(itemFound ? [item] : []), saveConsumable: jest.fn()};
-    const cache = {get: () => session ? data : undefined, set: jest.fn()};
+    const cache = {get: () => session ? structuredClone(data) : undefined, set: jest.fn((id, saved) => Object.assign(data, saved))};
     const fieldGuide = {observe: jest.fn()};
     const player = {level};
     vm.runInNewContext(source.slice(start, end), {
@@ -20,7 +20,7 @@ function shop({balance = 100, quantity, level = 10, session = true, itemFound = 
         Collectables: {getCollectItem: () => 'health', getCollectAmount: () => 10}
     });
     const res = {status: jest.fn().mockReturnThis(), json: jest.fn(), send: jest.fn()};
-    return {data, dao, res, player, fieldGuide, run: () => handler({params: {sessionId: 'session', shopId: 'potionshop', itemId: '1'}, query: {quantity}}, res)};
+    return {data, dao, res, player, item, fieldGuide, run: () => handler({params: {sessionId: 'session', shopId: 'potionshop', itemId: '1'}, query: {quantity}}, res)};
 }
 
 test('bulk purchase charges each resource and multiplies the supplied bundle', async () => {
@@ -52,4 +52,15 @@ test.each([{session: false}, {itemFound: false}])('missing session or item retur
     expect(s.res.status).toHaveBeenCalledWith(404);
     expect(s.dao.saveConsumable).not.toHaveBeenCalled();
     expect(s.fieldGuide.observe).not.toHaveBeenCalled();
+});
+
+test('a delayed stock response uses balances after another action reserved ingredients', async () => {
+    const s = shop({balance: 5}); let finish;
+    s.dao.getShopInventory.mockReturnValue(new Promise(resolve => {finish = resolve;}));
+    const buying = s.run();
+    s.data.gameData.items.gold = 0;
+    finish([s.item]); await buying;
+    expect(s.res.status).toHaveBeenCalledWith(400);
+    expect(s.dao.saveConsumable).not.toHaveBeenCalled();
+    expect(s.data.gameData.items.gold).toBe(0);
 });

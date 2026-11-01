@@ -8,6 +8,7 @@ function loadDao(client) {
         require: id => {
             if (id === 'node-cache') return class {};
             if (id === './looperlandsplatformclient.js') return {LooperLandsPlatformClient: class {constructor() {Object.assign(this, client);}}};
+            if (id === './inventoryexchange') return require('./inventoryexchange');
             return {};
         }
     };
@@ -73,4 +74,26 @@ test('atomic farming shares the writer, holds later consumption and returns curr
     await dao.processLootEventQueue();
     expect(client.commitFarmTransaction).toHaveBeenCalledWith(transaction);
     expect(client.storeInventoryTransaction.mock.calls.flat().flat().map(event => event.amount)).toEqual([1, -1]);
+});
+
+test('an exchange holds later inventory writes and includes them in its confirmed session quantities', async () => {
+    const balances = {wood: 8, stew: 0};
+    let finish, started;
+    const pending = new Promise(resolve => {finish = resolve;});
+    const writing = new Promise(resolve => {started = resolve;});
+    const client = {getInventoryItem: jest.fn(async (nftId, item) => ({amount: balances[item]})),
+        storeInventoryTransaction: jest.fn(async batch => {
+            if (batch.some(row => row.item === 'stew')) {started(); await pending;}
+            for (const row of batch) balances[row.item] += row.amount;
+        })};
+    const dao = loadDao(client);
+    const purchase = dao.exchangeInventory({nftId: 'avatar', costs: [{item: 'wood', amount: 2}], rewards: [{item: 'stew', amount: 1}]});
+    await writing;
+    await dao.saveLootEvent('avatar', 'wood', -1);
+    expect(client.storeInventoryTransaction).toHaveBeenCalledTimes(1);
+    finish();
+    await expect(purchase).resolves.toEqual({quantities: {wood: 5, stew: 1}});
+    await dao.processLootEventQueue();
+    expect(balances).toEqual({wood: 5, stew: 1});
+    expect(client.storeInventoryTransaction).toHaveBeenCalledTimes(2);
 });

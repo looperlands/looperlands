@@ -4,6 +4,7 @@ const dao = require('./dao.js');
 const {definitions} = require('./worlddefinitions');
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
+const availability = require('./contentavailability');
 
 class DialogueController {
     constructor(cache, platformClient) {
@@ -22,6 +23,7 @@ class DialogueController {
 
             for (let i = 0; i < dialogues.length; i++) {
                 const dialogue = dialogues[i];
+                if (!availability.isAvailable(dialogue.availability)) continue;
                 if (parseInt(dialogue.npc) === parseInt(npcId) && (!dialogue.key || dialogue.key === npcKey)) {
                     return dialogue;
                 }
@@ -51,6 +53,9 @@ class DialogueController {
 
             let sessionData = cache.get(sessionId) || {};
 
+            const window = JSON.stringify(dialogue.availability) || null;
+            if ((sessionData.currentDialogueAvailability || null) !== window) sessionData.currentNode = null;
+            sessionData.currentDialogueAvailability = window;
             if (sessionData.currentNpcKey !== npcKey) { sessionData.currentNode = null; sessionData.currentNpcKey = npcKey; }
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const {WorldDefinitions} = require('./worlddefinitions');
 const {ownerMap, lockedObjective, applyChanges, validateOverrides, validatePrerequisites} = require('./localquestoverrides');
 const {counters, validateDialogue} = require('./localquestdialogue');
+const availability = require('./contentavailability');
 
 const objectiveTypes = ['NPC_TALKED', 'KILL_MOB', 'LOOT_ITEM', 'AREA_ENTERED', 'DELIVER_ITEM', 'TILE_ACTION'];
 const idPattern = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
@@ -127,7 +128,9 @@ function validateQuests(quests, catalog, availableIds = new Set(), reservedIds =
     const ids = new Set();
     const has = (type, id, label) => {if (!catalog[type].some(row => row.id === id)) fail('Choose ' + label + ' from this map\'s ' + type + ' list.');};
     for (const quest of quests) {
-        fields(quest, ['id', 'name', 'npc', 'startText', 'inProgressText', 'endText', 'ordered', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'objectives'], 'Quest');
+        fields(quest, ['id', 'name', 'npc', 'startText', 'inProgressText', 'endText', 'ordered', 'level', 'requiredLevel', 'requiredQuest', 'returnToNpc', 'reward', 'objectives', 'availability', 'requiredChoices'], 'Quest');
+        try {availability.validate(quest.availability);} catch (error) {fail(error.message);}
+        try {require('./quests/queststate').validateRequiredChoices(quest.requiredChoices);} catch (error) {fail(error.message);}
         identifier(quest.id, 'Quest ID');
         if (ids.has(quest.id) || reservedIds.has(quest.id)) fail('Quest ID ' + quest.id + ' is already used. Choose a unique ID.');
         ids.add(quest.id);

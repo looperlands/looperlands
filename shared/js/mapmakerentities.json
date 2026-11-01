@@ -1,1 +1,287 @@
-[]
+[
+  {
+    "id": "bottled_midnight",
+    "kind": 1800000000,
+    "type": "item",
+    "name": "Bottled Midnight",
+    "builtin": false,
+    "sprite": {
+      "id": "item-bottled_midnight",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {
+      "collectable": true,
+      "collectAmount": 1,
+      "resource": false,
+      "transferable": true,
+      "inventoryDescription": "A small piece of Halloween night. Keep the cork in.",
+      "consumable": false
+    },
+    "client": {
+      "showSparks": true
+    }
+  },
+  {
+    "id": "graveyard_stew",
+    "kind": 1800000001,
+    "type": "item",
+    "name": "Graveyard Stew",
+    "builtin": false,
+    "sprite": {
+      "id": "item-graveyard_stew",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {
+      "collectable": true,
+      "collectAmount": 1,
+      "resource": false,
+      "transferable": true,
+      "inventoryDescription": "Warm mushroom stew. The spoon moves when nobody is looking.",
+      "consumable": true,
+      "consumeEffects": [
+        {
+          "type": "heal",
+          "amount": 75
+        }
+      ],
+      "cooldown": {
+        "group": "halloween-food",
+        "duration": 15000
+      }
+    },
+    "client": {
+      "showSparks": true
+    }
+  },
+  {
+    "id": "borrowed_courage",
+    "kind": 1800000002,
+    "type": "item",
+    "name": "Borrowed Courage",
+    "builtin": false,
+    "sprite": {
+      "id": "item-borrowed_courage",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {
+      "collectable": true,
+      "collectAmount": 1,
+      "resource": false,
+      "transferable": true,
+      "inventoryDescription": "A witch-brewed draught. Courage is easier to borrow than return.",
+      "consumable": true,
+      "consumeEffects": [
+        {
+          "type": "modifier",
+          "stat": "meleeDamageTaken",
+          "multiplier": 0.8,
+          "duration": 30000
+        }
+      ],
+      "cooldown": {
+        "group": "halloween-courage",
+        "duration": 60000
+      }
+    },
+    "client": {
+      "showSparks": true
+    }
+  },
+  {
+    "id": "halloween_footprints",
+    "kind": 1800000003,
+    "type": "npc",
+    "name": "Dark footprints",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_footprints",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle_down": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  },
+  {
+    "id": "halloween_pumpkin",
+    "kind": 1800000004,
+    "type": "npc",
+    "name": "The whispering pumpkin",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_pumpkin",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle_down": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  },
+  {
+    "id": "halloween_ghost",
+    "kind": 1800000005,
+    "type": "npc",
+    "name": "Lantern ghost",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_ghost",
+      "width": 32,
+      "height": 32,
+      "animations": {
+        "walk_right": {
+          "length": 4,
+          "row": 1
+        },
+        "idle_right": {
+          "length": 2,
+          "row": 2
+        },
+        "walk_up": {
+          "length": 4,
+          "row": 4
+        },
+        "idle_up": {
+          "length": 2,
+          "row": 5
+        },
+        "walk_down": {
+          "length": 4,
+          "row": 7
+        },
+        "idle_down": {
+          "length": 2,
+          "row": 8
+        }
+      },
+      "offset_x": -8,
+      "offset_y": -16
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  },
+  {
+    "id": "halloween_memorial",
+    "kind": 1800000006,
+    "type": "npc",
+    "name": "The old town ledger",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_memorial",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle_down": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  },
+  {
+    "id": "halloween_well",
+    "kind": 1800000007,
+    "type": "npc",
+    "name": "The whispering well",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_well",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle_down": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  },
+  {
+    "id": "halloween_keepsake",
+    "kind": 1800000008,
+    "type": "npc",
+    "name": "A silver keepsake",
+    "builtin": false,
+    "sprite": {
+      "id": "halloween_keepsake",
+      "width": 16,
+      "height": 16,
+      "animations": {
+        "idle_down": {
+          "length": 1,
+          "row": 0
+        }
+      },
+      "offset_x": 0,
+      "offset_y": 0
+    },
+    "gameplay": {},
+    "client": {},
+    "dialogue": [
+      "There is something strange here. Click to investigate."
+    ]
+  }
+]

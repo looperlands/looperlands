@@ -32,6 +32,23 @@ test('no context starts before a gesture; movement smooths a reused voice and le
     expect(voice.source.stop).toHaveBeenCalledWith(1.4);
     voice.source.onended(); expect(voice.gain.disconnect).toHaveBeenCalled(); expect(engine.cues.size).toBe(0);
 });
+
+test('removing an expired scene fades its positional voice while the ordinary source keeps playing', () => {
+    const {engine, sources} = setup(); engine.unlock(); engine.setVolumes(.2, .4);
+    const scene = fire({id: 'scene:halloween:cauldron', preset: 'lava', x: 12});
+    engine.update([fire(), scene], {x: 10, y: 10});
+    const ordinary = engine.voices.get('fire'), seasonal = engine.voices.get(scene.id);
+    expect(seasonal.pan.pan.setTargetAtTime.mock.calls[0][0]).toBeGreaterThan(0);
+    expect(seasonal.pan.connect).toHaveBeenCalledWith(engine.ambientBus);
+    expect(engine.ambientBus.gain.value).toBe(.4);
+    engine.update([fire()], {x: 10, y: 10});
+    expect(engine.voices.get('fire')).toBe(ordinary);
+    expect(ordinary.source.stop).not.toHaveBeenCalled();
+    expect(engine.voices.has(scene.id)).toBe(false);
+    expect(seasonal.gain.gain.setTargetAtTime).toHaveBeenLastCalledWith(0, 1, .08);
+    expect(seasonal.source.stop).toHaveBeenCalledWith(1.4);
+    expect(sources).toHaveLength(2);
+});
 test('the mix is bounded, texture buffers are shared, and distant sources allocate nothing', () => {
     const {engine, context} = setup(); engine.unlock();
     engine.update(Array.from({length: 30}, (_, i) => fire({id: 'fire' + i, x: i < 20 ? 10 : 100})), {x: 10, y: 10});

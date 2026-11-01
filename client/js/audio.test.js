@@ -375,6 +375,26 @@ test('ambience uses interpolated player tiles, clears map changes, and respects 
     manager.game.isStopped = false; manager.disable(); manager.updateAmbience(); expect(update.mock.calls.at(-1)[2]).toBe(false);
 });
 
+test('scene sound sources join the map mix and expire without resetting existing map voices or saved volumes', () => {
+    const {manager} = setup();
+    const update = jest.spyOn(manager.soundscape, 'update'), clear = jest.spyOn(manager.soundscape, 'clear');
+    const mapSound = {id: 'water', preset: 'water', x: 10, y: 20, radius: 10, volume: .3};
+    const seasonal = {...mapSound, id: 'scene:halloween:water'};
+    manager.game.started = true; manager.game.player = {x: 160, y: 320};
+    manager.game.map = {tilesize: 16, isLoaded: true, ambientSounds: [mapSound]};
+    manager.game.worldAmbience = {config: {ambientSounds: [seasonal]}};
+    manager.setVolumes({ambient: .5}); manager.updateAmbience();
+    expect(update).toHaveBeenLastCalledWith([mapSound, seasonal], {x: 10, y: 20}, true);
+    expect(clear).toHaveBeenCalledTimes(1);
+    manager.game.worldAmbience.config = {ambientSounds: []}; manager.updateAmbience();
+    expect(update).toHaveBeenLastCalledWith([mapSound], {x: 10, y: 20}, true);
+    expect(clear).toHaveBeenCalledTimes(1);
+    expect(manager.soundscape.ambientVolume).toBe(.44);
+    manager.game.worldAmbience.config = null; manager.game.map = {isLoaded: true}; manager.updateAmbience();
+    expect(update).toHaveBeenLastCalledWith([], {x: 10, y: 20}, true);
+    expect(clear).toHaveBeenCalledTimes(2);
+});
+
 test('zero-based achievement sound IDs work and mute stops native samples too', () => {
     const {manager} = setup({safari: false});
     manager.playSound('0'); expect(manager.sounds.achievement[0].play).toHaveBeenCalled();
