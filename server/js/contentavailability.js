@@ -20,16 +20,17 @@ function timestamp(value) {
 function validate(availability) {
     if (availability === undefined) return;
     if (!object(availability)) throw new Error('Content availability must be an annual window or a UTC timestamp window.');
+    if (availability.enabled !== undefined && typeof availability.enabled !== 'boolean') throw new Error('Content availability enabled must be a boolean.');
     if (availability.annual !== undefined) {
         const annual = availability.annual;
-        if (Object.keys(availability).length !== 1 || !object(annual) || Object.keys(annual).some(key => !['start', 'end'].includes(key)) ||
+        if (Object.keys(availability).some(key => !['annual', 'enabled'].includes(key)) || !object(annual) || Object.keys(annual).some(key => !['start', 'end'].includes(key)) ||
             !monthDay(annual.start) || !monthDay(annual.end) || annual.start === annual.end) {
             throw new Error('Annual availability needs different start and end dates in MM-DD format.');
         }
         return;
     }
     const start = timestamp(availability.startsAt), end = timestamp(availability.endsAt);
-    if (Object.keys(availability).some(key => !['startsAt', 'endsAt'].includes(key)) || !Number.isFinite(start) || !Number.isFinite(end) || start >= end) {
+    if (Object.keys(availability).some(key => !['startsAt', 'endsAt', 'enabled'].includes(key)) || !Number.isFinite(start) || !Number.isFinite(end) || start >= end) {
         throw new Error('Availability needs UTC startsAt and endsAt timestamps, with the end after the start.');
     }
 }
@@ -42,6 +43,7 @@ function currentTime() {
 function isAvailable(availability, now = currentTime()) {
     if (availability === undefined) return true;
     try {validate(availability);} catch (_) {return false;}
+    if (availability.enabled === false) return false;
     const date = new Date(now);
     if (!Number.isFinite(date.getTime())) return false;
     if (availability.annual) {

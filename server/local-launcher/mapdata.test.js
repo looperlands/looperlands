@@ -45,6 +45,25 @@ test('tools, analysis and coordinate previews reuse one load and one artwork ima
     expect((await (await api.fetch('./api/assets')).json())).toEqual({revision:'assets',entries:[{id:'rat'}]});
     expect(fetch).toHaveBeenCalledTimes(1);expect(imageSources).toHaveLength(1);
 });
+
+test('temporary content shares the map snapshot and refreshes after saving', async () => {
+    let enabled = true;
+    const fetch = jest.fn(async (url, options) => {
+        if (options?.method === 'POST') {enabled = false; return Response.json({saved: true});}
+        return response(events('one', String(enabled), [{type: 'resource', key: 'seasons', data: {
+            mapId: 'one', events: [{id: 'halloween', enabled}], revision: String(enabled)
+        }}]));
+    });
+    const {api} = fixture(fetch);
+    const before = await (await api.fetch('./api/seasons?mapId=one')).json();
+    expect(before.events[0].enabled).toBe(true);
+    await api.fetch('./api/map-canvas?mapId=one');
+    expect(fetch).toHaveBeenCalledTimes(1);
+    await api.fetch('./api/seasons', {method: 'POST', body: JSON.stringify({mapId: 'one'})});
+    const after = await (await api.fetch('./api/seasons?mapId=one')).json();
+    expect(after.events[0].enabled).toBe(false);
+    expect(after.revision).not.toBe(before.revision);
+});
 test('a slower previous map cannot overwrite the loading state of the newly selected map', async () => {
     const streams = new Map();
     const fetch = jest.fn(async url => new Response(new ReadableStream({start(controller){streams.set(new URL(url,'http://localhost/local/').searchParams.get('mapId'), controller);}})));

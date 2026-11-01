@@ -172,4 +172,8 @@ const dialogues = [
     dialogue('procession-3', 'story', {story: {text: 'Boooo. Yes, those are definitely ghost feet beneath this sheet. No further questions. Have you tried the witch\'s stew?'}})
 ];
 
-module.exports = {quests, dialogues, actors, choices, INTRO, SHADOW, GRAVEDIGGER, WELL};
+const StoryText = require('./halloween-text');
+const defaultTexts = Object.freeze(StoryText.getEntries(quests, dialogues).map(Object.freeze));
+StoryText.apply(quests, dialogues, require('./halloween-content').event.textOverrides);
+
+module.exports = {quests, dialogues, actors, choices, INTRO, SHADOW, GRAVEDIGGER, WELL, defaultTexts};

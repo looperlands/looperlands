@@ -50,6 +50,7 @@
   <script src="./vendor/soundscape.js" defer></script>
   <script src="./ambientupload.js" defer></script>
   <script src="./ambientbuilder.js" defer></script>
+  <script src="./seasonbuilder.js" defer></script>
   <script src="./sequence-contract.js" defer></script>
   <script src="./sequencebuilder.js" defer></script>
   <script src="./lighting-contract.js" defer></script>
@@ -81,6 +82,7 @@
           <a id="tab-connections" href="#connections" aria-controls="connections-pane" data-pane="connections">World connections</a>
           <a id="tab-ambient" href="#ambient" aria-controls="ambient-pane" data-pane="ambient">Ambient sounds</a>
           <a id="tab-scenes" href="#scenes" aria-controls="scenes-pane" data-pane="scenes">Scene manager</a>
+          <a id="tab-seasons" href="#seasons" aria-controls="seasons-pane" data-pane="seasons">Temporary content</a>
           <a id="tab-lighting" href="#lighting" aria-controls="lighting-pane" data-pane="lighting">Lights &amp; shadows</a>
         </div>
       </details>
@@ -364,6 +366,7 @@
               <div class="field"><label for="quest-level">Quest level</label><input id="quest-level" type="number" min="1" max="9999" required><span class="field-hint">Sets the quest’s XP reward.</span></div>
               <div class="field"><label for="quest-required-level">Required player level</label><input id="quest-required-level" type="number" min="1" max="9999" required></div>
               <div class="field"><label for="quest-prerequisite">Prerequisite quest ID</label><input id="quest-prerequisite" list="quest-prerequisites" maxlength="64" placeholder="None"><datalist id="quest-prerequisites"></datalist></div>
+              <div id="quest-availability-field" class="field"><label for="quest-availability">Availability</label><select id="quest-availability"></select><span id="quest-availability-hint" class="field-hint"></span></div>
             </div>
             <section class="quest-section" aria-labelledby="quest-story-heading">
               <h4 id="quest-story-heading">Dialogue</h4>
@@ -436,6 +439,7 @@ You only have {{remaining}} blue monsters left to slay!</pre>
     <section id="sequences-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-sequences" hidden></section>
     <section id="ambient-pane" class="tool-pane" role="region" aria-labelledby="tab-ambient" hidden></section>
     <section id="scenes-pane" class="tool-pane" role="region" aria-labelledby="tab-scenes" hidden></section>
+    <section id="seasons-pane" class="tool-pane" role="region" aria-labelledby="tab-seasons" hidden></section>
     <section id="zones-pane" class="tool-pane" role="region" aria-labelledby="tab-zones" hidden></section>
     <section id="fishing-pane" class="tool-pane" role="region" aria-labelledby="tab-fishing" hidden></section>
     <section id="encounters-pane" class="tool-pane" role="region" aria-labelledby="tab-encounters" hidden></section>
@@ -456,6 +460,7 @@ You only have {{remaining}} blue monsters left to slay!</pre>
       <div class="documentation-layout">
         <nav class="guide-nav" aria-label="Mapmaker guides">
           <a href="#documentation/mapmaker-toolbox">Mapmaker Toolbox</a>
+          <a href="#documentation/mapmaker-temporary-content">Temporary content</a>
           <a href="#documentation/mapmaker-sessions">Starting game sessions</a>
           <a href="#documentation/mapmaker-tile-actions">Interactions</a>
           <a href="#documentation/mapmaker-routes">NPC route painter</a>

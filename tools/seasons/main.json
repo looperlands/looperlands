@@ -1,0 +1,858 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "halloween",
+      "name": "Halloween: Something Is Wrong With the Village",
+      "enabled": true,
+      "availability": {
+        "annual": {
+          "start": "10-15",
+          "end": "11-09"
+        }
+      },
+      "actors": [
+        {
+          "key": "halloween:witch",
+          "kind": "WHISPYWITCH",
+          "label": "Whispy, the Unreliable Witch",
+          "x": 46,
+          "y": 214
+        },
+        {
+          "key": "halloween:footprints",
+          "kind": "halloween_footprints",
+          "label": "Abandoned Shoes",
+          "x": 46,
+          "y": 181
+        },
+        {
+          "key": "halloween:pumpkin",
+          "kind": "halloween_pumpkin",
+          "label": "The Whispering Pumpkin",
+          "x": 19,
+          "y": 164
+        },
+        {
+          "key": "halloween:gravedigger-left",
+          "kind": "halloween_ghost",
+          "label": "Mara, the Gravedigger",
+          "x": 23,
+          "y": 118
+        },
+        {
+          "key": "halloween:gravedigger-right",
+          "kind": "halloween_ghost",
+          "label": "Rowan, the Gravedigger",
+          "x": 26,
+          "y": 118
+        },
+        {
+          "key": "halloween:memorial",
+          "kind": "halloween_memorial",
+          "label": "The Burial Register",
+          "x": 25,
+          "y": 115
+        },
+        {
+          "key": "halloween:well",
+          "kind": "halloween_well",
+          "label": "The Whispering Well",
+          "x": 46,
+          "y": 297
+        },
+        {
+          "key": "halloween:keepsake",
+          "kind": "halloween_keepsake",
+          "label": "A Lost Ring",
+          "x": 19,
+          "y": 297
+        },
+        {
+          "key": "halloween:procession-1",
+          "kind": "halloween_ghost",
+          "label": "The Late Fisherman",
+          "x": 22,
+          "y": 123,
+          "area": {
+            "x": 18,
+            "y": 117,
+            "width": 16,
+            "height": 16
+          },
+          "route": [
+            {
+              "x": 29,
+              "y": 130,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 30,
+              "y": 120,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 22,
+              "y": 123,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            }
+          ],
+          "greeting": "Follow our lantern road through the graves. Whispy waits beside the Town notice board."
+        },
+        {
+          "key": "halloween:procession-2",
+          "kind": "halloween_ghost",
+          "label": "The Wandering Musician",
+          "x": 23,
+          "y": 123,
+          "area": {
+            "x": 18,
+            "y": 117,
+            "width": 16,
+            "height": 16
+          },
+          "route": [
+            {
+              "x": 30,
+              "y": 130,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 31,
+              "y": 120,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 23,
+              "y": 123,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            }
+          ],
+          "greeting": "Follow our lantern road through the graves. Whispy waits beside the Town notice board."
+        },
+        {
+          "key": "halloween:procession-3",
+          "kind": "halloween_ghost",
+          "label": "A Very Convincing Ghost",
+          "x": 22,
+          "y": 124,
+          "area": {
+            "x": 18,
+            "y": 117,
+            "width": 16,
+            "height": 16
+          },
+          "route": [
+            {
+              "x": 29,
+              "y": 131,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 30,
+              "y": 121,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            },
+            {
+              "x": 22,
+              "y": 124,
+              "waitSeconds": 8,
+              "activity": "following the lantern road"
+            }
+          ],
+          "greeting": "Follow our lantern road through the graves. Whispy waits beside the Town notice board."
+        }
+      ],
+      "decorations": [
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 39,
+          "y": 211
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 43,
+          "y": 213
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 48,
+          "y": 215
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 41,
+          "y": 224
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 49,
+          "y": 224
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 31,
+          "y": 215
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 45,
+          "y": 183
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 48,
+          "y": 180
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 42,
+          "y": 158
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 17,
+          "y": 164
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 21,
+          "y": 163
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 21,
+          "y": 165
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 21,
+          "y": 119
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 29,
+          "y": 119
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 24,
+          "y": 113
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 21,
+          "y": 124
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 32,
+          "y": 129
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 32,
+          "y": 121
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 36,
+          "y": 258
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 45,
+          "y": 278
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 45,
+          "y": 297
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 47,
+          "y": 296
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 22,
+          "y": 297
+        },
+        {
+          "image": "/img/1/item-m88npumpkin.png",
+          "x": 18,
+          "y": 296
+        },
+        {
+          "image": "/img/1/item-m88ncauldron.png",
+          "x": 47,
+          "y": 214
+        }
+      ],
+      "tiles": [],
+      "ambientSounds": [],
+      "parallax": [
+        {
+          "sceneId": 624,
+          "layers": [
+            {
+              "image": "/img/parallax/mist.png",
+              "plane": "ground",
+              "width": 512,
+              "height": 384,
+              "factorX": 0.98,
+              "factorY": 0.99,
+              "opacity": 0.13,
+              "driftX": 2,
+              "driftY": -0.3,
+              "activeSceneOnly": true
+            },
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 240,
+              "spacingY": 192,
+              "opacity": 0.38,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 312,
+              "offsetY": 384,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 352,
+              "spacingY": 272,
+              "opacity": 0.28,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 449,
+              "offsetY": 61,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 560,
+              "spacingY": 420,
+              "opacity": 0.16,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 66,
+              "offsetY": 158,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 627,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 288,
+              "spacingY": 230,
+              "opacity": 0.323,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 11,
+              "offsetY": 87,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 422,
+              "spacingY": 326,
+              "opacity": 0.23800000000000002,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 148,
+              "offsetY": 184,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 672,
+              "spacingY": 504,
+              "opacity": 0.136,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 285,
+              "offsetY": 281,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 628,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 240,
+              "spacingY": 192,
+              "opacity": 0.342,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 84,
+              "offsetY": 128,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 352,
+              "spacingY": 272,
+              "opacity": 0.25200000000000006,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 221,
+              "offsetY": 225,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 560,
+              "spacingY": 420,
+              "opacity": 0.14400000000000002,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 358,
+              "offsetY": 322,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 629,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 192,
+              "spacingY": 154,
+              "opacity": 0.38,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 157,
+              "offsetY": 169,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 282,
+              "spacingY": 218,
+              "opacity": 0.28,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 294,
+              "offsetY": 266,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 448,
+              "spacingY": 336,
+              "opacity": 0.16,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 431,
+              "offsetY": 363,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 630,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 336,
+              "spacingY": 269,
+              "opacity": 0.26599999999999996,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 230,
+              "offsetY": 210,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 493,
+              "spacingY": 381,
+              "opacity": 0.196,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 367,
+              "offsetY": 307,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 784,
+              "spacingY": 588,
+              "opacity": 0.11199999999999999,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 504,
+              "offsetY": 404,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 631,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 360,
+              "spacingY": 288,
+              "opacity": 0.24700000000000003,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 303,
+              "offsetY": 251,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 528,
+              "spacingY": 408,
+              "opacity": 0.18200000000000002,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 440,
+              "offsetY": 348,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 840,
+              "spacingY": 630,
+              "opacity": 0.10400000000000001,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 57,
+              "offsetY": 25,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        },
+        {
+          "sceneId": 633,
+          "layers": [
+            {
+              "width": 88,
+              "height": 88,
+              "spacingX": 276,
+              "spacingY": 221,
+              "opacity": 0.323,
+              "factorX": 1.035,
+              "factorY": 1.02,
+              "driftX": -6,
+              "driftY": -0.5,
+              "swayY": 5,
+              "swayPeriod": 9,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 449,
+              "offsetY": 333,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 56,
+              "height": 56,
+              "spacingX": 405,
+              "spacingY": 313,
+              "opacity": 0.23800000000000002,
+              "factorX": 1.015,
+              "factorY": 1.01,
+              "driftX": 3,
+              "driftY": -0.3,
+              "swayY": 3,
+              "swayPeriod": 13,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 66,
+              "offsetY": 10,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            },
+            {
+              "width": 112,
+              "height": 112,
+              "spacingX": 644,
+              "spacingY": 483,
+              "opacity": 0.136,
+              "factorX": 1.065,
+              "factorY": 1.04,
+              "driftX": -2,
+              "driftY": 0.4,
+              "swayY": 7,
+              "swayPeriod": 17,
+              "image": "/img/parallax/halloween-drifting-ghost.png",
+              "plane": "foreground",
+              "activeSceneOnly": true,
+              "nightOpacity": 0.9,
+              "nightBrightness": 0.95,
+              "offsetX": 203,
+              "offsetY": 107,
+              "orbitRadius": 12,
+              "orbitPeriod": 23,
+              "orbitVariation": 0.6,
+              "scaleVariation": 0.18
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

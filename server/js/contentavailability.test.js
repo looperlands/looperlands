@@ -32,6 +32,15 @@ test('one-off windows include their start and exclude their end without recurrin
     expect(() => validate(undefined)).not.toThrow();
 });
 
+test('a disabled schedule keeps its calendar but cannot become available', () => {
+    const now = Date.parse('2026-10-31T12:00:00Z');
+    for (const window of [halloween, {startsAt: '2026-10-30T00:00:00Z', endsAt: '2026-11-02T00:00:00Z'}]) {
+        expect(isAvailable({...window, enabled: true}, now)).toBe(true);
+        expect(isAvailable({...window, enabled: false}, now)).toBe(false);
+        expect(() => validate({...window, enabled: 'false'})).toThrow('boolean');
+    }
+});
+
 test.each([
     null, [], {}, {annual: {}}, {annual: {start: '10-15', end: '10-15'}},
     {annual: {start: '2-01', end: '03-01'}}, {annual: {start: '02-30', end: '03-01'}},

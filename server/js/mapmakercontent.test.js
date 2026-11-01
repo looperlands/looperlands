@@ -12,6 +12,15 @@ beforeEach(() => {
 });
 afterEach(() => fs.rmSync(root, {recursive: true, force: true}));
 
+test('invalid temporary content fails the production build before writing map artifacts', () => {
+    const file = path.join(root, 'client/maps/world_client_one.json');
+    const before = fs.readFileSync(file);
+    write('tools/seasons/one.json', {version: 1, events: [{id: 'unknown', enabled: true}]});
+    expect(() => Content.build(root)).toThrow();
+    expect(fs.readFileSync(file)).toEqual(before);
+    expect(fs.existsSync(file.replace(/\.json$/, '.js'))).toBe(false);
+});
+
 test('production artifacts include the same scenes, atmosphere and action placements as local transport', () => {
     fs.mkdirSync(path.join(root,'client/img/parallax'),{recursive:true});
     fs.copyFileSync(path.join(__dirname,'../../client/img/parallax/clouds.png'),path.join(root,'client/img/parallax/clouds.png'));
