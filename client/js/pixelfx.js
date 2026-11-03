@@ -21,7 +21,7 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
             const now=performance.now(), reduced=!!this.game.app?.settings?.getReducedMotion?.();
             this.hits=this.hits.filter(h=>now-h.started<500);
             const rows=this.rows.map(row=>{const phase=Config.phase(row,this.elapsedAtSync+now-this.syncedAt);return {...row,...Config.hitRegion(row,phase.cycle,this.seed),phase};});
-            const effects=rows.map(row=>({effect:row.effect,x:(row.x+row.width/2)*16,y:(row.y+row.height/2)*16,scale:row.scale,hue:row.hue || 0,removeBackdrop:row.background!=='original',time:reduced?200:row.phase.effectMs}));
+            const effects=rows.map(row=>({effect:row.effect,x:(row.x+row.width/2)*16,y:(row.y+row.height/2)*16,scale:row.scale,palette:row.palette,hue:row.hue || 0,removeBackdrop:row.background!=='original',time:reduced?200:row.phase.effectMs}));
             if(!reduced && this.game.app?.settings?.getCombatEffectsEnabled?.()!==false) for(const h of this.hits)effects.push({effect:h.effect,x:h.x*16+8,y:h.y*16+8,scale:.3,time:(now-h.started)/500*Config.catalog[h.effect].duration});
             // Warning tiles and countdowns are never disabled by reduced motion.
             renderer.setExtensionData('pixel-fx',effects.filter((e,i)=>i>=rows.length || rows[i].phase.effectMs!==null));
