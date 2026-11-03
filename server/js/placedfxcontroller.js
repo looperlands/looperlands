@@ -36,16 +36,27 @@ class PlacedFxController {
         const now = this.clock(), present = new Set();
         this.updateActivations(now);
         for (const player of Object.values(this.world.players)) {
-            if (!player.hasEnteredGame || player.isDead || player.hitPoints <= 0 || player.isBot()) continue;
+            if (!player.hasEnteredGame || player.isBot()) continue;
             present.add(player);
             let state = this.players.get(player);
             if (!state) {
-                state = {joined:now, ticks:new Map()}; this.players.set(player, state);
+                state = {joined:null, ticks:new Map()}; this.players.set(player, state);
             }
+            const alive = !player.isDead && player.hitPoints > 0;
+            if (alive && state.joined === null) {
+                state.joined = now;
+                state.revision = undefined;
+            } else if (!alive) {
+                state.joined = null;
+                state.ticks.clear();
+            }
+            // The world keeps rendering behind the revive screen. Dead observers
+            // still need activation updates, but regain warning protection on revive.
             if (state.revision !== this.revision) {
                 this.world.pushToPlayer(player, this.packet({type:'map', mapId:this.world.id, rows:this.rows, epoch:this.epoch, seed:this.seed, activations:Object.fromEntries(this.activations), now}));
                 state.revision = this.revision;
             }
+            if (!alive) continue;
             for (const row of this.rows) {
                 if (!row.hazard) continue;
                 const epoch = row.attackingMob === undefined ? this.epoch : this.activations.get(row.id);

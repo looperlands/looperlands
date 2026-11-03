@@ -81,3 +81,14 @@ test('decorative attack conditions synchronize without causing damage and identi
     tick(5000);expect(player.handleHurt).not.toHaveBeenCalled();
     boss.isDead=true;tick(5001);expect(latest().activations.fire).toBeNull();
 });
+
+test('dead observers receive shutdown and combat updates, then get warning protection again on revive',()=>{
+    const boss=bossHazard();boss.target=1;tick(0);tick(1000);player.isDead=true;tick(1100);
+    expect(latest().activations.fire).toBeNull();const sent=world.pushToPlayer.mock.calls.length;
+    tick(1200);expect(world.pushToPlayer).toHaveBeenCalledTimes(sent);
+    const other={...player,id:2,isDead:false,handleHurt:jest.fn()};world.players[2]=other;boss.target=2;tick(1300);
+    const toDead=world.pushToPlayer.mock.calls.findLast(call=>call[0]===player)[1].serialize()[1];expect(toDead.activations.fire).toBe(1300);
+    tick(2300);expect(player.handleHurt).toHaveBeenCalledTimes(1);
+    player.isDead=false;tick(2400);expect(fx.players.get(player).joined).toBe(2400);expect(player.handleHurt).toHaveBeenCalledTimes(1);
+    tick(1300+require('../../shared/js/placedfxconfig').cycleDuration(row)+1000);expect(player.handleHurt).toHaveBeenCalledTimes(2);
+});
