@@ -27,7 +27,8 @@ function applyMap(root, mapId, map) {
     require('./localparallaxassets').validateLayers(root,document.atmosphere);
     require('../../client/js/ambientconfig').validate(document.ambientSounds, map);
     require('./localambientassets').validateReferences(root, document.ambientSounds);
-    map = {...map, ambientSounds: document.ambientSounds};
+    require('../../shared/js/placedfxconfig').validate(document.placedFx, map);
+    map = {...map, ambientSounds: document.ambientSounds, placedFx: document.placedFx};
     return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes), document.atmosphere, document.weather), Tiles.document(root, mapId));
 }
 
@@ -49,7 +50,7 @@ function validate(root = projectRoot) {
         World.validateAtmosphere(doc.atmosphere);
         require('../../client/js/ambientconfig').validate(doc.ambientSounds, fishingMap);
         require('./localambientassets').validateReferences(root, doc.ambientSounds);
-        if (doc.scenes != null || doc.atmosphere.length || doc.weather || doc.ambientSounds.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
+        if (doc.scenes != null || doc.atmosphere.length || doc.weather || doc.ambientSounds.length || doc.placedFx.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
             const map = Tiles.readMap(root, mapId);
             applyMap(root, mapId, map);
             Tiles.validate(tileDoc, map, {base: Tiles.base(root, mapId), quests: registry.quests.map(quest => quest.id)});
@@ -67,13 +68,14 @@ function build(root = projectRoot) {
     const outputs = [];
     for (const mapId of Tiles.maps(root)) {
         const doc = World.readDocument(root, mapId), tiles = Tiles.document(root, mapId);
-        if (doc.scenes == null && !doc.atmosphere.length && !doc.weather && !doc.ambientSounds.length && !tiles.placements.length) continue;
         const file = path.join(root, 'client/maps/world_client_' + mapId + '.json');
-        const map = applyMap(root, mapId, JSON.parse(fs.readFileSync(file, 'utf8')));
+        const previous = JSON.parse(fs.readFileSync(file, 'utf8'));
+        if (doc.scenes == null && !doc.atmosphere.length && !doc.weather && !doc.ambientSounds.length && !doc.placedFx.length && !previous.placedFx?.length && !tiles.placements.length) continue;
+        const map = applyMap(root, mapId, previous);
         outputs.push([file, JSON.stringify(map)], [file.replace(/\.json$/, '.js'), 'var mapData = ' + JSON.stringify(map) + ';']);
         const server = path.join(root, 'server/maps/world_server_' + mapId + '.json');
         const serverMap = JSON.parse(fs.readFileSync(server, 'utf8'));
-        outputs.push([server, JSON.stringify({...serverMap, scenes: map.scenes})]);
+        outputs.push([server, JSON.stringify({...serverMap, scenes: map.scenes, placedFx: map.placedFx})]);
     }
     for (const [file, source] of outputs) fs.writeFileSync(file, source);
     return outputs.length;

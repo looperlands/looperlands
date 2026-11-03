@@ -98,7 +98,7 @@ test('failed client compilation restores the previous build and keeps the toolbo
 
 function certifyClient() {
     for (const file of ['client-build/js/home.js', 'client-build/js/game.js', 'client-build/js/lib/require-jquery.js',
-        'bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json']) write(file, '// fixture');
+        'bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json', 'shared/js/placedfxconfig.js', 'shared/js/pixelfxcatalog.js']) write(file, '// fixture');
     write('shared/js/mapmakerentities.json', '[]');
     const {clientFingerprint, recordClientBuild} = require('./mapmaker-client');
     recordClientBuild(root, clientFingerprint(root));

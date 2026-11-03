@@ -328,6 +328,7 @@ function createToolboxApp(toolbox) {
     });
     const guides = new Set(['mapmaker-toolbox', 'mapmaker-sessions', 'mapmaker-building', 'mapmaker-quest-builder', 'mapmaker-mobs', 'mapmaker-npcs', 'mapmaker-live-assets', 'mapmaker-tile-actions', 'mapmaker-routes', 'mapmaker-connections', 'mapmaker-events', 'mapmaker-dialogues', 'mapmaker-atmosphere', 'mapmaker-sequences', 'mapmaker-lighting', 'mapmaker-audio', 'mapmaker-encounters', 'mapmaker-fishing', 'mapmaker-zones', 'mapmaker-validator', 'mapmaker-inspector', 'mapmaker-area-editor', 'mapmaker-items', 'mapmaker-doors', 'mapmaker-production']);
     guides.add('mapmaker-temporary-content');
+    guides.add('mapmaker-fx');
     app.get('/local/guides/:slug.md', (req, res) => {
         if (!guides.has(req.params.slug)) return res.status(404).type('text/plain').send('Guide not found.');
         res.type('text/plain').sendFile(path.join(toolbox.root, 'docs', req.params.slug + '.md'));

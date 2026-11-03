@@ -53,7 +53,7 @@ function balance(client, state, wallet, now = Date.now()) {
 }
 function rewards(client,state,wallet) {
     const data = account(client,state,wallet);
-    return {unlocks:[...data.unlocks],selectedTitle:data.selectedTitle,selectedTrail:data.selectedTrail || null,rewards:catalog.rewards};
+    return {unlocks:[...data.unlocks],selectedTitle:data.selectedTitle,selectedHit:data.selectedHit || null,selectedTrail:data.selectedTrail || null,rewards:catalog.rewards};
 }
 function overview(client,state,wallet,now = Date.now(),level = 1) {
     const data = account(client,state,wallet), day = DailyPlay.dayOf(now), week = monday(day);
@@ -106,4 +106,10 @@ function selectTrail(client,state,wallet,trail) {
     data.selectedTrail = trail;
     return rewards(client,state,wallet);
 }
-module.exports = {record,overview,rewards,purchase,selectTitle,selectTrail};
+function selectHit(client,state,wallet,hit) {
+    const data = account(client,state,wallet);
+    if (hit !== null && (!data.unlocks.includes(hit) || catalog.rewards.find(row => row.id === hit)?.type !== 'hit')) error('Unlock this hit before equipping it.');
+    data.selectedHit = hit;
+    return rewards(client,state,wallet);
+}
+module.exports = {record,overview,rewards,purchase,selectTitle,selectTrail,selectHit};

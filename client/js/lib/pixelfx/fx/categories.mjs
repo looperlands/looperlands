@@ -1,0 +1,25 @@
+// The categories, in gallery order, with a line for each.
+
+export const categories = [
+  { id: "moves", name: "moves", blurb: "whole attacks, wind-up to recovery, chained from the effects below" },
+  { id: "fire", name: "fire", blurb: "torches, breath, pillars, walls of flame" },
+  { id: "explosions", name: "explosions", blurb: "blasts, smoke, fireworks, mushroom clouds" },
+  { id: "water", name: "water", blurb: "splashes, falls, fountains, waves" },
+  { id: "ice", name: "ice", blurb: "spikes, novas, freezing, shattering" },
+  { id: "lightning", name: "lightning", blurb: "strikes, arcs, coils, storms" },
+  { id: "scifi", name: "sci-fi", blurb: "holograms, shields, scanners, warps" },
+  { id: "melee", name: "melee", blurb: "slashes, smears, cleaves, combos" },
+  { id: "impacts", name: "impacts", blurb: "hit sparks, shockwaves, landings" },
+  { id: "projectiles", name: "projectiles", blurb: "bullets, rockets, lasers, arrows" },
+  { id: "spawn", name: "spawn & death", blurb: "poofs, portals, souls, shatters" },
+  { id: "arcane", name: "arcane", blurb: "portals, runes, missiles, beams" },
+  { id: "holy", name: "holy", blurb: "heals, halos, pillars of light" },
+  { id: "shadow", name: "shadow", blurb: "curses, voids, tendrils, souls" },
+  { id: "status", name: "status", blurb: "burning, frozen, poisoned, asleep" },
+  { id: "nature", name: "nature", blurb: "poison, vines, thorns, quakes" },
+  { id: "weather", name: "weather", blurb: "rain, snow, fog, aurora" },
+  { id: "ui", name: "ui", blurb: "level ups, numbers, toasts, countdowns" },
+  { id: "pickups", name: "pickups", blurb: "coins, gems, chests, potions" },
+  { id: "transitions", name: "transitions", blurb: "wipes, irises, dissolves" },
+  { id: "critters", name: "critters", blurb: "slimes, bats, ghosts, frogs" },
+];

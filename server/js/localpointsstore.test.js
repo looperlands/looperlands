@@ -90,3 +90,12 @@ test('fishing and harvest rewards require fixed action counts at every avatar le
     await client.storeActivity([...rows('fishing',1),...rows('tile',1,{stage:'harvest'})]);
     const data=await client.getPointsStore(wallet);expect(data.objectives.daily.slice(1).map(row=>row.progress)).toEqual([15,20]);expect(data.balance.earned).toBe(3);
 });
+
+test('hit styles are permanent wallet purchases, survive reconnect and cannot equip unowned or wrong-slot rewards',async()=>{
+    fund();await expect(client.selectRewardHit(wallet,'hit:frost')).rejects.toThrow('Unlock');
+    const request=body('hit-frost');await client.purchasePointsItem(wallet,request);await client.purchasePointsItem(wallet,request);
+    await client.selectRewardHit(wallet,'hit:frost');client=new LocalPlatform({dataDir:dir});
+    expect((await client.getRewardUnlocks(wallet)).selectedHit).toBe('hit:frost');expect((await client.getPointsStore(wallet)).balance.spent).toBe(350);
+    await expect(client.selectRewardHit(wallet,'trail:golden-sparks')).rejects.toThrow('Unlock');
+    expect((await client.selectRewardHit(wallet,null)).selectedHit).toBeNull();
+});

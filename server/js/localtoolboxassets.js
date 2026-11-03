@@ -2,7 +2,12 @@ const path = require('path');
 
 // Both local entry points serve the same editor shell and its shared scripts.
 function install(app, root) {
+    app.use('/local/vendor/lib/pixelfx', require('express').static(path.join(root, 'client/js/lib/pixelfx')));
     const assets = {
+        '/local/vendor/attackwarning-worker.js': 'client/js/attackwarning-worker.js',
+        '/local/vendor/pixelfxpainter.mjs': 'client/js/pixelfxpainter.mjs',
+        '/local/vendor/pixelfxcatalog.js': 'shared/js/pixelfxcatalog.js',
+        '/local/vendor/placedfxconfig.js': 'shared/js/placedfxconfig.js',
         '/local/vendor/ambientconfig.js': 'client/js/ambientconfig.js',
         '/local/vendor/soundscape.js': 'client/js/soundscape.js',
         '/local/dialogue-format.js': 'shared/js/dialogueformat.js',

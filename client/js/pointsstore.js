@@ -125,7 +125,7 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
             const keepsakes=node('section','ps-keepsakes');keepsakes.append(node('h3','','Make it yours'));
             for(const product of this.data.products.filter(row=>row.type==='unlock')) {
                 const reward=this.data.rewards.find(row=>row.id===product.reward),owned=this.data.unlocks.includes(product.reward),row=node('div','ps-keepsake-row');
-                const text=node('div');text.append(node('strong','',product.name),node('span','ps-footnote',reward?.type==='title'?'An earned title beside your name':reward?.type==='trail'?'Pixel sparks follow you while moving':'Permanent emote · all your avatars'));
+                const text=node('div');text.append(node('strong','',product.name),node('span','ps-footnote',reward?.type==='title'?'An earned title beside your name':reward?.type==='trail'?'Pixel sparks follow you while moving':reward?.type==='hit'?'Cosmetic weapon impacts · all your avatars':'Permanent emote · all your avatars'));
                 const choose=button(owned?'Owned':product.price+' points',()=>{this.selection={product,nftId:null,choice:null};this.notice=null;this.render();});choose.disabled=owned||this.busy||!!this.pending;
                 row.append(this.rewardArtwork(reward,'ps-keepsake-symbol'),text,choose);keepsakes.append(row);
             }
@@ -282,7 +282,20 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
                 tile.className='ps-title-tile';tile.disabled=!!this.trailBusy;tile.setAttribute('aria-pressed',String((this.data.selectedTrail || null)===trail.id));
                 tile.append(trail.id?this.rewardArtwork(trail,'ps-trail-preview'):node('span','ps-title-mark','—'),node('span','',trail.label));trailTiles.append(tile);
             }
-            ownedPage.append(trailTiles,node('p','ps-footnote','Equip a trail here after buying it. Trails follow all your avatars.'),node('h3','','Emotes'));
+            ownedPage.append(trailTiles,node('p','ps-footnote','Equip a trail here after buying it. Trails follow all your avatars.'),node('h3','','Weapon hit effects'));
+            const hitTiles=node('div','ps-title-tiles');
+            for(const hit of [{id:null,label:'Default hits'},...this.data.rewards.filter(row=>row.type==='hit'&&this.data.unlocks.includes(row.id))]) {
+                const tile=button('',async()=>{
+                    if(this.hitBusy)return;
+                    this.hitBusy=true;this.render();
+                    try {await axios.put(this.url('rewards/hit'),{hit:hit.id});this.notice=hit.id?'Hit equipped.':'Hit removed.';await this.load();}
+                    catch(error){this.error=error.response?.data?.error || 'Hit could not be confirmed.';}
+                    finally{this.hitBusy=false;this.render();}
+                });
+                tile.className='ps-title-tile';tile.disabled=!!this.hitBusy;tile.setAttribute('aria-pressed',String((this.data.selectedHit || null)===hit.id));
+                tile.append(hit.id?this.rewardArtwork(hit,'ps-hit-preview'):node('span','ps-title-mark','—'),node('span','',hit.label));hitTiles.append(tile);
+            }
+            ownedPage.append(hitTiles,node('p','ps-footnote','Equip a style after buying it. Critical hits use their own effect. Damage is unchanged.'),node('h3','','Emotes'));
             eventPage.append(node('h3','','Event keepsakes'),node('p','ps-description','Some things you have to be there for. These emotes are reserved for events.'));
             for(const reward of this.data.rewards.filter(row=>row.type==='emote')) {
                 const owned=this.data.unlocks.includes(reward.id),row=node('article','ps-reward-row');

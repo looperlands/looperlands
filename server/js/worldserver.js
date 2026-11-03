@@ -236,6 +236,7 @@ module.exports = World = cls.Class.extend({
             self.initDoorTriggers();
 
             self.map.generateCollisionGrid();
+            self.placedFx = new (require('./placedfxcontroller'))(self);
 
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
@@ -312,6 +313,7 @@ module.exports = World = cls.Class.extend({
             if (!self.npcBehavior) self.scenes?.sync(self);
             self.server.tileActionsController?.localSequences?.tick(self).catch(error => console.error('Interaction timer failed:', error.message));
             self.combat?.tick();
+            self.placedFx?.tick();
             self.processGroups();
             self.processQueues();
 
@@ -833,6 +835,7 @@ module.exports = World = cls.Class.extend({
     handleHurtEntity: function (entity, attacker, damage, critical = false) {
         var self = this;
 
+        this.placedFx?.hit(entity, attacker, damage, critical);
         if (damage > 0) {
             if (entity.type === 'mob' && entity.hitPoints > 0 && attacker.type === 'player') this.server?.fieldGuide?.observe(attacker, 'encounter', entity.kind);
             if (entity.type === 'player' && attacker.type === 'mob') this.server?.fieldGuide?.observe(entity, 'encounter', attacker.kind);

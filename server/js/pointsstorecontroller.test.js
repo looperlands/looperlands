@@ -73,3 +73,19 @@ test('only owned trail selections broadcast and clearing removes the live trail'
     expect(f.world.pushBroadcast.mock.calls.at(-1)[0].serialize()).toEqual([Types.Messages.PLAYER_TRAIL,f.player.id,'trail:golden-sparks']);
     f.profile.selectedTrail=null;f.controller.applyProfile('0xabc',f.profile);expect(f.player.selectedTrail).toBeNull();
 });
+
+test('hit style selection uses the authenticated wallet and only owned hit rewards reach combat',async()=>{
+    const f=setup();f.platform.selectRewardHit=jest.fn(async()=>f.profile);
+    f.profile.selectedHit='hit:frost';f.profile.rewards.push({id:'hit:frost',type:'hit'});
+    f.controller.applyProfile('0xabc',f.profile);expect(f.player.selectedHit).toBeNull();
+    f.profile.unlocks.push('hit:frost');f.req.body={hit:'hit:frost',wallet:'0xother'};
+    await f.controller.hit(f.req,f.res);expect(f.platform.selectRewardHit).toHaveBeenCalledWith('0xabc','hit:frost');expect(f.player.selectedHit).toBe('hit:frost');
+    f.profile.selectedHit=null;f.req.body={hit:null};await f.controller.hit(f.req,f.res);expect(f.player.selectedHit).toBeNull();
+    f.req.body={hit:42};await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(400);
+    f.player.isDead=true;await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(401);
+});
+test('a rejected or uncertain hit selection never invents a successful selection',async()=>{
+    const f=setup();f.req.body={hit:'hit:frost'};f.platform.selectRewardHit=jest.fn().mockRejectedValue({response:{status:400,data:{error:'Unlock this hit'}}});
+    await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(400);expect(f.res.json).toHaveBeenLastCalledWith({error:'Unlock this hit'});
+    f.platform.selectRewardHit.mockRejectedValue(new Error('offline'));await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(503);expect(f.player.selectedHit).toBeUndefined();
+});

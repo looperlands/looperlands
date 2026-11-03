@@ -42,6 +42,7 @@ class PointsStoreController {
             session.rewardTitle = label; this.cache.set(id,session);
             const live = this.context(id);
             if (!live) continue;
+            live.player.selectedHit = profile.rewards.find(reward => reward.id === profile.selectedHit && reward.type === 'hit' && profile.unlocks.includes(reward.id))?.id || null;
             const trail = profile.rewards.find(reward => reward.id === profile.selectedTrail && reward.type === 'trail' && profile.unlocks.includes(reward.id))?.id || null;
             if ((live.player.selectedTrail || null) !== trail) {
                 live.player.selectedTrail = trail;
@@ -146,6 +147,16 @@ class PointsStoreController {
             const profile = await this.profile(context.session.walletId,true); this.applyProfile(context.session.walletId,profile);
             return res.json(profile);
         } catch (error) {return res.status(error.response?.status === 400 ? 400 : 503).json({error:error.response?.status === 400 ? error.response.data.error : 'Trail could not be confirmed. Refresh your rewards.'});}
+    }
+    async hit(req,res) {
+        const context = this.context(req.params.sessionId);
+        if (!context) return res.status(401).json({error:'Your game session is no longer active.'});
+        if (!Object.hasOwn(req.body || {},'hit') || (req.body.hit !== null && typeof req.body.hit !== 'string')) return res.status(400).json({error:'Choose an unlocked hit.'});
+        try {
+            await this.platform.selectRewardHit(context.session.walletId,req.body.hit);
+            const profile = await this.profile(context.session.walletId,true); this.applyProfile(context.session.walletId,profile);
+            return res.json(profile);
+        } catch (error) {return res.status(error.response?.status === 400 ? 400 : 503).json({error:error.response?.status === 400 ? error.response.data.error : 'Hit could not be confirmed. Refresh your rewards.'});}
     }
 }
 module.exports = PointsStoreController;

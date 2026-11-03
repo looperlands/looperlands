@@ -6,8 +6,8 @@ const {validateScenes, applyScenes} = require('./localworldscenes');
 const {validateDialogue} = require('./localquestdialogue');
 const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
-const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes', sequences: 'sequences', ambient: 'ambientSounds'};
-const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: [], sequences: [], ambientSounds: []});
+const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes', sequences: 'sequences', ambient: 'ambientSounds', fx: 'placedFx'};
+const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: [], sequences: [], ambientSounds: [], placedFx: []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 function fields(value, allowed, label) {if (!object(value) || Object.keys(value).some(k => !allowed.includes(k))) fail(label + ' contains unsupported fields.');}
@@ -31,7 +31,7 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences','weather','ambientSounds'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences','weather','ambientSounds','placedFx'], 'World authoring source');
     if (value.weather != null) require('../../client/js/sceneenvironment').weather(value.weather);
     if (value.version !== 1) fail('World authoring source requires version: 1.');
     for (const key of Object.values(tools)) list(value[key] == null && key === 'scenes' ? [] : value[key] === undefined ? [] : value[key], 100, key);
@@ -122,7 +122,7 @@ function validateAtmosphere(entries, catalog) {
     }
     return entries;
 }
-const validate = {ambient:require('../../client/js/ambientconfig').validate,events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere,sequences:require('./scriptedsequenceconfig').validate};
+const validate = {fx:require('../../shared/js/placedfxconfig').validate,ambient:require('../../client/js/ambientconfig').validate,events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere,sequences:require('./scriptedsequenceconfig').validate};
 let baseline;
 function bundled() {return baseline ||= require('../world-definitions').register(new (require('./worlddefinitions').WorldDefinitions)(), {local:false});}
 async function catalog(root, mapId) {
@@ -232,8 +232,8 @@ function installRuntime(app,root,getWorlds=()=>({})) {
             // A fresh client map load must also refresh the already-running server's
             // area lookup, including when the local layout was removed or restored.
             const worlds=getWorlds()||{},world=worlds[mapId]||worlds['world_'+mapId];
-            if(world?.map)world.map.scenes=value.scenes||[];
-            if(doc.scenes==null&&!doc.atmosphere.length&&!doc.weather&&!doc.ambientSounds.length&&!tileDoc.placements.length)return next();
+            if(world?.map){world.map.scenes=value.scenes||[];world.map.placedFx=value.placedFx||[];world.placedFx?.configure(world.map.placedFx);}
+            if(doc.scenes==null&&!doc.atmosphere.length&&!doc.weather&&!doc.ambientSounds.length&&!doc.placedFx.length&&!map.placedFx?.length&&!tileDoc.placements.length)return next();
             res.setHeader('Cache-Control','no-store');
             if(match[2]==='js')return res.type('application/javascript').send('var mapData = '+JSON.stringify(value)+';');
             res.json(value);

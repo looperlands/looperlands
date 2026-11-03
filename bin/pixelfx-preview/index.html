@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LooperLands · FX playground</title>
+  <link rel="stylesheet" href="/opendesign/design-systems/looperlands/tokens/colors_and_type.css">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<main>
+  <header><span class="wordmark">LooperLands</span><span class="badge">LOCAL PLAYGROUND</span><a href="https://patch-gg.github.io/pixelfx/" target="_blank" rel="noreferrer">PixelFX reference ↗</a></header>
+  <div class="intro"><div><h1>A little more magic.</h1><p>Try the effects at game scale. Move, strike, dodge, compare.</p></div><button id="reset">Reset playground <kbd>R</kbd></button></div>
+  <div class="workspace">
+    <section class="stage" aria-label="Playable effects preview">
+      <div class="stage-top"><span id="scene-label">Training clearing</span><span id="health">100 HP</span><span id="fps">— FPS</span></div>
+      <canvas id="game" width="384" height="240" tabindex="0" aria-label="Effects playground. Move with WASD or arrow keys, Space to hit, C for a critical hit, E for a counter. Tap a ground position to walk there."></canvas>
+      <div class="stage-bottom"><span><kbd>WASD</kbd> move · <kbd>Space</kbd> hit · <kbd>C</kbd> crit · <kbd>E</kbd> counter</span><span>Tap ground to move</span></div>
+      <p id="status" role="status">Loading LooperLands art and effect sheets…</p>
+      <div class="quick-actions"><button data-action="hit">Hit</button><button data-action="critical">Critical hit</button><button data-action="counter">Counter</button><button data-action="charge">Dodge & counter</button></div>
+      <section class="tuning" aria-label="Preview settings">
+        <label>Avatar<select id="avatar"><option value="clotharmor">Cloth</option><option value="leatherarmor">Leather</option><option value="platearmor">Plate</option></select></label>
+        <label>Weapon<select id="weapon"><option value="sword1">Sword</option><option value="axe">Axe</option><option value="bluesword">Blue sword</option><option value="NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741">Custom NFT sword</option></select></label>
+        <label>Effect size<select id="size"><option value="0.7">Small · 70%</option><option value="1" selected>LL fit · 100%</option><option value="1.4">Large · 140%</option><option value="native">PixelFX original</option></select></label>
+        <label>Timing<select id="timing"><option value="1">Game pace</option><option value="0.25">Slow motion</option><option value="0">Paused</option></select></label>
+      </section>
+      <div class="options"><label><input type="checkbox" id="night"> Night</label><label><input type="checkbox" id="roof"> Roof occlusion</label><label><input type="checkbox" id="reduced"> Reduced motion</label><label><input type="checkbox" id="repeat"> Repeat selected effect</label><button id="crowd">Crowd test ×12</button></div>
+      <div class="telemetry"><span id="active">0 active effects</span><span id="dimensions">Effects use separate sheets</span><span id="freeze">Frost counter ready</span></div>
+    </section>
+    <aside aria-label="Effect choices">
+      <section class="choices"><span class="eyebrow">01–03 · COMBAT</span><h2>Give the hit a signature</h2>
+        <label>Ordinary impact<select id="impact"><option value="sparks">Sparks</option><option value="frost">Frost shards</option><option value="shadow">Shadow burst</option><option value="none">Original / no added FX</option></select></label>
+        <label>Counter style<select id="counter"><option value="holy">Holy Smite</option><option value="lightning">Lightning Call</option><option value="critical">Critical Hit</option></select></label>
+        <p>Impact overlays leave the weapon art intact. Counter strikes skip the long spell wind-up.</p>
+      </section>
+      <section class="choices"><span class="eyebrow">04–05 · DEPARTURE & ARRIVAL</span><h2>Make an entrance</h2>
+        <div class="pair"><label>Death<select id="death"><option value="embers">Ember dissolve</option><option value="ice">Icy fragments</option><option value="soul">Soul rise</option></select></label><button data-action="death">Try death</button></div>
+        <div class="pair"><label>Arrival<select id="arrival"><option value="portal">Portal ring</option><option value="poof">Poof</option><option value="beam">Light beam</option></select></label><button data-action="arrival">Respawn</button></div>
+        <button data-action="companion" id="companion">Summon companion</button><p>Death variants use the selected LL avatar. Enemy artwork stays unchanged.</p>
+      </section>
+      <section class="choices"><span class="eyebrow">06–08 · HAZARDS</span><h2>Watch your step</h2>
+        <div class="hazard-buttons"><button data-action="pillar">Flame Pillar</button><button data-action="meteor">Meteor</button><button data-action="flamethrower">Flamethrower</button></div>
+        <p>Marks appear under your feet. Step away before impact. Bright marked tiles are dangerous; fading smoke is safe.</p>
+      </section>
+      <section class="choices"><span class="eyebrow">09 · FROST COUNTER</span><h2>A moment to breathe</h2>
+        <label class="check"><input type="checkbox" id="frost-counter"> Freeze on counter</label><button data-action="freeze">Try frost counter</button><p>Three-second freeze. Ten-second cooldown. This is a gameplay experiment, separate from cosmetic unlocks.</p>
+      </section>
+    </aside>
+  </div>
+  <footer><p><strong>Visual prototype.</strong> Real LL art and PixelFX sheets; movement, damage, counters and freeze are simulated locally. This does not connect to a wallet or alter the game. Selected styles can later join the existing Points Exchange.</p><p>PixelFX: Patch / Hugo Duprez, MIT · <a href="assets/PixelFX-LICENSE">license</a> · <a href="assets/PixelFX-NOTICE.md">notices</a>. Death masks, portal rings, freeze shell and light beam are LL-sized procedural studies.</p></footer>
+</main>
+<script src="model.js"></script><script src="preview.js"></script>
+</body>
+</html>

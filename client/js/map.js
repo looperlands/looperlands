@@ -184,6 +184,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
             this.ambientSounds = map.ambientSounds || [];
+            this.placedFx = map.placedFx || [];
             this.pvpZones = map.pvpZones || [];
             this.fishingTiles = map.fishingTiles || {};
             this.collisions = map.collisions;
