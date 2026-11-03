@@ -1778,5 +1778,79 @@
       "radius": 16,
       "volume": 0.3
     }
+  ],
+  "placedFx": [
+    {
+      "id": "fx_1",
+      "name": "Torch",
+      "effect": "fire/torch",
+      "x": 153,
+      "y": 71,
+      "width": 1,
+      "height": 1,
+      "scale": 0.5,
+      "hue": 0,
+      "background": "transparent",
+      "hazard": null
+    },
+    {
+      "id": "fx_2",
+      "name": "Torch",
+      "effect": "fire/torch",
+      "x": 157,
+      "y": 71,
+      "width": 1,
+      "height": 1,
+      "scale": 0.5,
+      "hue": 0,
+      "background": "transparent",
+      "hazard": null
+    },
+    {
+      "id": "fx_3",
+      "name": "Flame pillar",
+      "effect": "fire/flame-pillar",
+      "x": 148,
+      "y": 64,
+      "width": 13,
+      "height": 6,
+      "scale": 0.5,
+      "hue": 0,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 1500,
+        "activeMs": 500,
+        "cooldownMs": 4100,
+        "damage": 10,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 2,
+        "areaHeight": 2
+      }
+    },
+    {
+      "id": "fx_4",
+      "name": "Flame pillar",
+      "effect": "fire/flame-pillar",
+      "x": 149,
+      "y": 63,
+      "width": 12,
+      "height": 6,
+      "scale": 0.5,
+      "hue": 0,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 1500,
+        "activeMs": 500,
+        "cooldownMs": 5600,
+        "damage": 10,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 2,
+        "areaHeight": 2
+      }
+    }
   ]
 }
