@@ -48,3 +48,11 @@ test('named palettes are allowlisted while legacy hue placements remain readable
     for(const palette of ['',null,42,'unknown','toString'])expect(()=>C.validate([{...row,palette}])).toThrow('palette');
     expect(C.validate([{...row,hue:120}])).toHaveLength(1);
 });
+
+test('attack conditions select a map mob and inactive effects have no animation or warning',()=>{
+    expect(C.validate([{...row,attackingMob:13}],{mobs:[{id:13}]})).toHaveLength(1);
+    expect(C.phase({...row,hazard},null)).toEqual({kind:'inactive',effectMs:null});
+    expect(C.phase(row,null)).toEqual({kind:'inactive',effectMs:null});
+    expect(()=>C.validate([{...row,attackingMob:13}],{mobs:[{id:2}]})).toThrow('from this map');
+    for(const attackingMob of [null,0,-1,1.5,'13',{},Number.MAX_SAFE_INTEGER+1])expect(()=>C.validate([{...row,attackingMob}])).toThrow('Attacking mob');
+});

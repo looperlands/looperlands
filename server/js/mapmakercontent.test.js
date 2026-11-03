@@ -90,7 +90,7 @@ test('ambient-only maps are included in production artifacts and invalid placeme
 
 test('decorative and hazard placements survive matching client/server export and invalid geometry aborts before writes',()=>{
     const effect={id:'camp',name:'Campfire',effect:'fire/campfire',x:2,y:2,width:2,height:2,scale:.5,hue:120,palette:'leaf',hazard:null};
-    const hazard={...effect,id:'trap',effect:'fire/meteor',hazard:{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:620}};
+    const hazard={...effect,id:'trap',effect:'fire/meteor',attackingMob:13,hazard:{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:620}};
     write('tools/worlds/one.json',{version:1,placedFx:[effect,hazard]});expect(Content.build(root)).toBe(3);
     for(const file of ['client/maps/world_client_one.json','server/maps/world_server_one.json'])expect(JSON.parse(fs.readFileSync(path.join(root,file))).placedFx).toEqual([effect,hazard]);
     const context={};vm.runInNewContext(fs.readFileSync(path.join(root,'client/maps/world_client_one.js'),'utf8'),context);expect(JSON.parse(JSON.stringify(context.mapData.placedFx))).toEqual([effect,hazard]);

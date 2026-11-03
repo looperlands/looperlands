@@ -25,3 +25,59 @@ test('random hazard damage uses exactly the advertised seeded footprint, with no
     player.x=footprint.x===r.x?r.x+1:r.x;tick(1250);expect(player.handleHurt).toHaveBeenCalledTimes(1);
     Object.assign(player,{x:footprint.x,y:footprint.y});tick(1600);expect(player.handleHurt).toHaveBeenCalledTimes(1);
 });
+
+function bossHazard() {
+    const boss={kind:13,hitPoints:100,isDead:false,target:null};
+    world.mobs={boss};fx.configure([{...row,attackingMob:13}]);return boss;
+}
+const latest=()=>world.pushToPlayer.mock.calls.at(-1)[1].serialize()[1];
+
+test('boss hazards wait for combat, start with a full warning and restart cleanly after disengaging',()=>{
+    const boss=bossHazard();tick(0);tick(80000);
+    expect(latest().activations).toEqual({fire:null});expect(player.handleHurt).not.toHaveBeenCalled();
+    boss.target=1;tick(81000);expect(latest().activations).toEqual({fire:81000});
+    tick(81999);expect(player.handleHurt).not.toHaveBeenCalled();tick(82000);expect(player.handleHurt).toHaveBeenCalledTimes(1);
+    boss.target=null;tick(82100);tick(82250);expect(player.handleHurt).toHaveBeenCalledTimes(1);expect(latest().activations.fire).toBeNull();
+    boss.target=1;tick(83000);tick(83999);expect(player.handleHurt).toHaveBeenCalledTimes(1);
+    tick(84000);expect(player.handleHurt).toHaveBeenCalledTimes(2);expect(latest().activations.fire).toBe(83000);
+});
+
+test.each(['dead mob','zero hp mob','removed mob','dead target','zero hp target','departed target','bot target','not entered target','wrong mob type'])('%s disables boss damage immediately',reason=>{
+    const boss=bossHazard();boss.target=1;tick(0);tick(1000);expect(player.handleHurt).toHaveBeenCalledTimes(1);
+    if(reason==='dead mob')boss.isDead=true;
+    if(reason==='zero hp mob')boss.hitPoints=0;
+    if(reason==='removed mob')world.mobs={};
+    if(reason==='dead target')player.isDead=true;
+    if(reason==='zero hp target')player.hitPoints=0;
+    if(reason==='departed target')delete world.players[1];
+    if(reason==='bot target')player.isBot=()=>true;
+    if(reason==='not entered target')player.hasEnteredGame=false;
+    if(reason==='wrong mob type')boss.kind=2;
+    tick(1250);expect(fx.activations.get('fire')).toBeNull();expect(player.handleHurt).toHaveBeenCalledTimes(1);
+});
+
+test('another attacking mob of the chosen type and target changes keep the same warning clock',()=>{
+    const boss=bossHazard(),other={...player,id:2};world.players[2]=other;boss.target=1;tick(0);
+    boss.target=2;tick(400);expect(fx.activations.get('fire')).toBe(0);
+    world.mobs.second={...boss,target:1};boss.isDead=true;tick(500);expect(fx.activations.get('fire')).toBe(0);
+    expect(world.pushToPlayer).toHaveBeenCalledTimes(2);
+    world.mobs.second.target=null;tick(600);expect(fx.activations.get('fire')).toBeNull();
+});
+
+test('activation updates preserve other hazard clocks and late-arrival protection',()=>{
+    const boss=bossHazard();fx.configure([{...row,id:'automatic'},{...row,attackingMob:13}]);tick(0);
+    boss.target=1;tick(500);expect(fx.players.get(player).joined).toBe(0);expect(latest().epoch).toBe(0);
+    tick(1000);expect(player.handleHurt.mock.calls.map(call=>call[0].id)).toEqual(['automatic']);
+    const late={...player,id:2,handleHurt:jest.fn()};world.players[2]=late;tick(1100);
+    const packet=latest();expect(packet.activations.fire).toBe(500);expect(packet.seed).toBe(fx.seed);
+    tick(1500);expect(player.handleHurt.mock.calls.at(-1)[0].id).toBe('fire');expect(late.handleHurt).not.toHaveBeenCalled();
+    tick(500+require('../../shared/js/placedfxconfig').cycleDuration(row)+1000);
+    expect(late.handleHurt.mock.calls.some(call=>call[0].id==='fire')).toBe(true);
+});
+
+test('decorative attack conditions synchronize without causing damage and identical configuration preserves activation',()=>{
+    const boss=bossHazard(),decoration={...row,attackingMob:13,hazard:null};fx.configure([decoration]);boss.target=1;tick(100);
+    now=500;fx.configure([decoration]);expect(fx.activations.get('fire')).toBe(100);
+    tick(5000);expect(player.handleHurt).not.toHaveBeenCalled();
+    boss.isDead=true;tick(5001);expect(latest().activations.fire).toBeNull();
+});
