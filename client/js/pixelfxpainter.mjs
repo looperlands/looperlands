@@ -1,4 +1,4 @@
-import {createFrame, clearFrame, createFx, composite} from './lib/pixelfx/core/index.mjs';
+import {createFrame, clearFrame, createFx, composite, PAL} from './lib/pixelfx/core/index.mjs';
 
 // Lazy loading and bounded frame caching are shared by the game worker and Toolbox.
 export class PixelFxPainter {
@@ -11,20 +11,25 @@ export class PixelFxPainter {
         if (!this.modules.has(id)) this.modules.set(id, import('./lib/pixelfx/fx/'+id+'.mjs').then(mod => {this.metadata.set(id,mod.meta);return mod;}));
         return this.modules.get(id);
     }
-    frame(id, time, hue = 0, removeBackdrop = false) {
-        const step = Math.floor(Math.max(0,time)/1000*20), key = id+':'+step+':'+hue+':'+removeBackdrop;
+    frame(id, time, {palette, hue = 0, removeBackdrop = false} = {}) {
+        if (palette && !Object.hasOwn(PAL,palette)) throw new Error('Unknown PixelFX palette');
+        // Named palettes go into the original shader, as in the upstream gallery.
+        // Retain hue only for older saved placements until a palette is selected.
+        if (palette) hue=0;
+        const instanceKey=id+':'+(palette || 'original');
+        const step = Math.floor(Math.max(0,time)/1000*20), key = instanceKey+':'+step+':'+hue+':'+removeBackdrop;
         if (this.frames.has(key)) {const frame=this.frames.get(key); this.frames.delete(key); this.frames.set(key,frame); return frame;}
-        let item = this.instances.get(id);
+        let item = this.instances.get(instanceKey);
         if (!item) {
-            this.instances.set(id, {loading:true});
-            this.load(id).then(mod => {this.instances.set(id, {mod});}).catch(error => {this.instances.set(id, {error}); console.warn('PixelFX:',id,error.message);});
+            this.instances.set(instanceKey, {loading:true});
+            this.load(id).then(mod => {this.instances.set(instanceKey, {mod});}).catch(error => {this.instances.set(instanceKey, {error}); console.warn('PixelFX:',id,error.message);});
             return null;
         }
         if (!item.mod) return null;
         if(this.frameSpent>12) return item.lastHue===hue && item.lastBackdrop===removeBackdrop ? item.last || null : null;
         const started=performance.now();
         const mod=item.mod, t=step/20, [w,h]=mod.meta.size;
-        if (!item.fx || item.fx.t>t) item.fx=createFx(mod,{x:mod.meta.origin[0],y:mod.meta.origin[1],seed:1});
+        if (!item.fx || item.fx.t>t) item.fx=createFx(mod,{x:mod.meta.origin[0],y:mod.meta.origin[1],seed:1,...(palette?{palette:PAL[palette]}:{})});
         item.fx.update(Math.max(0,t-item.fx.t));
         item.raw ||= createFrame(w,h); clearFrame(item.raw); item.fx.draw(item.raw);
         if(removeBackdrop) removeDarkBackdrop(item.raw.color);
@@ -34,11 +39,11 @@ export class PixelFxPainter {
         this.frames.set(key,canvas); this.bytes+=w*h*4;
         while(this.bytes>16*1024*1024) {const first=this.frames.keys().next().value, old=this.frames.get(first);this.bytes-=old.width*old.height*4;this.frames.delete(first);}
         // Simulations hold particles; do not keep abandoned map instances forever.
-        if(this.instances.size>32) for(const other of this.instances.keys()) if(other!==id){this.instances.delete(other);break;}
+        if(this.instances.size>32) for(const other of this.instances.keys()) if(other!==instanceKey){this.instances.delete(other);break;}
         return canvas;
     }
-    draw(ctx, effect, milliseconds, x, y, scale, hue = 0, removeBackdrop = false) {
-        const frame=this.frame(effect,milliseconds,hue,removeBackdrop); if(!frame)return false;
+    draw(ctx, effect, milliseconds, x, y, scale, appearance = {}) {
+        const frame=this.frame(effect,milliseconds,appearance); if(!frame)return false;
         const meta=this.metadata.get(effect); if(!meta)return false;
         ctx.imageSmoothingEnabled=false;
         ctx.drawImage(frame,Math.round(x-meta.origin[0]*scale),Math.round(y-meta.origin[1]*scale),Math.round(frame.width*scale),Math.round(frame.height*scale));

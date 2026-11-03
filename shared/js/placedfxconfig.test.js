@@ -41,3 +41,10 @@ test('random strikes stay inside the region, stay fixed during one cycle and var
     expect(positions.size).toBeGreaterThan(10);
     expect(()=>C.validate([{...r,hazard:{...r.hazard,areaWidth:11}}])).toThrow('Strike width');
 });
+
+test('named palettes are allowlisted while legacy hue placements remain readable',()=>{
+    expect(Object.keys(C.palettes)).toHaveLength(27);
+    for(const palette of Object.keys(C.palettes))expect(C.validate([{...row,palette}])).toHaveLength(1);
+    for(const palette of ['',null,42,'unknown','toString'])expect(()=>C.validate([{...row,palette}])).toThrow('palette');
+    expect(C.validate([{...row,hue:120}])).toHaveLength(1);
+});

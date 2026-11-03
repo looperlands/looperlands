@@ -13,7 +13,7 @@
         if (!Array.isArray(rows) || rows.length > 100) fail('Place at most 100 effects per map.');
         const ids = new Set();
         for (const r of rows) {
-            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','background','hazard'].includes(k))) fail('Unsupported placed FX field.');
+            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','palette','background','hazard'].includes(k))) fail('Unsupported placed FX field.');
             if (typeof r.id !== 'string' || !/^[a-z][a-z0-9_-]{0,63}$/i.test(r.id) || ids.has(r.id)) fail('FX IDs must be unique.');
             ids.add(r.id);
             if (typeof r.name !== 'string' || !r.name.trim() || r.name.length > 120 || /[<>\u0000-\u001f]/.test(r.name)) fail('Enter a plain-text FX name.');
@@ -24,6 +24,7 @@
             if (!Number.isFinite(r.scale) || r.scale < .1 || r.scale > 4) fail('Visual scale must be between 0.1 and 4.');
             if (r.background !== undefined && !['transparent','original'].includes(r.background)) fail('Choose transparent overlay or original artwork.');
             if (r.hue !== undefined) number(r.hue, -180, 180, 'Hue shift');
+            if (r.palette !== undefined && (typeof r.palette !== 'string' || !Object.hasOwn(Catalog.palettes, r.palette))) fail('Choose a palette from the PixelFX library.');
             if (r.hazard !== null) {
                 const h = r.hazard;
                 if (!h || Object.keys(h).some(k => !['warningMs','activeMs','cooldownMs','damage','tickMs','impactMs','placement','areaWidth','areaHeight'].includes(k))) fail('Unsupported hazard settings.');
@@ -64,5 +65,5 @@
         return {kind, cycle, remaining:kind==='warning'?h.warningMs-at:kind==='active'?h.warningMs+h.activeMs-at:period-at,
             tick:Math.floor((at-h.warningMs)/h.tickMs), effectMs:effectMs<0 || effectMs>=playbackDuration(row) ? null : effectMs%duration};
     }
-    return {validate, contains, phase, hitRegion, cycleDuration, hitStyles, catalog:Catalog.effects};
+    return {validate, contains, phase, hitRegion, cycleDuration, hitStyles, catalog:Catalog.effects, palettes:Catalog.palettes};
 });
