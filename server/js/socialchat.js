@@ -284,7 +284,8 @@ class SocialChat {
 function gameplayNameFromSession(session) {
     const identity = identityFromSession(session);
     const name = Utils.sanitize(identity.label);
-    return identity.label === identity.title ? name : name.substr(0, 15);
+    const displayName = identity.label === identity.title ? name : name.substr(0, 15);
+    return session.rewardTitle ? displayName + ' · ' + Utils.sanitize(session.rewardTitle) : displayName;
 }
 
 module.exports = { SocialChat, identityFromSession, shortWallet, gameplayNameFromSession };

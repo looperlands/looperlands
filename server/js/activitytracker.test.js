@@ -59,7 +59,7 @@ test.each([undefined, 'true', 'false'])('runtime tracking flag %s controls tile 
    expect(fs.existsSync(spool)).toBe(false);
   } else {
    expect(client.storeActivity).toHaveBeenCalledWith([
-    expect.objectContaining({type:'tile', data:{action:'farm', stage:'prepare', target:'*', quantity:1}})
+    expect.objectContaining({type:'tile', data:{action:'farm', stage:'prepare', target:'*', quantity:1, avatarLevel:1}})
    ]);
    expect(runtime.pending).toEqual([]);
   }

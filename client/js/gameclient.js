@@ -16,7 +16,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.deferredEntityActions = new Set([
                 Types.Messages.MOVE, Types.Messages.LOOTMOVE, Types.Messages.ATTACK,
                 Types.Messages.TELEPORT, Types.Messages.EQUIP, Types.Messages.NPC_STATE,
-                Types.Messages.MOBEXITCOMBAT, Types.Messages.PLAYER_TITLE
+                Types.Messages.MOBEXITCOMBAT, Types.Messages.PLAYER_TITLE, Types.Messages.PLAYER_TRAIL
             ]);
 
             console.log("Game client", this.host, this.port, this.protocol);
@@ -35,6 +35,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWN_BATCH] = this.receiveSpawnBatch;
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
+            this.handlers[Types.Messages.PLAYER_TRAIL] = data => this.playerTrail_callback?.(data[1], data[2]);
             this.handlers[Types.Messages.PLAYER_TITLE] = data => this.playerTitle_callback?.(data[1], data[2], data[3]);
             [Types.Messages.CHAT_STATE, Types.Messages.CHAT_MESSAGE, Types.Messages.CHAT_PLAYERS, Types.Messages.CHAT_ERROR, Types.Messages.CHAT_INVENTORY].forEach(type => {
                 this.handlers[type] = this.receiveSocialChat;
@@ -297,7 +298,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             const state = {id: data[1], kind: data[2], x: data[3], y: data[4]};
             if (Types.isPlayer(state.kind)) {
                 Object.assign(state, {name: data[5], orientation: data[6], armor: data[7],
-                    weapon: data[8], title: data[9], level: data[10], target: data[11]});
+                    weapon: data[8], title: data[9], level: data[10], target: data[11], selectedTrail: data[12] || null});
             } else if (Types.isMob(state.kind)) {
                 Object.assign(state, {orientation: data[5], level: data[6], target: data[7]});
             } else if (Types.isNpc(state.kind)) {
@@ -386,6 +387,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     const latest = pending.state;
                     if (latest.name !== undefined) character.name = latest.name;
                     if (latest.title !== undefined) character.title = latest.title;
+                    if (latest.selectedTrail !== undefined) character.selectedTrail = latest.selectedTrail;
                     if (latest.level !== undefined) character.level = latest.level;
                     if (Types.isNpc(kind)) {
                         character.setShowIndicator(latest.indicator);
@@ -830,6 +832,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.teleport_callback = callback;
         },
     
+        onPlayerTrail: function(callback) {this.playerTrail_callback = callback;},
+
         onPlayerTitle: function(callback) {
             this.playerTitle_callback = callback;
         },

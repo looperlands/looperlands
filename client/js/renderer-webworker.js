@@ -894,6 +894,10 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         shadow: 0,
     };
     if (inScene(lantern)) drawLightSource(ctx, lantern, cameraX, cameraY);
+    if (composingWorld) {
+        rendererExtensions?.draw('lighting', ctx, frameExtensions, {cameraX, cameraY, scale: 1,
+            sources: {overhead: canvases.highEntities}});
+    }
     ctx.restore();
 }
 

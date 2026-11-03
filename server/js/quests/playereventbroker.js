@@ -124,7 +124,7 @@ class PlayerEventBroker {
     async killMobEvent(mob) {
         this.player.server.server.fieldGuide?.observe(this.player, 'defeat', mob.kind);
         dao.saveMobKillEvent(this.player.nftId, mob.kind);
-        this.player.server.server.activity?.record(this.player, 'kill', {target: String(mob.kind), quantity: 1});
+        this.player.server.server.activity?.record(this.player, 'kill', {target: String(mob.kind), quantity: 1, enemyLevel: Math.max(1, Math.floor(Number(mob.level) || 1))});
 
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);

@@ -6373,6 +6373,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.app.hideWindows();
                 this.app.fieldGuide?.close();
                 this.app.eventBoard?.close();
+                this.app.pointsStore?.close();
                 clearInterval(this.scenePollingInterval);
                 this.scenePollingInterval = null;
                 clearTimeout(this.uniFishTimeout);
@@ -7339,6 +7340,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 if (this.client.isRecovering) this.app.clientUpdates.recoveryStatus('Reconnecting to the game server…');
                 this.bindTileActionCallbacks();
                 this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
+                this.client.onPlayerTrail((id, trail) => {
+                    const player = id === self.playerId ? self.player : self.entities[id];
+                    if (player) player.selectedTrail = trail;
+                });
                 this.client.onPlayerTitle((id, name, title) => {
                     const player = id === self.playerId ? self.player : self.entities[id];
                     if (player) {player.name = name; player.title = title;}
@@ -8463,6 +8468,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.footstepFeedback?.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
+                        self.app.pointsStore?.disconnect();
                         self.conversationHold.stop(); self.app.closeChoicesPopup();
                         self.worldAmbience.clear();
                         WorldScenery.update(self.renderer, null, self);
@@ -8699,6 +8705,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     }
                     if (state.name !== undefined) entity.name = state.name;
                     if (state.title !== undefined) entity.title = state.title;
+                    if (state.selectedTrail !== undefined) entity.selectedTrail = state.selectedTrail;
                     if (state.level !== undefined) entity.level = state.level;
                     if (entity instanceof Npc) {
                         entity.setShowIndicator(state.indicator);
@@ -9066,6 +9073,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 axios.get(url).then(function (response) {
                     if (!isCurrent()) return;
                     if (response.data !== "") {
+                        if (response.data?.pointsStore === true) {
+                            self.conversationHold.stop();
+                            self.app.pointsStore.open();
+                            return;
+                        }
                         const shop = response.data?.shop;
                         if (shop && typeof shop.id === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(shop.id) &&
                             typeof shop.name === 'string' && shop.name.trim() && shop.name.length <= 120 && !/[<>\u0000-\u001f]/.test(shop.name)) {

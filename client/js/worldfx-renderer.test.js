@@ -60,3 +60,35 @@ test('level-up ignition and staggered shockwaves use finite camera-relative geom
     state.time = 1000; state.particles = []; fx.draw(ctx, state, view);
     expect(ctx.ellipse).toHaveBeenCalledTimes(2); expect(ctx.fillRect).not.toHaveBeenCalled();
 });
+
+test('avatar trails draw on the ground pass only, before entities and overhead tiles',()=>{
+    const {fx,ctx,state,view}=setup();state.flags.heat=false;
+    state.particles=[{x:48,y:64,size:1,alpha:1,color:'#ffe7af',layer:'ground'}, {x:64,y:80,size:1,alpha:1,color:'#fff',layer:'foreground'}];
+    fx.ground(ctx,state,view);expect(ctx.fillRect.mock.calls).toEqual([[48,48,3,3]]);
+    ctx.fillRect.mockClear();fx.draw(ctx,state,view);expect(ctx.fillRect.mock.calls).toEqual([[96,96,3,3]]);
+});
+
+test('spark light brightens cores, masks overhead tiles, and reuses its canvas',()=>{
+    const {ctx,state,view}=setup(), operations=[];
+    const light={save(){},restore(){},clearRect:jest.fn(),
+        fillRect(...args){operations.push({kind:'pixel',args,alpha:this.globalAlpha,color:this.fillStyle,blend:this.globalCompositeOperation});},
+        drawImage(image){operations.push({kind:'mask',image,blend:this.globalCompositeOperation});}};
+    const canvas={width:480,height:224,getContext:()=>light},createCanvas=jest.fn(()=>canvas),fx=create(createCanvas);
+    view.sources.overhead={roof:true};view.scale=1;
+    state.particles=[{x:48,y:64,size:1,alpha:0.8,color:'#ffe7af',shape:'star',layer:'ground'}];
+    fx.lighting(ctx,state,view);
+    expect(operations[0]).toMatchObject({args:[12,12,9,9],blend:'screen'});
+    expect(operations.filter(row=>row.color==='#ffffff')).toEqual([
+        expect.objectContaining({args:[15,16,3,1],alpha:1}),expect.objectContaining({args:[16,15,1,3],alpha:1})]);
+    expect(operations.at(-1)).toEqual({kind:'mask',image:view.sources.overhead,blend:'destination-out'});
+    expect(ctx.globalCompositeOperation).toBe('screen');expect(ctx.drawImage).toHaveBeenCalledWith(canvas,0,0);
+    fx.lighting(ctx,state,view);expect(createCanvas).toHaveBeenCalledTimes(1);expect(light.clearRect).toHaveBeenCalledTimes(2);
+    ctx.canvas.width=640;fx.lighting(ctx,state,view);expect(canvas.width).toBe(640);expect(createCanvas).toHaveBeenCalledTimes(1);
+    state.particles=[];ctx.drawImage.mockClear();fx.lighting(ctx,state,view);expect(ctx.drawImage).not.toHaveBeenCalled();
+});
+
+test('foreground and expired particles do not create ground lighting',()=>{
+    const {ctx,state,view}=setup(),createCanvas=jest.fn(),fx=create(createCanvas);
+    state.particles=[{layer:'foreground',alpha:1},{layer:'ground',alpha:0}];
+    fx.lighting(ctx,state,view);expect(createCanvas).not.toHaveBeenCalled();expect(ctx.drawImage).not.toHaveBeenCalled();
+});

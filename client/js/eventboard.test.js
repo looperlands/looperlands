@@ -78,7 +78,7 @@ test('standings show ENS first with a subtitle and retain legacy labels and your
 test('daily progress confirms earned points and explains the next streak bonus', () => {
     const dailyPlay = {points: 17, activeDays: 7, streak: 7, checkedInToday: true, todayPoints: 8, nextBonusDay: 14, nextBonusPoints: 7};
     const content = Board.prototype.renderDailyPlay.call({dailyPlay});
-    expect(content.textContent).toContain('Total points 17');
+    expect(content.textContent).toContain('Daily-play points earned 17');
     expect(content.textContent).toContain('+8 points earned today');
     expect(content.textContent).toContain('+7 bonus at day 14');
     expect(content.textContent).toContain('00:00 UTC');

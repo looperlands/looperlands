@@ -136,3 +136,24 @@ test('static weather can respect ambience toggles independently of reduced motio
     fx.sceneFlags.ambience = false;
     expect(fx.enabled('ambience', false)).toBe(false);
 });
+
+test('equipped trails emit only while moving and disappear when removed', () => {
+    const {fx,game,renderer}=setup();game.player.selectedTrail='trail:golden-sparks';
+    fx.render(renderer,1000);fx.render(renderer,1100);expect(fx.particles).toHaveLength(0);
+    game.player.x+=4;fx.render(renderer,1200);expect(fx.particles).toHaveLength(6);
+    expect(fx.particles.every(p=>p.owner==='trail')).toBe(true);
+    fx.render(renderer,2100);expect(fx.particles).toHaveLength(0);
+    game.player.x+=4;fx.render(renderer,2200);expect(fx.particles).toHaveLength(6);
+    game.player.selectedTrail=null;fx.render(renderer,2250);expect(fx.particles).toHaveLength(0);
+});
+test('trails follow nearby equipped avatars without bridging teleports or maps', () => {
+    const {fx,game,renderer}=setup();const other={id:8,x:10,y:10,selectedTrail:'trail:golden-sparks'};
+    game.forEachVisibleEntityByDepth=fn=>fn(other);fx.render(renderer,1000);
+    other.x+=100;fx.render(renderer,1100);expect(fx.particles).toHaveLength(0);
+    other.x+=2;fx.render(renderer,1200);expect(fx.particles).toHaveLength(6);
+    game.mapId='other';fx.render(renderer,1300);expect(fx.particles).toHaveLength(0);
+});
+test('reduced motion suppresses equipped trails',()=>{
+    const {fx,game,renderer,settings}=setup();game.player.selectedTrail='trail:golden-sparks';fx.render(renderer,1000);
+    settings.getReducedMotion=()=>true;game.player.x+=4;fx.render(renderer,1100);expect(fx.particles).toHaveLength(0);expect(fx.trailActors.size).toBe(0);
+});

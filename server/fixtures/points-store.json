@@ -1,0 +1,177 @@
+{
+  "products": [
+    {
+      "id": "weapon-reroll",
+      "name": "Weapon trait reroll",
+      "price": 250,
+      "type": "reroll",
+      "assetTypes": [
+        "weapon",
+        "ranged_weapon"
+      ],
+      "description": "Roll a different weapon trait. Level and XP are preserved."
+    },
+    {
+      "id": "rod-reroll",
+      "name": "Fishing-rod trait reroll",
+      "price": 250,
+      "type": "reroll",
+      "assetTypes": [
+        "fishingrod"
+      ],
+      "description": "Roll a different fishing trait. Level and XP are preserved."
+    },
+    {
+      "id": "class-change",
+      "name": "Avatar class change",
+      "price": 400,
+      "type": "class",
+      "assetTypes": [
+        "looper"
+      ],
+      "description": "Choose a different class. Level and XP are preserved."
+    },
+    {
+      "id": "title-trailblazer",
+      "name": "Trailblazer title",
+      "price": 250,
+      "type": "unlock",
+      "reward": "title:trailblazer",
+      "description": "A permanent earned title, displayed beside your name."
+    },
+    {
+      "id": "title-reel-deal",
+      "name": "The Reel Deal title",
+      "price": 300,
+      "type": "unlock",
+      "reward": "title:reel-deal",
+      "description": "A permanent title for a dedicated angler."
+    },
+    {
+      "id": "emote-confetti",
+      "name": "Confetti emote",
+      "price": 250,
+      "type": "unlock",
+      "reward": "emote:confetti",
+      "description": "Celebrate with confetti. Permanent wallet unlock."
+    },
+    {
+      "id": "emote-salute",
+      "name": "Salute emote",
+      "price": 250,
+      "type": "unlock",
+      "reward": "emote:salute",
+      "description": "Salute your fellow adventurers. Permanent wallet unlock."
+    },
+    {
+      "id": "emote-bigcatch",
+      "name": "Big Catch emote",
+      "price": 350,
+      "type": "unlock",
+      "reward": "emote:bigcatch",
+      "description": "Show off a great catch. Permanent wallet unlock."
+    },
+    {
+      "id": "trail-golden-sparks",
+      "name": "Golden Spark Trail",
+      "price": 350,
+      "type": "unlock",
+      "reward": "trail:golden-sparks",
+      "description": "A trail of fading golden pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
+    }
+  ],
+  "objectives": [
+    {
+      "id": "combat",
+      "label": "Defeat {target} enemies",
+      "target": 50
+    },
+    {
+      "id": "fishing",
+      "label": "Make {target} successful catches",
+      "target": 15
+    },
+    {
+      "id": "harvest",
+      "label": "Complete {target} harvests",
+      "target": 20
+    }
+  ],
+  "dailyReward": 1,
+  "weeklyReward": 5,
+  "weeklyTarget": 4,
+  "difficulty": [
+    {
+      "minLevel": 1,
+      "combat": 50
+    },
+    {
+      "minLevel": 10,
+      "combat": 75
+    },
+    {
+      "minLevel": 25,
+      "combat": 100
+    },
+    {
+      "minLevel": 50,
+      "combat": 150
+    }
+  ],
+  "rewards": [
+    {
+      "id": "title:trailblazer",
+      "type": "title",
+      "label": "Trailblazer",
+      "source": "store"
+    },
+    {
+      "id": "title:reel-deal",
+      "type": "title",
+      "label": "The Reel Deal",
+      "source": "store"
+    },
+    {
+      "id": "emote:confetti",
+      "type": "emote",
+      "label": "Confetti",
+      "symbol": "\ud83c\udf89",
+      "source": "store"
+    },
+    {
+      "id": "emote:salute",
+      "type": "emote",
+      "label": "Salute",
+      "symbol": "\ud83e\udee1",
+      "source": "store"
+    },
+    {
+      "id": "emote:bigcatch",
+      "type": "emote",
+      "label": "Big Catch",
+      "symbol": "\ud83c\udfa3",
+      "source": "store"
+    },
+    {
+      "id": "emote:lantern",
+      "type": "emote",
+      "label": "Lantern Gathering",
+      "symbol": "\ud83c\udfee",
+      "source": "event"
+    },
+    {
+      "id": "emote:festival",
+      "type": "emote",
+      "label": "Festival Spark",
+      "symbol": "\ud83c\udf86",
+      "source": "event"
+    },
+    {
+      "id": "trail:golden-sparks",
+      "type": "trail",
+      "label": "Golden Spark Trail",
+      "source": "store",
+      "image": "img/points-store/golden-trail.svg"
+    }
+  ]
+}

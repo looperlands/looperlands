@@ -67,7 +67,8 @@ Types = {
         WORLD_AMBIENCE: 64,
         TILE_ACTION: 65,
         PLAYER_TITLE: 66,
-        WORLD_TIME: 67
+        WORLD_TIME: 67,
+        PLAYER_TRAIL: 68
     },
 
     Entities: {
@@ -12640,6 +12641,10 @@ Types.emotions = {
     'corn': "🌽",
     'beer': "🍺",
 };
+
+// Paid and event rewards are visible to observers, but sending them requires a wallet unlock.
+Types.unlockableEmotions = {confetti:'store',salute:'store',bigcatch:'store',lantern:'event',festival:'event'};
+Object.assign(Types.emotions, {confetti:'🎉',salute:'🫡',bigcatch:'🎣',lantern:'🏮',festival:'🎆'});
 
 // Mapmaker definitions use the same IDs and classifications on the server and client.
 (function (install) {

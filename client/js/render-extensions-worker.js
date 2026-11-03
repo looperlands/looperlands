@@ -5,7 +5,7 @@
     const extensions = new Map();
     return {
         register(id, extension) {
-            if (!/^[a-z][a-z0-9-]*$/.test(id) || !['background', 'ground', 'entities', 'foreground'].includes(extension?.layer) ||
+            if (!/^[a-z][a-z0-9-]*$/.test(id) || !['background', 'ground', 'entities', 'lighting', 'foreground'].includes(extension?.layer) ||
                 typeof (extension.layer === 'entities' ? extension.entries : extension.draw) !== 'function') throw new Error('Invalid render extension');
             extensions.set(id, extension);
         },
@@ -62,7 +62,7 @@
                 if (extension.layer !== layer || data[id] == null) continue;
                 context.save();
                 try {
-                    const projection = layer === 'ground' && !extension.subpixel ? {...view,
+                    const projection = (layer === 'ground' || layer === 'lighting') && !extension.subpixel ? {...view,
                         cameraX: -Math.round(-view.cameraX), cameraY: -Math.round(-view.cameraY)} : view;
                     extension.draw(context, data[id], projection);
                 }

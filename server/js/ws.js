@@ -265,6 +265,12 @@ WS.socketIOServer = Server.extend({
             updates.rebootHandoffs = revision => this.clientReloads.reboot(revision);
             updates.cancelReboot = () => this.clientReloads.cancelReboot();
         }
+        this.pointsStore = new (require('./pointsstorecontroller'))(cache, () => self.worldsMap, platformClient, self.socialChat, () => self.activity.flush());
+        app.get('/session/:sessionId/points-store', (req,res) => self.pointsStore.list(req,res));
+        app.post('/session/:sessionId/points-store/purchases', (req,res) => self.pointsStore.buy(req,res));
+        app.get('/session/:sessionId/rewards', (req,res) => self.pointsStore.rewards(req,res));
+        app.put('/session/:sessionId/rewards/trail', (req,res) => self.pointsStore.trail(req,res));
+        app.put('/session/:sessionId/rewards/title', (req,res) => self.pointsStore.title(req,res));
         const playerTitles = new PlayerTitleController(cache, () => self.worldsMap, platformClient, self.socialChat);
         app.put('/session/:sessionId/title', (req, res) => playerTitles.save(req, res));
         app.post('/session/:sessionId/title/prompt', (req, res) => playerTitles.prompt(req, res));

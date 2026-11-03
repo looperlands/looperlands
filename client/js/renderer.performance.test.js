@@ -115,6 +115,17 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     ]);
 });
 
+test('effect lights use the current overhead mask inside the native scene lighting pass',()=>{
+    const worker=setup(),registry=require('./render-extensions-worker')(),draw=jest.fn();
+    registry.register('spark-light',{layer:'lighting',draw});
+    worker.sandbox.effectRegistry=registry;vm.runInContext('rendererExtensions=effectRegistry',worker.sandbox);
+    const data=frame(10.25,20.75);data.extensions={'spark-light':{active:true}};data.scene.darkness=.9;
+    worker.send(data);
+    expect(draw).toHaveBeenCalledWith(worker.canvases.lighting.ctx,{active:true},{cameraX:10,cameraY:21,scale:1,sources:{overhead:worker.canvases.highEntities}});
+    expect(worker.canvases.highEntities.ctx.drawImage).toHaveBeenCalledWith(worker.canvases.high,0,0);
+    draw.mockClear();worker.send(frame());expect(draw).not.toHaveBeenCalled();
+});
+
 test('palette cutouts preserve ledge pixels, reuse masked tiles and keep normal variants intact', () => {
     const worker = setup(), ctx = worker.canvases.background.ctx, image = {};
     worker.drawScaledImage(ctx, image, 0, 0, 16, 16, 0, 0, 1, null, [[254,173,2]]);
