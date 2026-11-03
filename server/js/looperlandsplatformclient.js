@@ -243,6 +243,9 @@ class LooperLandsPlatformClient {
     async purchasePointsItem(wallet, body) {
         return (await this.client.post('/api/game/wallet/' + encodeURIComponent(wallet) + '/points-store/purchases', body, {timeout: 15000})).data;
     }
+    async selectRewardHit(wallet, hit) {
+        return (await this.client.put('/api/game/wallet/' + encodeURIComponent(wallet) + '/rewards/hit', {hit}, {timeout: 10000})).data;
+    }
     async selectRewardTrail(wallet, trail) {
         return (await this.client.put('/api/game/wallet/' + encodeURIComponent(wallet) + '/rewards/trail', {trail}, {timeout: 10000})).data;
     }

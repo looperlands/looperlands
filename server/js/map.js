@@ -32,6 +32,7 @@ module.exports = class Mapx {
                 if (require('./localplaytest').isLocalPlaytest()) {
                     const mapId = path.basename(filepath).replace(/^world_server_/, '').replace(/\.json$/, '');
                     const doc = require('./localworldauthoring').readDocument(root, mapId);
+                    json.placedFx = doc.placedFx;
                     json = require('./localworldauthoring').applyAtmosphere(require('./localworldscenes').applyScenes(json, doc.scenes), doc.atmosphere, doc.weather);
                 }
                 self.initMap(json);
@@ -48,6 +49,7 @@ module.exports = class Mapx {
         this.height = map.height;
         this.collisions = map.collisions;
         this.scenes = map.scenes || [];
+        this.placedFx = require('../../shared/js/placedfxconfig').validate(map.placedFx || [], map);
         this.fishingTiles = map.fishingTiles || {};
         this.eventBoards = map.eventBoards || [];
         this.mobAreas = map.roamingAreas;

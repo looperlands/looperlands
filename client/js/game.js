@@ -1,11 +1,11 @@
 define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', 'maptransition', 'scriptedsequenceplayer', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldfx', 'pixelfx', 'worldtime-worker', 'pickupfeedback', 'combatprototype', 'maptransition', 'scriptedsequenceplayer', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, WorldTime, PickupFeedback, CombatPrototype, MapTransition, SequencePlayer) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldFx, PixelFx, WorldTime, PickupFeedback, CombatPrototype, MapTransition, SequencePlayer) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -17,6 +17,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.playerPositionReady = false;
                 this.worldAmbience = new WorldAmbience();
                 this.worldFx = new WorldFx(this);
+                this.pixelFx = new PixelFx(this);
                 this.combatPrototype = new CombatPrototype(this);
                 this.footstepFeedback = new FootstepFeedback(this);
                 this.scriptedSequence = new SequencePlayer(this);
@@ -6323,6 +6324,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
                 this.worldFx?.clear?.();
+                this.pixelFx?.clear();
                 this.combatPrototype?.clear();
                 this.pickupFeedback?.clear();
                 this.infoManager.clear();
@@ -7211,6 +7213,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
                     this.worldFx?.render?.(this.renderer, this.currentTime);
+                    this.pixelFx?.render(this.renderer);
                     this.pickupFeedback?.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
@@ -7239,6 +7242,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
                 this.worldFx?.clear?.();
+                this.pixelFx?.pause();
                 this.pickupFeedback?.clear();
                 this.infoManager.clear();
                 this.footstepFeedback?.clear();
@@ -7439,6 +7443,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     console.log(self.storage);
                     self.player.setGridPosition(x, y);
                     self.combatPrototype?.connect(self.client.connection);
+                    self.client.pixelFx_callback = packet => self.pixelFx.receive(packet);
                     self.playerPositionReady = true;
                     self.map.preloadNearDoors(x, y);
                     self.player.setMaxHitPoints(hp);
@@ -8462,6 +8467,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.combatFeedback.hitFeel?.dispose();
                         self.toolImpactFeedback.clear();
                         self.worldFx?.clear?.();
+                        self.pixelFx?.clear();
                         self.combatPrototype?.clear();
                         self.pickupFeedback?.clear();
                         self.infoManager.clear();

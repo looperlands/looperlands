@@ -12,7 +12,7 @@ beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'looperlands-client-cache-'));
     for (const relative of ['client/index.html', 'client/js/game.js', 'client/sprites/rat.json', 'client/img/1/rat.png',
         'client/maps/world_client_one.js', 'client-build/index.html', 'client-build/js/home.js', 'client-build/js/game.js',
-        'client-build/js/lib/require-jquery.js', 'bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json']) write(relative);
+        'client-build/js/lib/require-jquery.js', 'bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json', 'shared/js/placedfxconfig.js', 'shared/js/pixelfxcatalog.js']) write(relative);
     write('shared/js/mapmakerentities.json', '[]');
 });
 afterEach(() => fs.rmSync(root, {recursive: true, force: true}));

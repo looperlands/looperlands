@@ -1,25 +1,15 @@
 (function(root, factory) {
-    if (typeof module === 'object' && module.exports) module.exports = factory(require('./mobhealthbar-worker'));
+    if (typeof module === 'object' && module.exports) module.exports = factory(require('./mobhealthbar-worker'), require('./attackwarning-worker'));
     else {
         if (!root.MobHealthBars) importScripts('mobhealthbar-worker.js');
-        const renderer = factory(root.MobHealthBars);
+        if (!root.AttackWarning) importScripts('attackwarning-worker.js');
+        const renderer = factory(root.MobHealthBars, root.AttackWarning);
         root.RendererExtensions.register('combat-prototype-ground', {layer:'ground', draw:renderer.ground});
         root.RendererExtensions.register('combat-prototype', {layer:'foreground', draw:renderer.draw});
     }
-})(typeof self !== 'undefined' ? self : null, function(HealthBars) {
+})(typeof self !== 'undefined' ? self : null, function(HealthBars, Warning) {
     const healthBars = new HealthBars.Bars();
-    function warningTile(ctx,x,y,progress,impact) {
-        ctx.fillStyle = impact ? 'rgba(232,134,72,.24)' : `rgba(227,174,100,${.06+.08*progress})`;
-        ctx.fillRect(x+1,y+1,14,14);
-        ctx.strokeStyle = `rgba(239,192,123,${impact ? .8 : .4+.3*progress})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        // Small corner marks leave the center clear, without a full box or an X.
-        for (const [cx,cy,dx,dy] of [[1.5,1.5,1,1],[14.5,1.5,-1,1],[1.5,14.5,1,-1],[14.5,14.5,-1,-1]]) {
-            ctx.moveTo(x+cx,y+cy+dy*3);ctx.lineTo(x+cx,y+cy);ctx.lineTo(x+cx+dx*3,y+cy);
-        }
-        ctx.stroke();
-    }
+    const warningTile = Warning.tile;
     const renderer = {
         ground(ctx, state, view) {
             for (const attack of state.fieldAttacks || []) renderer.ground(ctx,attack,view);

@@ -68,7 +68,8 @@ Types = {
         TILE_ACTION: 65,
         PLAYER_TITLE: 66,
         WORLD_TIME: 67,
-        PLAYER_TRAIL: 68
+        PLAYER_TRAIL: 68,
+        PIXEL_FX: 69
     },
 
     Entities: {

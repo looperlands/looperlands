@@ -51,7 +51,7 @@ function readers(root, mapId) {
         ['tile-authoring', 'Interactions and tile actions', () => require('./localtilebuilder').readTool(root, mapId)],
         ['world-authoring', 'Events, dialogue, scenes and sequences', async () => {
             const catalog = await world.catalog(root, mapId), tools = {};
-            for (const tool of ['events', 'dialogues', 'atmosphere', 'scenes', 'sequences', 'ambient']) {
+            for (const tool of ['events', 'dialogues', 'atmosphere', 'scenes', 'sequences', 'ambient', 'fx']) {
                 const {catalog: _, ...data} = await world.readTool(root, mapId, tool, catalog);
                 tools[tool] = data;
             }

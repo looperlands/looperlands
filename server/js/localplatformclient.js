@@ -217,6 +217,7 @@ class LocalPlatformClient {
     async getPointsStore(wallet, level = 1) {return this.change(state => require('./localpointsstore').overview(this,state,wallet,Date.now(),level));}
     async getRewardUnlocks(wallet) {return this.change(state => require('./localpointsstore').rewards(this,state,wallet));}
     async purchasePointsItem(wallet, body) {return this.change(state => require('./localpointsstore').purchase(this,state,wallet,body));}
+    async selectRewardHit(wallet, hit) {return this.change(state => require('./localpointsstore').selectHit(this,state,wallet,hit));}
     async selectRewardTrail(wallet, trail) {return this.change(state => require('./localpointsstore').selectTrail(this,state,wallet,trail));}
     async selectRewardTitle(wallet, title) {return this.change(state => require('./localpointsstore').selectTitle(this,state,wallet,title));}
 

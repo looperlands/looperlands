@@ -50,6 +50,10 @@
   <script src="./vendor/soundscape.js" defer></script>
   <script src="./ambientupload.js" defer></script>
   <script src="./ambientbuilder.js" defer></script>
+  <script src="./vendor/pixelfxcatalog.js" defer></script>
+  <script src="./vendor/placedfxconfig.js" defer></script>
+  <script src="./vendor/attackwarning-worker.js" defer></script>
+  <script src="./fxbuilder.js" defer></script>
   <script src="./seasonbuilder.js" defer></script>
   <script src="./sequence-contract.js" defer></script>
   <script src="./sequencebuilder.js" defer></script>
@@ -80,6 +84,7 @@
           <a id="tab-inspector" href="#inspector" aria-controls="inspector-pane" data-pane="inspector">Map inspector</a>
           <a id="tab-doors" href="#doors" aria-controls="doors-pane" data-pane="doors">Doors &amp; portals</a>
           <a id="tab-connections" href="#connections" aria-controls="connections-pane" data-pane="connections">World connections</a>
+          <a id="tab-fx" href="#fx" aria-controls="fx-pane" data-pane="fx">Effects &amp; hazards</a>
           <a id="tab-ambient" href="#ambient" aria-controls="ambient-pane" data-pane="ambient">Ambient sounds</a>
           <a id="tab-scenes" href="#scenes" aria-controls="scenes-pane" data-pane="scenes">Scene manager</a>
           <a id="tab-seasons" href="#seasons" aria-controls="seasons-pane" data-pane="seasons">Temporary content</a>
@@ -437,6 +442,7 @@ You only have {{remaining}} blue monsters left to slay!</pre>
     <section id="events-pane" class="tool-pane" role="region" aria-labelledby="tab-events" hidden></section>
     <section id="dialogues-pane" class="tool-pane" role="region" aria-labelledby="tab-dialogues" hidden></section>
     <section id="sequences-pane" class="tool-pane" role="tabpanel" aria-labelledby="tab-sequences" hidden></section>
+    <section id="fx-pane" class="tool-pane" role="region" aria-labelledby="tab-fx" hidden></section>
     <section id="ambient-pane" class="tool-pane" role="region" aria-labelledby="tab-ambient" hidden></section>
     <section id="scenes-pane" class="tool-pane" role="region" aria-labelledby="tab-scenes" hidden></section>
     <section id="seasons-pane" class="tool-pane" role="region" aria-labelledby="tab-seasons" hidden></section>

@@ -24,8 +24,9 @@ function checkRuntimeDependencies(directory) {
         const file = path.join(directory, entry.name);
         if (entry.isDirectory()) {
             checkRuntimeDependencies(file);
-        } else if (entry.name.endsWith('.js')) {
+        } else if (/\.m?js$/.test(entry.name)) {
             const source = fs.readFileSync(file, 'utf8');
+            if (entry.name.endsWith('.mjs')) for (const dependency of source.matchAll(/\bfrom\s*(["'])([^"']+)\1/g)) checkAsset(dependency[2], path.dirname(file));
             // Worker URLs resolve from the document; importScripts resolves from the worker.
             for (const worker of source.matchAll(/new\s+(?:Shared)?Worker\s*\(\s*(["'])([^"']+)\1\s*[,)]/g)) {
                 checkAsset(worker[2]);

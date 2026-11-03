@@ -269,6 +269,7 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId/points-store', (req,res) => self.pointsStore.list(req,res));
         app.post('/session/:sessionId/points-store/purchases', (req,res) => self.pointsStore.buy(req,res));
         app.get('/session/:sessionId/rewards', (req,res) => self.pointsStore.rewards(req,res));
+        app.put('/session/:sessionId/rewards/hit', (req,res) => self.pointsStore.hit(req,res));
         app.put('/session/:sessionId/rewards/trail', (req,res) => self.pointsStore.trail(req,res));
         app.put('/session/:sessionId/rewards/title', (req,res) => self.pointsStore.title(req,res));
         const playerTitles = new PlayerTitleController(cache, () => self.worldsMap, platformClient, self.socialChat);

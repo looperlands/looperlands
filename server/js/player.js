@@ -758,7 +758,7 @@ module.exports = Player = Character.extend({
 
             if (this.hitPoints <= 0) {
                 let kindString = Types.getKindAsString(mob.kind);
-                let killer = AltNames.getName(kindString);
+                let killer = mob.type === 'hazard' ? (mob.name || 'a map hazard') : AltNames.getName(kindString);
 
                 if (mob instanceof Player) {
                     discord.sendMessage(`💀 **${this.name}** ganked by **${mob.name}**.`);

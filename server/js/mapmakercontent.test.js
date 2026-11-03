@@ -87,3 +87,21 @@ test('ambient-only maps are included in production artifacts and invalid placeme
     expect(() => Content.build(root)).toThrow('inside the map');
     expect(fs.readFileSync(path.join(root, 'client/maps/world_client_one.json'))).toEqual(before);
 });
+
+test('decorative and hazard placements survive matching client/server export and invalid geometry aborts before writes',()=>{
+    const effect={id:'camp',name:'Campfire',effect:'fire/campfire',x:2,y:2,width:2,height:2,scale:.5,hue:120,hazard:null};
+    const hazard={...effect,id:'trap',effect:'fire/meteor',hazard:{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:620}};
+    write('tools/worlds/one.json',{version:1,placedFx:[effect,hazard]});expect(Content.build(root)).toBe(3);
+    for(const file of ['client/maps/world_client_one.json','server/maps/world_server_one.json'])expect(JSON.parse(fs.readFileSync(path.join(root,file))).placedFx).toEqual([effect,hazard]);
+    const context={};vm.runInNewContext(fs.readFileSync(path.join(root,'client/maps/world_client_one.js'),'utf8'),context);expect(JSON.parse(JSON.stringify(context.mapData.placedFx))).toEqual([effect,hazard]);
+    const before=fs.readFileSync(path.join(root,'client/maps/world_client_one.json'));write('tools/worlds/one.json',{version:1,placedFx:[{...hazard,width:20}]});
+    expect(()=>Content.build(root)).toThrow('inside');expect(fs.readFileSync(path.join(root,'client/maps/world_client_one.json'))).toEqual(before);
+});
+
+
+test('removing all placements clears already-built client and server effects',()=>{
+    const effect={id:'camp',name:'Campfire',effect:'fire/campfire',x:2,y:2,width:1,height:1,scale:.5,hazard:null};
+    write('tools/worlds/one.json',{version:1,placedFx:[effect]});Content.build(root);
+    write('tools/worlds/one.json',{version:1,placedFx:[]});expect(Content.build(root)).toBe(3);
+    for(const file of ['client/maps/world_client_one.json','server/maps/world_server_one.json'])expect(JSON.parse(fs.readFileSync(path.join(root,file))).placedFx).toEqual([]);
+});

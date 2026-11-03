@@ -20,7 +20,7 @@ function clientFingerprint(root) {
         }
     }
     directory('client');
-    for (const relative of ['bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json']) file(relative);
+    for (const relative of ['bin/build-client.js', 'bin/mapmaker-client.js', 'bin/r.js', 'package-lock.json', 'shared/js/placedfxconfig.js', 'shared/js/pixelfxcatalog.js']) file(relative);
     // The generated AMD module is refreshed by the full builder. Check its source
     // too so newly saved entity definitions always trigger a compilation.
     hash.update(fs.readFileSync(path.join(root, 'shared/js/mapmakerentities.json')));

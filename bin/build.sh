@@ -18,6 +18,7 @@ cd $CURDIR
 echo "Removing unnecessary js files from the build directory"
 # Keep bundles, worker scripts, on-demand modules, and globals loaded by index.html.
 find $BUILDDIR/js -type f ! \( \
+    -iname "*.mjs" -or -path "$BUILDDIR/js/lib/pixelfx/*" -or \
     -iname "game.js" -or -iname "home.js" -or -iname "log.js" -or \
     -iname "require-jquery.js" -or -iname "modernizr.js" -or \
     -iname "css3-mediaqueries.js" -or -iname "*worker.js" -or \
