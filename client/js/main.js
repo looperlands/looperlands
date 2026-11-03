@@ -493,6 +493,9 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
 
             for (var emotion in Types.emotions) {
                 var emotionDiv = $('<button type="button" class="emote" data-emotion="' + emotion + '" aria-label="' + emotion + '">' + Types.emotions[emotion] + '</button>');
+                if (Types.unlockableEmotions[emotion]) {
+                    emotionDiv.prop('disabled',true).attr('title',Types.unlockableEmotions[emotion] === 'event' ? 'Unlock through an event' : 'Unlock at the Points Exchange');
+                }
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');

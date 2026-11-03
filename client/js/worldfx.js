@@ -9,12 +9,13 @@ define(['worldfxconfig'], function (Config) {
             this.particles = [];
             this.rings = [];
             this.drops = new Map();
+            this.trailActors = new Map();
             this.mapId = game.mapId;
             this.sessionId = game.sessionId;
         }
 
         enabled(id, animated = true) {
-            if (id === 'levelup') return !this.game.app?.settings?.getReducedMotion?.();
+            if (id === 'levelup' || id === 'trail') return !this.game.app?.settings?.getReducedMotion?.();
             return (this.sceneFlags[id] ?? this.flags[id]) === true && (!animated || !this.game.app?.settings?.getReducedMotion?.());
         }
 
@@ -28,12 +29,14 @@ define(['worldfxconfig'], function (Config) {
             this.particles = [];
             this.rings = [];
             this.drops.clear();
+            this.trailActors.clear();
             this.lastActor = null;
             this.actor = null;
             this.mapId = this.game.mapId;
             this.sessionId = this.game.sessionId;
             this.game.renderer?.setExtensionData('world-fx', null);
             this.game.renderer?.setExtensionData('world-fx-ground', null);
+            this.game.renderer?.setExtensionData('world-fx-lighting', null);
         }
 
         sync() {
@@ -148,6 +151,33 @@ define(['worldfxconfig'], function (Config) {
                 fx: {actor: this.actor, flags: {fireflies: this.enabled('fireflies'), leaves: this.enabled('leaves')}}};
         }
 
+        avatarTrails(time) {
+            const seen = new Set();
+            const visit = entity => {
+                if (seen.has(entity.id) || entity.selectedTrail !== 'trail:golden-sparks' || entity.isDead || entity.isDying || entity.isVisible?.() === false) return;
+                seen.add(entity.id);
+                const previous = this.trailActors.get(entity.id);
+                const distance = previous ? Math.hypot(entity.x - previous.x, entity.y - previous.y) : 0;
+                const emittedAt = previous?.emittedAt || 0;
+                this.trailActors.set(entity.id, {entity, x: entity.x, y: entity.y, emittedAt});
+                // Skip idle frames, teleports, and replaced entities; never connect two maps.
+                if (!previous || previous.entity !== entity || distance === 0 || distance > 32 || time - emittedAt < 90) return;
+                this.trailActors.get(entity.id).emittedAt = time;
+                for (let i = 0; i < 6; i++) {
+                    this.particles.push({x: previous.x + 2 + this.random() * 12, y: previous.y + 9 + this.random() * 8,
+                        vx: (this.random() - 0.5) * 24, vy: -12 + this.random() * 18, gravity: 6,
+                        startedAt: time, lifetimeMs: 240 + this.random() * 120,
+                        size: 1, shape: i % 3 === 0 ? 'star' : 'pixel',
+                        color: ['#ffe7af', '#f1cd85', '#b78b57'][i % 3], owner: 'trail', actorId: entity.id});
+                }
+            };
+            visit(this.game.player);
+            this.game.forEachVisibleEntityByDepth?.(visit);
+            for (const id of this.trailActors.keys()) if (!seen.has(id)) this.trailActors.delete(id);
+            this.particles = this.particles.filter(p => p.owner !== 'trail' || seen.has(p.actorId));
+            if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
+        }
+
         render(renderer, time) {
             this.sync();
             if (!this.game.started || this.game.isStopped || !this.game.player || this.game.player.isDead || this.game.app?.settings?.getReducedMotion?.()) {
@@ -155,6 +185,7 @@ define(['worldfxconfig'], function (Config) {
                 return;
             }
             this.scene();
+            this.avatarTrails(time);
             const player = this.game.player;
             const elapsed = this.lastActor ? Math.max(1, time - this.lastActor.time) / 1000 : 1;
             this.actor = {x: player.x + 8, y: player.y + 12,
@@ -171,7 +202,7 @@ define(['worldfxconfig'], function (Config) {
             const particles = this.particles.map(p => {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
                 return {x: p.x + p.vx * seconds, y: p.y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
-                    color: p.color, size: p.size, shape: p.shape, trailX: p.vx * 0.055,
+                    color: p.color, size: p.size, shape: p.shape, layer: p.owner === 'trail' ? 'ground' : 'foreground', trailX: p.vx * 0.055,
                     trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs,
                     ...(p.design ? {design: {...p.design, colors: [p.color], size: p.size}, seed: p.seed, elapsed: seconds} : {})};
             });
@@ -179,6 +210,7 @@ define(['worldfxconfig'], function (Config) {
                 scenery: this.scenery, particles, rings: this.rings};
             renderer.setExtensionData('world-fx', data);
             renderer.setExtensionData('world-fx-ground', data);
+            renderer.setExtensionData('world-fx-lighting', data);
         }
     }
     return WorldFx;

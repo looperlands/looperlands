@@ -268,7 +268,7 @@ define(['jquery', 'mapnames', 'dailyplaycelebration'], function ($, mapNames, Da
             if (!progress.checkedInToday) today.append(node('small', '', 'Credit appears after activity syncs.'));
             section.append(today);
             const stats = node('dl', 'ev-daily-stats');
-            for (const [label, value] of [['Total points', progress.points], ['Active days', progress.activeDays], ['Day streak', progress.streak]]) {
+            for (const [label, value] of [['Daily-play points earned', progress.points], ['Active days', progress.activeDays], ['Day streak', progress.streak]]) {
                 const stat = node('div'); stat.append(node('dt', '', label), node('dd', '', value)); stats.append(stat);
             }
             section.append(stats);
@@ -277,6 +277,7 @@ define(['jquery', 'mapnames', 'dailyplaycelebration'], function ($, mapNames, Da
             bonus.append(node('h4', '', 'Next streak bonus'), node('p', 'ev-gold', '+'+progress.nextBonusPoints+' bonus at day '+progress.nextBonusDay),
                 node('p', 'ev-muted', remaining+' more active '+(remaining === 1 ? 'day' : 'days')+' to reach it.'));
             section.append(bonus, node('p', 'ev-daily-reset', 'Daily reset: 00:00 UTC. Earned points stay yours.'));
+            section.append(button('Earn more points · daily objectives', () => this.app.pointsStore.open('objectives')));
             return section;
         }
 

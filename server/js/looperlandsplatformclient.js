@@ -234,6 +234,22 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getPointsStore(wallet, level = 1) {
+        return (await this.client.get('/api/game/wallet/' + encodeURIComponent(wallet) + '/points-store', {timeout: 10000, params: {level}})).data;
+    }
+    async getRewardUnlocks(wallet) {
+        return (await this.client.get('/api/game/wallet/' + encodeURIComponent(wallet) + '/rewards', {timeout: 5000})).data;
+    }
+    async purchasePointsItem(wallet, body) {
+        return (await this.client.post('/api/game/wallet/' + encodeURIComponent(wallet) + '/points-store/purchases', body, {timeout: 15000})).data;
+    }
+    async selectRewardTrail(wallet, trail) {
+        return (await this.client.put('/api/game/wallet/' + encodeURIComponent(wallet) + '/rewards/trail', {trail}, {timeout: 10000})).data;
+    }
+    async selectRewardTitle(wallet, title) {
+        return (await this.client.put('/api/game/wallet/' + encodeURIComponent(wallet) + '/rewards/title', {title}, {timeout: 10000})).data;
+    }
+
     async getEventBoard(wallet, nft, map = null) {
         const params = {nft};
         if (map !== null) params.map = map;

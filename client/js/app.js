@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
 
     var App = Class.extend({
         init: function () {
@@ -60,6 +60,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
+            this.pointsStore = new PointsStore(this);
             if (!this.playerName && typeof PlayerName === 'function') this.playerName = new PlayerName(this);
             this.fieldGuide?.destroy();
             if (typeof FieldGuide === 'function') this.fieldGuide = new FieldGuide(this);
@@ -862,6 +863,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         hideWindows: function () {
+            this.pointsStore?.close();
             this.fieldGuide?.close();
             if ($('#achievements').hasClass('active')) {
                 this.toggleAchievements();

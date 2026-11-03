@@ -38,6 +38,11 @@ class PlayerClassModifiers {
         this._fishing = modifiers.fishing;
     }
 
+    async reloadClass(playerClass) {
+        await this.loadModifierData();
+        this._playerClass = playerClass;
+    }
+
     get playerClass() {
         return this._playerClass;
     }

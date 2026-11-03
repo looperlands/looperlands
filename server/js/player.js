@@ -200,6 +200,7 @@ module.exports = Player = Character.extend({
             self.mapId = playerCache.mapId;
             self.server.server.activity?.start(self);
             self.server.server.socialChat?.register(self);
+            self.server.server.pointsStore?.refreshPlayer(self).catch(error => console.error('[rewards]',error.message));
             self.playerEventBroker.setPlayer(self);
 
             const pendingFollow = self.pendingCompanionFollow;
@@ -253,6 +254,8 @@ module.exports = Player = Character.extend({
         }
         else if (action === Types.Messages.EMOTE) {
             var emotion = Utils.sanitize(message[1]);
+            if (!await self.server.server.pointsStore?.canEmote(self,emotion) && Object.hasOwn(Types.unlockableEmotions,emotion)) return;
+            if (!Object.hasOwn(Types.emotions,emotion)) return;
             self.broadcastToZone(new Messages.Emote(self, emotion), false);
             let emoticon = Types.emotions[emotion];
             discord.sendMessage(`**${self.name}** ${emoticon}`);
@@ -886,7 +889,10 @@ module.exports = Player = Character.extend({
 
         if (this.target) {
             state.push(this.target);
+        } else {
+            state.push(null);
         }
+        state.push(this.selectedTrail || null);
 
         return basestate.concat(state);
     },

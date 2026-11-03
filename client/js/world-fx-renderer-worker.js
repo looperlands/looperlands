@@ -1,13 +1,15 @@
 (function (root, factory) {
-    if (typeof module === 'object' && module.exports) module.exports = () => factory(require('./worldparticles-worker'));
+    if (typeof module === 'object' && module.exports) module.exports = createCanvas => factory(require('./worldparticles-worker'), createCanvas);
     else {
         if (!root.WorldParticles) importScripts('worldparticles-worker.js');
         const fx = factory(root.WorldParticles);
         root.RendererExtensions.register('world-fx-ground', {layer: 'ground', draw: fx.ground});
+        root.RendererExtensions.register('world-fx-lighting', {layer: 'lighting', draw: fx.lighting});
         root.RendererExtensions.register('world-fx', {layer: 'foreground', draw: fx.draw});
     }
-})(typeof self !== 'undefined' ? self : null, function (Particles) {
-    function ground(ctx, state, view) {
+})(typeof self !== 'undefined' ? self : null, function (Particles, createCanvas = (width, height) => new OffscreenCanvas(width, height)) {
+    let lightCanvas;
+    function heat(ctx, state, view) {
         const source = view.sources?.background;
         if (!state.flags.heat || !source) return;
         const regions = state.scenery?.fires ?? (view.fireLights || [])
@@ -62,10 +64,50 @@
         ctx.restore();
     }
 
-    function draw(ctx, state, view) {
+    function ground(ctx, state, view) {
+        heat(ctx, state, view);
+        drawParticles(ctx, (state.particles || []).filter(p => p.layer === 'ground'), view);
+    }
+
+    function lighting(ctx, state, view) {
+        const particles = (state.particles || []).filter(p => p.layer === 'ground' && p.alpha > 0);
+        if (!particles.length) return;
+        const {width, height} = ctx.canvas;
+        lightCanvas ||= createCanvas(width, height);
+        if (lightCanvas.width !== width) lightCanvas.width = width;
+        if (lightCanvas.height !== height) lightCanvas.height = height;
+        const light = lightCanvas.getContext('2d');
+        light.save();
+        light.clearRect(0, 0, width, height);
+        light.globalCompositeOperation = 'screen';
+        for (const p of particles) {
+            const x = Math.round(p.x - view.cameraX), y = Math.round(p.y - view.cameraY);
+            if (x < -5 || y < -5 || x > width + 5 || y > height + 5) continue;
+            light.fillStyle = '#ffe7af';
+            light.globalAlpha = p.alpha * 0.08;
+            light.fillRect(x - 4, y - 4, 9, 9);
+            light.globalAlpha = p.alpha * 0.16;
+            light.fillRect(x - 2, y - 2, 5, 5);
+            light.fillStyle = '#ffffff';
+            light.globalAlpha = Math.min(1, p.alpha * 2);
+            if (p.shape === 'star') {
+                light.fillRect(x - p.size, y, p.size * 2 + 1, 1);
+                light.fillRect(x, y - p.size, 1, p.size * 2 + 1);
+            } else light.fillRect(x, y, p.size, p.size);
+        }
+        // A covered spark must not punch a bright spot through a roof or canopy.
+        light.globalAlpha = 1;
+        light.globalCompositeOperation = 'destination-out';
+        if (view.sources?.overhead) light.drawImage(view.sources.overhead, 0, 0, width, height);
+        light.restore();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.drawImage(lightCanvas, 0, 0);
+    }
+
+    function drawParticles(ctx, particles, view) {
         const scale = view.scale;
         const xy = (x, y) => [Math.round((x - view.cameraX) * scale), Math.round((y - view.cameraY) * scale)];
-        for (const p of state.particles || []) {
+        for (const p of particles) {
             ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
             const [px, py] = xy(p.x, p.y);
             if (p.design) {
@@ -84,7 +126,13 @@
             }
         }
         ctx.globalAlpha = 1;
+    }
+
+    function draw(ctx, state, view) {
+        drawParticles(ctx, (state.particles || []).filter(p => p.layer !== 'ground'), view);
+        const scale = view.scale;
+        const xy = (x, y) => [Math.round((x - view.cameraX) * scale), Math.round((y - view.cameraY) * scale)];
         for (const ring of state.rings || []) levelUp(ctx, ring, state.time, xy, scale);
     }
-    return {ground, draw};
+    return {ground, draw, lighting};
 });

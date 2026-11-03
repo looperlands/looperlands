@@ -6,6 +6,7 @@ function register(target = definitions, options = {}) {
         target.register(map, {id: 'map-quests', quests: require('../js/quests/' + map).quests});
     }
     require('./main').register(target);
+    require('./points-exchange').register(target);
     const root = options.root || require('path').resolve(__dirname, '../..');
     require('./seasons').register(root, target);
     for (const mapId of require(require('path').join(root, 'server/config.json')).maps) {

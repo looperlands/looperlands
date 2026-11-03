@@ -25,6 +25,17 @@ class LocalPlatformClient {
                 throw new Error('Invalid local playtest data; preserve state.json before repairing it');
             }
             this.state = saved;
+            if (!saved.pointsObjectivesVersion) {
+                // Older local saves already contain accepted activities. Rebuild counters once;
+                // the stable daily/weekly ledger keys preserve any existing awards.
+                this.change(state => {
+                    for (const wallet of Object.values(state.wallets)) {
+                        if (wallet.pointsStore) wallet.pointsStore.objectives = {};
+                    }
+                    require('./localpointsstore').record(this, state, Object.values(state.activities));
+                    state.pointsObjectivesVersion = 1;
+                });
+            }
         }
     }
 
@@ -203,12 +214,19 @@ class LocalPlatformClient {
             return {accepted: facts};
         });
     }
+    async getPointsStore(wallet, level = 1) {return this.change(state => require('./localpointsstore').overview(this,state,wallet,Date.now(),level));}
+    async getRewardUnlocks(wallet) {return this.change(state => require('./localpointsstore').rewards(this,state,wallet));}
+    async purchasePointsItem(wallet, body) {return this.change(state => require('./localpointsstore').purchase(this,state,wallet,body));}
+    async selectRewardTrail(wallet, trail) {return this.change(state => require('./localpointsstore').selectTrail(this,state,wallet,trail));}
+    async selectRewardTitle(wallet, title) {return this.change(state => require('./localpointsstore').selectTitle(this,state,wallet,title));}
+
     async storeActivity(activities) {
         return this.change(state => {
-            const wallets = new Set();
+            const wallets = new Set(), inserted = [];
             for (const row of activities) {
                 if (own(state.activities, row.id)) continue;
                 put(state.activities, row.id, row);
+                inserted.push(row);
                 if (!row.actorWallet || !row.occurredAt || (row.type === 'playtime' && !(row.data?.activeSeconds > 0))) continue;
                 const key = row.actorWallet.toLowerCase().split(':')[0];
                 const wallet = this.wallet(state, key);
@@ -218,6 +236,7 @@ class LocalPlatformClient {
                 wallets.add(key);
             }
             for (const key of wallets) DailyPlay.award(this.wallet(state, key).dailyPlay);
+            require('./localpointsstore').record(this,state,inserted);
             return {accepted: activities.map(row => row.id)};
         });
     }
