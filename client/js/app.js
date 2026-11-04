@@ -1,7 +1,8 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics) {
 
     var App = Class.extend({
         init: function () {
+            this.growth = GrowthAnalytics;
 
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('sessionId');
