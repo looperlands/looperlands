@@ -96,14 +96,18 @@ test('overlapping scenes exclude earlier regions even when they have no parallax
 });
 
 test('flying shadows belong only to authored outdoor regions, never caves or interiors', () => {
+    const {applyMap} = require('../js/mapmakercontent');
+    const root = require('path').resolve(__dirname, '../..');
     for (const [mapId, asset, expected] of [
         ['main', 'bird-shadow', [624,627,628,629,630,631,633]],
         ['duckville', 'dragon-shadow', [740]]
     ]) {
         const doc = require('../../tools/worlds/' + mapId + '.json');
-        const {applyScenes} = require('../js/localworldscenes');
-        const map = require('../js/localworldauthoring').applyAtmosphere(
-            applyScenes(require('../maps/world_server_' + mapId + '.json'), doc.scenes), doc.atmosphere);
+        // Tiled exports are baselines; local loading and production builds apply
+        // the authored scenes and atmosphere through the same content adapter.
+        const maps = ['client','server'].map(kind => applyMap(root, mapId,
+            require('../../' + kind + '/maps/world_' + kind + '_' + mapId + '.json')));
+        const map = maps[1];
         const scenes = createParallaxScene({map}).packet().rendererExtensions[0].data.scenes;
         const shadows = scenes.filter(scene => scene.layers.some(layer => layer.image.endsWith(asset + '.png')));
         expect(shadows.map(scene => Number(scene.id)).sort((a,b) => a-b)).toEqual(expected.slice().sort((a,b) => a-b));
@@ -111,8 +115,8 @@ test('flying shadows belong only to authored outdoor regions, never caves or int
             const layer = scene.layers.find(layer => layer.image.endsWith(asset + '.png'));
             expect(layer).toMatchObject({plane: 'ground', factorX: 1, factorY: 1, activeSceneOnly: true});
             expect(layer.spacingY).toBeGreaterThan(layer.height * 4);
-            for (const kind of ['client','server']) {
-                expect(require('../../' + kind + '/maps/world_' + kind + '_' + mapId + '.json').scenes.find(s => String(s.id) === String(scene.id)).parallax).toEqual(doc.atmosphere.find(row => row.sceneId === String(scene.id)).parallax);
+            for (const loaded of maps) {
+                expect(loaded.scenes.find(s => String(s.id) === String(scene.id)).parallax).toEqual(doc.atmosphere.find(row => row.sceneId === String(scene.id)).parallax);
             }
         }
         expect(shadows.some(scene => /cave|cavern|house|shop|gauntlet/i.test(map.scenes.find(s => String(s.id) === String(scene.id)).name))).toBe(false);
