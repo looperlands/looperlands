@@ -164,6 +164,105 @@
   ],
   "sequences": [],
   "ambientSounds": [],
+  "placedFx": [
+    {
+      "id": "fx_2",
+      "name": "Geyser",
+      "effect": "water/geyser",
+      "x": 120,
+      "y": 424,
+      "width": 3,
+      "height": 12,
+      "scale": 0.5,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 750,
+        "activeMs": 2000,
+        "cooldownMs": 750,
+        "damage": 100,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 2,
+        "areaHeight": 2
+      },
+      "palette": "lava",
+      "options": {
+        "height": 70
+      }
+    },
+    {
+      "id": "fx_3",
+      "name": "Fire ring",
+      "effect": "fire/fire-ring",
+      "x": 25,
+      "y": 448,
+      "width": 8,
+      "height": 8,
+      "scale": 0.5,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 750,
+        "activeMs": 2000,
+        "cooldownMs": 750,
+        "damage": 200,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 6,
+        "areaHeight": 2
+      },
+      "attackingMob": 34000058
+    },
+    {
+      "id": "fx_1",
+      "name": "Geyser",
+      "effect": "water/geyser",
+      "x": 105,
+      "y": 424,
+      "width": 3,
+      "height": 12,
+      "scale": 0.5,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 750,
+        "activeMs": 2000,
+        "cooldownMs": 750,
+        "damage": 100,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 2,
+        "areaHeight": 2
+      },
+      "palette": "lava",
+      "options": {
+        "height": 70
+      }
+    },
+    {
+      "id": "fx_4",
+      "name": "Dirt explosion",
+      "effect": "explosions/dirt-explosion",
+      "x": 106,
+      "y": 454,
+      "width": 16,
+      "height": 4,
+      "scale": 0.5,
+      "background": "transparent",
+      "hazard": {
+        "warningMs": 1000,
+        "activeMs": 2000,
+        "cooldownMs": 750,
+        "damage": 50,
+        "tickMs": 500,
+        "impactMs": 0,
+        "placement": "random",
+        "areaWidth": 3,
+        "areaHeight": 2
+      }
+    }
+  ],
   "scenes": [
     {
       "id": "740",
