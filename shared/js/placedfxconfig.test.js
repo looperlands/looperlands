@@ -7,7 +7,7 @@ test('every pinned effect is available for decorative and hazardous placement',(
 });
 test('region is half-open, tile aligned and independent of visual scale',()=>{
     expect(C.contains(row,2,3)).toBe(true);expect(C.contains(row,3,5)).toBe(true);expect(C.contains(row,4,5)).toBe(false);expect(C.contains(row,2,6)).toBe(false);
-    expect(C.phase(row,3500)).toEqual({kind:'decoration',effectMs:500});
+    expect(C.phase(row,3500)).toEqual({kind:'decoration',cycle:1,effectMs:500});
 });
 test('effect anticipation, warning, impact, tick and safe cooldown share one clock',()=>{
     const r={...row,hazard};
@@ -55,4 +55,30 @@ test('attack conditions select a map mob and inactive effects have no animation 
     expect(C.phase(row,null)).toEqual({kind:'inactive',effectMs:null});
     expect(()=>C.validate([{...row,attackingMob:13}],{mobs:[{id:2}]})).toThrow('from this map');
     for(const attackingMob of [null,0,-1,1.5,'13',{},Number.MAX_SAFE_INTEGER+1])expect(()=>C.validate([{...row,attackingMob}])).toThrow('Attacking mob');
+});
+
+test('every shipped effect exposes typed, valid defaults without manual seeds or a second palette owner',()=>{
+    for(const [effect,meta]of Object.entries(C.catalog)){
+        expect(()=>C.validateOptions(effect,meta.options)).not.toThrow();
+        expect(C.optionFields(effect).map(f=>f.key)).not.toContain('seed');
+        expect(C.optionFields(effect).map(f=>f.key)).not.toContain('palette');
+    }
+    expect(C.validate([{...row,options:{height:30,wood:['#111111','#222222','#333333','#444444','#555555','#666666']}}])).toHaveLength(1);
+    expect(()=>C.validateOptions('water/waterfall',{ledge:false,height:75,width:9})).not.toThrow();
+    expect(()=>C.validateOptions('ui/achievement',{title:'WELL DONE',text:'Victory!'})).not.toThrow();
+    expect(()=>C.validateOptions('transitions/iris',{focus:[20,30]})).not.toThrow();
+});
+test.each([null,[],{seed:1},{palette:'leaf'},{actor:{}},{x:12},{height:'30'},{height:0},{height:Infinity},{height:100000},{wood:[]},{wood:['red']},JSON.parse('{"__proto__":{}}')])('rejects unsupported and unsafe options: %j',options=>{
+    expect(()=>C.validate([{...row,options}])).toThrow();
+});
+test('option types and bounds are enforced at the shared authoring boundary',()=>{
+    for(const [effect,options]of [['water/waterfall',{ledge:'false'}],['ui/achievement',{title:'<script>'}],['ui/achievement',{text:'a'.repeat(65)}],['fire/flame-pillar',{stone:'red'}],['transitions/iris',{focus:[20]}],['transitions/iris',{focus:[-1,30]}],['holy/sunburst',{rays:1.5}],['impacts/hit-flash',{side:0}]]){
+        expect(()=>C.validateOptions(effect,options)).toThrow('option');
+    }
+});
+test('visual seeds vary by placement, cycle, world and fight while remaining deterministic for observers',()=>{
+    const seed=C.effectSeed(row,0,123,1000);
+    expect(C.effectSeed(row,0,123,1000)).toBe(seed);
+    const variants=[seed,C.effectSeed({...row,id:'other'},0,123,1000),C.effectSeed(row,1,123,1000),C.effectSeed(row,0,124,1000),C.effectSeed(row,0,123,2000)];
+    expect(new Set(variants).size).toBe(5);expect(variants.every(n=>Number.isInteger(n) && n>0)).toBe(true);
 });

@@ -10,10 +10,12 @@
         <canvas class="fx-sample" width="320" height="180" aria-label="Selected library effect preview" style="background:#181b24;image-rendering:pixelated;max-width:100%"></canvas><p class="fx-description field-hint"></p><div class="world-toolbar"><button class="fx-preview">Restart placement preview</button><button class="fx-pause">Pause preview</button></div><p class="fx-phase field-hint" role="status"></p><div class="fx-map-host"></div></div>
         <aside class="zones-inspector"><div class="fx-editor"></div><h3>Placed effects</h3><div class="world-list fx-list"></div></aside></div>`;
     const $=s=>pane.querySelector(s);
-    let data,original,selected,editor,painter,pending,busy=false,loaded=false,start=performance.now(),paused=false,previewAttacking=false,fieldId=0;
+    const randomSeed=()=>1+Math.floor(Math.random()*2147483646);
+    let data,original,selected,editor,painter,pending,busy=false,loaded=false,start=performance.now(),previewSeed=randomSeed(),paused=false,previewAttacking=false,fieldId=0;
     import('./vendor/pixelfxpainter.mjs').then(({PixelFxPainter})=>{painter=new PixelFxPainter((w,h)=>el('canvas','',{width:w,height:h}));}).catch(error=>status('FX preview unavailable: '+error.message,true));
     const current=()=>data?.entries.find(r=>r.id===selected), dirty=()=>data && original!==JSON.stringify(data.entries);
-    const appearance=row=>({palette:row?.palette,hue:row?.hue || 0,removeBackdrop:row?.background!=='original'});
+    const appearance=(row,cycle)=>({palette:row?.palette,options:row?.options,seed:Config.effectSeed(row || {id:'sample'},cycle,previewSeed),hue:row?.hue || 0,removeBackdrop:row?.background!=='original'});
+    function restart(){start=performance.now();previewSeed=randomSeed();}
     const mobName=kind=>data.catalog.mobs.find(mob=>mob.id===kind)?.name || 'Missing mob #'+kind;
     const previewPhase=(row,elapsed)=>Config.phase(row,row.attackingMob!==undefined && (!previewAttacking || row.attackingMob!==current()?.attackingMob)?null:elapsed);
     function status(text,error=false){$('.fx-status').textContent=text;$('.fx-status').classList.toggle('error',error);}
@@ -28,6 +30,44 @@
         input.value=row[key] ?? '';input.required=true;input.oninput=()=>{row[key]=min===undefined?input.value:input.value===''?null:Number(input.value);touch();};
         wrap.append(el('label',label,{htmlFor:id}),input);parent.append(wrap);
     }
+    function effectOptions(form,row){
+        const fields=Config.optionFields(row.effect),group=el('fieldset');
+        group.append(el('legend','Effect options'),el('p','Seeds change automatically for every placement and playback. All players share the same variation.',{className:'field-hint'}));
+        if(!fields.length)group.append(el('p','This effect has no extra options. Use the palette picker above.',{className:'field-hint'}));
+        for(const f of fields){
+            const label=f.key.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase()),value=row.options?.[f.key] ?? f.default;
+            const wrap=el('div','',{className:'field'});
+            const update=value=>{
+                row.options ||= {};
+                if(JSON.stringify(value)===JSON.stringify(f.default))delete row.options[f.key];else row.options[f.key]=value;
+                if(!Object.keys(row.options).length)delete row.options;
+                restart();touch();
+            };
+            const input=(value,attrs,onchange,suffix='')=>{
+                const id='fx-option-'+(++fieldId),control=el('input','',{id,...attrs});
+                if(attrs.type==='checkbox')control.checked=value;else control.value=value;
+                control.oninput=()=>onchange(control);
+                wrap.append(el('label',label+suffix,{htmlFor:id}),control);
+            };
+            if(f.type==='boolean')input(value,{type:'checkbox'},c=>update(c.checked));
+            else if(f.type==='choice'){
+                const id='fx-option-'+(++fieldId),control=el('select','',{id});
+                for(const choice of f.values)control.append(el('option',String(choice),{value:String(choice)}));
+                control.value=String(value);control.onchange=()=>update(Number(control.value));wrap.append(el('label',label,{htmlFor:id}),control);
+            }else if(f.type==='colors' || f.type==='point'){
+                value.forEach((part,i)=>input(part,f.type==='colors'?{type:'color'}:{type:'number',min:0,max:f.max[i],step:.01,required:true},c=>{
+                    const next=[...(row.options?.[f.key] || f.default)];next[i]=f.type==='colors'?c.value:c.value===''?null:Number(c.value);update(next);
+                },f.type==='point'?(i?' Y':' X'):' '+(i+1)));
+            }else if(f.type==='number')input(value,{type:'number',min:f.min,max:f.max,step:f.step,required:true},c=>update(c.value===''?null:Number(c.value)));
+            else input(value,{type:f.type==='color'?'color':'text',maxLength:64},c=>update(c.value));
+            group.append(wrap);
+        }
+        if(fields.length){
+            group.append(el('p','Options change the artwork within its original canvas. The highlighted region still controls damage.',{className:'field-hint'}));
+            button(group,'Reset effect options',()=>{delete row.options;restart();renderEditor();touch();});
+        }
+        form.append(group);
+    }
     function list(){const host=$('.fx-list');host.replaceChildren();for(const row of data?.entries || [])button(host,(row.hazard?'⚠ ':'')+row.name,()=>select(row.id,true),{ariaPressed:String(row.id===selected)});}
     function touch(){controls();list();editor?.refresh();status('Unsaved effects. Save, then build and start a fresh playtest.');}
     function choices(){const q=$('#fx-search').value.toLowerCase(),old=$('#fx-effect').value;$('#fx-effect').replaceChildren();let group;
@@ -36,12 +76,12 @@
         $('.fx-add').disabled=!$('#fx-effect').value;describe();
     }
     function describe(){const meta=Config.catalog[$('#fx-effect').value];$('.fx-description').textContent=meta?meta.name+' · '+meta.category+' · '+(meta.duration/1000)+'s · '+(meta.loop?'loop':'repeats on placement')+(meta.actor?' · Designed around a character silhouette; check the preview before placing.':''): 'No matching effects.';}
-    function select(id,focus=false){selected=id;previewAttacking=false;renderEditor();list();editor?.refresh();if(focus)editor?.fit();start=performance.now();}
+    function select(id,focus=false){selected=id;previewAttacking=false;renderEditor();list();editor?.refresh();if(focus)editor?.fit();restart();}
     function renderEditor(){
         const host=$('.fx-editor'),row=current();host.replaceChildren();if(!row){host.append(el('p','Choose an effect, then Place effect. Draw, move or resize its region on the map.'));return;}
         const form=el('form');form.onsubmit=e=>{e.preventDefault();save();};host.append(form);
         form.append(el('h3',Config.catalog[row.effect]?.name || row.effect));field(form,'Name',row,'name');
-        button(form,'Use selected library effect',()=>{if(!$('#fx-effect').value)return;row.effect=$('#fx-effect').value;if(row.hazard)row.hazard.impactMs=0;renderEditor();touch();});
+        button(form,'Use selected library effect',()=>{if(!$('#fx-effect').value)return;row.effect=$('#fx-effect').value;delete row.options;if(row.hazard)row.hazard.impactMs=0;restart();renderEditor();touch();});
         const grid=el('div','',{className:'asset-field-grid'});form.append(grid);
         field(grid,'Tile X',row,'x',0,data.catalog.width-1);field(grid,'Tile Y',row,'y',0,data.catalog.height-1);
         field(grid,'Area width (tiles)',row,'width',1,32);field(grid,'Area height (tiles)',row,'height',1,32);field(form,'Visual scale',row,'scale',.1,4,.05);
@@ -49,29 +89,30 @@
         const legacyHue=!row.palette && !!row.hue;
         if(legacyHue)palettes.append(el('option','Existing hue variation',{value:'legacy',disabled:true}));
         palettes.value=legacyHue?'legacy':row.palette || '';
-        palettes.onchange=()=>{if(palettes.value)row.palette=palettes.value;else delete row.palette;delete row.hue;start=performance.now();renderEditor();touch();};form.append(el('label','Palette',{htmlFor:'fx-palette'}),palettes);
+        palettes.onchange=()=>{if(palettes.value)row.palette=palettes.value;else delete row.palette;delete row.hue;restart();renderEditor();touch();};form.append(el('label','Palette',{htmlFor:'fx-palette'}),palettes);
         form.append(el('p',legacyHue?'Your saved hue stays unchanged until you choose a palette.':'The same palettes as the PixelFX gallery. “its own” restores the effect’s original palette. Fixed artwork keeps its original colors.',{className:'field-hint'}));
+        effectOptions(form,row);
         const background=el('select','',{id:'fx-background'});background.append(el('option','Transparent overlay',{value:'transparent'}),el('option','Original artwork',{value:'original'}));background.value=row.background || 'transparent';
         background.onchange=()=>{row.background=background.value;touch();};form.append(el('label','Background',{htmlFor:'fx-background'}),background);
         form.append(el('p','Transparent overlay removes dark translucent backdrops. Use Original artwork to keep dark smoke and shadows.',{className:'field-hint'}));
         const conditional=row.attackingMob!==undefined;
         const conditionLabel=el('label',' Only enable while a mob is attacking'),condition=el('input','',{type:'checkbox',checked:conditional,disabled:!conditional && !data.catalog.mobs.length});conditionLabel.prepend(condition);form.append(conditionLabel);
-        condition.onchange=()=>{if(condition.checked)row.attackingMob=data.catalog.mobs[0].id;else delete row.attackingMob;previewAttacking=false;start=performance.now();renderEditor();touch();};
+        condition.onchange=()=>{if(condition.checked)row.attackingMob=data.catalog.mobs[0].id;else delete row.attackingMob;previewAttacking=false;restart();renderEditor();touch();};
         if(conditional){
             const mobs=el('select','',{id:'fx-attacking-mob'});
             for(const mob of data.catalog.mobs)mobs.append(el('option',mob.name,{value:String(mob.id)}));
             if(!data.catalog.mobs.some(mob=>mob.id===row.attackingMob))mobs.append(el('option',mobName(row.attackingMob),{value:String(row.attackingMob),disabled:true}));
             mobs.value=String(row.attackingMob);
-            mobs.onchange=()=>{row.attackingMob=Number(mobs.value);previewAttacking=false;start=performance.now();renderEditor();touch();};
+            mobs.onchange=()=>{row.attackingMob=Number(mobs.value);previewAttacking=false;restart();renderEditor();touch();};
             form.append(el('label','Attacking mob',{htmlFor:'fx-attacking-mob'}),mobs,el('p','Runs while any living mob of this type on this map is attacking a player. Hazards start each new fight with a full warning. Stops when none are attacking.',{className:'field-hint'}));
             const previewLabel=el('label',' Preview mob attacking'),preview=el('input','',{type:'checkbox',checked:previewAttacking});previewLabel.prepend(preview);form.append(previewLabel);
-            preview.onchange=()=>{previewAttacking=preview.checked;start=performance.now();editor?.refresh();};
+            preview.onchange=()=>{previewAttacking=preview.checked;restart();editor?.refresh();};
         }else if(!data.catalog.mobs.length)form.append(el('p','Place a mob and build the map to use an attack condition.',{className:'field-hint'}));
         const label=el('label',' Hazard — damage players in this region'),check=el('input','',{type:'checkbox',checked:!!row.hazard});label.prepend(check);form.append(label);
-        check.onchange=()=>{row.hazard=check.checked?{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:0}:null;renderEditor();start=performance.now();touch();};
+        check.onchange=()=>{row.hazard=check.checked?{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:0}:null;renderEditor();restart();touch();};
         if(row.hazard){const h=row.hazard;
             const position=el('select','',{id:'fx-position'});position.append(el('option','Whole region',{value:'fixed'}),el('option','Random within region',{value:'random'}));position.value=h.placement || 'fixed';
-            position.onchange=()=>{h.placement=position.value;if(h.placement==='random'){h.areaWidth=Math.min(2,row.width);h.areaHeight=Math.min(2,row.height);}else{delete h.areaWidth;delete h.areaHeight;}renderEditor();start=performance.now();touch();};
+            position.onchange=()=>{h.placement=position.value;if(h.placement==='random'){h.areaWidth=Math.min(2,row.width);h.areaHeight=Math.min(2,row.height);}else{delete h.areaWidth;delete h.areaHeight;}renderEditor();restart();touch();};
             form.append(el('label','Strike position',{htmlFor:'fx-position'}),position);
             if(h.placement==='random'){field(form,'Strike width (tiles)',h,'areaWidth',1,row.width);field(form,'Strike height (tiles)',h,'areaHeight',1,row.height);form.append(el('p','Each cycle picks a position inside the larger region. Only the highlighted strike footprint causes damage.',{className:'field-hint'}));}
             form.append(el('p',h.placement==='random'?'The chosen footprint is highlighted before damage. Visual scale does not change its hit area.':'Every tile in the region is highlighted before damage. Visual scale does not change the hit area.',{className:'field-hint'}));
@@ -84,12 +125,12 @@
     }
     function draw(ctx,view){
         if(!data || !painter)return;painter.beginFrame();const elapsed=performance.now()-start;
-        for(const source of data.entries){try{Config.validate([source],data.catalog);}catch(_){continue;}const p=previewPhase(source,elapsed),row={...source,...Config.hitRegion(source,p.cycle,12345)},center=view.project({x:row.x+row.width/2,y:row.y+row.height/2});
+        for(const source of data.entries){try{Config.validate([source],data.catalog);}catch(_){continue;}const p=previewPhase(source,elapsed),row={...source,...Config.hitRegion(source,p.cycle,previewSeed)},center=view.project({x:row.x+row.width/2,y:row.y+row.height/2});
             if(row.hazard && ['warning','active'].includes(p.kind))for(let dy=0;dy<row.height;dy++)for(let dx=0;dx<row.width;dx++){
                 const pos=view.project({x:row.x+dx,y:row.y+dy});ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(view.scale/16,view.scale/16);
                 window.AttackWarning.tile(ctx,0,0,p.kind==='warning'?1-p.remaining/row.hazard.warningMs:1,p.kind==='active');ctx.restore();
             }
-            if(p.effectMs!==null)painter.draw(ctx,row.effect,p.effectMs,center.x,center.y,row.scale*view.scale/16,appearance(row));
+            if(p.effectMs!==null)painter.draw(ctx,row.effect,p.effectMs,center.x,center.y,row.scale*view.scale/16,appearance(row,p.cycle));
             if(row.hazard && p.kind==='warning'){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff0ce';ctx.strokeStyle='#241d25';ctx.lineWidth=2;const label=(p.remaining/1000).toFixed(1),top=view.project({x:row.x+row.width/2,y:row.y});ctx.strokeText(label,top.x,top.y-3);ctx.fillText(label,top.x,top.y-3);}
 
         }
@@ -105,10 +146,19 @@
     $('.fx-add').onclick=()=>{let i=1;while(data.entries.some(r=>r.id==='fx_'+i))i++;const effect=$('#fx-effect').value;data.entries.push({id:'fx_'+i,name:Config.catalog[effect].name,effect,x:current()?.x || 0,y:current()?.y || 0,width:1,height:1,scale:.5,background:'transparent',hazard:null});select('fx_'+i);editor?.setMode('draw');touch();};
     $('.fx-save').onclick=save;$('.fx-reload').onclick=()=>guard(()=>load(data?.mapId || $('#fx-map').value));
     $('#fx-map').onchange=e=>{const id=e.target.value;e.target.value=data?.mapId || id;guard(()=>load(id));};
-    $('#fx-search').oninput=choices;$('#fx-effect').onchange=()=>{describe();start=performance.now();};
-    $('.fx-preview').onclick=()=>{start=performance.now();paused=false;$('.fx-pause').textContent='Pause preview';};
+    $('#fx-search').oninput=choices;$('#fx-effect').onchange=()=>{describe();restart();};
+    $('.fx-preview').onclick=()=>{restart();paused=false;$('.fx-pause').textContent='Pause preview';};
     $('.fx-pause').onclick=()=>{paused=!paused;$('.fx-pause').textContent=paused?'Resume preview':'Pause preview';};
     window.addEventListener('beforeunload',event=>{if(dirty()){event.preventDefault();event.returnValue='';}});
     choices();window.ToolboxNavigation.route('fx',async params=>{if(!loaded){const setup=await request();$('#fx-map').replaceChildren(...setup.maps.map(id=>el('option',id,{value:id})));loaded=true;}const id=params.get('map') || data?.mapId || $('#fx-map').value;if(id!==data?.mapId)guard(()=>load(id));});
-    setInterval(()=>{if(pane.hidden || document.hidden || paused || busy)return;const meta=Config.catalog[$('#fx-effect').value];if(painter && meta){const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);painter.beginFrame();painter.draw(ctx,$('#fx-effect').value,(performance.now()-start)%meta.duration,160,140,Math.min(1,150/meta.size[1]),appearance(current()));}editor?.refresh();const row=current();if(row){const p=previewPhase(row,performance.now()-start);$('.fx-phase').textContent=p.kind==='inactive'?row.name+' · Waiting for '+mobName(row.attackingMob)+' to attack':row.hazard?row.name+' · '+p.kind+' · '+(p.remaining/1000).toFixed(1)+'s · '+row.width*row.height+' region tiles':row.name+' · Decoration (no damage)';}},50);
+    function drawSample(elapsed){
+        const effect=$('#fx-effect').value,meta=Config.catalog[effect];
+        if(!painter || !meta)return;
+        const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);
+        const row=current()?.effect===effect?current():{...current(),id:'sample',options:undefined};
+        try{Config.validateOptions(effect,row.options);}catch(_){return;}
+        painter.beginFrame();
+        painter.draw(ctx,effect,elapsed%meta.duration,160,140,Math.min(1,150/meta.size[1]),appearance(row,Math.floor(elapsed/meta.duration)));
+    }
+    setInterval(()=>{if(pane.hidden || document.hidden || paused || busy)return;drawSample(performance.now()-start);editor?.refresh();const row=current();if(row){const p=previewPhase(row,performance.now()-start);$('.fx-phase').textContent=p.kind==='inactive'?row.name+' · Waiting for '+mobName(row.attackingMob)+' to attack':row.hazard?row.name+' · '+p.kind+' · '+(p.remaining/1000).toFixed(1)+'s · '+row.width*row.height+' region tiles':row.name+' · Decoration (no damage)';}},50);
 })();

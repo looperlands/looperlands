@@ -21,11 +21,13 @@ test('trigger feedback loops are rejected, while disabled rules do not form acti
 test('unsupported blocks, duplicate IDs, invalid references and oversized chains fail validation',()=>{expect(()=>W.validateRules([rule(),rule()])).toThrow('unique');const r=rule();r.when.type='constructor';expect(()=>W.validateRules([r])).toThrow('supported');const unknown=rule();expect(()=>W.validateRules([unknown],{mobs:[]})).toThrow('Unknown Mob');const long=rule();long.actions=Array(21).fill(long.actions[0]);expect(()=>W.validateRules([long])).toThrow('20');});
 test('boss FX conditions save and reload only map mob references, preserving the draft on an invalid choice',async()=>{
     const base=await W.readTool(root,'one','fx');expect(base.catalog.mobs).toEqual(expect.arrayContaining([{id:13,name:expect.any(String)}]));
-    const row={id:'boss_fx',name:'Boss flames',effect:'fire/flame-pillar',x:2,y:2,width:2,height:2,scale:.5,palette:'leaf',attackingMob:13,hazard:null};
+    const row={id:'boss_fx',name:'Boss flames',effect:'fire/flame-pillar',x:2,y:2,width:2,height:2,scale:.5,palette:'leaf',options:{height:100,stone:'#227744'},attackingMob:13,hazard:null};
     const saved=await W.saveTool(root,{mapId:'one',tool:'fx',revision:base.revision,entries:[row]});
     expect(saved.entries).toEqual([row]);expect((await W.readTool(root,'one','fx')).entries).toEqual([row]);
     const before=fs.readFileSync(path.join(root,'tools/worlds/one.json'));
     await expect(W.saveTool(root,{mapId:'one',tool:'fx',revision:saved.revision,entries:[{...row,attackingMob:999999999}]})).rejects.toThrow('from this map');
+    await expect(W.saveTool(root,{mapId:'one',tool:'fx',revision:saved.revision,entries:[{...row,options:{seed:100}}]})).rejects.toThrow('Unsupported effect option');
+    await expect(W.saveTool(root,{mapId:'one',tool:'fx',revision:saved.revision,entries:[{...row,options:{height:0}}]})).rejects.toThrow('Invalid effect option');
     expect(fs.readFileSync(path.join(root,'tools/worlds/one.json'))).toEqual(before);
 });
 test('dialogues reject broken links, unreachable nodes and duplicate NPC scopes',()=>{const valid=tree();expect(()=>W.validateDialogues([valid])).not.toThrow();const broken=tree();broken.nodes.welcome.options[0].goto='missing';expect(()=>W.validateDialogues([broken])).toThrow('missing node');const unreachable=tree();unreachable.nodes.lost={text:'Lost'};expect(()=>W.validateDialogues([unreachable])).toThrow('unreachable');expect(()=>W.validateDialogues([tree(),{...tree(),id:'another'}])).toThrow('same NPC');});
