@@ -292,10 +292,12 @@ function createToolboxApp(toolbox) {
         next();
     });
     app.use('/local/api/assets', express.json({limit: '18mb'}));
+    app.use('/local/api/fx-sheets', express.json({limit: '6mb'}));
     app.use('/local/api/parallax-images', express.json({limit: '6mb'}));
     app.use('/local/api/ambient-assets', express.json({limit: '2mb'}));
     app.use('/local/api/seasons', express.json({limit: '1mb'}));
     app.use(express.json({limit: '256kb'}));
+    require('../server/js/localfxassets').install(app, toolbox);
     require('../server/js/localparallaxassets').install(app, toolbox);
     require('../server/js/localtoolboxassets').install(app, toolbox.root);
     require('../server/js/localassetapi').install(app, toolbox);
@@ -375,6 +377,7 @@ function createToolboxApp(toolbox) {
     app.get('/', (req, res) => res.redirect('/local/'));
     app.use((error, req, res, next) => res.status(error.status || 500).json({error: error.type === 'entity.too.large' ?
         (req.path.startsWith('/local/api/assets') ? 'These spritesheets exceed the 18 MB request limit. Use a smaller sheet.' :
+            req.path.startsWith('/local/api/fx-sheets') ? 'This sprite sheet exceeds the 6 MB request limit. Upload a PNG smaller than 4 MB.' :
             req.path.startsWith('/local/api/seasons') ? 'Temporary content exceeds the 1 MB request limit. Remove entries before saving.' :
                 'This request exceeds the 256 KB toolbox limit. Shorten dialogue or remove quests before saving.') : 'The toolbox could not read the request.'}));
     return app;

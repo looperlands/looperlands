@@ -50,16 +50,32 @@
             if (!valid) fail('Invalid effect option: '+key+'.');
         }
     }
+    const validImage = image => typeof image==='string' && /^\/img\/map-fx\/custom-[a-f0-9]{32}\.png$/.test(image);
+    function validateSprite(sprite) {
+        if (!sprite || typeof sprite!=='object' || Array.isArray(sprite) || Object.keys(sprite).some(key=>!['image','frameWidth','frameHeight','columns','frames','fps'].includes(key))) fail('Choose a custom sprite sheet and its frame settings.');
+        if (!validImage(sprite.image)) fail('Choose an uploaded local effect PNG.');
+        number(sprite.frameWidth,1,1024,'Frame width');number(sprite.frameHeight,1,1024,'Frame height');
+        number(sprite.columns,1,256,'Sheet columns');number(sprite.frames,1,256,'Frame count');number(sprite.fps,1,60,'Frames per second');
+        if (sprite.frames/sprite.fps>60) fail('Keep custom animations within 60 seconds.');
+    }
+    function metadata(row) {
+        return row.sprite ? {duration:row.sprite.frames/row.sprite.fps*1000,loop:false,size:[row.sprite.frameWidth,row.sprite.frameHeight]} : Catalog.effects[row.effect];
+    }
     function validate(rows, map) {
         if (!Array.isArray(rows) || rows.length > 100) fail('Place at most 100 effects per map.');
         const ids = new Set();
         for (const r of rows) {
-            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','palette','background','hazard','attackingMob','options'].includes(k))) fail('Unsupported placed FX field.');
+            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','palette','background','hazard','attackingMob','options','sprite'].includes(k))) fail('Unsupported placed FX field.');
             if (typeof r.id !== 'string' || !/^[a-z][a-z0-9_-]{0,63}$/i.test(r.id) || ids.has(r.id)) fail('FX IDs must be unique.');
             ids.add(r.id);
             if (typeof r.name !== 'string' || !r.name.trim() || r.name.length > 120 || /[<>\u0000-\u001f]/.test(r.name)) fail('Enter a plain-text FX name.');
-            if (!Object.hasOwn(Catalog.effects, r.effect)) fail('Choose an effect from the PixelFX catalog.');
-            validateOptions(r.effect,r.options);
+            if (r.sprite !== undefined) {
+                validateSprite(r.sprite);
+                if (['effect','options','palette','hue','background'].some(key=>r[key]!==undefined)) fail('Custom sprite sheets use their own artwork instead of PixelFX appearance settings.');
+            } else {
+                if (!Object.hasOwn(Catalog.effects, r.effect)) fail('Choose an effect from the PixelFX catalog.');
+                validateOptions(r.effect,r.options);
+            }
             number(r.x, 0, (map?.width || 10000)-1, 'Tile X'); number(r.y, 0, (map?.height || 10000)-1, 'Tile Y');
             number(r.width, 1, 32, 'Area width'); number(r.height, 1, 32, 'Area height');
             if (map && (r.x+r.width>map.width || r.y+r.height>map.height)) fail('The FX area must fit inside the map.');
@@ -79,7 +95,7 @@
                 number(h.warningMs, 750, 60000, 'Warning'); number(h.activeMs, 100, 60000, 'Active duration');
                 number(h.cooldownMs, 250, 300000, 'Cooldown'); number(h.damage, 1, 10000, 'Damage');
                 number(h.tickMs, 250, 60000, 'Damage interval');
-                number(h.impactMs, 0, Math.min(h.warningMs, Catalog.effects[r.effect].duration-1), 'Effect impact time');
+                number(h.impactMs, 0, Math.min(h.warningMs, Math.ceil(metadata(r).duration)-1), 'Effect impact time');
             }
         }
         return rows;
@@ -99,16 +115,16 @@
         return {x:row.x+Math.floor(next()*(row.width-h.areaWidth+1)),y:row.y+Math.floor(next()*(row.height-h.areaHeight+1)),width:h.areaWidth,height:h.areaHeight};
     }
     function playbackDuration(row) {
-        const meta=Catalog.effects[row.effect];
+        const meta=metadata(row);
         return meta.loop && row.hazard ? Math.max(meta.duration,row.hazard.impactMs+row.hazard.activeMs) : meta.duration;
     }
     function cycleDuration(row) {
         const h=row.hazard;
-        return h ? h.warningMs+Math.max(h.activeMs,playbackDuration(row)-h.impactMs)+h.cooldownMs : Catalog.effects[row.effect].duration;
+        return h ? h.warningMs+Math.max(h.activeMs,playbackDuration(row)-h.impactMs)+h.cooldownMs : metadata(row).duration;
     }
     function phase(row, elapsed) {
         if (elapsed === null) return {kind:'inactive', effectMs:null};
-        const duration = Catalog.effects[row.effect].duration;
+        const duration = metadata(row).duration;
         if (!row.hazard) return {kind:'decoration', cycle:Math.floor(Math.max(0,elapsed)/duration), effectMs:Math.max(0, elapsed)%duration};
         const h = row.hazard, period = cycleDuration(row);
         const cycle = Math.floor(Math.max(0, elapsed)/period), at = Math.max(0, elapsed)%period;
@@ -117,5 +133,5 @@
         return {kind, cycle, remaining:kind==='warning'?h.warningMs-at:kind==='active'?h.warningMs+h.activeMs-at:period-at,
             tick:Math.floor((at-h.warningMs)/h.tickMs), effectMs:effectMs<0 || effectMs>=playbackDuration(row) ? null : effectMs%duration};
     }
-    return {validate, validateOptions, optionFields, contains, phase, hitRegion, effectSeed, cycleDuration, hitStyles, catalog:Catalog.effects, palettes:Catalog.palettes};
+    return {validate, validateSprite, validImage, metadata, validateOptions, optionFields, contains, phase, hitRegion, effectSeed, cycleDuration, hitStyles, catalog:Catalog.effects, palettes:Catalog.palettes};
 });

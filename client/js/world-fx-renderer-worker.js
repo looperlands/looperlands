@@ -83,7 +83,7 @@
         for (const p of particles) {
             const x = Math.round(p.x - view.cameraX), y = Math.round(p.y - view.cameraY);
             if (x < -5 || y < -5 || x > width + 5 || y > height + 5) continue;
-            light.fillStyle = '#ffe7af';
+            light.fillStyle = p.color;
             light.globalAlpha = p.alpha * 0.08;
             light.fillRect(x - 4, y - 4, 9, 9);
             light.globalAlpha = p.alpha * 0.16;

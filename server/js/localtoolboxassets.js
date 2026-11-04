@@ -5,6 +5,7 @@ function install(app, root) {
     app.use('/local/vendor/lib/pixelfx', require('express').static(path.join(root, 'client/js/lib/pixelfx')));
     const assets = {
         '/local/vendor/attackwarning-worker.js': 'client/js/attackwarning-worker.js',
+        '/local/vendor/spritesheetpainter.mjs': 'client/js/spritesheetpainter.mjs',
         '/local/vendor/pixelfxpainter.mjs': 'client/js/pixelfxpainter.mjs',
         '/local/vendor/pixelfxcatalog.js': 'shared/js/pixelfxcatalog.js',
         '/local/vendor/placedfxconfig.js': 'shared/js/placedfxconfig.js',

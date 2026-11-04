@@ -36,3 +36,26 @@ Points Exchange sells **Spark Hit**, **Frost Hit** and **Shadow Hit** as permane
 `bin/pixelfx-preview/` is the original interactive experiment, served by `node bin/local-pixelfx-preview.js`. Production authoring and damage use `placedfxconfig`, `placedfxcontroller`, the game `pixelfx` manager and the worker renderer. The Toolbox and worker share the lazy native-module painter, with a 16 MB frame cache. Run `npm run check`, `node bin/check-pixelfx.mjs`, and the client build. Validate an actual Toolbox save → build → fresh game session separately from the standalone experiment.
 
 The Platform change adds nullable `game_reward_profile.hit` and `PUT /api/game/wallet/{wallet}/rewards/hit`. Deploy its migration/API/catalog before the game release. Selection validates ownership and reward type; purchases use the existing transactional, idempotent Points Exchange flow.
+
+## Custom sprite sheets
+
+Select or place an effect, then choose **Upload custom sprite sheet**. Upload a
+PNG up to 4 MB, 4096 pixels per side and 8 million pixels. The editor prepares
+standard PNG pixel data and stores immutable artwork under `client/img/map-fx/`.
+Replacing a sheet leaves artwork used by other maps intact. Include the uploaded
+PNG with the authoring changes when sharing or releasing the map.
+
+Set frame width/height, columns, frame count and frames per second. Frames play
+left to right, then top to bottom; the last row may have unused frames. The grid
+must match the whole image. Limits are 1024 pixels per frame dimension, 256
+frames, 1–60 fps and 60 seconds per animation. Each frame's bottom center anchors
+to the region center. The library preview switches to the uploaded animation.
+
+Custom sheets use their original colors and transparency. **Use selected library
+effect** switches back to PixelFX. Either artwork source can be decoration or a
+hazard, with the same region, warning, impact time, random strike placement and
+attacking-mob condition. The server controls damage and playback timing for all
+observers. Save, reload, build and launch a fresh playtest to verify the result.
+
+Save and build reject missing images or mismatched grids. Uploads reject invalid
+PNGs, remote paths and symlink destinations, and wait while a map build runs.

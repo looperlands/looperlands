@@ -69,7 +69,8 @@ define(['jquery', 'mapnames', 'dailyplaycelebration'], function ($, mapNames, Da
             if (this.dailyPlay && this.now() >= Date.parse(this.dailyPlay.resetsAt)) {this.dailyPlay = null; this.lastLive = 0;}
             this.live = visibleEvents(this.live, game.mapId, this.now());
             this.renderPanel();
-            this.dailyReward?.consider(this.dailyPlay, this.opened);
+            this.dailyReward?.consider(this.dailyPlay, this.opened || this.app.pointsStore?.opened);
+            this.dailyReward?.considerObjectives(this.app.pointsStore?.progressSession===this.app.sessionId ? this.app.pointsStore?.progress : null, this.opened || this.app.pointsStore?.opened);
             if (!this.pending && Date.now() - this.lastLive >= 15000) this.loadLive();
             if (this.opened && !this.joining && Date.now() - this.lastBoard >= 15000) this.loadBoard();
         }

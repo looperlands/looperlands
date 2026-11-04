@@ -181,7 +181,7 @@ async function saveTool(root, input, beforeWrite = () => {}) {
             if (input.weather !== null) require('../../client/js/sceneenvironment').weather(input.weather);
             changes.weather=input.weather;
         }
-    } else {validate[input.tool](input.entries,options);if(input.tool==='atmosphere')require('./localparallaxassets').validateLayers(root,input.entries);changes={[section]:input.entries};}
+    } else {validate[input.tool](input.entries,options);if(input.tool==='atmosphere')require('./localparallaxassets').validateLayers(root,input.entries);if(input.tool==='fx')require('./localfxassets').validateSprites(root,input.entries);changes={[section]:input.entries};}
     // Recheck after asynchronous catalog reads so concurrent saves cannot overwrite each other.
     const latest=readDocument(root,input.mapId);
     if(input.tool==='scenes') {

@@ -2,7 +2,7 @@
 
 The main-map merchant beside the event board sells weapon/rod trait rerolls (250
 points), chosen avatar class changes (400), two titles (250/300), three emotes
-(250/250/350), and a Golden Spark Trail (350). Level and XP are preserved. A reroll excludes the existing trait.
+(250/250/350), four Spark Trail colors (blue, green, pink and purple, 250 each), and a Golden Spark Trail (500). Level and XP are preserved. A reroll excludes the existing trait.
 Borrowed/rented assets cannot be permanently changed.
 
 Fishing requires 15 successful catches and harvesting requires 20 harvests at every
@@ -65,13 +65,13 @@ markers. Collection: clickable title tiles and earned emotes alongside clearly r
 
 ## Avatar trails
 
-Golden Spark Trail is a permanent wallet unlock. Purchase it, then equip it in
+Blue, Green, Pink, Purple and Golden Spark Trails are permanent wallet unlocks. The gold version costs 500 points; the other colors cost 250 each. Existing owners keep their unlocks. Purchase it, then equip it in
 Collection; the No trail tile removes it. The server validates ownership and
 synchronizes the selection to nearby players, including spawn/reconnect state.
 The existing world particle renderer draws short, six-spark bursts only while
 moving. Trail particles draw on the ground pass, beneath avatars and overhead
 tile layers, and fade in 240–360 milliseconds. Spark centers remain bright at night
-and cast a small warm glow into the scene's light mask. Overhead tiles block that
+and cast a small glow matching their color into the scene's light mask. Overhead tiles block that
 light, so covered sparks cannot shine through roofs. The light buffer is reused
 and clears with the trail. Teleports do not create connecting lines; map changes, death, unequipping
 and reduced motion clear the effect. This is a native pixel particle effect,
@@ -94,3 +94,19 @@ node tools/render.mjs pickups/collect-burst --sheet --no-actor --fps 20 --bg non
 
 No PixelFX font or runtime dependency is included. No beams are used. Start, reel
 ticks and reveal sounds use the existing audio manager and sound-volume controls.
+
+## Daily completion feedback
+
+Completed objective rows show a checkmark and their point reward. During gameplay,
+`GET /session/:sessionId/points-store/progress` polls every five seconds, syncs
+durable activity, and reads only the platform balance and objective progress. It
+uses `GET /api/game/wallet/{wallet}/points-store/progress` on the platform; deploy
+that endpoint and the updated catalog before the game. No migration is required.
+
+Each confirmed completed challenge queues a five-second celebration in the brown
+game panel: a stamped quest seal, a pixel-spark burst, the achievement sound, and
+its objective and point reward, even while the store is closed. Browser receipts
+are scoped to wallet, UTC day and objective to suppress duplicates after avatar
+changes or reloads. Menus, death and reduced motion retain the existing notification
+behavior; pending completions wait until the game can show them. Activity sync and
+network latency can delay feedback; the client never awards points optimistically.

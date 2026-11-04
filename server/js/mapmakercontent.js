@@ -28,6 +28,7 @@ function applyMap(root, mapId, map) {
     require('../../client/js/ambientconfig').validate(document.ambientSounds, map);
     require('./localambientassets').validateReferences(root, document.ambientSounds);
     require('../../shared/js/placedfxconfig').validate(document.placedFx, map);
+    require('./localfxassets').validateSprites(root,document.placedFx);
     map = {...map, ambientSounds: document.ambientSounds, placedFx: document.placedFx};
     return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes), document.atmosphere, document.weather), Tiles.document(root, mapId));
 }

@@ -1,5 +1,6 @@
 define(['worldfxconfig'], function (Config) {
     const PARTICLE_LIMIT = 256;
+    const trailColors = {"trail:golden-sparks": ["#ffe7af", "#f1cd85", "#b78b57"], "trail:blue-sparks": ["#c4efff", "#69c9ff", "#3986cf"], "trail:green-sparks": ["#d1ffd5", "#7fe89a", "#3aab70"], "trail:pink-sparks": ["#ffe0ef", "#ff9bcf", "#cd5b9b"], "trail:purple-sparks": ["#ecddff", "#c09aff", "#8658cd"]};
     class WorldFx {
         constructor(game, random = Math.random) {
             this.game = game;
@@ -154,7 +155,8 @@ define(['worldfxconfig'], function (Config) {
         avatarTrails(time) {
             const seen = new Set();
             const visit = entity => {
-                if (seen.has(entity.id) || entity.selectedTrail !== 'trail:golden-sparks' || entity.isDead || entity.isDying || entity.isVisible?.() === false) return;
+                const colors = trailColors[entity.selectedTrail];
+                if (seen.has(entity.id) || !Array.isArray(colors) || entity.isDead || entity.isDying || entity.isVisible?.() === false) return;
                 seen.add(entity.id);
                 const previous = this.trailActors.get(entity.id);
                 const distance = previous ? Math.hypot(entity.x - previous.x, entity.y - previous.y) : 0;
@@ -168,7 +170,7 @@ define(['worldfxconfig'], function (Config) {
                         vx: (this.random() - 0.5) * 24, vy: -12 + this.random() * 18, gravity: 6,
                         startedAt: time, lifetimeMs: 240 + this.random() * 120,
                         size: 1, shape: i % 3 === 0 ? 'star' : 'pixel',
-                        color: ['#ffe7af', '#f1cd85', '#b78b57'][i % 3], owner: 'trail', actorId: entity.id});
+                        color: colors[i % colors.length], owner: 'trail', actorId: entity.id});
                 }
             };
             visit(this.game.player);

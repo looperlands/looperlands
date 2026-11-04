@@ -90,3 +90,44 @@ test('blocked browser storage still deduplicates in memory and teardown cancels 
     expect(reward.root.hidden).toBe(true); expect(reward.root.remove).toHaveBeenCalled();
     expect(new Reward(app).consider(progress)).toBe(false);
 });
+
+const objectives = () => ({balance:{available:19},objectives:{dailyReward:1,resetsAt:progress.resetsAt,daily:[
+    {id:'fishing',label:'Make 15 successful catches',target:15,progress:15},
+    {id:'harvest',label:'Complete 20 harvests',target:20,progress:20}]}});
+test('each completed challenge queues its own brown popup and deduplicates across reloads',()=>{
+    const reward=new Reward(app), data=objectives();
+    expect(reward.considerObjectives(data)).toBe(true);
+    expect(reward.root.textContent).toContain('Daily challenge complete!');
+    expect(reward.root.textContent).toContain('Make 15 successful catches');
+    expect(reward.root.textContent).toContain('+1 point');
+    expect(reward.root.textContent).not.toContain('streak bonus');
+    expect(reward.considerObjectives(data)).toBe(false);
+    jest.advanceTimersByTime(5000);
+    expect(reward.considerObjectives(data)).toBe(true);
+    expect(reward.root.textContent).toContain('Complete 20 harvests');
+    reward.destroy();load();expect(new Reward(app).considerObjectives(data)).toBe(false);
+});
+test('partial, expired, deferred and stale daily progress cannot consume a completion receipt',()=>{
+    const reward=new Reward(app), data=objectives();data.objectives.daily[0].progress=14;data.objectives.daily[1].progress=19;
+    expect(reward.considerObjectives(data)).toBe(false);
+    data.objectives.daily[1].progress=20;expect(reward.considerObjectives(data,true)).toBe(false);
+    app.game.player.isDead=true;expect(reward.considerObjectives(data)).toBe(false);app.game.player.isDead=false;
+    expect(reward.considerObjectives(data)).toBe(true);reward.hide();
+    expect(reward.considerObjectives(data)).toBe(false);
+    jest.setSystemTime(new Date('2026-10-27T00:01:00Z'));
+    expect(reward.considerObjectives(data)).toBe(false);
+    data.objectives.resetsAt='2026-10-28T00:00:00Z';expect(reward.considerObjectives(data)).toBe(true);
+});
+test('blocked storage still suppresses repeated challenge notifications',()=>{
+    browserStorage.getItem=()=>{throw new Error('blocked');};browserStorage.setItem=()=>{throw new Error('blocked');};
+    const data=objectives();data.objectives.daily.pop();const reward=new Reward(app);
+    expect(reward.considerObjectives(data)).toBe(true);reward.destroy();expect(new Reward(app).considerObjectives(data)).toBe(false);
+});
+
+test('challenge celebrations stamp the quest seal, burst once and honor sound and motion preferences',()=>{
+    app.game.audioManager={playSound:jest.fn()};const reward=new Reward(app);reward.considerObjectives(objectives());
+    const content=reward.root.children[0];expect(content.className).toContain('dr-objective');expect(content.children[0].className).toBe('quest-seal dr-complete-seal');
+    expect(content.children.find(child=>child.className==='dr-sparks').children).toHaveLength(16);expect(app.game.audioManager.playSound).toHaveBeenCalledWith('achievement');
+    reward.destroy();app.storage.walletId='0xother';app.settings.getReducedMotion=()=>true;const quiet=new Reward(app);quiet.considerObjectives(objectives());
+    expect(quiet.root.children[0].className).not.toContain('dr-motion');expect(quiet.root.children[0].children.some(child=>child.className==='dr-sparks')).toBe(false);
+});

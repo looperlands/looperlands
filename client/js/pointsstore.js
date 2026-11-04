@@ -26,12 +26,22 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
             const game=this.app.game;
             if(!game?.started || game.player?.isDead || !game.client?.connection?.connected) {if(this.opened)this.close(); return;}
             if(this.session!==this.app.sessionId) {
-                this.session=this.app.sessionId; this.data=null; this.pending=null;
+                this.session=this.app.sessionId; this.data=null; this.progress=null; this.progressSession=null; this.pending=null;
                 // The wallet returned by the server supplies the durable retry identity.
                 this.purchaseStorageKey=null;
             }
             if(this.opened && !this.busy && (this.tab==='objectives' || !this.selection)) await this.load();
-            else await this.loadRewards();
+            else if (!document.hidden) {await Promise.all([this.loadRewards(),this.loadProgress()]);}
+        }
+        async loadProgress() {
+            if(this.progressPending)return;
+            const session=this.app.sessionId;
+            this.progressPending=true;
+            try {
+                const response=await axios.get(this.url('points-store/progress'));
+                if(session===this.app.sessionId){this.progress=response.data;this.progressSession=session;}
+            } catch (_) { /* Keep confirmed progress; the next tick retries without announcing success. */ }
+            finally {this.progressPending=false;}
         }
         async loadRewards() {
             try {const response=await axios.get(this.url('rewards')); this.applyRewards(response.data);} catch (_) {this.applyRewards({unlocks:[]});}
@@ -52,7 +62,7 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
             try {
                 const response=await axios.get(this.url());
                 if(session!==this.app.sessionId)return;
-                this.data=response.data; this.error=null; this.applyRewards(this.data);
+                this.data=response.data; this.progress=this.data; this.progressSession=session; this.error=null; this.applyRewards(this.data);
                 const storageKey='points-purchase:'+this.data.wallet;
                 if(this.purchaseStorageKey!==storageKey) {
                     this.purchaseStorageKey=storageKey;
@@ -244,7 +254,8 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
             const goals=this.data.objectives,spread=node('div','ps-spread'),daily=node('section','ps-page'),weekly=node('section','ps-page');
             daily.append(node('h3','','Daily objectives'),node('p','ps-description','Earn '+goals.dailyReward+(goals.dailyReward===1?' point per challenge.':' points per challenge.')+' Complete all three for '+(goals.dailyReward*goals.daily.length)+' points.'),node('p','ps-footnote','Combat level '+(goals.level || 1)+(goals.locked?' · fixed for today':' · lock when you start')));
             for(const goal of goals.daily) {
-                const row=node('div','ps-goal');row.append(node('strong','',goal.label),node('span','',goal.progress+' / '+goal.target),this.progressBar(goal.progress,goal.target,goal.label));daily.append(row);
+                const completed=goal.progress>=goal.target;
+                const row=node('div','ps-goal');row.append(node('strong','',(completed?'✓ ':'')+goal.label),node('span','',completed?'Completed · +'+goals.dailyReward+' point'+(goals.dailyReward===1?'':'s'):goal.progress+' / '+goal.target),this.progressBar(goal.progress,goal.target,goal.label));daily.append(row);
             }
             daily.append(node('p','ps-footnote','Each challenge rewards once per day, across your avatars.'),node('p','ps-footnote','Resets at 00:00 UTC. Progress refreshes automatically.'));
             weekly.append(node('h3','','Weekly regular'),node('p','ps-description','Complete a daily objective on '+goals.weeklyTarget+' days. Earn '+goals.weeklyReward+' extra points.'));

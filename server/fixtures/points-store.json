@@ -74,7 +74,7 @@
     {
       "id": "trail-golden-sparks",
       "name": "Golden Spark Trail",
-      "price": 350,
+      "price": 500,
       "type": "unlock",
       "reward": "trail:golden-sparks",
       "description": "A trail of fading golden pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
@@ -102,6 +102,38 @@
       "type": "unlock",
       "reward": "hit:shadow",
       "description": "Permanent cosmetic weapon hit effect. Equip or remove in Collection. Damage is unchanged."
+    },
+    {
+      "id": "trail-blue-sparks",
+      "name": "Blue Spark Trail",
+      "price": 250,
+      "type": "unlock",
+      "reward": "trail:blue-sparks",
+      "description": "A trail of fading blue pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
+    },
+    {
+      "id": "trail-green-sparks",
+      "name": "Green Spark Trail",
+      "price": 250,
+      "type": "unlock",
+      "reward": "trail:green-sparks",
+      "description": "A trail of fading green pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
+    },
+    {
+      "id": "trail-pink-sparks",
+      "name": "Pink Spark Trail",
+      "price": 250,
+      "type": "unlock",
+      "reward": "trail:pink-sparks",
+      "description": "A trail of fading pink pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
+    },
+    {
+      "id": "trail-purple-sparks",
+      "name": "Purple Spark Trail",
+      "price": 250,
+      "type": "unlock",
+      "reward": "trail:purple-sparks",
+      "description": "A trail of fading purple pixel sparks while you move. Permanent wallet unlock; equip or remove in Collection."
     }
   ],
   "objectives": [
@@ -217,6 +249,34 @@
       "label": "Shadow Hit",
       "source": "store",
       "symbol": "\u25c8"
+    },
+    {
+      "id": "trail:blue-sparks",
+      "type": "trail",
+      "label": "Blue Spark Trail",
+      "source": "store",
+      "image": "img/points-store/blue-trail.svg"
+    },
+    {
+      "id": "trail:green-sparks",
+      "type": "trail",
+      "label": "Green Spark Trail",
+      "source": "store",
+      "image": "img/points-store/green-trail.svg"
+    },
+    {
+      "id": "trail:pink-sparks",
+      "type": "trail",
+      "label": "Pink Spark Trail",
+      "source": "store",
+      "image": "img/points-store/pink-trail.svg"
+    },
+    {
+      "id": "trail:purple-sparks",
+      "type": "trail",
+      "label": "Purple Spark Trail",
+      "source": "store",
+      "image": "img/points-store/purple-trail.svg"
     }
   ]
 }
