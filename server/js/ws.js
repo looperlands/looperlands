@@ -266,6 +266,7 @@ WS.socketIOServer = Server.extend({
             updates.cancelReboot = () => this.clientReloads.cancelReboot();
         }
         this.pointsStore = new (require('./pointsstorecontroller'))(cache, () => self.worldsMap, platformClient, self.socialChat, () => self.activity.flush());
+        app.get('/session/:sessionId/points-store/progress', (req,res) => self.pointsStore.progress(req,res));
         app.get('/session/:sessionId/points-store', (req,res) => self.pointsStore.list(req,res));
         app.post('/session/:sessionId/points-store/purchases', (req,res) => self.pointsStore.buy(req,res));
         app.get('/session/:sessionId/rewards', (req,res) => self.pointsStore.rewards(req,res));

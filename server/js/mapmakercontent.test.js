@@ -105,3 +105,14 @@ test('removing all placements clears already-built client and server effects',()
     write('tools/worlds/one.json',{version:1,placedFx:[]});expect(Content.build(root)).toBe(3);
     for(const file of ['client/maps/world_client_one.json','server/maps/world_server_one.json'])expect(JSON.parse(fs.readFileSync(path.join(root,file))).placedFx).toEqual([]);
 });
+
+test('custom sheets persist in identical client and server exports and missing artwork blocks a build',()=>{
+    const png=fs.readFileSync(path.join(__dirname,'../../client/img/1/item-wood.png'));
+    const saved=require('./localfxassets').save(root,{image:'data:image/png;base64,'+png.toString('base64')});
+    const placedFx=[{id:'custom',name:'Custom trap',sprite:{image:saved.image,frameWidth:saved.width,frameHeight:saved.height,columns:1,frames:1,fps:10},x:2,y:2,width:2,height:2,scale:1,hazard:{warningMs:1000,activeMs:500,cooldownMs:2000,damage:1,tickMs:500,impactMs:0}}];
+    write('tools/worlds/one.json',{version:1,rules:[],dialogues:[],atmosphere:[],placedFx});Content.build(root);
+    const client=JSON.parse(fs.readFileSync(path.join(root,'client/maps/world_client_one.json'))),server=JSON.parse(fs.readFileSync(path.join(root,'server/maps/world_server_one.json')));
+    const script={};vm.runInNewContext(fs.readFileSync(path.join(root,'client/maps/world_client_one.js'),'utf8'),script);
+    expect(client.placedFx).toEqual(placedFx);expect(server.placedFx).toEqual(placedFx);expect(JSON.parse(JSON.stringify(script.mapData.placedFx))).toEqual(placedFx);
+    fs.unlinkSync(path.join(root,'client'+saved.image));expect(()=>Content.build(root)).toThrow('Missing effect sprite');
+});

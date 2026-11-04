@@ -234,6 +234,9 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getPointsProgress(wallet, level = 1) {
+        return (await this.client.get('/api/game/wallet/' + encodeURIComponent(wallet) + '/points-store/progress', {timeout: 10000, params: {level}})).data;
+    }
     async getPointsStore(wallet, level = 1) {
         return (await this.client.get('/api/game/wallet/' + encodeURIComponent(wallet) + '/points-store', {timeout: 10000, params: {level}})).data;
     }

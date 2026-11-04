@@ -157,3 +157,10 @@ test('reduced motion suppresses equipped trails',()=>{
     const {fx,game,renderer,settings}=setup();game.player.selectedTrail='trail:golden-sparks';fx.render(renderer,1000);
     settings.getReducedMotion=()=>true;game.player.x+=4;fx.render(renderer,1100);expect(fx.particles).toHaveLength(0);expect(fx.trailActors.size).toBe(0);
 });
+
+test.each(['blue','green','pink','purple'])('%s trails use their own palette on the existing ground pass',color=>{
+    const {fx,game,renderer}=setup();game.player.selectedTrail='trail:'+color+'-sparks';fx.render(renderer,1000);game.player.x+=4;fx.render(renderer,1100);
+    expect(fx.particles).toHaveLength(6);expect(fx.particles[0].color).not.toBe('#ffe7af');
+    const particles=renderer.setExtensionData.mock.calls.findLast(call=>call[0]==='world-fx')[1].particles;
+    expect(particles.every(p=>p.layer==='ground')).toBe(true);
+});

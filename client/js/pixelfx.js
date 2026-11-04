@@ -26,7 +26,7 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
                 const phase=Config.phase(row,Number.isFinite(epoch)?serverTime-epoch:null);
                 return {...row,...Config.hitRegion(row,phase.cycle,this.seed),seed:Config.effectSeed(row,phase.cycle,this.seed,epoch),phase};
             });
-            const effects=rows.map(row=>({effect:row.effect,x:(row.x+row.width/2)*16,y:(row.y+row.height/2)*16,scale:row.scale,palette:row.palette,seed:row.seed,options:row.options,hue:row.hue || 0,removeBackdrop:row.background!=='original',time:reduced?200:row.phase.effectMs}));
+            const effects=rows.map(row=>({effect:row.effect,sprite:row.sprite,x:(row.x+row.width/2)*16,y:(row.y+row.height/2)*16,scale:row.scale,palette:row.palette,seed:row.seed,options:row.options,hue:row.hue || 0,removeBackdrop:row.background!=='original',time:reduced?200:row.phase.effectMs}));
             if(!reduced && this.game.app?.settings?.getCombatEffectsEnabled?.()!==false) for(const h of this.hits)effects.push({effect:h.effect,x:h.x*16+8,y:h.y*16+8,scale:.3,seed:h.seed,time:(now-h.started)/500*Config.catalog[h.effect].duration});
             // Warning tiles and countdowns are never disabled by reduced motion.
             renderer.setExtensionData('pixel-fx',effects.filter((e,i)=>i>=rows.length || rows[i].phase.effectMs!==null));

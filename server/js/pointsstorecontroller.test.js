@@ -89,3 +89,16 @@ test('a rejected or uncertain hit selection never invents a successful selection
     await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(400);expect(f.res.json).toHaveBeenLastCalledWith({error:'Unlock this hit'});
     f.platform.selectRewardHit.mockRejectedValue(new Error('offline'));await f.controller.hit(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(503);expect(f.player.selectedHit).toBeUndefined();
 });
+
+test('gameplay progress syncs activity before reading and never requires merchant proximity',async()=>{
+    const f=setup();f.player.x=0;f.player.level=12;
+    let synced=false;f.controller.syncActivity=async()=>{synced=true;};
+    const progress={balance:{available:2},objectives:{daily:[{id:'harvest',progress:20,target:20}]}};
+    f.platform.getPointsProgress=jest.fn(async()=>{expect(synced).toBe(true);return progress;});
+    await f.controller.progress(f.req,f.res);expect(f.platform.getPointsProgress).toHaveBeenCalledWith('0xabc',12);expect(f.res.json).toHaveBeenCalledWith(progress);
+    f.player.isDead=true;await f.controller.progress(f.req,f.res);expect(f.res.status).toHaveBeenCalledWith(401);
+});
+test('failed syncs and session changes do not announce successful challenge progress',async()=>{
+    const f=setup();f.controller.syncActivity=async()=>{throw new Error('offline');};await f.controller.progress(f.req,f.res);expect(f.res.status).toHaveBeenCalledWith(503);
+    f.controller.syncActivity=async()=>{};f.platform.getPointsProgress=async()=>{f.player.isDead=true;return {};};await f.controller.progress(f.req,f.res);expect(f.res.status).toHaveBeenLastCalledWith(409);
+});

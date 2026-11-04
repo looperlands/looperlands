@@ -79,3 +79,12 @@ test('owned trail tiles equip and clear through the rewards endpoint',async()=>{
     await tile.listeners.click();expect(f.axios.put).toHaveBeenCalledWith('/session/s/rewards/trail',{trail:'trail:golden-sparks'});
     const clear=descendants(f.store.board).find(el=>el.tag==='button'&&el.textContent.trim().endsWith('No trail'));await clear.listeners.click();expect(f.axios.put).toHaveBeenLastCalledWith('/session/s/rewards/trail',{trail:null});
 });
+
+test('completed harvests show a checkmark immediately after confirmed refresh',async()=>{
+    const f=setup();f.data.objectives.daily[2].progress=19;await f.store.open('objectives');expect(f.store.board.textContent).not.toContain('✓ Complete');
+    f.data.objectives.daily[2].progress=20;await f.store.load();expect(f.store.board.textContent).toContain('✓ Complete');expect(f.store.board.textContent).toContain('Completed · +1 point');
+});
+test('closed stores poll lightweight progress and ignore responses belonging to a previous session',async()=>{
+    const f=setup();await f.store.tick();expect(f.axios.get).toHaveBeenCalledWith('/session/s/points-store/progress');expect(f.store.progress).toBe(f.data);expect(f.store.progressSession).toBe('s');
+    let resolve;f.axios.get.mockImplementationOnce(()=>new Promise(r=>{resolve=r;}));const pending=f.store.loadProgress();f.app.sessionId='other';resolve({data:{balance:{available:99}}});await pending;expect(f.store.progress).toBe(f.data);
+});

@@ -3,7 +3,7 @@
     const pane=document.getElementById('fx-pane'), Config=window.PlacedFxConfig;
     if(!pane || !Config)return;
     const el=(tag,text='',attrs={})=>Object.assign(document.createElement(tag),{textContent:text,...attrs});
-    pane.innerHTML=`<header class="pane-heading"><h2>Map effects & hazards</h2><p>Place a campfire, candle or any PixelFX effect. Enable Hazard to damage players in the highlighted tiles. <a href="#documentation/mapmaker-fx">Read the guide</a></p></header>
+    pane.innerHTML=`<header class="pane-heading"><h2>Map effects & hazards</h2><p>Place a PixelFX effect or upload a custom PNG sprite sheet. Enable Hazard to damage players in the highlighted tiles. <a href="#documentation/mapmaker-fx">Read the guide</a></p></header>
         <div class="world-toolbar"><div class="field"><label for="fx-map">Map</label><select id="fx-map"></select></div><button class="fx-save primary" disabled>Save effects</button><button class="fx-reload">Reload</button><a class="fx-build" href="#build">Build this map</a></div>
         <p class="fx-status" role="status" aria-live="polite">Choose a map.</p><div class="asset-discard fx-discard" hidden><p>Discard unsaved FX changes?</p><button class="fx-discard-yes">Discard changes</button><button class="fx-discard-no">Keep editing</button></div>
         <div class="zones-workspace fx-workspace" hidden><div class="zones-map-column"><div class="world-toolbar"><div class="field"><label for="fx-search">Find an effect</label><input id="fx-search" type="search" placeholder="Campfire, candle, meteor…"></div><div class="field"><label for="fx-effect">PixelFX library</label><select id="fx-effect"></select></div><button class="fx-add">Place effect</button></div>
@@ -11,8 +11,9 @@
         <aside class="zones-inspector"><div class="fx-editor"></div><h3>Placed effects</h3><div class="world-list fx-list"></div></aside></div>`;
     const $=s=>pane.querySelector(s);
     const randomSeed=()=>1+Math.floor(Math.random()*2147483646);
-    let data,original,selected,editor,painter,pending,busy=false,loaded=false,start=performance.now(),previewSeed=randomSeed(),paused=false,previewAttacking=false,fieldId=0;
+    let data,original,selected,editor,painter,sheets,pending,busy=false,loaded=false,start=performance.now(),previewSeed=randomSeed(),paused=false,previewAttacking=false,fieldId=0;
     import('./vendor/pixelfxpainter.mjs').then(({PixelFxPainter})=>{painter=new PixelFxPainter((w,h)=>el('canvas','',{width:w,height:h}));}).catch(error=>status('FX preview unavailable: '+error.message,true));
+    import('./vendor/spritesheetpainter.mjs').then(({SpriteSheetPainter})=>{sheets=new SpriteSheetPainter();}).catch(error=>status(error.message,true));
     const current=()=>data?.entries.find(r=>r.id===selected), dirty=()=>data && original!==JSON.stringify(data.entries);
     const appearance=(row,cycle)=>({palette:row?.palette,options:row?.options,seed:Config.effectSeed(row || {id:'sample'},cycle,previewSeed),hue:row?.hue || 0,removeBackdrop:row?.background!=='original'});
     function restart(){start=performance.now();previewSeed=randomSeed();}
@@ -80,11 +81,20 @@
     function renderEditor(){
         const host=$('.fx-editor'),row=current();host.replaceChildren();if(!row){host.append(el('p','Choose an effect, then Place effect. Draw, move or resize its region on the map.'));return;}
         const form=el('form');form.onsubmit=e=>{e.preventDefault();save();};host.append(form);
-        form.append(el('h3',Config.catalog[row.effect]?.name || row.effect));field(form,'Name',row,'name');
-        button(form,'Use selected library effect',()=>{if(!$('#fx-effect').value)return;row.effect=$('#fx-effect').value;delete row.options;if(row.hazard)row.hazard.impactMs=0;restart();renderEditor();touch();});
+        form.append(el('h3',row.sprite?'Custom sprite sheet':Config.catalog[row.effect]?.name || row.effect));field(form,'Name',row,'name');
+        button(form,'Use selected library effect',()=>{if(!$('#fx-effect').value)return;row.effect=$('#fx-effect').value;delete row.sprite;delete row.options;if(row.hazard)row.hazard.impactMs=0;restart();renderEditor();touch();});
+        const upload=el('input','',{id:'fx-sheet',type:'file',accept:'image/png'});
+        form.append(el('label','Upload custom sprite sheet',{htmlFor:'fx-sheet'}),upload,el('p','PNG up to 4 MB and 4096 pixels per side. Frames play left to right, then top to bottom. The bottom center of each frame anchors to the region center.',{className:'field-hint'}));
+        upload.onchange=()=>uploadSheet(upload.files[0],row);
+        if(row.sprite) {
+            const settings=el('fieldset');settings.append(el('legend','Sprite sheet frames'));
+            field(settings,'Frame width (pixels)',row.sprite,'frameWidth',1,1024);field(settings,'Frame height (pixels)',row.sprite,'frameHeight',1,1024);
+            field(settings,'Columns',row.sprite,'columns',1,256);field(settings,'Frame count',row.sprite,'frames',1,256);field(settings,'Frames per second',row.sprite,'fps',1,60);form.append(settings);
+        }
         const grid=el('div','',{className:'asset-field-grid'});form.append(grid);
         field(grid,'Tile X',row,'x',0,data.catalog.width-1);field(grid,'Tile Y',row,'y',0,data.catalog.height-1);
         field(grid,'Area width (tiles)',row,'width',1,32);field(grid,'Area height (tiles)',row,'height',1,32);field(form,'Visual scale',row,'scale',.1,4,.05);
+        if(!row.sprite) {
         const palettes=el('select','',{id:'fx-palette'});palettes.append(el('option','its own',{value:''}),...Object.keys(Config.palettes).map(name=>el('option',name,{value:name})));
         const legacyHue=!row.palette && !!row.hue;
         if(legacyHue)palettes.append(el('option','Existing hue variation',{value:'legacy',disabled:true}));
@@ -95,6 +105,7 @@
         const background=el('select','',{id:'fx-background'});background.append(el('option','Transparent overlay',{value:'transparent'}),el('option','Original artwork',{value:'original'}));background.value=row.background || 'transparent';
         background.onchange=()=>{row.background=background.value;touch();};form.append(el('label','Background',{htmlFor:'fx-background'}),background);
         form.append(el('p','Transparent overlay removes dark translucent backdrops. Use Original artwork to keep dark smoke and shadows.',{className:'field-hint'}));
+        }
         const conditional=row.attackingMob!==undefined;
         const conditionLabel=el('label',' Only enable while a mob is attacking'),condition=el('input','',{type:'checkbox',checked:conditional,disabled:!conditional && !data.catalog.mobs.length});conditionLabel.prepend(condition);form.append(conditionLabel);
         condition.onchange=()=>{if(condition.checked)row.attackingMob=data.catalog.mobs[0].id;else delete row.attackingMob;previewAttacking=false;restart();renderEditor();touch();};
@@ -118,7 +129,7 @@
             form.append(el('p',h.placement==='random'?'The chosen footprint is highlighted before damage. Visual scale does not change its hit area.':'Every tile in the region is highlighted before damage. Visual scale does not change the hit area.',{className:'field-hint'}));
             field(form,'Warning (ms)',h,'warningMs',750,60000);field(form,'Active damage (ms)',h,'activeMs',100,60000);field(form,'Safe pause after animation (ms)',h,'cooldownMs',250,300000);
             field(form,'Damage per hit',h,'damage',1,10000);field(form,'Damage interval (ms)',h,'tickMs',250,60000);
-            field(form,'Impact frame (ms into effect)',h,'impactMs',0,Math.min(h.warningMs,Config.catalog[row.effect].duration-1));
+            field(form,'Impact frame (ms into effect)',h,'impactMs',0,Math.min(h.warningMs,Math.ceil(Config.metadata(row).duration)-1));
             form.append(el('p','For a falling meteor, set the impact frame to its landing time. The animation starts during the warning, and damage begins at that frame.',{className:'field-hint'}));
         } else form.append(el('p','Decoration only. No damage, countdown or warning tiles.',{className:'field-hint'}));
         button(form,'Remove from draft',()=>{data.entries=data.entries.filter(r=>r!==row);select(data.entries[0]?.id);touch();},{className:'destructive'});
@@ -130,10 +141,29 @@
                 const pos=view.project({x:row.x+dx,y:row.y+dy});ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(view.scale/16,view.scale/16);
                 window.AttackWarning.tile(ctx,0,0,p.kind==='warning'?1-p.remaining/row.hazard.warningMs:1,p.kind==='active');ctx.restore();
             }
-            if(p.effectMs!==null)painter.draw(ctx,row.effect,p.effectMs,center.x,center.y,row.scale*view.scale/16,appearance(row,p.cycle));
+            if(p.effectMs!==null) {if(row.sprite)sheets?.draw(ctx,row.sprite,p.effectMs,center.x,center.y,row.scale*view.scale/16);else painter.draw(ctx,row.effect,p.effectMs,center.x,center.y,row.scale*view.scale/16,appearance(row,p.cycle));}
             if(row.hazard && p.kind==='warning'){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff0ce';ctx.strokeStyle='#241d25';ctx.lineWidth=2;const label=(p.remaining/1000).toFixed(1),top=view.project({x:row.x+row.width/2,y:row.y});ctx.strokeText(label,top.x,top.y-3);ctx.fillText(label,top.x,top.y-3);}
 
         }
+    }
+    async function uploadSheet(file,row) {
+        if(!file || busy)return;
+        busy=true;controls();status('Uploading sprite sheet…');
+        try {
+            if(file.type!=='image/png' || file.size>4*1024*1024)throw new Error('Choose a PNG smaller than 4 MB.');
+            const bitmap=await createImageBitmap(file);
+            try {
+                if(bitmap.width>4096 || bitmap.height>4096 || bitmap.width*bitmap.height>8388608)throw new Error('Keep the sheet within 4096 pixels per side and 8 million pixels.');
+                const canvas=el('canvas','',{width:bitmap.width,height:bitmap.height});canvas.getContext('2d').drawImage(bitmap,0,0);
+                const response=await fetch('./api/fx-sheets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:canvas.toDataURL('image/png')})});
+                const saved=await response.json();if(!response.ok)throw new Error(saved.error || 'Sprite sheet could not upload.');
+                const width=Math.min(32,saved.width),height=Math.min(32,saved.height);
+                row.sprite={image:saved.image,frameWidth:width,frameHeight:height,columns:Math.max(1,Math.floor(saved.width/width)),frames:Math.min(256,Math.max(1,Math.floor(saved.width/width)*Math.floor(saved.height/height))),fps:12};
+                for(const key of ['effect','palette','hue','options','background'])delete row[key];
+                if(row.hazard)row.hazard.impactMs=0;
+                restart();renderEditor();touch();status('Sprite sheet uploaded. Check the frame grid and preview, then save effects.');
+            }finally{bitmap.close();}
+        }catch(error){status(error.message,true);}finally{busy=false;controls();}
     }
     async function request(mapId,body){const response=await (window.ToolboxMapData?.fetch || fetch)('./api/world-authoring'+(mapId?'?tool=fx&mapId='+encodeURIComponent(mapId):''),{signal:AbortSignal.timeout(45000),...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});const value=await response.json();if(!response.ok)throw new Error(value.error || 'FX could not load.');return value;}
     async function load(id){busy=true;controls();status('Loading map effects…');try{
@@ -152,6 +182,8 @@
     window.addEventListener('beforeunload',event=>{if(dirty()){event.preventDefault();event.returnValue='';}});
     choices();window.ToolboxNavigation.route('fx',async params=>{if(!loaded){const setup=await request();$('#fx-map').replaceChildren(...setup.maps.map(id=>el('option',id,{value:id})));loaded=true;}const id=params.get('map') || data?.mapId || $('#fx-map').value;if(id!==data?.mapId)guard(()=>load(id));});
     function drawSample(elapsed){
+        const custom=current()?.sprite;
+        if(custom && sheets) {const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);try{Config.validateSprite(custom);}catch(_){return;}sheets.draw(ctx,custom,elapsed%Config.metadata(current()).duration,160,150,Math.min(2,140/custom.frameHeight));return;}
         const effect=$('#fx-effect').value,meta=Config.catalog[effect];
         if(!painter || !meta)return;
         const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);

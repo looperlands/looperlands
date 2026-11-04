@@ -43,3 +43,13 @@ test('options and changing seeds reach the worker, remain stable within playback
     first.fx.receive({type:'hit',mapId:'world_main',id:1,effect:'impacts/crit-hit',seed:198,x:2,y:3});first.fx.render(first.renderer);
     expect(rendered(first,'pixel-fx').at(-1).seed).toBe(198);
 });
+
+test('late clients retain custom sheet frames, warning timing and random footprints across cycles',()=>{
+    const first=setup(false),late=setup(false),sprite={image:'/img/map-fx/custom-'+ 'a'.repeat(32)+'.png',frameWidth:32,frameHeight:32,columns:4,frames:8,fps:8};
+    const custom={...row,effect:undefined,sprite,width:8,height:8,hazard:{...row.hazard,placement:'random',areaWidth:2,areaHeight:1}};
+    first.fx.receive({type:'map',mapId:'world_main',rows:[custom],epoch:100,seed:123,now:1600});
+    for(const elapsed of [0,300,5000,10000]) {
+        localNow=1000+elapsed;late.fx.receive({type:'map',mapId:'world_main',rows:[custom],epoch:100,seed:123,now:1600+elapsed});
+        first.fx.render(first.renderer);late.fx.render(late.renderer);expect(rendered(first,'pixel-fx')).toEqual(rendered(late,'pixel-fx'));expect(rendered(first,'pixel-fx-tiles')).toEqual(rendered(late,'pixel-fx-tiles'));
+    }
+});

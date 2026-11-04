@@ -82,3 +82,19 @@ test('visual seeds vary by placement, cycle, world and fight while remaining det
     const variants=[seed,C.effectSeed({...row,id:'other'},0,123,1000),C.effectSeed(row,1,123,1000),C.effectSeed(row,0,124,1000),C.effectSeed(row,0,123,2000)];
     expect(new Set(variants).size).toBe(5);expect(variants.every(n=>Number.isInteger(n) && n>0)).toBe(true);
 });
+
+const sprite={image:'/img/map-fx/custom-'+ 'a'.repeat(32)+'.png',frameWidth:32,frameHeight:48,columns:4,frames:8,fps:8};
+const custom={...row,effect:undefined,sprite};
+test('custom sheets use the same synchronized warning, impact and cooldown contract',()=>{
+    expect(C.validate([custom])).toHaveLength(1);expect(C.metadata(custom).duration).toBe(1000);
+    const r={...custom,hazard};C.validate([r]);expect(C.phase(r,1000)).toMatchObject({kind:'active',effectMs:400});expect(C.phase(r,1600).effectMs).toBe(null);
+    expect(C.phase(custom,1250)).toMatchObject({kind:'decoration',cycle:1,effectMs:250});
+});
+test.each([{image:'https://example.com/hazard.png'},{image:'/img/map-fx/../../secret.png'},{frames:0},{fps:61},{frameWidth:1025},{columns:257},{frames:256,fps:1}])('invalid custom sheet settings are rejected: %j',override=>{
+    expect(()=>C.validate([{...custom,sprite:{...sprite,...override}}])).toThrow();
+});
+test('custom artwork cannot be mixed with PixelFX appearance settings',()=>{
+    for(const extra of [{effect:'fire/campfire'},{palette:'leaf'},{options:{}},{background:'transparent'}])expect(()=>C.validate([{...custom,...extra}])).toThrow('own artwork');
+});
+
+test('a partial first row can retain unused sheet columns',()=>{expect(()=>C.validate([{...custom,sprite:{...sprite,frames:2}}])).not.toThrow();});

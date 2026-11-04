@@ -70,6 +70,17 @@ class PointsStoreController {
             return res.json({...data,wallet:walletKey(context.session.walletId),canPurchase:this.nearMerchant(current)});
         } catch (_) {return res.status(503).json({error:'Points are temporarily unavailable.'});}
     }
+    async progress(req,res) {
+        const context = this.context(req.params.sessionId);
+        if (!context) return res.status(401).json({error:'Your game session is no longer active.'});
+        try {
+            await this.syncActivity();
+            const data = await this.platform.getPointsProgress(context.session.walletId, Math.max(1, Math.floor(Number(context.player.level) || 1)));
+            const current = this.context(req.params.sessionId);
+            if (!current || current.player !== context.player) return res.status(409).json({error:'Your session changed. Refresh your progress.'});
+            return res.json(data);
+        } catch (_) {return res.status(503).json({error:'Points are temporarily unavailable.'});}
+    }
     async rewards(req,res) {
         const context = this.context(req.params.sessionId);
         if (!context) return res.status(401).json({error:'Your game session is no longer active.'});

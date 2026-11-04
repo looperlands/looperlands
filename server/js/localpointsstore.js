@@ -55,13 +55,16 @@ function rewards(client,state,wallet) {
     const data = account(client,state,wallet);
     return {unlocks:[...data.unlocks],selectedTitle:data.selectedTitle,selectedHit:data.selectedHit || null,selectedTrail:data.selectedTrail || null,rewards:catalog.rewards};
 }
-function overview(client,state,wallet,now = Date.now(),level = 1) {
+function progress(client,state,wallet,now = Date.now(),level = 1) {
     const data = account(client,state,wallet), day = DailyPlay.dayOf(now), week = monday(day);
     const next = new Date(week); next.setUTCDate(next.getUTCDate()+7);
-    return {...catalog,...rewards(client,state,wallet),balance:balance(client,state,wallet,now),assets:Object.entries(state.assets).filter(([nft,row]) => row.wallet === key(wallet) && ['looper','weapon','ranged_weapon','fishingrod'].includes(assetType(nft))).map(([nftId,row]) => ({nftId,name:'Local '+assetType(nftId),type:assetType(nftId),trait:row.trait,traits:traits(assetType(nftId))})),
+    return {balance:balance(client,state,wallet,now),
         objectives:{level:data.dailyLevels?.[day] || level,locked:!!data.dailyLevels?.[day],daily:goals(data.dailyLevels?.[day] || level).map(row => ({...row,progress:data.objectives[day]?.[row.id] || 0})),dailyReward:catalog.dailyReward,dailyCompleted:completedDays(data).includes(day),
             weeklyDays:completedDays(data).filter(day => monday(day) === week).length,weeklyTarget:catalog.weeklyTarget,weeklyReward:catalog.weeklyReward,
             resetsAt:new Date(Date.parse(day)+86400000).toISOString(),weekResetsAt:next.toISOString()}};
+}
+function overview(client,state,wallet,now = Date.now(),level = 1) {
+    return {...catalog,...rewards(client,state,wallet),...progress(client,state,wallet,now,level),assets:Object.entries(state.assets).filter(([nft,row]) => row.wallet === key(wallet) && ['looper','weapon','ranged_weapon','fishingrod'].includes(assetType(nft))).map(([nftId,row]) => ({nftId,name:'Local '+assetType(nftId),type:assetType(nftId),trait:row.trait,traits:traits(assetType(nftId))}))};
 }
 function purchase(client,state,wallet,body) {
     const {requestId,productId,nftId = null,choice = null} = body;
@@ -112,4 +115,4 @@ function selectHit(client,state,wallet,hit) {
     data.selectedHit = hit;
     return rewards(client,state,wallet);
 }
-module.exports = {record,overview,rewards,purchase,selectTitle,selectTrail,selectHit};
+module.exports = {progress,record,overview,rewards,purchase,selectTitle,selectTrail,selectHit};

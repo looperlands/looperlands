@@ -99,3 +99,14 @@ test('hit styles are permanent wallet purchases, survive reconnect and cannot eq
     await expect(client.selectRewardHit(wallet,'trail:golden-sparks')).rejects.toThrow('Unlock');
     expect((await client.selectRewardHit(wallet,null)).selectedHit).toBeNull();
 });
+
+test('lightweight harvest progress and points agree after duplicate batches and a restart',async()=>{
+    const rows=Array.from({length:20},()=>({id:crypto.randomUUID(),type:'tile',actorWallet:wallet,nftId:'avatar',mapId:'main',sessionId:'s',occurredAt:new Date().toISOString(),data:{stage:'harvest',target:'carrot'}}));
+    await client.storeActivity(rows);await client.storeActivity(rows);client=new LocalPlatform({dataDir:dir});
+    const progress=await client.getPointsProgress(wallet);expect(progress.objectives.daily[2].progress).toBe(20);expect(progress.balance.available).toBe(2);expect(progress.assets).toBeUndefined();
+});
+test.each(['blue','green','pink','purple'])('%s trails cost less than gold and remain permanent wallet unlocks',async color=>{
+    fund();const receipt=await client.purchasePointsItem(wallet,body('trail-'+color+'-sparks'));expect(receipt.paid).toBe(250);
+    await client.selectRewardTrail(wallet,'trail:'+color+'-sparks');expect((await client.getRewardUnlocks(wallet)).selectedTrail).toBe('trail:'+color+'-sparks');
+    const catalog=(await client.getPointsStore(wallet)).products;expect(catalog.find(row=>row.id==='trail-golden-sparks').price).toBe(500);
+});
