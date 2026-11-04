@@ -7216,6 +7216,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.pixelFx?.render(this.renderer);
                     this.pickupFeedback?.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
+                    if (!this.growthWorldReported) {
+                        this.growthWorldReported = true;
+                        this.app?.growth?.worldLoaded(this.app.storage.f2p);
+                    }
                     if (this.gamepadListener) {
                         this.gamepadListener.update();
                     } else {
@@ -8504,6 +8508,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onQuestComplete(function (questName, endText, xpReward, medal, reward) {
+                        self.app.growth?.firstQuestCompleted();
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
                         self.showQuestCompleteNotification(questName, endText, xpReward, medal, reward);
                         self.renderStatistics();
