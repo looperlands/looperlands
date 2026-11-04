@@ -10,10 +10,12 @@
         <canvas class="fx-sample" width="320" height="180" aria-label="Selected library effect preview" style="background:#181b24;image-rendering:pixelated;max-width:100%"></canvas><p class="fx-description field-hint"></p><div class="world-toolbar"><button class="fx-preview">Restart placement preview</button><button class="fx-pause">Pause preview</button></div><p class="fx-phase field-hint" role="status"></p><div class="fx-map-host"></div></div>
         <aside class="zones-inspector"><div class="fx-editor"></div><h3>Placed effects</h3><div class="world-list fx-list"></div></aside></div>`;
     const $=s=>pane.querySelector(s);
-    let data,original,selected,editor,painter,pending,busy=false,loaded=false,start=performance.now(),paused=false,fieldId=0;
+    let data,original,selected,editor,painter,pending,busy=false,loaded=false,start=performance.now(),paused=false,previewAttacking=false,fieldId=0;
     import('./vendor/pixelfxpainter.mjs').then(({PixelFxPainter})=>{painter=new PixelFxPainter((w,h)=>el('canvas','',{width:w,height:h}));}).catch(error=>status('FX preview unavailable: '+error.message,true));
     const current=()=>data?.entries.find(r=>r.id===selected), dirty=()=>data && original!==JSON.stringify(data.entries);
     const appearance=row=>({palette:row?.palette,hue:row?.hue || 0,removeBackdrop:row?.background!=='original'});
+    const mobName=kind=>data.catalog.mobs.find(mob=>mob.id===kind)?.name || 'Missing mob #'+kind;
+    const previewPhase=(row,elapsed)=>Config.phase(row,row.attackingMob!==undefined && (!previewAttacking || row.attackingMob!==current()?.attackingMob)?null:elapsed);
     function status(text,error=false){$('.fx-status').textContent=text;$('.fx-status').classList.toggle('error',error);}
     function controls(){$('.fx-save').disabled=busy || !dirty();$('.fx-reload').disabled=busy;$('#fx-map').disabled=busy;$('.fx-workspace').inert=busy;}
     function guard(action){if(busy)return;if(!dirty())return action();pending=action;$('.fx-discard').hidden=false;}
@@ -34,7 +36,7 @@
         $('.fx-add').disabled=!$('#fx-effect').value;describe();
     }
     function describe(){const meta=Config.catalog[$('#fx-effect').value];$('.fx-description').textContent=meta?meta.name+' · '+meta.category+' · '+(meta.duration/1000)+'s · '+(meta.loop?'loop':'repeats on placement')+(meta.actor?' · Designed around a character silhouette; check the preview before placing.':''): 'No matching effects.';}
-    function select(id,focus=false){selected=id;renderEditor();list();editor?.refresh();if(focus)editor?.fit();start=performance.now();}
+    function select(id,focus=false){selected=id;previewAttacking=false;renderEditor();list();editor?.refresh();if(focus)editor?.fit();start=performance.now();}
     function renderEditor(){
         const host=$('.fx-editor'),row=current();host.replaceChildren();if(!row){host.append(el('p','Choose an effect, then Place effect. Draw, move or resize its region on the map.'));return;}
         const form=el('form');form.onsubmit=e=>{e.preventDefault();save();};host.append(form);
@@ -52,6 +54,19 @@
         const background=el('select','',{id:'fx-background'});background.append(el('option','Transparent overlay',{value:'transparent'}),el('option','Original artwork',{value:'original'}));background.value=row.background || 'transparent';
         background.onchange=()=>{row.background=background.value;touch();};form.append(el('label','Background',{htmlFor:'fx-background'}),background);
         form.append(el('p','Transparent overlay removes dark translucent backdrops. Use Original artwork to keep dark smoke and shadows.',{className:'field-hint'}));
+        const conditional=row.attackingMob!==undefined;
+        const conditionLabel=el('label',' Only enable while a mob is attacking'),condition=el('input','',{type:'checkbox',checked:conditional,disabled:!conditional && !data.catalog.mobs.length});conditionLabel.prepend(condition);form.append(conditionLabel);
+        condition.onchange=()=>{if(condition.checked)row.attackingMob=data.catalog.mobs[0].id;else delete row.attackingMob;previewAttacking=false;start=performance.now();renderEditor();touch();};
+        if(conditional){
+            const mobs=el('select','',{id:'fx-attacking-mob'});
+            for(const mob of data.catalog.mobs)mobs.append(el('option',mob.name,{value:String(mob.id)}));
+            if(!data.catalog.mobs.some(mob=>mob.id===row.attackingMob))mobs.append(el('option',mobName(row.attackingMob),{value:String(row.attackingMob),disabled:true}));
+            mobs.value=String(row.attackingMob);
+            mobs.onchange=()=>{row.attackingMob=Number(mobs.value);previewAttacking=false;start=performance.now();renderEditor();touch();};
+            form.append(el('label','Attacking mob',{htmlFor:'fx-attacking-mob'}),mobs,el('p','Runs while any living mob of this type on this map is attacking a player. Hazards start each new fight with a full warning. Stops when none are attacking.',{className:'field-hint'}));
+            const previewLabel=el('label',' Preview mob attacking'),preview=el('input','',{type:'checkbox',checked:previewAttacking});previewLabel.prepend(preview);form.append(previewLabel);
+            preview.onchange=()=>{previewAttacking=preview.checked;start=performance.now();editor?.refresh();};
+        }else if(!data.catalog.mobs.length)form.append(el('p','Place a mob and build the map to use an attack condition.',{className:'field-hint'}));
         const label=el('label',' Hazard — damage players in this region'),check=el('input','',{type:'checkbox',checked:!!row.hazard});label.prepend(check);form.append(label);
         check.onchange=()=>{row.hazard=check.checked?{warningMs:1500,activeMs:500,cooldownMs:2500,damage:10,tickMs:500,impactMs:0}:null;renderEditor();start=performance.now();touch();};
         if(row.hazard){const h=row.hazard;
@@ -69,8 +84,8 @@
     }
     function draw(ctx,view){
         if(!data || !painter)return;painter.beginFrame();const elapsed=performance.now()-start;
-        for(const source of data.entries){try{Config.validate([source],data.catalog);}catch(_){continue;}const p=Config.phase(source,elapsed),row={...source,...Config.hitRegion(source,p.cycle,12345)},center=view.project({x:row.x+row.width/2,y:row.y+row.height/2});
-            if(row.hazard && p.kind!=='cooldown')for(let dy=0;dy<row.height;dy++)for(let dx=0;dx<row.width;dx++){
+        for(const source of data.entries){try{Config.validate([source],data.catalog);}catch(_){continue;}const p=previewPhase(source,elapsed),row={...source,...Config.hitRegion(source,p.cycle,12345)},center=view.project({x:row.x+row.width/2,y:row.y+row.height/2});
+            if(row.hazard && ['warning','active'].includes(p.kind))for(let dy=0;dy<row.height;dy++)for(let dx=0;dx<row.width;dx++){
                 const pos=view.project({x:row.x+dx,y:row.y+dy});ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(view.scale/16,view.scale/16);
                 window.AttackWarning.tile(ctx,0,0,p.kind==='warning'?1-p.remaining/row.hazard.warningMs:1,p.kind==='active');ctx.restore();
             }
@@ -95,5 +110,5 @@
     $('.fx-pause').onclick=()=>{paused=!paused;$('.fx-pause').textContent=paused?'Resume preview':'Pause preview';};
     window.addEventListener('beforeunload',event=>{if(dirty()){event.preventDefault();event.returnValue='';}});
     choices();window.ToolboxNavigation.route('fx',async params=>{if(!loaded){const setup=await request();$('#fx-map').replaceChildren(...setup.maps.map(id=>el('option',id,{value:id})));loaded=true;}const id=params.get('map') || data?.mapId || $('#fx-map').value;if(id!==data?.mapId)guard(()=>load(id));});
-    setInterval(()=>{if(pane.hidden || document.hidden || paused || busy)return;const meta=Config.catalog[$('#fx-effect').value];if(painter && meta){const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);painter.beginFrame();painter.draw(ctx,$('#fx-effect').value,(performance.now()-start)%meta.duration,160,140,Math.min(1,150/meta.size[1]),appearance(current()));}editor?.refresh();const row=current();if(row){const p=Config.phase(row,performance.now()-start);$('.fx-phase').textContent=row.hazard?row.name+' · '+p.kind+' · '+(p.remaining/1000).toFixed(1)+'s · '+row.width*row.height+' region tiles':row.name+' · Decoration (no damage)';}},50);
+    setInterval(()=>{if(pane.hidden || document.hidden || paused || busy)return;const meta=Config.catalog[$('#fx-effect').value];if(painter && meta){const ctx=$('.fx-sample').getContext('2d');ctx.clearRect(0,0,320,180);painter.beginFrame();painter.draw(ctx,$('#fx-effect').value,(performance.now()-start)%meta.duration,160,140,Math.min(1,150/meta.size[1]),appearance(current()));}editor?.refresh();const row=current();if(row){const p=previewPhase(row,performance.now()-start);$('.fx-phase').textContent=p.kind==='inactive'?row.name+' · Waiting for '+mobName(row.attackingMob)+' to attack':row.hazard?row.name+' · '+p.kind+' · '+(p.remaining/1000).toFixed(1)+'s · '+row.width*row.height+' region tiles':row.name+' · Decoration (no damage)';}},50);
 })();

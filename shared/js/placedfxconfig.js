@@ -13,7 +13,7 @@
         if (!Array.isArray(rows) || rows.length > 100) fail('Place at most 100 effects per map.');
         const ids = new Set();
         for (const r of rows) {
-            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','palette','background','hazard'].includes(k))) fail('Unsupported placed FX field.');
+            if (!r || Object.keys(r).some(k => !['id','name','effect','x','y','width','height','scale','hue','palette','background','hazard','attackingMob'].includes(k))) fail('Unsupported placed FX field.');
             if (typeof r.id !== 'string' || !/^[a-z][a-z0-9_-]{0,63}$/i.test(r.id) || ids.has(r.id)) fail('FX IDs must be unique.');
             ids.add(r.id);
             if (typeof r.name !== 'string' || !r.name.trim() || r.name.length > 120 || /[<>\u0000-\u001f]/.test(r.name)) fail('Enter a plain-text FX name.');
@@ -25,6 +25,10 @@
             if (r.background !== undefined && !['transparent','original'].includes(r.background)) fail('Choose transparent overlay or original artwork.');
             if (r.hue !== undefined) number(r.hue, -180, 180, 'Hue shift');
             if (r.palette !== undefined && (typeof r.palette !== 'string' || !Object.hasOwn(Catalog.palettes, r.palette))) fail('Choose a palette from the PixelFX library.');
+            if (r.attackingMob !== undefined) {
+                number(r.attackingMob, 1, Number.MAX_SAFE_INTEGER, 'Attacking mob');
+                if (map?.mobs && !map.mobs.some(mob => mob.id === r.attackingMob)) fail('Choose an attacking mob from this map.');
+            }
             if (r.hazard !== null) {
                 const h = r.hazard;
                 if (!h || Object.keys(h).some(k => !['warningMs','activeMs','cooldownMs','damage','tickMs','impactMs','placement','areaWidth','areaHeight'].includes(k))) fail('Unsupported hazard settings.');
@@ -56,6 +60,7 @@
         return h ? h.warningMs+Math.max(h.activeMs,playbackDuration(row)-h.impactMs)+h.cooldownMs : Catalog.effects[row.effect].duration;
     }
     function phase(row, elapsed) {
+        if (elapsed === null) return {kind:'inactive', effectMs:null};
         const duration = Catalog.effects[row.effect].duration;
         if (!row.hazard) return {kind:'decoration', effectMs:Math.max(0, elapsed)%duration};
         const h = row.hazard, period = cycleDuration(row);
