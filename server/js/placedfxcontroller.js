@@ -10,12 +10,13 @@ class PlacedFxController {
     configure(rows) {
         Config.validate(rows, this.world.map);
         const key = JSON.stringify(rows); if (key === this.key) return;
-        this.key = key; this.rows = rows; this.epoch = this.clock(); this.seed = Math.floor(Math.random()*2147483647); this.players.clear();
+        this.key = key; this.rows = rows; this.epoch = this.clock(); this.seed = this.randomSeed(); this.players.clear();
         this.controlledRows = rows.filter(row => row.attackingMob !== undefined);
         this.activations = new Map(this.controlledRows.map(row => [row.id, null]));
         this.revision++;
     }
     packet(value) {return {serialize: () => [Types.Messages.PIXEL_FX, value]};}
+    randomSeed() {return 1+Math.floor(Math.random()*2147483646);}
     updateActivations(now) {
         if (!this.controlledRows.length) return;
         const attacking = new Set();
@@ -78,7 +79,7 @@ class PlacedFxController {
         if (damage<=0 || attacker.type!=='player') return;
         const effect = critical ? 'impacts/crit-hit' : Config.hitStyles[attacker.selectedHit];
         if (!effect) return;
-        this.world.pushToAdjacentGroups(entity.group, this.packet({type:'hit', mapId:this.world.id, id:++this.serial, effect, x:entity.x,y:entity.y}));
+        this.world.pushToAdjacentGroups(entity.group, this.packet({type:'hit', mapId:this.world.id, id:++this.serial, effect, seed:this.randomSeed(), x:entity.x,y:entity.y}));
     }
 }
 module.exports = PlacedFxController;

@@ -15,6 +15,15 @@ test('leaving the hit region avoids damage, decoration never damages, disconnect
 test('reloading identical map data preserves the cycle; edits send fresh configuration',()=>{tick(0);const epoch=fx.epoch;now=700;fx.configure([row]);expect(fx.epoch).toBe(epoch);fx.configure([{...row,x:4}]);tick(700);expect(world.pushToPlayer).toHaveBeenCalledTimes(2);expect(fx.epoch).toBe(700);});
 test('confirmed hits broadcast selected cosmetics; crit wins, misses and unknown styles emit nothing',()=>{const target={group:'1-1',x:5,y:6};fx.hit(target,{type:'player',selectedHit:'hit:frost'},12,false);fx.hit(target,{type:'player',selectedHit:'hit:frost'},12,true);expect(world.pushToAdjacentGroups.mock.calls.map(c=>c[1].serialize()[1].effect)).toEqual(['ice/snowflake-burst','impacts/crit-hit']);fx.hit(target,{type:'player',selectedHit:'hit:frost'},0,true);fx.hit(target,{type:'mob'},10,true);fx.hit(target,{type:'player',selectedHit:'unowned'},10,false);expect(world.pushToAdjacentGroups).toHaveBeenCalledTimes(2);});
 
+test('each hit broadcasts one fresh server seed shared by its observers',()=>{
+    const random=jest.spyOn(Math,'random').mockReturnValueOnce(.2).mockReturnValueOnce(.8);
+    try{
+        for(let i=0;i<2;i++)fx.hit({group:'1-1',x:5,y:6},{type:'player'},10,true);
+        const seeds=world.pushToAdjacentGroups.mock.calls.map(call=>call[1].serialize()[1].seed);
+        expect(seeds[0]).not.toBe(seeds[1]);expect(seeds.every(seed=>Number.isInteger(seed) && seed>0)).toBe(true);
+    }finally{random.mockRestore();}
+});
+
 
 test('random hazard damage uses exactly the advertised seeded footprint, with no damage during its visual tail',()=>{
     const Config=require('../../shared/js/placedfxconfig');

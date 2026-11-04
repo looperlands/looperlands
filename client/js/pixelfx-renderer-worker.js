@@ -6,7 +6,7 @@
     RendererExtensions.register('pixel-fx', {layer:'entities', entries(effects,view) {
         if(!painter)return [];
         painter.beginFrame();
-        return effects.filter(e=>Math.abs(e.x-view.cameraX)<view.viewportWidth/view.scale+1024 && Math.abs(e.y-view.cameraY)<view.viewportHeight/view.scale+1024).map(e=>({y:e.y,draw(ctx){painter.draw(ctx,e.effect,e.time,(e.x-view.cameraX)*view.scale,(e.y-view.cameraY)*view.scale,e.scale*view.scale,{palette:e.palette,hue:e.hue,removeBackdrop:e.removeBackdrop});}}));
+        return effects.filter(e=>Math.abs(e.x-view.cameraX)<view.viewportWidth/view.scale+1024 && Math.abs(e.y-view.cameraY)<view.viewportHeight/view.scale+1024).map(e=>({y:e.y,draw(ctx){painter.draw(ctx,e.effect,e.time,(e.x-view.cameraX)*view.scale,(e.y-view.cameraY)*view.scale,e.scale*view.scale,{palette:e.palette,seed:e.seed,options:e.options,hue:e.hue,removeBackdrop:e.removeBackdrop});}}));
     }});
     RendererExtensions.register('pixel-fx-tiles', {layer:'ground',draw(ctx,rows,view) {
         const s=view.scale;

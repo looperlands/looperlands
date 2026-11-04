@@ -19,6 +19,14 @@ The map preview shows the same phase calculation used by the server: the same su
 
 Placements are stored in `tools/worlds/<map>.json` under `placedFx`. The build validates them and exports identical placements to client JSON/JS and server JSON. Limits: 100 placements per map, 32 × 32 tiles per region, warning at least 750 ms, damage interval at least 250 ms. Players arriving or reviving mid-cycle are protected until a complete new warning cycle has begun.
 
+## Effect options and variation
+
+**Effect options** exposes the selected effect's own settings: for example Flame pillar's height and stone color, Waterfall's height, width and ledge, particle counts, text, secondary color ramps and scenery toggles. Controls start at the library defaults. Changes update the preview immediately; **Reset effect options** restores those defaults. Replacing the library effect clears options belonging to the previous effect. Save and build to use the same options in the game.
+
+Seeds are automatic. Each placement and playback cycle gets a different variation derived from the server's random world seed; a new boss fight also gets a new variation. Hit effects receive a fresh server seed for every hit. All observers, including late arrivals, use the same seeds. **Restart placement preview** creates a fresh preview seed as well. Seeds cannot be overridden in effect options.
+
+Options affect artwork inside the library's fixed canvas. Large dimensions can be clipped; use **Visual scale** to resize the whole effect. Options do not change the highlighted damage footprint or hazard timing. Only options declared by the selected effect are accepted; number ranges, text length, colors and array shapes are validated before saving and exporting.
+
 ## Weapon hit effects
 
 Points Exchange sells **Spark Hit**, **Frost Hit** and **Shadow Hit** as permanent wallet unlocks for 350 points each. Equip one or restore default hits under **Collection → Weapon hit effects**. Custom weapon art stays intact; effects play at confirmed damage positions and are visible to nearby players. They do not change damage. Critical hits use Critical Hit automatically, including the existing critical counter-hit path. Creator-authored death animations remain intact.

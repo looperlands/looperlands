@@ -4,6 +4,7 @@ import {createFrame, clearFrame, createFx, composite, PAL} from './lib/pixelfx/c
 export class PixelFxPainter {
     constructor(canvas = (w,h) => new OffscreenCanvas(w,h)) {
         this.canvas = canvas; this.modules = new Map(); this.metadata = new Map(); this.instances = new Map(); this.frames = new Map(); this.bytes = 0;
+        this.seed=1+Math.floor(Math.random()*2147483646);
     }
     beginFrame() {this.frameSpent=0;}
     load(id) {
@@ -11,12 +12,12 @@ export class PixelFxPainter {
         if (!this.modules.has(id)) this.modules.set(id, import('./lib/pixelfx/fx/'+id+'.mjs').then(mod => {this.metadata.set(id,mod.meta);return mod;}));
         return this.modules.get(id);
     }
-    frame(id, time, {palette, hue = 0, removeBackdrop = false} = {}) {
+    frame(id, time, {palette, seed = this.seed, options = {}, hue = 0, removeBackdrop = false} = {}) {
         if (palette && !Object.hasOwn(PAL,palette)) throw new Error('Unknown PixelFX palette');
         // Named palettes go into the original shader, as in the upstream gallery.
         // Retain hue only for older saved placements until a palette is selected.
         if (palette) hue=0;
-        const instanceKey=id+':'+(palette || 'original');
+        const instanceKey=JSON.stringify([id,palette || 'original',seed,Object.entries(options).sort(([a],[b])=>a.localeCompare(b))]);
         const step = Math.floor(Math.max(0,time)/1000*20), key = instanceKey+':'+step+':'+hue+':'+removeBackdrop;
         if (this.frames.has(key)) {const frame=this.frames.get(key); this.frames.delete(key); this.frames.set(key,frame); return frame;}
         let item = this.instances.get(instanceKey);
@@ -29,7 +30,7 @@ export class PixelFxPainter {
         if(this.frameSpent>12) return item.lastHue===hue && item.lastBackdrop===removeBackdrop ? item.last || null : null;
         const started=performance.now();
         const mod=item.mod, t=step/20, [w,h]=mod.meta.size;
-        if (!item.fx || item.fx.t>t) item.fx=createFx(mod,{x:mod.meta.origin[0],y:mod.meta.origin[1],seed:1,...(palette?{palette:PAL[palette]}:{})});
+        if (!item.fx || item.fx.t>t) item.fx=createFx(mod,{...options,x:mod.meta.origin[0],y:mod.meta.origin[1],seed,...(palette?{palette:PAL[palette]}:{})});
         item.fx.update(Math.max(0,t-item.fx.t));
         item.raw ||= createFrame(w,h); clearFrame(item.raw); item.fx.draw(item.raw);
         if(removeBackdrop) removeDarkBackdrop(item.raw.color);

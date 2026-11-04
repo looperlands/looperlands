@@ -31,3 +31,15 @@ test('late observers share the active boss timeline and random footprint without
     expect(rendered(first,'pixel-fx')[0]).toEqual(automatic);
     expect(rendered(first,'pixel-fx-tiles').some(r=>r.id==='boss')).toBe(false);
 });
+
+test('options and changing seeds reach the worker, remain stable within playback, and agree for late joins',()=>{
+    const first=setup(false),late=setup(false),placed={...row,hazard:null,options:{height:30}},packet={type:'map',mapId:'world_main',rows:[placed,{...placed,id:'other'}],epoch:100,seed:374,now:200};
+    first.fx.receive(packet);first.fx.render(first.renderer);
+    const initial=rendered(first,'pixel-fx');expect(initial[0].options).toEqual({height:30});expect(initial[0].seed).not.toBe(initial[1].seed);
+    localNow+=100;first.fx.render(first.renderer);expect(rendered(first,'pixel-fx')[0].seed).toBe(initial[0].seed);
+    localNow+=Config.catalog[row.effect].duration;first.fx.render(first.renderer);
+    const next=rendered(first,'pixel-fx');expect(next[0].seed).not.toBe(initial[0].seed);
+    late.fx.receive({...packet,now:packet.now+localNow-1000});late.fx.render(late.renderer);expect(rendered(late,'pixel-fx')).toEqual(next);
+    first.fx.receive({type:'hit',mapId:'world_main',id:1,effect:'impacts/crit-hit',seed:198,x:2,y:3});first.fx.render(first.renderer);
+    expect(rendered(first,'pixel-fx').at(-1).seed).toBe(198);
+});
