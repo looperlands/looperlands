@@ -21,6 +21,7 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             this.isSwitchingWeapon = true;
             this.level = null;
             this.currentProjectileType = null;
+            this.canHoldWeapon = true;
         },
     
         loot: function(item) {

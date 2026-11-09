@@ -92,3 +92,17 @@ test('foreground and expired particles do not create ground lighting',()=>{
     state.particles=[{layer:'foreground',alpha:1},{layer:'ground',alpha:0}];
     fx.lighting(ctx,state,view);expect(createCanvas).not.toHaveBeenCalled();expect(ctx.drawImage).not.toHaveBeenCalled();
 });
+
+
+test('evolution draws a faceted cocoon, orbiting stars and three expanding halos', () => {
+    const {fx, ctx, state, view} = setup();
+    state.rings = [{owner: 'evolution', x: 48, y: 64, coreX: 48, coreY: 49, radius: 62, startedAt: 0}];
+    state.time = 900; fx.draw(ctx, state, view);
+    expect(ctx.ellipse).toHaveBeenCalledTimes(3);
+    expect(ctx.fillRect).toHaveBeenCalledTimes(24);
+    for (const method of ['fillRect', 'ellipse', 'moveTo', 'lineTo']) {
+        expect(ctx[method].mock.calls.flat().every(Number.isFinite)).toBe(true);
+    }
+    ctx.fillRect.mockClear(); state.time = 3000; fx.draw(ctx, state, view);
+    expect(ctx.fillRect).not.toHaveBeenCalled();
+});

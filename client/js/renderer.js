@@ -485,7 +485,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         }
     
     
-                        if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && (entity.actionToolName || entity.hasWeapon())) {
+                        if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && entity.canHoldWeapon !== false && (entity.actionToolName || entity.hasWeapon())) {
                             const weaponName = entity.actionToolName || entity.getWeaponName();
                             let weapon = this.game.sprites[weaponName];
     
@@ -552,7 +552,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         }
                     }
     
-                    if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && (entity.actionToolName || entity.hasWeapon())) {
+                    if(entity instanceof Character && (!entity.isDead || entity.pixelDissolve) && entity.canHoldWeapon !== false && (entity.actionToolName || entity.hasWeapon())) {
                         const weaponName = entity.actionToolName || entity.getWeaponName();
                         let weapon = this.game.sprites[weaponName];
                         if(Types.alwaysOnTop(weaponName) || entity.orientation !== Types.Orientations.UP) {
@@ -702,7 +702,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     s = this.scale,
                     spr;
     
-                if(entity instanceof Player && entity.hasWeapon()) {
+                if(entity instanceof Player && entity.canHoldWeapon !== false && entity.hasWeapon()) {
                     var weapon = this.game.sprites[entity.getWeaponName()];
                     spr = weapon;
                 } else {

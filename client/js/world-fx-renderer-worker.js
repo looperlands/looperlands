@@ -64,6 +64,46 @@
         ctx.restore();
     }
 
+    function evolution(ctx, ring, time, xy, scale) {
+        const age = Math.max(0, time - ring.startedAt), fade = Math.min(1, (2900 - age) / 700);
+        if (fade <= 0) return;
+        const [cx, cy] = xy(ring.coreX, ring.coreY);
+        ctx.save();
+        // A faceted cocoon opens into orbiting runes, then three expanding halos.
+        if (age < 1400) {
+            const opening = Math.min(1, age / 700), radius = (10 + opening * 15) * scale;
+            ctx.globalAlpha = (1 - age / 1400) * 0.7;
+            ctx.strokeStyle = '#d8b1ff'; ctx.lineWidth = scale;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - radius * 1.7); ctx.lineTo(cx + radius, cy);
+            ctx.lineTo(cx, cy + radius * 0.8); ctx.lineTo(cx - radius, cy);
+            ctx.lineTo(cx, cy - radius * 1.7); ctx.stroke();
+            ctx.strokeStyle = '#a2fff0';
+            ctx.beginPath(); ctx.moveTo(cx, cy - radius * 1.7); ctx.lineTo(cx, cy + radius * 0.8); ctx.stroke();
+        }
+        for (let i = 0; i < 12; i++) {
+            const angle = i / 12 * Math.PI * 2 + age / 650;
+            const radius = (14 + Math.min(age, 1600) / 45) * scale;
+            const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius * .45 - age / 160 * scale;
+            ctx.globalAlpha = fade * Math.min(1, age / 200);
+            ctx.fillStyle = i % 2 ? '#a2fff0' : '#fff4b1';
+            const size = (i % 3 === 0 ? 2 : 1) * scale;
+            ctx.fillRect(Math.round(x) - size, Math.round(y), size * 2 + scale, scale);
+            ctx.fillRect(Math.round(x), Math.round(y) - size, scale, size * 2 + scale);
+        }
+        for (let wave = 0; wave < 3; wave++) {
+            const progress = (age - 350 - wave * 230) / 1200;
+            if (progress < 0 || progress > 1) continue;
+            const radius = (1 - Math.pow(1 - progress, 3)) * ring.radius;
+            ctx.globalAlpha = (1 - progress) * .85;
+            ctx.strokeStyle = ['#fff4b1', '#a2fff0', '#d8b1ff'][wave];
+            ctx.lineWidth = (wave ? 1 : 2) * scale;
+            ctx.beginPath(); ctx.ellipse(...xy(ring.x, ring.y), Math.max(1, radius) * scale,
+                Math.max(.5, radius * .42) * scale, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
     function ground(ctx, state, view) {
         heat(ctx, state, view);
         drawParticles(ctx, (state.particles || []).filter(p => p.layer === 'ground'), view);
@@ -132,7 +172,10 @@
         drawParticles(ctx, (state.particles || []).filter(p => p.layer !== 'ground'), view);
         const scale = view.scale;
         const xy = (x, y) => [Math.round((x - view.cameraX) * scale), Math.round((y - view.cameraY) * scale)];
-        for (const ring of state.rings || []) levelUp(ctx, ring, state.time, xy, scale);
+        for (const ring of state.rings || []) {
+            if (ring.owner === 'evolution') evolution(ctx, ring, state.time, xy, scale);
+            else levelUp(ctx, ring, state.time, xy, scale);
+        }
     }
     return {ground, draw, lighting};
 });

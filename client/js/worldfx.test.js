@@ -164,3 +164,27 @@ test.each(['blue','green','pink','purple'])('%s trails use their own palette on 
     const particles=renderer.setExtensionData.mock.calls.findLast(call=>call[0]==='world-fx')[1].particles;
     expect(particles.every(p=>p.layer==='ground')).toBe(true);
 });
+
+
+test('evolution has staggered star showers, its own halo and a bounded lifetime', () => {
+    const {fx, game, renderer} = setup();
+    fx.evolve(game.player);
+    expect(fx.particles).toHaveLength(84);
+    expect(fx.rings[0]).toMatchObject({owner: 'evolution', lifetimeMs: 2900});
+    fx.render(renderer, 1000);
+    expect(renderer.setExtensionData.mock.calls.at(-1)[1].particles).toHaveLength(0);
+    fx.render(renderer, 1600);
+    expect(renderer.setExtensionData.mock.calls.at(-1)[1].particles).toHaveLength(56);
+    fx.render(renderer, 4000);
+    expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
+});
+
+test('evolution respects reduced motion, death and map cleanup', () => {
+    const {fx, game, settings} = setup();
+    settings.getReducedMotion = () => true; fx.evolve(game.player);
+    expect(fx.rings).toHaveLength(0);
+    settings.getReducedMotion = () => false; game.player.isDead = true; fx.evolve(game.player);
+    expect(fx.rings).toHaveLength(0);
+    game.player.isDead = false; fx.evolve(game.player); game.mapId = 'new'; fx.sync();
+    expect(fx.rings).toHaveLength(0); expect(fx.particles).toHaveLength(0);
+});

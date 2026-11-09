@@ -538,3 +538,39 @@
 @media (prefers-reduced-motion: reduce) {
     #levelup-notification { transition: none; }
 }
+
+/* Evolution is a separate milestone from ordinary XP level-ups. */
+#evolution-notification {
+    position: absolute;
+    z-index: 12;
+    top: 14%;
+    left: 50%;
+    width: min(360px, calc(100% - 40px));
+    box-sizing: border-box;
+    padding: 18px 22px;
+    border: 2px solid #c4fff3;
+    border-radius: 4px;
+    background: linear-gradient(145deg, #162743ed, #33204aeb);
+    color: #fff4d4;
+    box-shadow: 0 0 0 3px #243a56, 0 0 36px #92ffe951, inset 0 0 22px #9af6e51c;
+    font: 14px/1.4 'GraphicPixel', sans-serif;
+    text-align: center;
+    pointer-events: none;
+    transform: translate(-50%, -8px) scale(.96);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 250ms, transform 350ms, visibility 250ms;
+}
+#evolution-notification.active { opacity: 1; visibility: visible; transform: translate(-50%, 0) scale(1); }
+.evolution-eyebrow { color: #a2f6e5; font-size: 11px; letter-spacing: 2px; }
+.evolution-title { color: #fff4b1; font-size: 38px; line-height: 1.25; text-shadow: 0 3px #765281, 0 0 15px #ffd98b80; }
+.evolution-detail { color: #e0caff; font-size: 17px; margin-top: 4px; }
+.evolution-note { margin-top: 10px; color: #d9e6ed; font: 12px/1.5 sans-serif; }
+#evolution-notification.reduced-motion { transition: none; transform: translateX(-50%); }
+@media (prefers-reduced-motion: reduce) {
+    #evolution-notification { transition: none; transform: translateX(-50%); }
+}
+@media (max-height: 480px) {
+    #evolution-notification { top: 6%; padding: 10px 16px; }
+    .evolution-title { font-size: 28px; }
+}

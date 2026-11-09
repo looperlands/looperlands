@@ -24,3 +24,32 @@ test('nearby upgrades share a compact notification and earlier timers cannot dis
     expect(notification.lines).toEqual(['LEVEL UP', 'Companion · 2']);
     jest.useRealTimers();
 });
+
+test('evolution has a separate accessible notification and keeps weapon mechanics explicit', () => {
+    jest.useFakeTimers();
+    let app;
+    const notification = {lines: [], classes: new Set(),
+        empty() {this.lines = []; return this;},
+        toggleClass(name, enabled) {if (enabled) this.classes.add(name); else this.classes.delete(name); return this;},
+        addClass(name) {this.classes.add(name); return this;}, removeClass(name) {this.classes.delete(name); return this;}
+    };
+    const notice = {hidden: true};
+    const $ = selector => selector === '#evolution-notification' ? notification : {
+        text(value) {this.value = value; return this;}, appendTo(target) {target.lines.push(this.value);}
+    };
+    vm.runInNewContext(fs.readFileSync(require.resolve('./app'), 'utf8'), {
+        define: (_, factory) => {app = factory($);}, Class: {extend: methods => methods},
+        document: {getElementById: () => notice}, setTimeout, clearTimeout,
+    });
+    app.settings = {getReducedMotion: () => true}; app.game = {player: {canHoldWeapon: false}};
+    app.showEvolutionNotification({evolutionLevel: 10, canHoldWeapon: false}); app.updateWeaponAppearanceNotice();
+    expect(notification.lines).toContain('EVOLVED!');
+    expect(notification.lines.at(-1)).toContain('damage, traits and XP');
+    expect(notification.classes.has('reduced-motion')).toBe(true);
+    expect(notice.hidden).toBe(false);
+    jest.advanceTimersByTime(3000); app.showEvolutionNotification({evolutionLevel: 20, canHoldWeapon: true});
+    jest.advanceTimersByTime(3000); expect(notification.classes.has('active')).toBe(true);
+    jest.advanceTimersByTime(2600); expect(notification.classes.has('active')).toBe(false);
+    app.game.player.canHoldWeapon = true; app.updateWeaponAppearanceNotice(); expect(notice.hidden).toBe(true);
+    jest.useRealTimers();
+});

@@ -23,6 +23,7 @@ const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
 const syncExperience = require('./experiencesync.js');
+const {resolveAvatarAppearance} = require('./avatarappearance');
 
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
@@ -136,6 +137,11 @@ module.exports = Player = Character.extend({
             self.name = gameplayNameFromSession(playerCache);
             self.walletId = playerCache.walletId;
             self.nftId = playerCache.nftId;
+            playerCache.xp = parseInt(playerCache.xp);
+            self.level = Formulas.level(playerCache.xp);
+            // Only the authenticated platform session supplies creator configuration.
+            self.avatarDefinition = playerCache.avatar?.nftId === self.nftId ? playerCache.avatar : null;
+            self.avatarAppearance = self.avatarDefinition ? resolveAvatarAppearance(self.avatarDefinition, self.level) : null;
             self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
             self.mapId = playerCache.mapId;
             try { await self.server.server.eventEquipment?.register(self); }
@@ -174,12 +180,10 @@ module.exports = Player = Character.extend({
 
             playerCache.isDirty = true;
             playerCache.entityId = self.id;
-            playerCache.xp = parseInt(playerCache.xp);
             playerCache.x = undefined;
             playerCache.y = undefined;
             self.server.server.cache.set(self.sessionId, playerCache);
             self.title = playerCache.title;
-            self.level = Formulas.level(playerCache.xp);
             self.updateHitPoints();
             if (resumeState) {
                 self.restoreClientState(resumeState);
@@ -810,17 +814,32 @@ module.exports = Player = Character.extend({
 
         this.server.server.cache.set(this.sessionId, session);
 
-        let updatedLevel = Formulas.level(session.xp);
-
-        if (updatedLevel <= Formulas.MAX_LEVEL && this.level < updatedLevel) {
-            this.level = updatedLevel;
-            let message = `💪 **${this.name}** advanced to level ${updatedLevel}`;
-            discord.sendMessage(message);
-            this.updateHitPoints();
-        }
+        this.updateEarnedLevel(session.xp);
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
             await this.syncExperience();
+        }
+    },
+
+    updateEarnedLevel: function (xp) {
+        const level = Formulas.level(xp);
+        if (level <= Formulas.MAX_LEVEL && this.level < level) {
+            this.level = level;
+            discord.sendMessage(`💪 **${this.name}** advanced to level ${level}`);
+            this.updateHitPoints();
+            this.updateAvatarAppearance();
+        }
+    },
+
+    updateAvatarAppearance: function () {
+        if (!this.avatarDefinition) return;
+        const appearance = resolveAvatarAppearance(this.avatarDefinition, this.level);
+        const previous = this.avatarAppearance;
+        if (JSON.stringify(previous) === JSON.stringify(appearance)) return;
+        this.avatarAppearance = appearance;
+        if (this.hasEnteredGame) {
+            this.broadcast(new Messages.AvatarAppearance(this,
+                !!previous && appearance.evolutionLevel > previous.evolutionLevel), false);
         }
     },
 
@@ -844,6 +863,7 @@ module.exports = Player = Character.extend({
                     if (session !== undefined) {
                         session.xp = Math.max(session.xp, xp);
                         this.server.server.cache.set(this.sessionId, session);
+                        this.updateEarnedLevel(session.xp);
                     }
                 }
             );
@@ -893,6 +913,7 @@ module.exports = Player = Character.extend({
             state.push(null);
         }
         state.push(this.selectedTrail || null);
+        state.push(this.avatarAppearance || null);
 
         return basestate.concat(state);
     },
@@ -903,6 +924,7 @@ module.exports = Player = Character.extend({
             const builtAt = release?.builtAt || process.env.GAME_BUILD_DATE;
             // Optional trailing metadata keeps existing clients compatible.
             if (builtAt) message = [...message, {builtAt, revision: release?.revision}];
+            if (this.avatarAppearance) message = [...message.slice(0, 8), message[8] || null, this.avatarAppearance];
         }
         this.connection.send(message);
     },

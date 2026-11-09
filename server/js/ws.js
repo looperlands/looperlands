@@ -429,6 +429,8 @@ WS.socketIOServer = Server.extend({
             body.f2p = sessionData.f2p;
             body.trait = sessionData.trait;
             body.localDoorAccess = sessionData.localDoorAccess;
+            // The browser can request a destination, never a different avatar form.
+            body.avatar = sessionData.avatar;
             delete body.map;
 
             let responseJson = await newSession(body, true);

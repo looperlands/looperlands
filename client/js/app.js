@@ -915,6 +915,25 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
             }, 3200);
         },
 
+        showEvolutionNotification: function (appearance) {
+            const notification = $('#evolution-notification');
+            clearTimeout(this.evolutionNotificationTimeout);
+            notification.empty();
+            $('<div class="evolution-eyebrow">').text('A NEW FORM AWAKENS').appendTo(notification);
+            $('<div class="evolution-title">').text('EVOLVED!').appendTo(notification);
+            $('<div class="evolution-detail">').text('Level ' + appearance.evolutionLevel + ' evolution unlocked').appendTo(notification);
+            $('<div class="evolution-note">').text(appearance.canHoldWeapon === false
+                ? 'Built-in attacks. Your selected weapon still powers damage, traits and XP.'
+                : 'Your journey continues in a powerful new form.').appendTo(notification);
+            notification.toggleClass('reduced-motion', this.settings?.getReducedMotion?.() === true).addClass('active');
+            this.evolutionNotificationTimeout = setTimeout(() => notification.removeClass('active'), 5600);
+        },
+
+        updateWeaponAppearanceNotice: function () {
+            const notice = document.getElementById('weapon-appearance-notice');
+            if (notice) notice.hidden = this.game.player.canHoldWeapon !== false;
+        },
+
         showAchievementNotification: function (questName, endText, xpReward, medal, reward) {
             if (!this.questCelebration) this.questCelebration = new QuestCelebration(this);
             this.questCelebration.show({questName, endText, xpReward, medal, reward});
@@ -1227,7 +1246,9 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 let columns = 0;
 
                 inventoryHtml += "<div class='inventorySection' id='inventory-weapons'><div class='inventoryTitle'>Weapons</div>";
-                inventoryHtml += "<div class='inventorySectionItems'>"
+                inventoryHtml += "<div class='inventorySectionItems'>";
+                inventoryHtml += "<p id='weapon-appearance-notice' class='weapon-appearance-notice' role='note'" +
+                    (_this.game.player.canHoldWeapon === false ? "" : " hidden") + ">This form has built-in attacks and cannot display a held weapon. Keep a weapon selected: it still determines damage and traits, and earns XP.</p>";
                 columns++;
                 weaponInventory.forEach(function(item) {
                     let url = getItemURL(item);

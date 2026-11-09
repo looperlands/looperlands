@@ -16,7 +16,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.deferredEntityActions = new Set([
                 Types.Messages.MOVE, Types.Messages.LOOTMOVE, Types.Messages.ATTACK,
                 Types.Messages.TELEPORT, Types.Messages.EQUIP, Types.Messages.NPC_STATE,
-                Types.Messages.MOBEXITCOMBAT, Types.Messages.PLAYER_TITLE, Types.Messages.PLAYER_TRAIL
+                Types.Messages.MOBEXITCOMBAT, Types.Messages.PLAYER_TITLE, Types.Messages.PLAYER_TRAIL, Types.Messages.AVATAR_APPEARANCE
             ]);
 
             console.log("Game client", this.host, this.port, this.protocol);
@@ -36,6 +36,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
             this.handlers[Types.Messages.PIXEL_FX] = data => this.pixelFx_callback?.(data[1]);
+            this.handlers[Types.Messages.AVATAR_APPEARANCE] = data => this.avatarAppearance_callback?.(data[1], data[2], data[3] === true);
             this.handlers[Types.Messages.PLAYER_TRAIL] = data => this.playerTrail_callback?.(data[1], data[2]);
             this.handlers[Types.Messages.PLAYER_TITLE] = data => this.playerTitle_callback?.(data[1], data[2], data[3]);
             [Types.Messages.CHAT_STATE, Types.Messages.CHAT_MESSAGE, Types.Messages.CHAT_PLAYERS, Types.Messages.CHAT_ERROR, Types.Messages.CHAT_INVENTORY].forEach(type => {
@@ -262,7 +263,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 serverTime = data[7]
         
             if(this.welcome_callback) {
-                this.welcome_callback(id, name, x, y, hp, title, serverTime, data[8]);
+                this.welcome_callback(id, name, x, y, hp, title, serverTime, data[8], data[9]);
             }
             this.isRecovering = false;
         },
@@ -299,7 +300,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             const state = {id: data[1], kind: data[2], x: data[3], y: data[4]};
             if (Types.isPlayer(state.kind)) {
                 Object.assign(state, {name: data[5], orientation: data[6], armor: data[7],
-                    weapon: data[8], title: data[9], level: data[10], target: data[11], selectedTrail: data[12] || null});
+                    weapon: data[8], title: data[9], level: data[10], target: data[11], selectedTrail: data[12] || null, avatarAppearance: data[13] || null});
             } else if (Types.isMob(state.kind)) {
                 Object.assign(state, {orientation: data[5], level: data[6], target: data[7]});
             } else if (Types.isNpc(state.kind)) {
@@ -347,7 +348,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     this.spawn_fieldEffect_callback(fieldEffect, x, y);
                 }
             } else {
-                const appearance = JSON.stringify([kind, state.armor, state.weapon]);
+                const appearance = JSON.stringify([kind, state.armor, state.weapon, state.avatarAppearance]);
                 const loading = this.pendingSpawns.get(id);
                 if (loading?.appearance === appearance) {
                     // A newer snapshot supersedes earlier state, sharing the asset load.
@@ -390,6 +391,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     if (latest.title !== undefined) character.title = latest.title;
                     if (latest.selectedTrail !== undefined) character.selectedTrail = latest.selectedTrail;
                     if (latest.level !== undefined) character.level = latest.level;
+                    character.avatarAppearance = latest.avatarAppearance;
                     if (Types.isNpc(kind)) {
                         character.setShowIndicator(latest.indicator);
                         character.applyBehaviorState(latest.behavior);

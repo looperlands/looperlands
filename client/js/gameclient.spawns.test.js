@@ -247,3 +247,18 @@ test('re-entering an area reuses appearance metadata cached by an earlier load',
     expect(s.spawned).toHaveBeenLastCalledWith(expect.objectContaining({dynamicArmorNFTData: {nftId: '0xavatar'}}),
         5, 2, s.Types.Orientations.DOWN, 7);
 });
+
+
+test('spawn and welcome retain authoritative form metadata and defer updates until the entity exists', () => {
+    const s = setup(), appearance = {nftId: '0xavatar', tokenHash: 'stage-two', assetType: 'looper', canHoldWeapon: false, evolutionLevel: 10};
+    const spawned = s.player(); spawned[12] = null; spawned[13] = appearance;
+    const updates = jest.fn(), welcome = jest.fn();
+    s.client.avatarAppearance_callback = updates; s.client.onWelcome(welcome);
+    s.receive([s.M.WELCOME, 1, 'Player', 2, 3, 100, '', 0, null, appearance]);
+    expect(welcome.mock.calls[0][8]).toEqual(appearance);
+    s.receive([spawned, [s.M.AVATAR_APPEARANCE, 42, {...appearance, tokenHash: 'stage-three', evolutionLevel: 20}, true]]);
+    expect(updates).not.toHaveBeenCalled();
+    s.loads[0].done({nftId: '0xavatar'});
+    expect(s.spawned.mock.calls[0][0].avatarAppearance).toEqual(appearance);
+    expect(updates).toHaveBeenCalledWith(42, expect.objectContaining({evolutionLevel: 20}), true);
+});

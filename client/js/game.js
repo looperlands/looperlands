@@ -6467,12 +6467,14 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.player.setWeaponName(this.storage.data.player.weapon);
                 }
 
-                const spriteName = this.player.getSpriteName();
+                const player = this.player, sessionId = this.sessionId;
+                const spriteName = player.getSpriteName();
                 const playerSprite = this.sprites[spriteName];
                 if (playerSprite === undefined) {
                     this.player.dyanmicNFTLoaded = false;
 
                     loadDynamicNFT(spriteName, this.sessionId, (spriteName, nftData) => {
+                        if (this.player !== player || this.sessionId !== sessionId || player.avatarAppearance) return;
                         const sprite = this.loadSprite(
                             spriteName,
                             nftData.tokenHash,
@@ -6688,8 +6690,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.sprites = this.spritesets[scale - 1];
 
                     _.each(this.entities, function (entity) {
+                        const visibleName = entity.normalSprite?.name || entity.avatarSpriteName || entity.getSpriteName();
                         entity.sprite = null;
-                        entity.setSprite(self.sprites[entity.getSpriteName()]);
+                        entity.setSprite(self.sprites[visibleName]);
                     });
                     //this.initHurtSprites();
                     this.initShadows();
@@ -7348,6 +7351,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 if (this.client.isRecovering) this.app.clientUpdates.recoveryStatus('Reconnecting to the game server…');
                 this.bindTileActionCallbacks();
                 this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
+                this.client.avatarAppearance_callback = (id, appearance, celebrate) => {
+                    const entity = id === self.playerId ? self.player : self.getEntityById(id);
+                    if (entity) self.applyAvatarAppearance(entity, appearance, celebrate);
+                };
                 this.client.onPlayerTrail((id, trail) => {
                     const player = id === self.playerId ? self.player : self.entities[id];
                     if (player) player.selectedTrail = trail;
@@ -7432,7 +7439,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 });
 
                 this.client.onWorldTime(time => self.syncLocalWorldTime(time));
-                this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset, buildInfo) {
+                this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset, buildInfo, avatarAppearance) {
                     self.app.settings?.setBuildInfo?.(buildInfo);
                     self.combatFeedback?.hitFeel?.bindAudioGestures();
                     const reviving = self.reviving === true;
@@ -7441,6 +7448,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     console.log("Received player ID from server : " + id);
                     self.player.id = id;
                     self.playerId = id;
+                    self.applyAvatarAppearance(self.player, avatarAppearance);
                     // Always accept name received from the server which will
                     // sanitize and shorten names exceeding the allowed length.
                     self.player.name = name;
@@ -7941,7 +7949,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onSpawnCharacter(function (entity, x, y, orientation, targetId) {
                         if (self.refreshEntityState({id: entity.id, kind: entity.kind, x, y, orientation,
                             target: targetId, name: entity.name, title: entity.title, level: entity.level,
-                            armor: entity.networkArmor, weapon: entity.networkWeapon, appearance: entity})) return;
+                            armor: entity.networkArmor, weapon: entity.networkWeapon, avatarAppearance: entity.avatarAppearance, appearance: entity})) return;
 
                         if (!self.entityIdExists(entity.id)) {
                             try {
@@ -8344,21 +8352,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         if (player) {
                             if (itemName === undefined) {
                                 loadDynamicNFTByKind(itemKind, self.sessionId, (nftData) => {
+                                    if (self.getEntityById(playerId) !== player) return;
                                     const itemName = loadAssetSprites(nftData, self);
-                                    player.setWeaponName(itemName);
+                                    self.applyEquipmentAppearance(player, itemName, itemKind, nftData);
                                 });
                             } else {
-                                if (Types.isArmor(itemKind)) {
-                                    if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
-                                        player.stopInvincibility();
-                                    }
-                                    player.setSprite(self.sprites[itemName]);
-                                } else if (Types.isWeapon(itemKind)) {
-                                    player.setWeaponName(itemName);
-                                }
-                                if (itemKind === Types.Entities.FIREFOX) {
-                                    player.startInvincibility();
-                                }
+                                self.applyEquipmentAppearance(player, itemName, itemKind);
                             }
                         }
                     });
@@ -8691,6 +8690,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const entity = this.getEntityById(state.id);
                 if (!entity) return false;
                 if (entity.id === this.playerId) return true;
+                if (state.avatarAppearance) this.applyAvatarAppearance(entity, state.avatarAppearance);
                 const appearanceChanged = entity instanceof Player &&
                     (entity.networkArmor !== state.armor || entity.networkWeapon !== state.weapon);
                 if (entity.kind !== state.kind || entity.isDead || entity.isDying) {
@@ -8761,7 +8761,91 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     entity.dynamicWeaponNFTData = weapon;
                     entity.networkArmor = appearance.networkArmor;
                     entity.networkWeapon = appearance.networkWeapon;
+                    if (appearance.networkArmor === Types.Entities.FIREFOX) entity.startInvincibility();
+                    else if (entity.invincible) entity.stopInvincibility();
+                    this.applyAvatarAppearance(entity, appearance.avatarAppearance);
                 }
+            },
+
+            applyEquipmentAppearance: function (entity, itemName, itemKind, metadata) {
+                if (Types.isArmor(itemKind) || ['looper', 'armor'].includes(metadata?.assetType)) {
+                    if (itemKind === Types.Entities.FIREFOX) {
+                        entity.setSprite(this.sprites[itemName]);
+                        entity.startInvincibility();
+                        return;
+                    }
+                    if (entity.invincible) entity.stopInvincibility();
+                    if (entity.avatarAppearance?.nftId?.replace('0x', 'NFT_') === itemName) {
+                        this.applyAvatarAppearance(entity, entity.avatarAppearance);
+                    } else entity.setSprite(this.sprites[itemName]);
+                } else if (metadata || Types.isWeapon(itemKind)) {
+                    entity.setWeaponName(itemName);
+                }
+            },
+
+            applyAvatarAppearance: function (entity, appearance, celebrate = false) {
+                if (!appearance || typeof appearance.nftId !== 'string' || typeof appearance.tokenHash !== 'string' ||
+                    !appearance.tokenHash || !Number.isInteger(appearance.evolutionLevel) || appearance.evolutionLevel < 1) return;
+                const previous = entity.displayedAvatarAppearance || entity.avatarAppearance;
+                const identity = appearance.nftId.replace('0x', 'NFT_');
+                const visualName = identity + '__form_' + appearance.tokenHash;
+                const changed = entity.avatarSpriteName !== visualName;
+                entity.avatarAppearance = appearance;
+                entity.canHoldWeapon = appearance.canHoldWeapon !== false;
+                entity.spriteName = identity;
+                entity.dynamicArmorNFTData = {...entity.dynamicArmorNFTData, ...appearance};
+                entity.dyanmicNFTLoaded = true;
+                if (entity === this.player) this.app.updateWeaponAppearanceNotice?.();
+                if (!changed && entity.sprite?.name === visualName) return;
+                if (entity.avatarAppearanceRequest?.visualName === visualName) return;
+                const request = {visualName}, sessionId = this.sessionId, map = this.map;
+                entity.avatarAppearanceRequest = request;
+                const sprite = this.sprites[visualName] || this.loadSprite(visualName, appearance.tokenHash, 'looper', appearance.nftId);
+                if (sprite.hasShadow === undefined) sprite.hasShadow = Types.hasShadow(identity);
+                this.sprites[visualName] = sprite;
+                const apply = loaded => {
+                    if (entity.avatarAppearanceRequest !== request || this.sessionId !== sessionId || this.map !== map ||
+                        this.isStopped || (entity !== this.player && this.getEntityById(entity.id) !== entity)) return;
+                    entity.avatarAppearanceRequest = null;
+                    if (!loaded) {
+                        delete this.sprites[visualName];
+                        return; // Retain visible artwork; a later snapshot can retry.
+                    }
+                    const unlocked = (celebrate || entity.pendingAvatarEvolution === appearance.evolutionLevel) && previous &&
+                        previous.nftId === appearance.nftId && appearance.evolutionLevel > previous.evolutionLevel;
+                    if (entity.invincible || entity.isDead || entity.isDying) {
+                        if (unlocked && entity.invincible) entity.pendingAvatarEvolution = appearance.evolutionLevel;
+                        return;
+                    }
+                    entity.pendingAvatarEvolution = null;
+                    entity.displayedAvatarAppearance = appearance;
+                    const animation = entity.currentAnimation;
+                    entity.avatarSpriteName = visualName;
+                    entity.setSprite(sprite);
+                    // Preserve movement and attack timing while replacing only the artwork.
+                    if (animation && entity.animations[animation.name]) {
+                        const replacement = entity.animations[animation.name];
+                        replacement.speed = animation.speed;
+                        replacement.count = animation.count;
+                        replacement.endcount_callback = animation.endcount_callback;
+                        replacement.lastTime = animation.lastTime;
+                        replacement.currentFrame = {...animation.currentFrame};
+                        entity.currentAnimation = replacement;
+                    } else entity.idle();
+                    if (entity === this.player) {
+                        this.app.initEquipmentIcons?.();
+                        this.app.progressionCards?.refreshAvatar?.();
+                    }
+                    if (unlocked) {
+                        this.worldFx?.evolve?.(entity);
+                        if (entity === this.player) {
+                            this.app.showEvolutionNotification?.(appearance);
+                            this.audioManager?.playSound?.('achievement');
+                        }
+                    }
+                };
+                if (sprite.whenImageLoaded) sprite.whenImageLoaded().then(apply);
+                else apply(true);
             },
 
             clearPendingEntityAttack: function (id) {

@@ -16,7 +16,7 @@ define(['worldfxconfig'], function (Config) {
         }
 
         enabled(id, animated = true) {
-            if (id === 'levelup' || id === 'trail') return !this.game.app?.settings?.getReducedMotion?.();
+            if (id === 'evolution' || id === 'levelup' || id === 'trail') return !this.game.app?.settings?.getReducedMotion?.();
             return (this.sceneFlags[id] ?? this.flags[id]) === true && (!animated || !this.game.app?.settings?.getReducedMotion?.());
         }
 
@@ -105,6 +105,28 @@ define(['worldfxconfig'], function (Config) {
             if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
             this.rings.push({x: entity.x + 8, y: entity.y + 12, coreX: x, coreY: y,
                 startedAt, owner: 'levelup', radius: 38, lifetimeMs: 1600});
+            if (this.rings.length > 64) this.rings.shift();
+        }
+
+        evolve(entity) {
+            this.sync();
+            if (!entity || entity.isDead || !this.enabled('evolution') ||
+                !Number.isFinite(entity.x) || !Number.isFinite(entity.y)) return;
+            const startedAt = this.game.currentTime || Date.now();
+            const colors = ['#fff4b1', '#a2fff0', '#d8b1ff', '#ffffff'];
+            this.rings.push({owner: 'evolution', x: entity.x + 8, y: entity.y + 12,
+                coreX: entity.x + 8, coreY: entity.y - 3, startedAt, radius: 62, lifetimeMs: 2900});
+            // Three staggered star showers keep the reveal readable without a screen flash.
+            for (let i = 0; i < 84; i++) {
+                const wave = Math.floor(i / 28), angle = i / 28 * Math.PI * 2;
+                const speed = 22 + this.random() * 38;
+                this.particles.push({x: entity.x + 8, y: entity.y - 4,
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed * 0.6 - 28,
+                    gravity: 18, startedAt: startedAt + 350 + wave * 230, lifetimeMs: 1500,
+                    color: colors[i % colors.length], size: i % 5 === 0 ? 2 : 1,
+                    shape: i % 3 === 0 ? 'star' : 'spark', owner: 'evolution'});
+            }
+            if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
             if (this.rings.length > 64) this.rings.shift();
         }
 
@@ -201,7 +223,7 @@ define(['worldfxconfig'], function (Config) {
                 renderer.registerExtension('world-fx-renderer-worker.js');
                 this.registeredRenderer = renderer;
             }
-            const particles = this.particles.map(p => {
+            const particles = this.particles.filter(p => p.startedAt <= time).map(p => {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
                 return {x: p.x + p.vx * seconds, y: p.y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
                     color: p.color, size: p.size, shape: p.shape, layer: p.owner === 'trail' ? 'ground' : 'foreground', trailX: p.vx * 0.055,
