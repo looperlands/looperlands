@@ -11,6 +11,12 @@ and XP attribution do not change. A form with built-in attacks hides held
 equipment while playing its standard attack frames. The inventory explains why a
 weapon still needs to be selected.
 
+The unlock celebration gives the player time to notice the change: the original
+form visibly charges before the new artwork appears, followed by a slower reveal
+and lingering effects. Its notification uses the same pixel panel artwork and
+typography as the game's other cards. Gameplay stays responsive throughout;
+reduced motion skips the animated build-up and keeps the readable notification.
+
 ## Platform contract
 
 The platform owns validation, creator authorization, upload processing and

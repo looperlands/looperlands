@@ -915,18 +915,23 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
             }, 3200);
         },
 
-        showEvolutionNotification: function (appearance) {
+        showEvolutionNotification: function (appearance, anticipating = false) {
             const notification = $('#evolution-notification');
             clearTimeout(this.evolutionNotificationTimeout);
             notification.empty();
-            $('<div class="evolution-eyebrow">').text('A NEW FORM AWAKENS').appendTo(notification);
-            $('<div class="evolution-title">').text('EVOLVED!').appendTo(notification);
-            $('<div class="evolution-detail">').text('Level ' + appearance.evolutionLevel + ' evolution unlocked').appendTo(notification);
-            $('<div class="evolution-note">').text(appearance.canHoldWeapon === false
+            $('<div class="evolution-eyebrow">').text(anticipating ? 'A NEW FORM AWAKENS' : 'EVOLUTION COMPLETE').appendTo(notification);
+            $('<div class="evolution-title">').text(anticipating ? 'EVOLVING...' : 'EVOLVED!').appendTo(notification);
+            $('<div class="evolution-detail">').text('Level ' + appearance.evolutionLevel + ' evolution' + (anticipating ? '' : ' unlocked')).appendTo(notification);
+            $('<div class="evolution-note">').text(anticipating ? 'Your new form is awakening. Keep moving — your adventure continues.' : appearance.canHoldWeapon === false
                 ? 'Built-in attacks. Your selected weapon still powers damage, traits and XP.'
                 : 'Your journey continues in a powerful new form.').appendTo(notification);
             notification.toggleClass('reduced-motion', this.settings?.getReducedMotion?.() === true).addClass('active');
-            this.evolutionNotificationTimeout = setTimeout(() => notification.removeClass('active'), 5600);
+            this.evolutionNotificationTimeout = setTimeout(() => notification.removeClass('active'), anticipating ? 10000 : 8000);
+        },
+
+        hideEvolutionNotification: function () {
+            clearTimeout(this.evolutionNotificationTimeout);
+            $('#evolution-notification').removeClass('active');
         },
 
         updateWeaponAppearanceNotice: function () {

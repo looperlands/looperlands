@@ -94,15 +94,21 @@ test('foreground and expired particles do not create ground lighting',()=>{
 });
 
 
-test('evolution draws a faceted cocoon, orbiting stars and three expanding halos', () => {
+test('evolution builds anticipation before three reveal waves and keeps a lingering aura', () => {
     const {fx, ctx, state, view} = setup();
-    state.rings = [{owner: 'evolution', x: 48, y: 64, coreX: 48, coreY: 49, radius: 62, startedAt: 0}];
+    state.rings = [{owner: 'evolution', x: 48, y: 64, coreX: 48, coreY: 49, radius: 54, startedAt: 0, revealDelayMs: 1800, lifetimeMs: 7200}];
     state.time = 900; fx.draw(ctx, state, view);
+    expect(ctx.ellipse).not.toHaveBeenCalled();
+    expect(ctx.fillRect).toHaveBeenCalledTimes(14);
+    ctx.fillRect.mockClear(); state.time = 3000; fx.draw(ctx, state, view);
     expect(ctx.ellipse).toHaveBeenCalledTimes(3);
     expect(ctx.fillRect).toHaveBeenCalledTimes(24);
     for (const method of ['fillRect', 'ellipse', 'moveTo', 'lineTo']) {
         expect(ctx[method].mock.calls.flat().every(Number.isFinite)).toBe(true);
     }
-    ctx.fillRect.mockClear(); state.time = 3000; fx.draw(ctx, state, view);
+    ctx.fillRect.mockClear(); ctx.ellipse.mockClear(); state.time = 6000; fx.draw(ctx, state, view);
+    expect(ctx.fillRect).toHaveBeenCalledTimes(24);
+    expect(ctx.ellipse).not.toHaveBeenCalled();
+    ctx.fillRect.mockClear(); state.time = 7200; fx.draw(ctx, state, view);
     expect(ctx.fillRect).not.toHaveBeenCalled();
 });

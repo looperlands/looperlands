@@ -49,7 +49,17 @@ test('evolution has a separate accessible notification and keeps weapon mechanic
     expect(notice.hidden).toBe(false);
     jest.advanceTimersByTime(3000); app.showEvolutionNotification({evolutionLevel: 20, canHoldWeapon: true});
     jest.advanceTimersByTime(3000); expect(notification.classes.has('active')).toBe(true);
-    jest.advanceTimersByTime(2600); expect(notification.classes.has('active')).toBe(false);
+    jest.advanceTimersByTime(5000); expect(notification.classes.has('active')).toBe(false);
+    app.showEvolutionNotification({evolutionLevel: 30}, true);
+    expect(notification.lines).toContain('EVOLVING...');
+    jest.advanceTimersByTime(1800);
+    app.showEvolutionNotification({evolutionLevel: 30});
+    expect(notification.lines).toContain('EVOLVED!');
+    jest.advanceTimersByTime(7999); expect(notification.classes.has('active')).toBe(true);
+    jest.advanceTimersByTime(1); expect(notification.classes.has('active')).toBe(false);
+    app.showEvolutionNotification({evolutionLevel: 40}, true);
+    app.hideEvolutionNotification();
+    expect(notification.classes.has('active')).toBe(false);
     app.game.player.canHoldWeapon = true; app.updateWeaponAppearanceNotice(); expect(notice.hidden).toBe(true);
     jest.useRealTimers();
 });

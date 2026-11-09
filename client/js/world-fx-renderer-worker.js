@@ -65,38 +65,40 @@
     }
 
     function evolution(ctx, ring, time, xy, scale) {
-        const age = Math.max(0, time - ring.startedAt), fade = Math.min(1, (2900 - age) / 700);
+        const age = Math.max(0, time - ring.startedAt), revealDelay = ring.revealDelayMs;
+        const afterReveal = age - revealDelay, fade = Math.min(1, (ring.lifetimeMs - age) / 1400);
         if (fade <= 0) return;
-        const [cx, cy] = xy(ring.coreX, ring.coreY);
+        const charge = Math.min(1, age / revealDelay), [cx, cy] = xy(ring.coreX, ring.coreY);
         ctx.save();
-        // A faceted cocoon opens into orbiting runes, then three expanding halos.
-        if (age < 1400) {
-            const opening = Math.min(1, age / 700), radius = (10 + opening * 15) * scale;
-            ctx.globalAlpha = (1 - age / 1400) * 0.7;
-            ctx.strokeStyle = '#d8b1ff'; ctx.lineWidth = scale;
+        // The old form stays visible as a slow, warm aura gathers around it.
+        if (afterReveal < 1200) {
+            const radius = (13 + charge * 11) * scale;
+            ctx.globalAlpha = afterReveal < 0 ? .18 + charge * .48 : (1 - afterReveal / 1200) * .66;
+            ctx.strokeStyle = '#f1cd85'; ctx.lineWidth = scale;
             ctx.beginPath();
-            ctx.moveTo(cx, cy - radius * 1.7); ctx.lineTo(cx + radius, cy);
-            ctx.lineTo(cx, cy + radius * 0.8); ctx.lineTo(cx - radius, cy);
-            ctx.lineTo(cx, cy - radius * 1.7); ctx.stroke();
-            ctx.strokeStyle = '#a2fff0';
-            ctx.beginPath(); ctx.moveTo(cx, cy - radius * 1.7); ctx.lineTo(cx, cy + radius * 0.8); ctx.stroke();
+            ctx.moveTo(cx, cy - radius * 1.5); ctx.lineTo(cx + radius, cy);
+            ctx.lineTo(cx, cy + radius * .8); ctx.lineTo(cx - radius, cy);
+            ctx.lineTo(cx, cy - radius * 1.5); ctx.stroke();
+            ctx.strokeStyle = '#b97b50';
+            ctx.beginPath(); ctx.moveTo(cx, cy - radius * 1.5); ctx.lineTo(cx, cy + radius * .8); ctx.stroke();
         }
         for (let i = 0; i < 12; i++) {
-            const angle = i / 12 * Math.PI * 2 + age / 650;
-            const radius = (14 + Math.min(age, 1600) / 45) * scale;
-            const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius * .45 - age / 160 * scale;
-            ctx.globalAlpha = fade * Math.min(1, age / 200);
-            ctx.fillStyle = i % 2 ? '#a2fff0' : '#fff4b1';
+            if (afterReveal < 0 && i > Math.floor(charge * 12)) continue;
+            const angle = i / 12 * Math.PI * 2 + age / 1800;
+            const radius = (afterReveal < 0 ? 30 - charge * 10 : 20 + Math.min(afterReveal, 3000) / 150) * scale;
+            const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius * .45 - Math.max(0, afterReveal) / 700 * scale;
+            ctx.globalAlpha = fade * (.4 + charge * .6);
+            ctx.fillStyle = i % 2 ? '#f1cd85' : '#fff2d4';
             const size = (i % 3 === 0 ? 2 : 1) * scale;
             ctx.fillRect(Math.round(x) - size, Math.round(y), size * 2 + scale, scale);
             ctx.fillRect(Math.round(x), Math.round(y) - size, scale, size * 2 + scale);
         }
         for (let wave = 0; wave < 3; wave++) {
-            const progress = (age - 350 - wave * 230) / 1200;
+            const progress = (afterReveal - wave * 600) / 2100;
             if (progress < 0 || progress > 1) continue;
             const radius = (1 - Math.pow(1 - progress, 3)) * ring.radius;
-            ctx.globalAlpha = (1 - progress) * .85;
-            ctx.strokeStyle = ['#fff4b1', '#a2fff0', '#d8b1ff'][wave];
+            ctx.globalAlpha = (1 - progress) * .8;
+            ctx.strokeStyle = ['#fff2d4', '#f1cd85', '#b97b50'][wave];
             ctx.lineWidth = (wave ? 1 : 2) * scale;
             ctx.beginPath(); ctx.ellipse(...xy(ring.x, ring.y), Math.max(1, radius) * scale,
                 Math.max(.5, radius * .42) * scale, 0, 0, Math.PI * 2); ctx.stroke();

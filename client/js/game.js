@@ -6356,6 +6356,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             pauseForMapTransition: function () {
+                this.cancelAvatarAppearance?.(this.player);
                 this.app.hideChat();
                 this.started = false;
                 this.isStopped = true;
@@ -6828,6 +6829,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             removeEntity: function (entity) {
                 if (this.entities[entity.id] === entity) {
+                    this.cancelAvatarAppearance?.(entity);
                     this.forgetEntityAttacks(entity.id);
                     this.unregisterEntityPosition(entity);
                     if (entity instanceof Character) {
@@ -7242,6 +7244,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             stop: function () {
+                this.cancelAvatarAppearance?.(this.player);
                 this.scriptedSequence?.reset();
                 console.log("Game stopped.");
                 this.isStopped = true;
@@ -8110,6 +8113,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                             }
 
                                             entity.isDying = true;
+                                            self.cancelAvatarAppearance?.(entity);
 
                                             if (!entity.deathAnimated) {
                                                 entity.setSprite(self.sprites["death"]);
@@ -8783,66 +8787,101 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
+            cancelAvatarAppearance: function (entity) {
+                if (!entity) return;
+                clearTimeout(entity.avatarAppearanceRequest?.revealTimer);
+                entity.avatarAppearanceRequest = null;
+                entity.pendingAvatarEvolution = null;
+                this.worldFx?.cancelEvolution?.(entity);
+                if (entity === this.player) this.app.hideEvolutionNotification?.();
+            },
+
             applyAvatarAppearance: function (entity, appearance, celebrate = false) {
                 if (!appearance || typeof appearance.nftId !== 'string' || typeof appearance.tokenHash !== 'string' ||
                     !appearance.tokenHash || !Number.isInteger(appearance.evolutionLevel) || appearance.evolutionLevel < 1) return;
                 const previous = entity.displayedAvatarAppearance || entity.avatarAppearance;
                 const identity = appearance.nftId.replace('0x', 'NFT_');
                 const visualName = identity + '__form_' + appearance.tokenHash;
-                const changed = entity.avatarSpriteName !== visualName;
+                const canHoldWeapon = appearance.canHoldWeapon !== false;
+                const appearanceKey = JSON.stringify([visualName, appearance.evolutionLevel, canHoldWeapon]);
                 entity.avatarAppearance = appearance;
-                entity.canHoldWeapon = appearance.canHoldWeapon !== false;
                 entity.spriteName = identity;
-                entity.dynamicArmorNFTData = {...entity.dynamicArmorNFTData, ...appearance};
                 entity.dyanmicNFTLoaded = true;
-                if (entity === this.player) this.app.updateWeaponAppearanceNotice?.();
-                if (!changed && entity.sprite?.name === visualName) return;
-                if (entity.avatarAppearanceRequest?.visualName === visualName) return;
-                const request = {visualName}, sessionId = this.sessionId, map = this.map;
+                // Initial hydration must hide equipment even when a legacy base image is unavailable.
+                if (!entity.displayedAvatarAppearance || entity.avatarSpriteName === visualName) {
+                    entity.canHoldWeapon = canHoldWeapon;
+                    if (entity === this.player) this.app.updateWeaponAppearanceNotice?.();
+                }
+                const pending = entity.avatarAppearanceRequest;
+                if (pending?.appearanceKey === appearanceKey && pending.sessionId === this.sessionId && pending.map === this.map) return;
+                if (pending) this.cancelAvatarAppearance(entity);
+                if (entity.sprite?.name === visualName && entity.canHoldWeapon === canHoldWeapon &&
+                    entity.displayedAvatarAppearance?.evolutionLevel === appearance.evolutionLevel) return;
+                const sessionId = this.sessionId, map = this.map;
+                const request = {visualName, appearanceKey, sessionId, map};
                 entity.avatarAppearanceRequest = request;
                 const sprite = this.sprites[visualName] || this.loadSprite(visualName, appearance.tokenHash, 'looper', appearance.nftId);
                 if (sprite.hasShadow === undefined) sprite.hasShadow = Types.hasShadow(identity);
                 this.sprites[visualName] = sprite;
+                const current = () => entity.avatarAppearanceRequest === request && this.sessionId === sessionId && this.map === map &&
+                    !this.isStopped && !this.mapTransition?.active && (entity === this.player || this.getEntityById(entity.id) === entity);
                 const apply = loaded => {
-                    if (entity.avatarAppearanceRequest !== request || this.sessionId !== sessionId || this.map !== map ||
-                        this.isStopped || (entity !== this.player && this.getEntityById(entity.id) !== entity)) return;
-                    entity.avatarAppearanceRequest = null;
+                    if (!current()) {
+                        if (entity.avatarAppearanceRequest === request) this.cancelAvatarAppearance(entity);
+                        return;
+                    }
                     if (!loaded) {
+                        entity.avatarAppearanceRequest = null;
                         delete this.sprites[visualName];
-                        return; // Retain visible artwork; a later snapshot can retry.
+                        return; // Retain the displayed form and retry from a later snapshot.
                     }
                     const unlocked = (celebrate || entity.pendingAvatarEvolution === appearance.evolutionLevel) && previous &&
                         previous.nftId === appearance.nftId && appearance.evolutionLevel > previous.evolutionLevel;
-                    if (entity.invincible || entity.isDead || entity.isDying) {
-                        if (unlocked && entity.invincible) entity.pendingAvatarEvolution = appearance.evolutionLevel;
-                        return;
-                    }
-                    entity.pendingAvatarEvolution = null;
-                    entity.displayedAvatarAppearance = appearance;
-                    const animation = entity.currentAnimation;
-                    entity.avatarSpriteName = visualName;
-                    entity.setSprite(sprite);
-                    // Preserve movement and attack timing while replacing only the artwork.
-                    if (animation && entity.animations[animation.name]) {
-                        const replacement = entity.animations[animation.name];
-                        replacement.speed = animation.speed;
-                        replacement.count = animation.count;
-                        replacement.endcount_callback = animation.endcount_callback;
-                        replacement.lastTime = animation.lastTime;
-                        replacement.currentFrame = {...animation.currentFrame};
-                        entity.currentAnimation = replacement;
-                    } else entity.idle();
-                    if (entity === this.player) {
-                        this.app.initEquipmentIcons?.();
-                        this.app.progressionCards?.refreshAvatar?.();
-                    }
-                    if (unlocked) {
-                        this.worldFx?.evolve?.(entity);
-                        if (entity === this.player) {
-                            this.app.showEvolutionNotification?.(appearance);
-                            this.audioManager?.playSound?.('achievement');
+                    const reveal = () => {
+                        if (!current()) {
+                            if (entity.avatarAppearanceRequest === request) this.cancelAvatarAppearance(entity);
+                            return;
                         }
-                    }
+                        if (entity.invincible || entity.isDead || entity.isDying) {
+                            this.cancelAvatarAppearance(entity);
+                            if (unlocked && entity.invincible && !entity.isDead && !entity.isDying) entity.pendingAvatarEvolution = appearance.evolutionLevel;
+                            return;
+                        }
+                        entity.avatarAppearanceRequest = null;
+                        entity.pendingAvatarEvolution = null;
+                        entity.displayedAvatarAppearance = appearance;
+                        entity.dynamicArmorNFTData = {...entity.dynamicArmorNFTData, ...appearance};
+                        entity.canHoldWeapon = canHoldWeapon;
+                        const animation = entity.currentAnimation;
+                        entity.avatarSpriteName = visualName;
+                        // A resize during anticipation may have selected another spriteset.
+                        entity.setSprite(this.sprites[visualName] || sprite);
+                        // Only artwork changes: movement, attacks and their callbacks continue.
+                        if (animation && entity.animations[animation.name]) {
+                            const replacement = entity.animations[animation.name];
+                            replacement.speed = animation.speed;
+                            replacement.count = animation.count;
+                            replacement.endcount_callback = animation.endcount_callback;
+                            replacement.lastTime = animation.lastTime;
+                            replacement.currentFrame = {...animation.currentFrame};
+                            entity.currentAnimation = replacement;
+                        } else entity.idle();
+                        if (entity === this.player) {
+                            this.app.initEquipmentIcons?.();
+                            this.app.updateWeaponAppearanceNotice?.();
+                            this.app.progressionCards?.refreshAvatar?.();
+                            if (unlocked) {
+                                this.app.showEvolutionNotification?.(appearance);
+                                this.audioManager?.playSound?.('achievement');
+                            }
+                        }
+                    };
+                    if (entity.invincible || entity.isDead || entity.isDying) {reveal(); return;}
+                    const anticipation = unlocked ? this.worldFx?.evolve?.(entity) || 0 : 0;
+                    if (anticipation > 0) {
+                        if (entity === this.player) this.app.showEvolutionNotification?.(appearance, true);
+                        request.revealTimer = setTimeout(reveal, anticipation);
+                    } else reveal();
                 };
                 if (sprite.whenImageLoaded) sprite.whenImageLoaded().then(apply);
                 else apply(true);
@@ -10447,6 +10486,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             beginPlayerDeath: function () {
+                this.cancelAvatarAppearance?.(this.player);
                 this.audioManager?.soundscape?.clear();
                 const player = this.player;
                 const duration = this.app.settings.getReducedMotion() ? 120 : 1000;

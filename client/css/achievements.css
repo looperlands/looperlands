@@ -539,38 +539,40 @@
     #levelup-notification { transition: none; }
 }
 
-/* Evolution is a separate milestone from ordinary XP level-ups. */
+/* The same pixel panel artwork and typography as quest and progression cards. */
 #evolution-notification {
     position: absolute;
-    z-index: 12;
-    top: 14%;
+    z-index: 1250;
+    top: max(22px, env(safe-area-inset-top));
     left: 50%;
-    width: min(360px, calc(100% - 40px));
+    width: min(360px, calc(100% - 32px));
     box-sizing: border-box;
-    padding: 18px 22px;
-    border: 2px solid #c4fff3;
-    border-radius: 4px;
-    background: linear-gradient(145deg, #162743ed, #33204aeb);
-    color: #fff4d4;
-    box-shadow: 0 0 0 3px #243a56, 0 0 36px #92ffe951, inset 0 0 22px #9af6e51c;
-    font: 14px/1.4 'GraphicPixel', sans-serif;
+    padding: 14px 20px 16px;
+    border: 8px solid transparent;
+    border-image: url('../img/common/panel.png') 12 fill / 8px / 0 stretch;
+    background: transparent;
+    color: #e4d0b6;
+    box-shadow: 0 12px 26px #100c1477;
+    font: 14px/1.4 GraphicPixel, sans-serif;
     text-align: center;
+    image-rendering: pixelated;
     pointer-events: none;
-    transform: translate(-50%, -8px) scale(.96);
+    transform: translateX(-50%);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 250ms, transform 350ms, visibility 250ms;
+    transition: opacity 250ms, visibility 250ms;
 }
-#evolution-notification.active { opacity: 1; visibility: visible; transform: translate(-50%, 0) scale(1); }
-.evolution-eyebrow { color: #a2f6e5; font-size: 11px; letter-spacing: 2px; }
-.evolution-title { color: #fff4b1; font-size: 38px; line-height: 1.25; text-shadow: 0 3px #765281, 0 0 15px #ffd98b80; }
-.evolution-detail { color: #e0caff; font-size: 17px; margin-top: 4px; }
-.evolution-note { margin-top: 10px; color: #d9e6ed; font: 12px/1.5 sans-serif; }
-#evolution-notification.reduced-motion { transition: none; transform: translateX(-50%); }
+#evolution-notification.active { opacity: 1; visibility: visible; }
+.evolution-eyebrow { padding-bottom: 8px; border-bottom: 1px solid #9a6c545c; color: #d7ab97; font-size: 10px; }
+.evolution-title { margin: 10px -14px 8px; padding: 5px 0; border: 3px solid transparent; border-image: url('../img/common/small-border.png') 3 / 3px / 0 stretch; background: #624235; color: #ffe2a0; font: 34px/1 AdvoCut, GraphicPixel, sans-serif; text-shadow: 0 2px #291d29; }
+.evolution-detail { color: #f1cd85; font-size: 13px; }
+.evolution-note { margin-top: 11px; color: #e4d0b6; font: 12px/1.5 GraphicPixel, sans-serif; }
+#evolution-notification.reduced-motion { transition: none; }
 @media (prefers-reduced-motion: reduce) {
-    #evolution-notification { transition: none; transform: translateX(-50%); }
+    #evolution-notification { transition: none; }
 }
 @media (max-height: 480px) {
-    #evolution-notification { top: 6%; padding: 10px 16px; }
-    .evolution-title { font-size: 28px; }
+    #evolution-notification { top: 12px; padding: 9px 14px; }
+    .evolution-title { font-size: 28px; margin-top: 6px; }
+    .evolution-note { margin-top: 7px; }
 }
