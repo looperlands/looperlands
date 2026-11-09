@@ -1,8 +1,8 @@
 define(['../../shared/js/placedfxconfig'], function (Config) {
     class PixelFx {
         constructor(game) {this.game=game;this.clear();}
-        clear() {this.rows=[];this.activations={};this.hits=[];this.seen=new Set();this.mapId=this.game.mapId;this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);}
-        pause() {this.hits=[];this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);}
+        clear() {this.rows=[];this.activations={};this.hits=[];this.seen=new Set();this.mapId=this.game.mapId;this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);this.game.renderer?.setExtensionData('invincibility-aura',null);}
+        pause() {this.hits=[];this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);this.game.renderer?.setExtensionData('invincibility-aura',null);}
         receive(packet) {
             if (packet.mapId?.replace(/^world_/,'')!==this.game.mapId?.replace(/^world_/,'')) return;
             if(this.mapId!==this.game.mapId)this.clear();
@@ -17,7 +17,7 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
         render(renderer) {
             if(this.mapId!==this.game.mapId)this.clear();
             if(!this.game.started || this.game.isStopped)return;
-            if(this.renderer!==renderer){renderer.registerExtension('pixelfx-renderer-worker.js');this.renderer=renderer;}
+            if(this.renderer!==renderer){renderer.registerExtension('pixelfx-renderer-worker.js');renderer.registerExtension('invincibility-aura-worker.js');this.renderer=renderer;}
             const now=performance.now(), reduced=!!this.game.app?.settings?.getReducedMotion?.();
             this.hits=this.hits.filter(h=>now-h.started<500);
             const serverTime=this.serverTimeAtSync+now-this.syncedAt;
@@ -28,6 +28,13 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
             });
             const effects=rows.map(row=>({effect:row.effect,sprite:row.sprite,x:(row.x+row.width/2)*16,y:(row.y+row.height/2)*16,scale:row.scale,palette:row.palette,seed:row.seed,options:row.options,hue:row.hue || 0,removeBackdrop:row.background!=='original',time:reduced?200:row.phase.effectMs}));
             if(!reduced && this.game.app?.settings?.getCombatEffectsEnabled?.()!==false) for(const h of this.hits)effects.push({effect:h.effect,x:h.x*16+8,y:h.y*16+8,scale:.3,seed:h.seed,time:(now-h.started)/500*Config.catalog[h.effect].duration});
+            const players=new Set([...Object.values(this.game.entities || {}),this.game.player]);
+            const auras=[];
+            for (const player of players) {
+                if (!player?.invincible || player.isDead || player.isDying) continue;
+                auras.push({x:player.x+8,y:player.y+16,time:reduced?600:now});
+            }
+            renderer.setExtensionData('invincibility-aura',auras);
             // Warning tiles and countdowns are never disabled by reduced motion.
             renderer.setExtensionData('pixel-fx',effects.filter((e,i)=>i>=rows.length || rows[i].phase.effectMs!==null));
             renderer.setExtensionData('pixel-fx-tiles',rows.filter(r=>r.hazard && ['warning','active'].includes(r.phase.kind)));

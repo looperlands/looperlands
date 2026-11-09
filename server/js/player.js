@@ -914,6 +914,7 @@ module.exports = Player = Character.extend({
         }
         state.push(this.selectedTrail || null);
         state.push(this.avatarAppearance || null);
+        state.push(!!this.invincible);
 
         return basestate.concat(state);
     },

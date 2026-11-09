@@ -300,7 +300,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             const state = {id: data[1], kind: data[2], x: data[3], y: data[4]};
             if (Types.isPlayer(state.kind)) {
                 Object.assign(state, {name: data[5], orientation: data[6], armor: data[7],
-                    weapon: data[8], title: data[9], level: data[10], target: data[11], selectedTrail: data[12] || null, avatarAppearance: data[13] || null});
+                    weapon: data[8], title: data[9], level: data[10], target: data[11], selectedTrail: data[12] || null, avatarAppearance: data[13] || null, invincible: data[14]});
             } else if (Types.isMob(state.kind)) {
                 Object.assign(state, {orientation: data[5], level: data[6], target: data[7]});
             } else if (Types.isNpc(state.kind)) {
@@ -392,6 +392,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                     if (latest.selectedTrail !== undefined) character.selectedTrail = latest.selectedTrail;
                     if (latest.level !== undefined) character.level = latest.level;
                     character.avatarAppearance = latest.avatarAppearance;
+                    if (latest.invincible) character.startInvincibility();
                     if (Types.isNpc(kind)) {
                         character.setShowIndicator(latest.indicator);
                         character.applyBehaviorState(latest.behavior);

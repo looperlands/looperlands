@@ -1,0 +1,43 @@
+PXA 2
+SIZE 16 16
+NAME "Invincibility Potion"
+PAL #28243d #69412f #c58a4c #ffe29a #426477 #83c9d2 #e3ffff #306bad #58b6d1 #f9d35b #fff4bd #b88130
+LAYER art "Potion" 1 0
+LAYER bubbles "Bubbles" 1 0
+PART bottle 12 12
+SPAN 4 0 0110
+SPAN 4 1 0220
+SPAN 3 2 034430
+SPAN 4 3 0550
+SPAN 3 4 045540
+SPAN 2 5 0465540
+SPAN 1 6 046888540
+SPAN 1 7 048999840
+SPAN 1 8 0489A9840
+SPAN 1 9 048B9B840
+SPAN 2 10 048B840
+SPAN 3 11 0{5}
+ENDPART
+ANIM float "Float" 5
+FRAME float_1 200 CLEAR KEY
+CEL art
+USE potion bottle 2 1
+CEL bubbles
+SPAN 5 10 6
+SPAN 9 8 6
+FRAME float_2 200 FROM float_1 INBETWEEN
+CEL art
+AT potion 2 2
+FRAME float_3 200 CLEAR KEY
+CEL art
+USE potion bottle 2 3
+CEL bubbles
+SPAN 5 10 6
+SPAN 9 12 6
+FRAME float_4 200 CLEAR INBETWEEN
+CEL art
+USE potion bottle 2 2
+CEL bubbles
+SPAN 5 8 6
+SPAN 9 10 6
+END
