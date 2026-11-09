@@ -11,6 +11,19 @@ test('disabling combat effects suppresses cosmetic hits while preserving map war
 test('saved palettes reach the game worker without changing hazard geometry or timing',()=>{const{fx,renderer}=setup(false);fx.receive({type:'map',mapId:'world_main',rows:[{...row,palette:'leaf'}],epoch:0,now:1600});fx.render(renderer);expect(renderer.setExtensionData.mock.calls.findLast(c=>c[0]==='pixel-fx')[1][0]).toMatchObject({palette:'leaf',time:100,x:48,y:64});expect(renderer.setExtensionData.mock.calls.findLast(c=>c[0]==='pixel-fx-tiles')[1][0]).toMatchObject({x:2,y:3,width:2,height:2,phase:{kind:'active'}});});
 
 const rendered=(observer,key)=>observer.renderer.setExtensionData.mock.calls.findLast(call=>call[0]===key)[1];
+test.each([
+    ['impacts/hit-spark', .4, 'electric', 240, 450],
+    ['impacts/crit-hit', .3, undefined, 340, 600],
+    ['ice/snowflake-burst', .35, undefined, 400, 1000],
+    ['shadow/dark-explosion', .25, undefined, 450, 1300],
+])('hit %s uses preview playback and expires on time', (effect,scale,palette,duration,end)=>{
+    const observer=setup(false);
+    observer.fx.receive({type:'hit',mapId:'world_main',id:1,effect,x:2,y:3});
+    localNow+=duration/2;observer.fx.render(observer.renderer);
+    expect(rendered(observer,'pixel-fx')[0]).toMatchObject({effect,scale,palette,time:end/2});
+    localNow+=duration/2;observer.fx.render(observer.renderer);
+    expect(rendered(observer,'pixel-fx')).toEqual([]);
+});
 test.each([false,true])('inactive boss effects hide artwork and warnings with reduced motion %s',reduced=>{
     const observer=setup(reduced),packet={type:'map',mapId:'world_main',rows:[{...row,attackingMob:13}],epoch:0,now:5000};
     for(const activations of [undefined,{camp:null}]){observer.fx.receive({...packet,activations});observer.fx.render(observer.renderer);expect(rendered(observer,'pixel-fx')).toEqual([]);expect(rendered(observer,'pixel-fx-tiles')).toEqual([]);}
