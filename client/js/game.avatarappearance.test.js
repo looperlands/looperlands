@@ -113,26 +113,26 @@ test('legacy and malformed appearance data leaves existing rendering unchanged',
 });
 
 
-test('temporary transformations restore the evolved form without changing the equipped weapon', async () => {
+test('invincibility preserves the evolved form and selected weapon', async () => {
     const {game, appearance, loaded} = setup();
     game.sprites.firefox = {name: 'firefox'};
     game.applyAvatarAppearance(game.player, appearance(10, 'evolved', false)); await loaded();
     game.applyEquipmentAppearance(game.player, 'firefox', 20);
-    expect(game.player.sprite.name).toBe('firefox'); expect(game.player.invincible).toBe(true);
+    expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved'); expect(game.player.invincible).toBe(true);
     game.applyEquipmentAppearance(game.player, 'NFT_avatar', 21); await loaded();
     expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved');
     expect(game.player.invincible).toBe(false); expect(game.player.weaponName).toBe('NFT_weapon');
     expect(game.worldFx.evolve).not.toHaveBeenCalled();
 });
 
-test('an evolution unlocked during a temporary transformation waits to reveal and celebrate', async () => {
+test('an evolution unlocked during invincibility can reveal and celebrate', async () => {
     const {game, appearance, loaded} = setup();
     game.sprites.firefox = {name: 'firefox'};
     game.applyAvatarAppearance(game.player, appearance()); await loaded();
     game.applyEquipmentAppearance(game.player, 'firefox', 20);
     game.applyAvatarAppearance(game.player, appearance(10, 'evolved', false), true); await loaded();
-    expect(game.player.sprite.name).toBe('firefox');
-    expect(game.worldFx.evolve).not.toHaveBeenCalled();
+    expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved');
+    expect(game.worldFx.evolve).toHaveBeenCalledTimes(1);
     game.applyEquipmentAppearance(game.player, 'NFT_avatar', 21); await loaded();
     expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved');
     expect(game.worldFx.evolve).toHaveBeenCalledTimes(1);
@@ -226,35 +226,23 @@ describe('a paced evolution reveal', () => {
         expect(game.audioManager.playSound).not.toHaveBeenCalled();
     });
 
-    test('dying after a deferred transformation cancels celebration permanently, including revive', async () => {
-        const {game, loaded, appearance} = await anticipate();
-        game.sprites.firefox = {name: 'firefox'};
+    test('dying during an invincible anticipation cancels the reveal', async () => {
+        const {game} = await anticipate();
         game.applyEquipmentAppearance(game.player, 'firefox', 20);
-        jest.advanceTimersByTime(1800);
-        expect(game.player.pendingAvatarEvolution).toBe(10);
-        game.applyEquipmentAppearance(game.player, 'NFT_avatar', 21); await loaded();
         game.player.isDead = true;
         game.cancelAvatarAppearance(game.player);
-        expect(game.player.pendingAvatarEvolution).toBeNull();
         jest.advanceTimersByTime(1800);
-        game.player.isDead = false;
-        game.applyAvatarAppearance(game.player, appearance(10, 'evolved', false)); await loaded();
-        expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved');
-        expect(game.player.avatarAppearanceRequest).toBeNull();
+        expect(game.player.sprite.name).toBe('NFT_avatar__form_base');
         expect(game.audioManager.playSound).not.toHaveBeenCalled();
     });
 
-    test('a transformation starting during anticipation defers the reveal until it ends', async () => {
-        const {game, loaded} = await anticipate();
-        game.sprites.firefox = {name: 'firefox'};
+    test('invincibility starting during anticipation preserves the scheduled reveal', async () => {
+        const {game} = await anticipate();
         game.applyEquipmentAppearance(game.player, 'firefox', 20);
-        jest.advanceTimersByTime(1800);
-        expect(game.player.sprite.name).toBe('firefox');
-        expect(game.player.pendingAvatarEvolution).toBe(10);
-        expect(game.app.hideEvolutionNotification).toHaveBeenCalled();
-        game.applyEquipmentAppearance(game.player, 'NFT_avatar', 21); await loaded();
+        expect(game.player.sprite.name).toBe('NFT_avatar__form_base');
         jest.advanceTimersByTime(1800);
         expect(game.player.sprite.name).toBe('NFT_avatar__form_evolved');
+        expect(game.player.invincible).toBe(true);
         expect(game.audioManager.playSound).toHaveBeenCalledTimes(1);
     });
 });

@@ -8,8 +8,8 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
     };
     class PixelFx {
         constructor(game) {this.game=game;this.clear();}
-        clear() {this.rows=[];this.activations={};this.hits=[];this.seen=new Set();this.mapId=this.game.mapId;this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);}
-        pause() {this.hits=[];this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);}
+        clear() {this.rows=[];this.activations={};this.hits=[];this.seen=new Set();this.mapId=this.game.mapId;this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);this.game.renderer?.setExtensionData('invincibility-aura',null);}
+        pause() {this.hits=[];this.game.renderer?.setExtensionData('pixel-fx',null);this.game.renderer?.setExtensionData('pixel-fx-tiles',null);this.game.renderer?.setExtensionData('invincibility-aura',null);}
         receive(packet) {
             if (packet.mapId?.replace(/^world_/,'')!==this.game.mapId?.replace(/^world_/,'')) return;
             if(this.mapId!==this.game.mapId)this.clear();
@@ -24,7 +24,7 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
         render(renderer) {
             if(this.mapId!==this.game.mapId)this.clear();
             if(!this.game.started || this.game.isStopped)return;
-            if(this.renderer!==renderer){renderer.registerExtension('pixelfx-renderer-worker.js');this.renderer=renderer;}
+            if(this.renderer!==renderer){renderer.registerExtension('pixelfx-renderer-worker.js');renderer.registerExtension('invincibility-aura-worker.js');this.renderer=renderer;}
             const now=performance.now(), reduced=!!this.game.app?.settings?.getReducedMotion?.();
             this.hits=this.hits.filter(h=>now-h.started<hitAppearance[h.effect].duration);
             const serverTime=this.serverTimeAtSync+now-this.syncedAt;
@@ -38,6 +38,13 @@ define(['../../shared/js/placedfxconfig'], function (Config) {
                 const appearance=hitAppearance[h.effect];
                 effects.push({effect:h.effect,x:h.x*16+8,y:h.y*16+8,scale:appearance.scale,palette:appearance.palette,seed:h.seed,time:(now-h.started)/appearance.duration*appearance.end});
             }
+            const players=new Set([...Object.values(this.game.entities || {}),this.game.player]);
+            const auras=[];
+            for (const player of players) {
+                if (!player?.invincible || player.isDead || player.isDying) continue;
+                auras.push({x:player.x+8,y:player.y+16,time:reduced?600:now});
+            }
+            renderer.setExtensionData('invincibility-aura',auras);
             // Warning tiles and countdowns are never disabled by reduced motion.
             renderer.setExtensionData('pixel-fx',effects.filter((e,i)=>i>=rows.length || rows[i].phase.effectMs!==null));
             renderer.setExtensionData('pixel-fx-tiles',rows.filter(r=>r.hazard && ['warning','active'].includes(r.phase.kind)));

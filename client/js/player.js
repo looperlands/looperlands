@@ -80,11 +80,7 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
         
         getArmorSprite: function() {
-            if(this.invincible) {
-                return this.currentArmorSprite;
-            } else {
-                return this.sprite;
-            }
+            return this.sprite;
         },
     
         getWeaponName: function() {

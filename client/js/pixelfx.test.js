@@ -66,3 +66,14 @@ test('late clients retain custom sheet frames, warning timing and random footpri
         first.fx.render(first.renderer);late.fx.render(late.renderer);expect(rendered(first,'pixel-fx')).toEqual(rendered(late,'pixel-fx'));expect(rendered(first,'pixel-fx-tiles')).toEqual(rendered(late,'pixel-fx-tiles'));
     }
 });
+
+test.each([false,true])('invincibility follows active players and freezes with reduced motion %s',reduced=>{
+    const observer=setup(reduced),player={x:32,y:48,invincible:true};
+    observer.game.player=player;observer.game.entities={self:player,dead:{...player,isDead:true}};
+    observer.fx.render(observer.renderer);
+    expect(rendered(observer,'invincibility-aura')).toEqual([{x:40,y:64,time:reduced?600:1000}]);
+    player.invincible=false;observer.fx.render(observer.renderer);
+    expect(rendered(observer,'invincibility-aura')).toEqual([]);
+    observer.fx.pause();
+    expect(rendered(observer,'invincibility-aura')).toBeNull();
+});

@@ -7952,7 +7952,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     self.client.onSpawnCharacter(function (entity, x, y, orientation, targetId) {
                         if (self.refreshEntityState({id: entity.id, kind: entity.kind, x, y, orientation,
                             target: targetId, name: entity.name, title: entity.title, level: entity.level,
-                            armor: entity.networkArmor, weapon: entity.networkWeapon, avatarAppearance: entity.avatarAppearance, appearance: entity})) return;
+                            armor: entity.networkArmor, weapon: entity.networkWeapon, avatarAppearance: entity.avatarAppearance, invincible: entity.invincible, appearance: entity})) return;
 
                         if (!self.entityIdExists(entity.id)) {
                             try {
@@ -8695,6 +8695,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 if (!entity) return false;
                 if (entity.id === this.playerId) return true;
                 if (state.avatarAppearance) this.applyAvatarAppearance(entity, state.avatarAppearance);
+                if (entity instanceof Player && state.invincible !== undefined) {
+                    if (state.invincible) entity.startInvincibility();
+                    else entity.stopInvincibility();
+                }
                 const appearanceChanged = entity instanceof Player &&
                     (entity.networkArmor !== state.armor || entity.networkWeapon !== state.weapon);
                 if (entity.kind !== state.kind || entity.isDead || entity.isDying) {
@@ -8766,7 +8770,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     entity.networkArmor = appearance.networkArmor;
                     entity.networkWeapon = appearance.networkWeapon;
                     if (appearance.networkArmor === Types.Entities.FIREFOX) entity.startInvincibility();
-                    else if (entity.invincible) entity.stopInvincibility();
                     this.applyAvatarAppearance(entity, appearance.avatarAppearance);
                 }
             },
@@ -8774,7 +8777,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             applyEquipmentAppearance: function (entity, itemName, itemKind, metadata) {
                 if (Types.isArmor(itemKind) || ['looper', 'armor'].includes(metadata?.assetType)) {
                     if (itemKind === Types.Entities.FIREFOX) {
-                        entity.setSprite(this.sprites[itemName]);
                         entity.startInvincibility();
                         return;
                     }
@@ -8842,9 +8844,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             if (entity.avatarAppearanceRequest === request) this.cancelAvatarAppearance(entity);
                             return;
                         }
-                        if (entity.invincible || entity.isDead || entity.isDying) {
+                        if (entity.isDead || entity.isDying) {
                             this.cancelAvatarAppearance(entity);
-                            if (unlocked && entity.invincible && !entity.isDead && !entity.isDying) entity.pendingAvatarEvolution = appearance.evolutionLevel;
                             return;
                         }
                         entity.avatarAppearanceRequest = null;
@@ -8876,7 +8877,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             }
                         }
                     };
-                    if (entity.invincible || entity.isDead || entity.isDying) {reveal(); return;}
+                    if (entity.isDead || entity.isDying) {reveal(); return;}
                     const anticipation = unlocked ? this.worldFx?.evolve?.(entity) || 0 : 0;
                     if (anticipation > 0) {
                         if (entity === this.player) this.app.showEvolutionNotification?.(appearance, true);
