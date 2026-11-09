@@ -934,8 +934,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
             }
             const copy = $('<div class="evolution-copy">').appendTo(body);
             $('<div class="evolution-detail">').text('Level ' + appearance.evolutionLevel + ' evolution' + (anticipating ? '' : ' unlocked')).appendTo(copy);
-            $('<div class="evolution-note">').text(anticipating ? 'Your new form is awakening. Keep moving — your adventure continues.' : appearance.canHoldWeapon === false
-                ? 'Built-in attacks. Your selected weapon still powers damage, traits and XP.'
+            $('<div class="evolution-note">').text(anticipating ? 'Your new form is awakening. Keep moving — your adventure continues.'
                 : 'Your journey continues in a powerful new form.').appendTo(copy);
             notification.toggleClass('reduced-motion', this.settings?.getReducedMotion?.() === true).addClass('active');
             this.evolutionNotificationTimeout = setTimeout(() => this.hideEvolutionNotification(), anticipating ? 10000 : 8000);

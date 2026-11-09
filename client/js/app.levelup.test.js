@@ -25,7 +25,7 @@ test('nearby upgrades share a compact notification and earlier timers cannot dis
     jest.useRealTimers();
 });
 
-test('evolution has a separate accessible notification and keeps weapon mechanics explicit', () => {
+test('evolution has an accessible notification separate from the weapon appearance notice', () => {
     jest.useFakeTimers();
     let app;
     const notification = {lines: [], classes: new Set(),
@@ -48,7 +48,7 @@ test('evolution has a separate accessible notification and keeps weapon mechanic
     app.settings = {getReducedMotion: () => true}; app.game = {player: {canHoldWeapon: false}};
     app.showEvolutionNotification({evolutionLevel: 10, canHoldWeapon: false}); app.updateWeaponAppearanceNotice();
     expect(notification.lines).toContain('EVOLVED!');
-    expect(notification.lines.at(-1)).toContain('damage, traits and XP');
+    expect(notification.lines.at(-1)).toBe('Your journey continues in a powerful new form.');
     expect(notification.classes.has('reduced-motion')).toBe(true);
     expect(artwork.render).toHaveBeenLastCalledWith(app.evolutionPortrait, [evolved], expect.any(Object), {slot: true});
     const firstPortrait = app.evolutionPortrait;
