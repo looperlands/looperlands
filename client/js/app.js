@@ -915,6 +915,43 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
             }, 3200);
         },
 
+        showEvolutionNotification: function (appearance, anticipating = false) {
+            const notification = $('#evolution-notification');
+            this.hideEvolutionNotification();
+            notification.empty();
+            $('<div class="evolution-eyebrow">').text(anticipating ? 'A NEW FORM AWAKENS' : 'EVOLUTION COMPLETE').appendTo(notification);
+            $('<div class="evolution-title">').text(anticipating ? 'EVOLVING...' : 'EVOLVED!').appendTo(notification);
+            const body = $('<div class="evolution-body">').appendTo(notification);
+            if (!anticipating) {
+                body.addClass('has-portrait');
+                const art = $('<div class="evolution-art">').appendTo(body);
+                $('<span class="evolution-pedestal" aria-hidden="true">').appendTo(art);
+                const portrait = $('<span class="evolution-sprite" role="img" aria-label="Evolved avatar">').appendTo(art)[0];
+                const status = $('<span class="evolution-art-status">').appendTo(art)[0];
+                this.evolutionPortrait = portrait;
+                // Reveal the displayed form, never a fallback to the original avatar.
+                CardArtwork.render(portrait, CardArtwork.sources(this.game, this, 'avatar').slice(0, 1), status, {slot: true});
+            }
+            const copy = $('<div class="evolution-copy">').appendTo(body);
+            $('<div class="evolution-detail">').text('Level ' + appearance.evolutionLevel + ' evolution' + (anticipating ? '' : ' unlocked')).appendTo(copy);
+            $('<div class="evolution-note">').text(anticipating ? 'Your new form is awakening. Keep moving — your adventure continues.'
+                : 'Your journey continues in a powerful new form.').appendTo(copy);
+            notification.toggleClass('reduced-motion', this.settings?.getReducedMotion?.() === true).addClass('active');
+            this.evolutionNotificationTimeout = setTimeout(() => this.hideEvolutionNotification(), anticipating ? 10000 : 8000);
+        },
+
+        hideEvolutionNotification: function () {
+            clearTimeout(this.evolutionNotificationTimeout);
+            if (this.evolutionPortrait) CardArtwork.cancel(this.evolutionPortrait);
+            this.evolutionPortrait = null;
+            $('#evolution-notification').removeClass('active');
+        },
+
+        updateWeaponAppearanceNotice: function () {
+            const notice = document.getElementById('weapon-appearance-notice');
+            if (notice) notice.hidden = this.game.player.canHoldWeapon !== false;
+        },
+
         showAchievementNotification: function (questName, endText, xpReward, medal, reward) {
             if (!this.questCelebration) this.questCelebration = new QuestCelebration(this);
             this.questCelebration.show({questName, endText, xpReward, medal, reward});
@@ -1227,7 +1264,9 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 let columns = 0;
 
                 inventoryHtml += "<div class='inventorySection' id='inventory-weapons'><div class='inventoryTitle'>Weapons</div>";
-                inventoryHtml += "<div class='inventorySectionItems'>"
+                inventoryHtml += "<div class='inventorySectionItems'>";
+                inventoryHtml += "<p id='weapon-appearance-notice' class='weapon-appearance-notice' role='note'" +
+                    (_this.game.player.canHoldWeapon === false ? "" : " hidden") + ">This form has built-in attacks and cannot display a held weapon. Keep a weapon selected: it still determines damage and traits, and earns XP.</p>";
                 columns++;
                 weaponInventory.forEach(function(item) {
                     let url = getItemURL(item);

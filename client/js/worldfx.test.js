@@ -164,3 +164,56 @@ test.each(['blue','green','pink','purple'])('%s trails use their own palette on 
     const particles=renderer.setExtensionData.mock.calls.findLast(call=>call[0]==='world-fx')[1].particles;
     expect(particles.every(p=>p.layer==='ground')).toBe(true);
 });
+
+
+test('evolution has staggered star showers, its own halo and a bounded lifetime', () => {
+    const {fx, game, renderer} = setup();
+    expect(fx.evolve(game.player)).toBe(1800);
+    expect(fx.particles).toHaveLength(84);
+    expect(fx.rings[0]).toMatchObject({owner: 'evolution', revealDelayMs: 1800, lifetimeMs: 7200});
+    fx.render(renderer, 1000);
+    expect(renderer.setExtensionData.mock.calls.at(-1)[1].particles).toHaveLength(0);
+    fx.render(renderer, 2799);
+    expect(renderer.setExtensionData.mock.calls.at(-1)[1].particles).toHaveLength(0);
+    fx.render(renderer, 3400);
+    expect(renderer.setExtensionData.mock.calls.at(-1)[1].particles).toHaveLength(56);
+    fx.render(renderer, 7000);
+    expect(fx.rings).toHaveLength(1);
+    fx.render(renderer, 8200);
+    expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
+});
+
+test('evolution respects reduced motion, death and map cleanup', () => {
+    const {fx, game, settings} = setup();
+    settings.getReducedMotion = () => true; fx.evolve(game.player);
+    expect(fx.rings).toHaveLength(0);
+    settings.getReducedMotion = () => false; game.player.isDead = true; fx.evolve(game.player);
+    expect(fx.rings).toHaveLength(0);
+    game.player.isDead = false; fx.evolve(game.player); game.mapId = 'new'; fx.sync();
+    expect(fx.rings).toHaveLength(0); expect(fx.particles).toHaveLength(0);
+});
+
+
+test('the full ceremony follows its moving actor and never follows a replacement with the same ID', () => {
+    const {fx, game, renderer} = setup();
+    fx.evolve(game.player);
+    game.player.x += 100; game.player.y += 40;
+    fx.render(renderer, 2800);
+    const state = renderer.setExtensionData.mock.calls.at(-1)[1];
+    expect(state.rings[0]).toMatchObject({x: 268, y: 372, coreX: 268, coreY: 357});
+    expect(state.rings[0].actor).toBeUndefined();
+    expect(state.particles[0]).toMatchObject({x: 268, y: 356});
+    game.player = {...game.player};
+    fx.render(renderer, 2900);
+    expect(fx.rings).toHaveLength(0); expect(fx.particles).toHaveLength(0);
+});
+
+test('canceling or superseding a ceremony removes only that actor’s evolution effects', () => {
+    const {fx, game, item} = setup();
+    item.x = 32; item.y = 64;
+    fx.evolve(game.player); fx.evolve(item); fx.evolve(game.player);
+    expect(fx.rings).toHaveLength(2); expect(fx.particles).toHaveLength(168);
+    fx.cancelEvolution(game.player);
+    expect(fx.rings).toHaveLength(1); expect(fx.rings[0].actor).toBe(item);
+    expect(fx.particles).toHaveLength(84);
+});

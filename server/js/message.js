@@ -51,6 +51,17 @@ Messages.WorldAmbience = Message.extend({
     serialize: function() { return [Types.Messages.WORLD_AMBIENCE, this.config]; }
 });
 
+Messages.AvatarAppearance = Message.extend({
+    init: function(player, celebrate) {
+        this.playerId = player.id;
+        this.appearance = player.avatarAppearance;
+        this.celebrate = celebrate === true;
+    },
+    serialize: function() {
+        return [Types.Messages.AVATAR_APPEARANCE, this.playerId, this.appearance, this.celebrate];
+    }
+});
+
 Messages.LootMove = Message.extend({
     init: function(entity, item) {
         this.entity = entity;

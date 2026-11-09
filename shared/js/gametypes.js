@@ -69,7 +69,8 @@ Types = {
         PLAYER_TITLE: 66,
         WORLD_TIME: 67,
         PLAYER_TRAIL: 68,
-        PIXEL_FX: 69
+        PIXEL_FX: 69,
+        AVATAR_APPEARANCE: 70
     },
 
     Entities: {

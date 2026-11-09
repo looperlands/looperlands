@@ -64,6 +64,48 @@
         ctx.restore();
     }
 
+    function evolution(ctx, ring, time, xy, scale) {
+        const age = Math.max(0, time - ring.startedAt), revealDelay = ring.revealDelayMs;
+        const afterReveal = age - revealDelay, fade = Math.min(1, (ring.lifetimeMs - age) / 1400);
+        if (fade <= 0) return;
+        const charge = Math.min(1, age / revealDelay), [cx, cy] = xy(ring.coreX, ring.coreY);
+        ctx.save();
+        // The old form stays visible as a slow, warm aura gathers around it.
+        if (afterReveal < 1200) {
+            const radius = (13 + charge * 11) * scale;
+            ctx.globalAlpha = afterReveal < 0 ? .18 + charge * .48 : (1 - afterReveal / 1200) * .66;
+            ctx.strokeStyle = '#f1cd85'; ctx.lineWidth = scale;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - radius * 1.5); ctx.lineTo(cx + radius, cy);
+            ctx.lineTo(cx, cy + radius * .8); ctx.lineTo(cx - radius, cy);
+            ctx.lineTo(cx, cy - radius * 1.5); ctx.stroke();
+            ctx.strokeStyle = '#b97b50';
+            ctx.beginPath(); ctx.moveTo(cx, cy - radius * 1.5); ctx.lineTo(cx, cy + radius * .8); ctx.stroke();
+        }
+        for (let i = 0; i < 12; i++) {
+            if (afterReveal < 0 && i > Math.floor(charge * 12)) continue;
+            const angle = i / 12 * Math.PI * 2 + age / 1800;
+            const radius = (afterReveal < 0 ? 30 - charge * 10 : 20 + Math.min(afterReveal, 3000) / 150) * scale;
+            const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius * .45 - Math.max(0, afterReveal) / 700 * scale;
+            ctx.globalAlpha = fade * (.4 + charge * .6);
+            ctx.fillStyle = i % 2 ? '#f1cd85' : '#fff2d4';
+            const size = (i % 3 === 0 ? 2 : 1) * scale;
+            ctx.fillRect(Math.round(x) - size, Math.round(y), size * 2 + scale, scale);
+            ctx.fillRect(Math.round(x), Math.round(y) - size, scale, size * 2 + scale);
+        }
+        for (let wave = 0; wave < 3; wave++) {
+            const progress = (afterReveal - wave * 600) / 2100;
+            if (progress < 0 || progress > 1) continue;
+            const radius = (1 - Math.pow(1 - progress, 3)) * ring.radius;
+            ctx.globalAlpha = (1 - progress) * .8;
+            ctx.strokeStyle = ['#fff2d4', '#f1cd85', '#b97b50'][wave];
+            ctx.lineWidth = (wave ? 1 : 2) * scale;
+            ctx.beginPath(); ctx.ellipse(...xy(ring.x, ring.y), Math.max(1, radius) * scale,
+                Math.max(.5, radius * .42) * scale, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
     function ground(ctx, state, view) {
         heat(ctx, state, view);
         drawParticles(ctx, (state.particles || []).filter(p => p.layer === 'ground'), view);
@@ -132,7 +174,10 @@
         drawParticles(ctx, (state.particles || []).filter(p => p.layer !== 'ground'), view);
         const scale = view.scale;
         const xy = (x, y) => [Math.round((x - view.cameraX) * scale), Math.round((y - view.cameraY) * scale)];
-        for (const ring of state.rings || []) levelUp(ctx, ring, state.time, xy, scale);
+        for (const ring of state.rings || []) {
+            if (ring.owner === 'evolution') evolution(ctx, ring, state.time, xy, scale);
+            else levelUp(ctx, ring, state.time, xy, scale);
+        }
     }
     return {ground, draw, lighting};
 });

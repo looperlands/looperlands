@@ -22,9 +22,9 @@ function dynamicWeapon(options, assetType = 'weapon') {
     return GameTypes.addDynamicNFT({nftId: `0xweapon-layer-${assetId++}`, assetType, options});
 }
 
-function drawOrder(weaponName, orientation, animation = 'walk_up', actionToolName) {
+function drawOrder(weaponName, orientation, animation = 'walk_up', actionToolName, canHoldWeapon = true) {
     const actor = Object.assign(new Character(), {
-        id: 1, x: 32, y: 48, orientation, actionToolName,
+        id: 1, x: 32, y: 48, orientation, actionToolName, canHoldWeapon,
         sprite: {id: 'body', name: 'body', width: 32, height: 32, offsetX: -8, offsetY: -12},
         currentAnimation: {name: animation, currentFrame: {x: 0, y: 0, index: 0}},
         hasShadow: () => false, hasWeapon: () => true,
@@ -66,4 +66,13 @@ test('static weapons and temporary action tools keep their upward layering', () 
     expect(drawOrder('redsword', GameTypes.Orientations.UP)).toEqual(['redsword', 'body']);
     const weapon = dynamicWeapon({alwaysOnTopOfPlayer: true});
     expect(drawOrder(weapon, GameTypes.Orientations.UP, 'atk_up', 'tool-shovel')).toEqual(['tool-shovel', 'body']);
+});
+
+
+test('built-in attack forms omit both held layers in every direction while retaining selected equipment', () => {
+    const weapon = dynamicWeapon({alwaysOnTopOfPlayer: true});
+    for (const direction of ['UP', 'LEFT', 'RIGHT', 'DOWN']) {
+        expect(drawOrder(weapon, GameTypes.Orientations[direction], 'atk_up', undefined, false)).toEqual(['body']);
+        expect(drawOrder(weapon, GameTypes.Orientations[direction], 'atk_up', 'tool-shovel', false)).toEqual(['body']);
+    }
 });

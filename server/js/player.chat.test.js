@@ -17,6 +17,7 @@ function createPlayer() {
             switch (name) {
                 case '../../shared/js/gametypes': return Types;
                 case './utils': return Utils;
+                case './formulas': return {level: () => 1};
                 case './message': return { Chat: function (player, message) { this.message = message; } };
                 case './format': return { check: () => true };
                 case './chat.js': return chat;
@@ -99,7 +100,7 @@ test('a session cannot authenticate in a different map', async () => {
 test('a rejected companion join cannot complete HELLO or restore its deleted session', async () => {
     const {player, receive} = createPlayer();
     player.hasEnteredGame = false;
-    const cache = {get: () => ({mapId: 'main', walletId: 'wallet', nftId: 'dog', gameData: {}}), set: jest.fn()};
+    const cache = {get: () => ({mapId: 'main', walletId: 'wallet', nftId: 'dog', xp: 0, gameData: {}}), set: jest.fn()};
     player.server = {id: 'world_main', server: {cache, worldsMap: {}},
         addPlayer: jest.fn().mockReturnValue(false), enter_callback: jest.fn()};
     Object.assign(player, {equipArmor: jest.fn(), equipWeapon: jest.fn(), updatePosition: jest.fn(), send: jest.fn()});

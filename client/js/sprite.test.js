@@ -116,3 +116,21 @@ test('dynamic NFT sprites keep their Spaces asset URL', () => {
         src: 'https://looperlands.sfo3.digitaloceanspaces.com/assets/looper/1/token-hash.png'
     }));
 });
+
+
+test('avatar forms use isolated renderer image identities despite sharing one NFT', async () => {
+    const {sprite, renderWorker, requests} = createSprite('NFT_abc__form_stage-two', undefined, true);
+    expect(sprite.id).toBe('NFT_abc__form_stage-two');
+    expect(renderWorker.postMessage).toHaveBeenCalledWith(expect.objectContaining({id: sprite.id, spriteName: sprite.name}));
+    const ready = sprite.whenImageLoaded();
+    requests[0].onload();
+    await expect(ready).resolves.toBe(true);
+    await expect(sprite.whenImageLoaded()).resolves.toBe(true);
+});
+
+test('appearance preload resolves a failed image without replacing the previous avatar', async () => {
+    const {sprite, requests} = createSprite('NFT_abc__form_failed', undefined, true);
+    const ready = sprite.whenImageLoaded();
+    requests[0].onerror();
+    await expect(ready).resolves.toBe(false);
+});

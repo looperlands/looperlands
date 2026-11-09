@@ -86,7 +86,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			if (!assetType.startsWith("projectile_")) {
 				nftId = nftId.replace("0x", "NFT_");
 			}
-			this.loadJSON(template, nftId);
+			// Forms share their NFT identity but need distinct renderer image slots.
+			this.loadJSON(template, assetType === "looper" ? this.name : nftId);
 		},
 
 		loadJSON: function (data, id) {
@@ -107,7 +108,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 		load: function () {
 			// World artwork is fetched by the renderer when it first becomes visible.
 			// Only sprites also drawn on the main thread need an Image up front.
-			if (this.useWebworker !== false && (this.deferImage || this.id.startsWith("NFT_"))) {
+			if (this.useWebworker !== false && (this.deferImage || this.dynamicNFT || this.id.startsWith("NFT_"))) {
 				this.isLoaded = true;
 				this.sendToWorker();
 			} else {
@@ -120,9 +121,15 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			return this.imageLoaded ? this.image : null;
 		},
 
+		whenImageLoaded: function () {
+			this.loadImage();
+			return this.imageReady || Promise.resolve(this.imageLoaded === true);
+		},
+
 		loadImage: function () {
 			if (this.image || this.loadError) return;
-			let self = this;
+			let self = this, resolveImage;
+			this.imageReady = new Promise(resolve => { resolveImage = resolve; });
 
 			let finished = false;
 			const fail = function () {
@@ -132,6 +139,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				self.image.onload = self.image.onerror = null;
 				self.loadError = new Error('Sprite artwork could not be loaded: ' + self.filepath);
 				console.error('[sprite]', self.loadError.message);
+				resolveImage(false);
 			};
 			// Startup queues many sprite requests; allow time for slower connections.
 			const timer = setTimeout(fail, 120000);
@@ -145,6 +153,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				if (!self.workerRegistered) self.sendToWorker();
 				self.imageLoaded = true;
 				self.isLoaded = true;
+				resolveImage(true);
 			};
 			this.image.onerror = fail;
 			this.image.src = this.filepath;

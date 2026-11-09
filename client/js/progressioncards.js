@@ -166,6 +166,9 @@ define(['cardartwork'], function (CardArtwork) {
                 }
             }
         }
+        refreshAvatar() {
+            if (this.stats && this.cards.avatar) this.renderCard('avatar');
+        }
         renderCard(type) {
             const card = this.cards[type] || this.makeCard(type), player = type === 'avatar';
             const info = player ? this.stats.avatarLevelInfo : this.stats.weaponInfo?.weaponLevelInfo;

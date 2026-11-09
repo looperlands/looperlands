@@ -16,7 +16,7 @@ define(['worldfxconfig'], function (Config) {
         }
 
         enabled(id, animated = true) {
-            if (id === 'levelup' || id === 'trail') return !this.game.app?.settings?.getReducedMotion?.();
+            if (id === 'evolution' || id === 'levelup' || id === 'trail') return !this.game.app?.settings?.getReducedMotion?.();
             return (this.sceneFlags[id] ?? this.flags[id]) === true && (!animated || !this.game.app?.settings?.getReducedMotion?.());
         }
 
@@ -108,6 +108,42 @@ define(['worldfxconfig'], function (Config) {
             if (this.rings.length > 64) this.rings.shift();
         }
 
+        evolve(entity) {
+            this.sync();
+            if (!entity || entity.isDead || !this.enabled('evolution') ||
+                !Number.isFinite(entity.x) || !Number.isFinite(entity.y)) return 0;
+            const startedAt = this.game.currentTime || Date.now(), revealDelayMs = 1800;
+            const colors = ['#fff2d4', '#f1cd85', '#d7ab97', '#b97b50'];
+            // Superseding a form replaces its ceremony instead of stacking effects.
+            this.cancelEvolution(entity);
+            this.rings.push({owner: 'evolution', actor: entity, x: entity.x + 8, y: entity.y + 12,
+                coreX: entity.x + 8, coreY: entity.y - 3, startedAt, revealDelayMs, radius: 54, lifetimeMs: 7200});
+            // Warm star showers begin at the reveal, followed by a lingering aura.
+            for (let i = 0; i < 84; i++) {
+                const wave = Math.floor(i / 28), angle = i / 28 * Math.PI * 2;
+                const speed = 14 + this.random() * 26;
+                this.particles.push({x: entity.x + 8, y: entity.y - 4,
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed * 0.5 - 20,
+                    gravity: 9, startedAt: startedAt + revealDelayMs + wave * 600, lifetimeMs: 2600,
+                    color: colors[i % colors.length], size: i % 5 === 0 ? 2 : 1,
+                    shape: i % 3 === 0 ? 'star' : 'spark', owner: 'evolution', actor: entity});
+            }
+            if (this.particles.length > PARTICLE_LIMIT) this.particles.splice(0, this.particles.length - PARTICLE_LIMIT);
+            if (this.rings.length > 64) this.rings.shift();
+            return revealDelayMs;
+        }
+
+        cancelEvolution(entity) {
+            this.rings = this.rings.filter(r => r.owner !== 'evolution' || r.actor !== entity);
+            this.particles = this.particles.filter(p => p.owner !== 'evolution' || p.actor !== entity);
+        }
+
+        evolutionActor(effect) {
+            const actor = effect.actor;
+            const current = actor?.id === this.game.player?.id ? this.game.player : this.game.getEntityById?.(actor?.id);
+            return actor === current && actor && !actor.isDead && !actor.isDying ? actor : null;
+        }
+
         tileChanged(stage) {
             this.sync();
             this.scene();
@@ -194,22 +230,32 @@ define(['worldfxconfig'], function (Config) {
                 vx: this.lastActor ? Math.max(-200, Math.min(200, (player.x - this.lastActor.x) / elapsed)) : 0,
                 vy: this.lastActor ? Math.max(-200, Math.min(200, (player.y - this.lastActor.y) / elapsed)) : 0};
             this.lastActor = {x: player.x, y: player.y, time};
-            this.particles = this.particles.filter(p => time - p.startedAt < p.lifetimeMs && this.enabled(p.owner || 'stage'));
-            this.rings = this.rings.filter(r => time - r.startedAt < r.lifetimeMs);
+            this.particles = this.particles.filter(p => time - p.startedAt < p.lifetimeMs && this.enabled(p.owner || 'stage') &&
+                (p.owner !== 'evolution' || this.evolutionActor(p)));
+            this.rings = this.rings.filter(r => time - r.startedAt < r.lifetimeMs &&
+                (r.owner !== 'evolution' || this.evolutionActor(r)));
             for (const [id, drop] of this.drops) if (!this.enabled('loot') || time - drop.startedAt > 800 || this.game.getEntityById(id) !== drop.entity) this.drops.delete(id);
             if (this.registeredRenderer !== renderer) {
                 renderer.registerExtension('world-fx-renderer-worker.js');
                 this.registeredRenderer = renderer;
             }
-            const particles = this.particles.map(p => {
+            const particles = this.particles.filter(p => p.startedAt <= time).map(p => {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
-                return {x: p.x + p.vx * seconds, y: p.y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
+                const actor = p.owner === 'evolution' && this.evolutionActor(p);
+                const x = actor ? actor.x + 8 : p.x, y = actor ? actor.y - 4 : p.y;
+                return {x: x + p.vx * seconds, y: y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
                     color: p.color, size: p.size, shape: p.shape, layer: p.owner === 'trail' ? 'ground' : 'foreground', trailX: p.vx * 0.055,
                     trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs,
                     ...(p.design ? {design: {...p.design, colors: [p.color], size: p.size}, seed: p.seed, elapsed: seconds} : {})};
             });
             const data = {time, actor: this.actor, flags: Object.fromEntries(Object.keys(this.flags).map(id => [id, this.enabled(id)])),
-                scenery: this.scenery, particles, rings: this.rings};
+                scenery: this.scenery, particles, rings: this.rings.map(ring => {
+                    const actor = ring.owner === 'evolution' && this.evolutionActor(ring);
+                    if (!actor) return ring;
+                    const effect = {...ring};
+                    delete effect.actor;
+                    return {...effect, x: actor.x + 8, y: actor.y + 12, coreX: actor.x + 8, coreY: actor.y - 3};
+                })};
             renderer.setExtensionData('world-fx', data);
             renderer.setExtensionData('world-fx-ground', data);
             renderer.setExtensionData('world-fx-lighting', data);
