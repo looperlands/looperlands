@@ -34,11 +34,15 @@ test('evolution has a separate accessible notification and keeps weapon mechanic
         addClass(name) {this.classes.add(name); return this;}, removeClass(name) {this.classes.delete(name); return this;}
     };
     const notice = {hidden: true};
+    const evolved = {url: '/evolved-form.png'}, original = {url: '/original-form.png'};
+    const artwork = {sources: jest.fn(() => [evolved, original]), render: jest.fn(), cancel: jest.fn()};
     const $ = selector => selector === '#evolution-notification' ? notification : {
-        text(value) {this.value = value; return this;}, appendTo(target) {target.lines.push(this.value);}
+        0: {}, lines: [], addClass() {return this;},
+        text(value) {this.value = value; return this;},
+        appendTo(target) {this.lines = target.lines; if (this.value !== undefined) target.lines.push(this.value); return this;}
     };
     vm.runInNewContext(fs.readFileSync(require.resolve('./app'), 'utf8'), {
-        define: (_, factory) => {app = factory($);}, Class: {extend: methods => methods},
+        define: (dependencies, factory) => {app = factory(...dependencies.map(name => name === 'jquery' ? $ : name === 'cardartwork' ? artwork : undefined));}, Class: {extend: methods => methods},
         document: {getElementById: () => notice}, setTimeout, clearTimeout,
     });
     app.settings = {getReducedMotion: () => true}; app.game = {player: {canHoldWeapon: false}};
@@ -46,12 +50,17 @@ test('evolution has a separate accessible notification and keeps weapon mechanic
     expect(notification.lines).toContain('EVOLVED!');
     expect(notification.lines.at(-1)).toContain('damage, traits and XP');
     expect(notification.classes.has('reduced-motion')).toBe(true);
+    expect(artwork.render).toHaveBeenLastCalledWith(app.evolutionPortrait, [evolved], expect.any(Object), {slot: true});
+    const firstPortrait = app.evolutionPortrait;
     expect(notice.hidden).toBe(false);
     jest.advanceTimersByTime(3000); app.showEvolutionNotification({evolutionLevel: 20, canHoldWeapon: true});
+    expect(artwork.cancel).toHaveBeenCalledWith(firstPortrait);
     jest.advanceTimersByTime(3000); expect(notification.classes.has('active')).toBe(true);
     jest.advanceTimersByTime(5000); expect(notification.classes.has('active')).toBe(false);
     app.showEvolutionNotification({evolutionLevel: 30}, true);
     expect(notification.lines).toContain('EVOLVING...');
+    expect(app.evolutionPortrait).toBeNull();
+    expect(artwork.render).toHaveBeenCalledTimes(2);
     jest.advanceTimersByTime(1800);
     app.showEvolutionNotification({evolutionLevel: 30});
     expect(notification.lines).toContain('EVOLVED!');
