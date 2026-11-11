@@ -15,7 +15,9 @@ function createManifest(root, revision) {
         if (stat.isDirectory()) {
             for (const name of fs.readdirSync(filename).sort()) visit(relative + '/' + name, target, prefix);
         } else if (!/(?:\.(?:test|spec)\.[^.]+$|(?:^|\/)README(?:\.[^/]+)?$)/i.test(relative)) {
-            if (!relative.endsWith('/build.txt')) target[relative.slice(prefix.length)] = hash(fs.readFileSync(filename));
+            // Build reports and timestamp-based local cache metadata are not runtime assets.
+            if (relative.endsWith('/build.txt') || relative === 'client-build/.mapmaker-client.json') return;
+            target[relative.slice(prefix.length)] = hash(fs.readFileSync(filename));
         }
     }
     for (const relative of ['server', 'shared', 'package.json', 'package-lock.json', 'Dockerfile.prod',

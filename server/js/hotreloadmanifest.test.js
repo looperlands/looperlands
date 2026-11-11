@@ -53,6 +53,33 @@ test('the artifact exports only allowed source bodies and verifies their content
     expect(() => createBundle(root)).toThrow('Artifact differs from manifest');
 });
 
+test('rebuilding the same release ignores timestamp-based client cache metadata but rejects changed assets', () => {
+    const {clientFingerprint, recordClientBuild} = require('../../bin/mapmaker-client');
+    const {HotReload} = require('./hotreload');
+    for (const relative of ['bin/mapmaker-client.js', 'shared/js/placedfxconfig.js', 'shared/js/pixelfxcatalog.js', 'shared/js/mapmakerentities.json']) {
+        fs.writeFileSync(path.join(root, relative), 'build input');
+    }
+    fs.cpSync(path.join(root, 'client'), path.join(root, 'client-build'), {recursive: true});
+    const fingerprint = clientFingerprint(root);
+    recordClientBuild(root, fingerprint);
+    const before = createManifest(root, 'a'.repeat(40));
+    const reload = new HotReload(root, before);
+
+    // Fresh checkouts change timestamps even when the compiled assets are identical.
+    fs.utimesSync(path.join(root, 'client/js/app.js'), new Date(0), new Date(0));
+    const rebuilt = clientFingerprint(root);
+    expect(rebuilt).not.toBe(fingerprint);
+    recordClientBuild(root, rebuilt);
+    const next = createManifest(root, before.revision);
+    expect(next).toEqual(before);
+    expect(next.client.files['.mapmaker-client.json']).toBeUndefined();
+    expect(reload.plan({manifest: next, sources: {}}, before.revision)).toMatchObject({method: 'hmr', changed: []});
+
+    fs.writeFileSync(path.join(root, 'client-build/js/app.js'), 'changed client');
+    const changed = createManifest(root, before.revision);
+    expect(() => reload.plan({manifest: changed, sources: {}}, before.revision)).toThrow('An immutable release cannot change its contents');
+});
+
 test('symlinked runtime files cannot enter a release artifact', () => {
     fs.symlinkSync(path.join(root, 'package.json'), path.join(root, 'client/linked.json'));
     expect(() => createManifest(root, 'a'.repeat(40))).toThrow('Runtime symlink is unsupported');
