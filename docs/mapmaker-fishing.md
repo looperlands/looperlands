@@ -10,7 +10,7 @@ Open **Gameplay → Fishing** in the Mapmaker Toolbox. Choose the map you want t
 4. Select another area from **Authored areas** to keep editing. **Save all changes** saves additions, edits and removals together to Tiled.
 5. Choose **Build this map**, wait for completion, then start a fresh playtest with a fishing rod at the appropriate level.
 
-Casting requires a living player with a rod equipped, standing in the same row or column, one or two tiles from a fishing tile. The server checks the saved fishing map, position and rod level before selecting a catch. The validator warns when an area has no reachable casting position under the built base collisions.
+Casting requires a living player with an owned fishing rod, standing in the same row or column, one or two tiles from a fishing tile. Clicking the water automatically equips the last-used owned rod, or the first owned rod if none has been used this session. The server waits for its level and traits to load and checks the saved fishing map, position and rod level before selecting a catch. Finishing or cancelling fishing restores the previous weapon; manual equipment selections take precedence. If no rod is owned or its level is too low, the weapon stays equipped. The validator warns when an area has no reachable casting position under the built base collisions.
 
 Changes remain drafts until saved. Reload and map switches ask before discarding changes. If Tiled or another tab changed the file, save is rejected and the draft is retained; reload and reapply it. Fishing areas may not affect the same tile. Rotated shapes, layer offsets and non-rectangles must be corrected in Tiled.
 

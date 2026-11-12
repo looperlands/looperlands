@@ -80,6 +80,7 @@ function connectCompanion(cache, sessionId, eventEquipment) {
             switch (name) {
                 case '../../shared/js/gametypes': return Types;
                 case './format': return formatModule.exports;
+                case './fishingequipment': return require('./fishingequipment');
                 case './message': return Messages;
                 case './utils': return {randomOrientation: () => 1};
                 case './formulas': return {level: () => 1};

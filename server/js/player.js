@@ -19,6 +19,7 @@ const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
 const {completeFishingCatch} = require("./fishingresult");
+const {rememberFishingWeapon, restoreFishingWeapon, cancelFishing} = require("./fishingequipment");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
@@ -646,12 +647,17 @@ module.exports = Player = Character.extend({
                 }
             }
         } else if (action === Types.Messages.FISHINGRESULT) {
+            const active = self.fishingRequest || self.pendingFish;
+            self.fishingRequest = null;
+            const completion = completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
+            if (active) {
+                restoreFishingWeapon(self);
+                self.server.announceDespawnFloat(self);
+            }
             try {
-                await completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
+                await completion;
             } catch (error) {
                 console.error('[fishing] catch award failed:', error.message);
-            } finally {
-                self.server.announceDespawnFloat(self);
             }
         }
         else {
@@ -665,6 +671,7 @@ module.exports = Player = Character.extend({
         const self = this;
         if (self.disconnected) return;
         self.disconnected = true;
+        cancelFishing(self);
         delete self.pendingCompanionFollow;
         self.server.server.clientReloads?.disconnected(self);
         self.server.server.activity?.stop(self.sessionId);
@@ -720,8 +727,7 @@ module.exports = Player = Character.extend({
         }
     },
 
-    incrementNFTSpecialItemExperience: function (experience) {
-        let nftWeapon = this.getNFTWeapon();
+    incrementNFTSpecialItemExperience: function (experience, nftWeapon = this.getNFTWeapon()) {
         if (nftWeapon !== undefined && (nftWeapon instanceof NFTSpecialItem.NFTSpecialItem)) {
             nftWeapon.incrementExperience(experience);
         }
@@ -772,6 +778,7 @@ module.exports = Player = Character.extend({
                 }
 
                 this.isDead = true;
+                cancelFishing(this);
                 if (this.loopringTimeout) {
                     clearTimeout(this.loopringTimeout);
                 }
@@ -1006,6 +1013,7 @@ module.exports = Player = Character.extend({
 
     equipWeapon: function (kind) {
         if (Types.isFishingRod(kind)) {this.equipSpecialItem(kind);return;}
+        this.fishingWeapon = null;
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
@@ -1053,14 +1061,18 @@ module.exports = Player = Character.extend({
 
 
     equipSpecialItem: function (kind) {
+        rememberFishingWeapon(this);
+        this.lastFishingRod = kind;
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         this.nftWeapon = new NFTSpecialItem.NFTSpecialItem(this.walletId, kindString);
-        this.nftWeapon.loadItemData();
+        this.fishingRodReady = this.nftWeapon.loadItemData();
+        this.fishingRodReady?.catch(error => console.error('[fishing] rod load failed:', error.message));
     },
 
     equipItem: function (item) {
         if (item) {
+            if (this.fishingRequest || this.pendingFish) cancelFishing(this);
             //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
             if (this.getNFTWeapon() !== undefined) {
                 this.getNFTWeapon().syncExperience();

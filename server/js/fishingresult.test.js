@@ -59,3 +59,16 @@ test.each(['expired','changed-map','dead'])('a %s attempt cannot award a catch',
     expect(await completeFishingCatch(player,true,false,dependencies)).toBeNull();
     expect(player.playerEventBroker.lootEvent).not.toHaveBeenCalled();
 });
+
+test('a delayed catch award credits and flushes the casting rod after the weapon was restored', async () => {
+    let finish;
+    const rod = {syncExperience: jest.fn().mockResolvedValue()};
+    const sword = {};
+    player.nftWeapon = rod; player.getNFTWeapon = () => player.nftWeapon;
+    player.playerEventBroker.lootEvent.mockImplementation(() => new Promise(resolve => {finish = resolve;}));
+    const pending = completeFishingCatch(player, true, false, dependencies);
+    player.nftWeapon = sword;
+    finish(); await pending;
+    expect(player.incrementNFTSpecialItemExperience).toHaveBeenCalledWith(10, rod);
+    expect(rod.syncExperience).toHaveBeenCalledTimes(1);
+});
