@@ -1,5 +1,5 @@
 /* A brief catch reveal using the game's panel frame, fonts and real fish sprites. */
-.fishing-catch { --fc-accent:#e4d0b6; --fc-water:#344347; --fc-surface:#342433; --fc-ink:#291d29; --fc-glow:#8fbabb85; --fc-wash-width:480px; --fc-wash-height:440px; --fc-reveal:650ms; --fc-impact:370ms; --fc-size:1; position:fixed; left:50%; top:43%; width:176px; z-index:1250; transform:translate(-50%,-50%); pointer-events:none; color:#f4dfbc; font:11px/1.4 GraphicPixel,sans-serif; text-align:center; perspective:900px; }
+.fishing-catch { --fc-accent:#e4d0b6; --fc-water:#344347; --fc-surface:#342433; --fc-ink:#291d29; --fc-reveal:650ms; --fc-impact:370ms; --fc-size:1; position:fixed; left:50%; top:43%; width:164px; z-index:1250; transform:translate(-50%,-50%); pointer-events:none; color:#f4dfbc; font:11px/1.4 GraphicPixel,sans-serif; text-align:center; perspective:900px; }
 .fishing-catch[hidden],.fishing-catch [hidden] { display:none !important; }
 .fishing-catch * { box-sizing:border-box; }
 .fc-uncommon { --fc-accent:#b9e794; --fc-water:#375638; --fc-surface:#26382a; --fc-glow:#7bb54ca3; --fc-wash-width:560px; --fc-wash-height:500px; }
@@ -19,17 +19,15 @@
 .fc-result { font:20px/1 AdvoCut,GraphicPixel,sans-serif; color:#f4dfbc; }
 .fc-perfect .fc-result { color:#f6d57d; }
 .fc-rarity { color:var(--fc-ink); background:var(--fc-accent); padding:3px 5px; font-size:9px; text-transform:capitalize; }
-.fc-art { height:88px; position:relative; display:grid; place-items:center; background:var(--fc-water); overflow:hidden; margin:0 -2px; }
+.fc-art { height:80px; position:relative; display:grid; place-items:center; background:var(--fc-water); overflow:hidden; margin:0 -2px; }
 .fc-art::after { content:''; position:absolute; inset:0; background:#fff2d5; opacity:0; animation:fc-flash 320ms var(--fc-impact) ease-out both; }
-.fc-sprite { position:relative; display:block; width:72px; height:72px; z-index:1; image-rendering:pixelated; animation:fc-specimen 600ms var(--fc-impact) cubic-bezier(.16,1,.3,1) both; }
+.fc-sprite { position:relative; display:block; width:64px; height:64px; z-index:1; image-rendering:pixelated; animation:fc-specimen 600ms var(--fc-impact) cubic-bezier(.16,1,.3,1) both; }
 .fc-shadow { position:absolute; bottom:9px; width:52px; height:6px; background:#17121c66; border-radius:50%; }
 .fc-art-status { position:absolute; inset:auto 5px 10px; font-size:10px; color:var(--fc-accent); }
-.fc-name { font:23px/1.08 AdvoCut,GraphicPixel,sans-serif; margin:10px 0 8px; overflow-wrap:anywhere; color:var(--fc-accent); }
+.fc-name { font:22px/1.08 AdvoCut,GraphicPixel,sans-serif; margin:10px 0 8px; overflow-wrap:anywhere; color:var(--fc-accent); }
 .fc-rewards { display:flex; justify-content:space-between; align-items:center; gap:8px; border-block:1px solid #9a6c545c; padding:7px 0; font-size:11px; }
 .fc-xp { color:var(--fc-accent); font-variant-numeric:tabular-nums; }
 .fc-quantity { color:#e4d0b6; font-variant-numeric:tabular-nums; }
-.fc-habitat { margin:8px 0 4px; color:#e4d0b6; font-size:9px; }
-.fc-saved { display:block; margin-top:4px; color:#d7ab97; font-size:9px; }
 .fc-effects { position:absolute; inset:0; pointer-events:none; }
 .fc-wash { position:absolute; left:50%; top:40%; width:var(--fc-wash-width); height:var(--fc-wash-height); background:radial-gradient(ellipse,var(--fc-glow) 8%,transparent 66%),radial-gradient(ellipse,#130e1bcc 12%,#130e1b99 42%,transparent 70%); opacity:0; transform:translate(-50%,-50%); animation:fc-wash 1900ms var(--fc-impact) ease-out both; }
 .fc-ring { position:absolute; left:50%; top:40%; width:180px; height:180px; border:4px solid var(--fc-accent); border-radius:50%; opacity:0; animation:fc-ring 850ms var(--fc-impact) cubic-bezier(.16,1,.3,1) both; }
@@ -52,6 +50,6 @@
 @keyframes fc-ring { 0% { opacity:.9; transform:translate(-50%,-50%) scale(.6); } 100% { opacity:0; transform:translate(-50%,-50%) scale(2.7); } }
 @keyframes fc-ray { 0% { opacity:0; transform:rotate(var(--fc-angle)) scaleY(.45); } 12% { opacity:.55; transform:rotate(var(--fc-angle)) scaleY(1); } 100% { opacity:0; transform:rotate(calc(var(--fc-angle) + 12deg)) scaleY(1.2); } }
 @keyframes fc-depart { to { opacity:0; transform:translateY(-12px) scale(.94); } }
-@media (max-width:760px),(max-height:540px) { .fishing-catch { width:156px; } .fc-art { height:72px; } .fc-sprite { width:60px; height:60px; } .fc-name { margin:8px 0; font-size:21px; } .fc-face { padding:6px 8px; } .fc-habitat,.fc-saved { display:none; } .fc-result { font-size:18px; } .fc-rarity { font-size:8px; padding:3px 4px; } }
-@media (max-width:420px) { .fishing-catch { width:144px; } .fc-name { font-size:20px; } }
+@media (max-width:760px),(max-height:540px) { .fishing-catch { width:144px; } .fc-art { height:64px; } .fc-sprite { width:56px; height:56px; } .fc-name { margin:8px 0; font-size:20px; } .fc-face { padding:6px 8px; } .fc-result { font-size:18px; } .fc-rarity { font-size:8px; padding:3px 4px; } }
+@media (max-width:420px) { .fishing-catch { width:136px; } .fc-name { font-size:19px; } }
 @media (prefers-reduced-motion:reduce) { .fishing-catch *,.fishing-catch *::after { animation:none !important; } .fc-sparks { display:none; } }

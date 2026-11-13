@@ -77,17 +77,11 @@ define(['cardartwork'], function (CardArtwork) {
             rewards.append(node('span', 'fc-quantity', '\u00d7' + receipt.quantity + ' fish'),
                 node('span', 'fc-xp', '+' + receipt.experience.toLocaleString('en-US') + ' XP'));
             front.append(heading, art, node('h2', 'fc-name', receipt.name), rewards);
-            if (typeof receipt.mapId === 'string') {
-                const habitat = receipt.mapId.replace(/[_-]/g, ' ').replace(/^./, letter => letter.toUpperCase());
-                front.append(node('p', 'fc-habitat', habitat + (Number.isInteger(receipt.requiredLevel) && receipt.requiredLevel > 0
-                    ? ' \u00b7 Fishing level ' + receipt.requiredLevel + '+' : '')));
-            }
-            front.append(node('span', 'fc-saved', 'Added to inventory'));
             turn.append(back, front); card.append(turn);
             const effects = node('div', 'fc-effects');
             effects.setAttribute('aria-hidden', 'true');
             if (!quiet) {
-                effects.append(node('div', 'fc-wash'));
+                if (tier > 0) effects.append(node('div', 'fc-wash'));
                 if (tier >= 2) effects.append(node('div', 'fc-ring'));
                 if (tier >= 3) {
                     const rays = node('div', 'fc-rays');
@@ -131,7 +125,7 @@ define(['cardartwork'], function (CardArtwork) {
             // Reserve the largest spring frame so it never swings over the player.
             const halfWidth = this.root.offsetWidth * this.profile.scale * 1.12 / 2;
             const halfHeight = this.root.offsetHeight * this.profile.scale * 1.12 / 2;
-            const gap = Math.max(28, Math.abs(edge.x - origin.x) + 12);
+            const gap = Math.max(44, Math.abs(edge.x - origin.x) + 28);
             const minX = Math.max(8, viewport.left + 8) + halfWidth;
             const maxX = Math.min(window.innerWidth - 8, viewport.right - 8) - halfWidth;
             const top = viewport.bottom - viewport.top < halfHeight * 2 + 16 ? 8 : Math.max(8, viewport.top + 8);

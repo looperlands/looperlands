@@ -21,7 +21,8 @@ afterEach(() => jest.useRealTimers());
 test('confirmed catches show exact rewards with real artwork and an accessible announcement', () => {
     const {ui, artwork} = setup();
     expect(ui.show(receipt)).toBe(true);
-    expect(text(ui.root)).toEqual(expect.arrayContaining(['Perfect!','A jellyfish','epic','\u00d72 fish','+150 XP','M88n2 \u00b7 Fishing level 10+','Added to inventory']));
+    expect(text(ui.root)).toEqual(expect.arrayContaining(['Perfect!','A jellyfish','epic','\u00d72 fish','+150 XP']));
+    expect(text(ui.root)).not.toContain('Added to inventory');
     expect(ui.root.attributes).toMatchObject({role:'status','aria-live':'polite','aria-atomic':'true'});
     expect(ui.root.className).toBe('fishing-catch fc-epic fc-perfect');
     expect(artwork.render).toHaveBeenCalledWith(ui.sprite, [expect.objectContaining({url:'img/1/m88njellyfish.png'})], expect.any(Object), {slot:true});
@@ -64,7 +65,7 @@ test('clearing for a cast, map change or death cancels effects and pagehide rele
     expect(artwork.cancel).toHaveBeenCalledWith(sprite);
     expect(ui.root.hidden).toBe(true);
     expect(jest.getTimerCount()).toBe(0);
-    ui.show({...receipt, mapId:undefined, requiredLevel:undefined});
+    ui.show(receipt);
     window.addEventListener.mock.calls[0][1]();
     expect(window.removeEventListener).toHaveBeenCalledWith('pagehide', ui.onPageHide);
     expect(ui.root.remove).toHaveBeenCalled();

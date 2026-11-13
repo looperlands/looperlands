@@ -13,7 +13,8 @@ input or delays the next cast.
 The compact card appears near the character, preferring the right side, then the
 left, with above and below as fallbacks. Its placement reserves room for the
 character's body and spring animation, and clamps to the available viewport.
-Small screens use a narrower card and hide the secondary habitat/inventory footer.
+Small screens use a narrower card. The card contains fish, rarity, quantity and XP;
+the habitat and added-to-inventory footer have been removed to keep it compact.
 Rarity anticipation, colour, particles, light rays and sound retain their impact.
 
 Players can turn **Settings → Interface → Fish Catch Cards** off independently.
@@ -26,7 +27,8 @@ and AdvoCut fonts, warm text and plum surfaces. Its water-coloured specimen area
 uses the real fish artwork, cropped by `CardArtwork`. Rarity affects the accent
 and the water colour. There is no full-screen flash or camera shake.
 
-Every tier has a background glow. A bounded dark falloff behind the colour keeps
+Uncommon and rarer tiers have a background glow; common catches have none.
+A bounded dark falloff behind the colour keeps
 it visible on bright map terrain; higher rarities increase its size and intensity.
 The catch sound is normalized to approximately -1 dB peak before the game's sound
 mix and saved volume controls are applied.
@@ -38,7 +40,7 @@ It replaces fishing's use of the combat `KILL` message. Failed, expired and dupl
 attempts do not emit a receipt. A delayed receipt retains the casting map ID; the
 client ignores its reveal after leaving that map, dying or disconnecting.
 
-The reveal shows the awarded quantity and XP, caught habitat and water level.
+The reveal shows the awarded quantity and XP.
 Website-wide recorded-catch counts and first-recorded dates are not supplied by
 the game reward contract and are not invented for this card.
 
