@@ -11042,13 +11042,16 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             canFish: function (gX, gY, keyboard) {
+                // Door traversal takes priority over overlapping or nearby water.
+                if (this.map.isDoor(gX, gY) || this.map.isDoor(this.player.gridX, this.player.gridY)) return false;
                 if (this.player.isOnSameAxis(gX, gY)
                     && this.player.isNear({gridX: gX, gridY: gY}, 2)
                     && this.map.getLakeName(gX, gY)) {
                     return {gridX: gX, gridY: gY};
                 } else if (keyboard) { // let keyboard seek one tile further
                     let tryPos = this.player.getOneStepFurther(gX, gY);
-                    if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
+                    if (!this.map.isDoor(tryPos.gridX, tryPos.gridY)
+                        && this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
                         return tryPos;
                     }
                 }

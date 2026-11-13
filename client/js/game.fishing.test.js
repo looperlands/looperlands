@@ -2,7 +2,7 @@ const fs = require('fs');
 const vm = require('vm');
 
 function setup() {
-    const modules = {};
+    const modules = Object.fromEntries(['mob', 'player', 'item', 'npc', 'chest'].map(name => [name, class {}]));
     const axios = {get: jest.fn()};
     const sandbox = {
         define(dependencies, factory) {
@@ -11,6 +11,7 @@ function setup() {
         },
         axios, console: {error: jest.fn()}, setTimeout, clearTimeout, setInterval, clearInterval,
         Date, Math, AltNames: {getName: fish => fish},
+        $: () => ({hasClass: () => false, filter: () => [], is: () => false}),
     };
     vm.createContext(sandbox);
     for (const name of ['lib/class', 'float', 'game']) {
@@ -21,7 +22,7 @@ function setup() {
         sessionId: 'session', player: {id: 1, isFishing: false, orientation: 'right',
             getWeaponName: () => 'rod', getOrientationTo: () => 'right', idle: jest.fn(),
             animate: (name, speed, count, onEnd) => onEnd()},
-        map: {getLakeName: () => 'm88nDreamPond1'}, floats: {}, fish: {},
+        map: {getLakeName: () => 'm88nDreamPond1', isDoor: () => false}, floats: {}, fish: {},
         fishingData: {fishName: null, fishPos: 0}, renderer: {scale: 1}, camera: {isVisible: () => true},
         app: {setFish: jest.fn(), setFishPos: jest.fn(), setFishingTarget: jest.fn(),
             showFishing: jest.fn(), hideFishing: jest.fn(), holdFishing: jest.fn()},
@@ -29,6 +30,7 @@ function setup() {
         audioManager: {playSound: jest.fn()}, renderStatistics: jest.fn(),
     });
     game.getEntityById = () => game.player;
+    sandbox.self = game;
     return {game, axios};
 }
 
@@ -209,4 +211,50 @@ test('server equipment broadcasts update the local rod and restore the weapon an
     expect(game.player.weaponName).toBe('rod');
     methods.applyEquipmentAppearance.call(game, game.player, 'sword', swordKind, metadata);
     expect(game.player.weaponName).toBe('sword'); expect(game.player.dynamicWeaponNFTData).toBe(metadata);
+});
+
+function doorwayFixture() {
+    const {game} = setup();
+    Object.assign(game, {
+        started: true, previousClickPosition: {}, pathingGrid: Array.from({length: 6}, () => Array(6).fill(0)),
+        getEntityAt: () => null, isZoningTile: () => false, makePlayerGoTo: jest.fn(), startFishing: jest.fn(),
+    });
+    Object.assign(game.player, {
+        gridX: 2, gridY: 2, weaponName: 'sword1', isOnSameAxis: () => true, isNear: () => true,
+        getOneStepFurther: () => ({gridX: 2, gridY: 4}),
+    });
+    game.app.hideChat = jest.fn();
+    return {game};
+}
+
+test.each([false, true])('a door tagged as fishable still receives movement (keyboard=%s)', keyboard => {
+    const {game} = doorwayFixture();
+    game.map.isDoor = (x, y) => x === 2 && y === 3;
+    game.click({x: 2, y: 3, keyboard});
+    expect(game.makePlayerGoTo).toHaveBeenCalledWith(2, 3);
+    expect(game.startFishing).not.toHaveBeenCalled();
+});
+
+test('keyboard movement through a dry door cannot cast into water beyond it', () => {
+    const {game} = doorwayFixture();
+    game.map.isDoor = (x, y) => x === 2 && y === 3;
+    game.map.getLakeName = (x, y) => y === 4 ? 'pond' : null;
+    game.click({x: 2, y: 3, keyboard: true});
+    expect(game.makePlayerGoTo).toHaveBeenCalledWith(2, 3);
+    expect(game.startFishing).not.toHaveBeenCalled();
+});
+
+test('the keyboard fishing probe excludes door tiles beyond the movement target', () => {
+    const {game} = doorwayFixture();
+    game.map.isDoor = (x, y) => x === 2 && y === 4;
+    game.map.getLakeName = (x, y) => y === 4 ? 'pond' : null;
+    expect(game.canFish(2, 3, true)).toBe(false);
+});
+
+test('leaving a door tile does not start fishing instead of walking', () => {
+    const {game} = doorwayFixture();
+    game.map.isDoor = (x, y) => x === 2 && y === 2;
+    game.click({x: 2, y: 3, keyboard: true});
+    expect(game.makePlayerGoTo).toHaveBeenCalledWith(2, 3);
+    expect(game.startFishing).not.toHaveBeenCalled();
 });
