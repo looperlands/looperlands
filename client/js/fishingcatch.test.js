@@ -1,17 +1,17 @@
 const fs = require('fs'), vm = require('vm');
-function setup({reduced = false, effects = true, systemReduced = false} = {}) {
+function setup({reduced = false, effects = true, systemReduced = false, cards = true} = {}) {
     const element = () => ({children: [], style: {setProperty: jest.fn()}, classList: {add: jest.fn()},
         attributes: {}, setAttribute(name, value) {this.attributes[name] = value;},
         append(...children) {this.children.push(...children);}, replaceChildren() {this.children = [];}, remove: jest.fn()});
     const artwork = {render: jest.fn(), cancel: jest.fn()};
-    const window = {matchMedia: () => ({matches: systemReduced}), addEventListener: jest.fn(), removeEventListener: jest.fn()};
+    const window = {innerWidth:900,innerHeight:600,matchMedia: () => ({matches: systemReduced}), addEventListener: jest.fn(), removeEventListener: jest.fn()};
     let Catch;
     vm.runInNewContext(fs.readFileSync(require.resolve('./fishingcatch'), 'utf8'), {
         define: (_, factory) => {Catch = factory(artwork);}, document: {createElement: element, body: element()},
         window, setTimeout, clearTimeout
     });
-    const app = {settings: {getReducedMotion: () => reduced, getCombatEffectsEnabled: () => effects}, game: {fish:{}}};
-    return {ui: new Catch(app), artwork, window};
+    const app = {settings: {getReducedMotion: () => reduced, getCombatEffectsEnabled: () => effects, getFishCatchCardsEnabled: () => cards}, game: {fish:{},showNotification:jest.fn()}};
+    return {ui: new Catch(app), artwork, window, app};
 }
 const receipt = {fish:'m88njellyfish',name:'A jellyfish',rarity:'epic',quantity:2,experience:150,perfect:true,mapId:'m88n2',requiredLevel:10};
 const text = element => [element.textContent, ...element.children.flatMap(text)].filter(Boolean);
@@ -21,7 +21,8 @@ afterEach(() => jest.useRealTimers());
 test('confirmed catches show exact rewards with real artwork and an accessible announcement', () => {
     const {ui, artwork} = setup();
     expect(ui.show(receipt)).toBe(true);
-    expect(text(ui.root)).toEqual(expect.arrayContaining(['Perfect catch!','A jellyfish','epic','\u00d72 fish','+150 XP','M88n2 \u00b7 Fishing level 10+','Added to inventory']));
+    expect(text(ui.root)).toEqual(expect.arrayContaining(['Perfect!','A jellyfish','epic','\u00d72 fish','+150 XP']));
+    expect(text(ui.root)).not.toContain('Added to inventory');
     expect(ui.root.attributes).toMatchObject({role:'status','aria-live':'polite','aria-atomic':'true'});
     expect(ui.root.className).toBe('fishing-catch fc-epic fc-perfect');
     expect(artwork.render).toHaveBeenCalledWith(ui.sprite, [expect.objectContaining({url:'img/1/m88njellyfish.png'})], expect.any(Object), {slot:true});
@@ -64,7 +65,7 @@ test('clearing for a cast, map change or death cancels effects and pagehide rele
     expect(artwork.cancel).toHaveBeenCalledWith(sprite);
     expect(ui.root.hidden).toBe(true);
     expect(jest.getTimerCount()).toBe(0);
-    ui.show({...receipt, mapId:undefined, requiredLevel:undefined});
+    ui.show(receipt);
     window.addEventListener.mock.calls[0][1]();
     expect(window.removeEventListener).toHaveBeenCalledWith('pagehide', ui.onPageHide);
     expect(ui.root.remove).toHaveBeenCalled();
@@ -113,7 +114,7 @@ test('the game refreshes statistics and plays the existing sound only for a disp
 test('rarity adds anticipation, impact and colour hooks, and sound lands on the reveal beat', () => {
     const {ui} = setup(); const sound = jest.fn();
     ui.show({...receipt, rarity:'common', perfect:false}, sound);
-    const commonSparks = ui.root.children[0].children[0].children.length;
+    const commonSparks = ui.root.children[0].children.find(el => el.className === 'fc-sparks').children.length;
     jest.advanceTimersByTime(369); expect(sound).not.toHaveBeenCalled();
     jest.advanceTimersByTime(1); expect(sound).toHaveBeenCalledTimes(1);
     ui.show({...receipt, rarity:'legendary', perfect:false}, sound);
@@ -123,4 +124,28 @@ test('rarity adds anticipation, impact and colour hooks, and sound lands on the 
     expect(ui.root.style.setProperty).toHaveBeenCalledWith('--fc-reveal', '1280ms');
     jest.advanceTimersByTime(849); expect(sound).toHaveBeenCalledTimes(1);
     ui.clear(); jest.runAllTimers(); expect(sound).toHaveBeenCalledTimes(1);
+});
+
+test('turning cards off keeps confirmed catch text and sound without a card or effect timers', () => {
+    const {ui, artwork, app} = setup({cards:false}); const sound = jest.fn();
+    expect(ui.show(receipt,sound)).toBe(false);
+    expect(ui.root.hidden).toBe(true);
+    expect(artwork.render).not.toHaveBeenCalled();
+    expect(app.game.showNotification).toHaveBeenCalledWith('Caught A jellyfish \u00d72 \u00b7 +150 XP');
+    expect(sound).toHaveBeenCalledTimes(1);
+    expect(jest.getTimerCount()).toBe(0);
+});
+
+test.each([['right',442,292,900,600],['left',842,292,900,600],['above',162,442,340,700]])('places the reveal %s of the character without covering their tile', (side,x,y,width,height) => {
+    const {ui,app,window} = setup(); window.innerWidth=width; window.innerHeight=height;
+    app.game.player={x,y};
+    app.game.renderer={getScreenPosition:(x,y)=>({x,y}),canvas:{getBoundingClientRect:()=>({left:0,top:0,right:width,bottom:height})}};
+    ui.root.offsetWidth=164;ui.root.offsetHeight=240;
+    ui.show({...receipt,rarity:'common'});
+    const cx=parseFloat(ui.root.style.left),cy=parseFloat(ui.root.style.top),px=x+8,py=y+8;
+    if(side==='right')expect(cx-82).toBeGreaterThan(px+100);
+    if(side==='left')expect(cx+82).toBeLessThan(px-100);
+    if(side==='above')expect(cy+120).toBeLessThan(py-12);
+    expect(cx-82).toBeGreaterThanOrEqual(0);expect(cx+82).toBeLessThanOrEqual(width);
+    expect(cy-120).toBeGreaterThanOrEqual(0);expect(cy+120).toBeLessThanOrEqual(height);
 });

@@ -37,6 +37,21 @@ test('combat effects default on and retain a saved disabled preference', () => {
     expect(disabled.elements.get('combatEffectsEnabled').checked).toBe(false);
 });
 
+test('each player can disable fish cards, retain the preference and dismiss an active reveal', () => {
+    const {settings,elements,values,app}=setup();
+    expect(settings.getFishCatchCardsEnabled()).toBe(true);
+    expect(elements.get('fishCatchCardsEnabled').checked).toBe(true);
+    app.fishingCatch={clear:jest.fn()};
+    elements.get('fishCatchCardsEnabled').checked=false;settings.setSettings();
+    expect(app.fishingCatch.clear).toHaveBeenCalledTimes(1);
+    expect(values.get('fishCatchCardsEnabled')).toBe('false');
+    const reopened=setup(Object.fromEntries(values));
+    expect(reopened.settings.getFishCatchCardsEnabled()).toBe(false);
+    expect(reopened.elements.get('fishCatchCardsEnabled').checked).toBe(false);
+    reopened.elements.get('fishCatchCardsEnabled').checked=true;reopened.settings.setSettings();
+    expect(reopened.settings.getFishCatchCardsEnabled()).toBe(true);
+});
+
 test('build information shows the actual timestamp in local time with release details available', () => {
     const {settings, elements} = setup();
     const builtAt = '2026-10-20T23:30:00Z', revision = 'a'.repeat(40);

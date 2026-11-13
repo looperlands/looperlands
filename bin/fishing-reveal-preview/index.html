@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/preview/preview.css">
 </head>
 <body>
-    <header><h1>Fishing catch reveal</h1><p>A short celebration. Then back to the water.</p></header>
+    <header><h1>Fishing catch reveal</h1><p>Try every rarity against the fishing beach.</p></header>
     <main aria-label="Catch animation stage"><p id="ready" role="status">Loading fish artwork…</p></main>
     <form id="controls">
         <div class="options">
@@ -18,10 +18,16 @@
             <label class="check"><input type="checkbox" id="double"> Double catch</label>
             <label class="check"><input type="checkbox" id="quiet"> Reduced motion</label>
             <label class="check"><input type="checkbox" id="sound" checked> Sound</label>
+            <label class="check"><input type="checkbox" id="cards" checked> Show cards</label>
             <button type="submit" disabled>Catch a fish</button>
         </div>
         <p class="preview-note">Example rewards, using the in-game reveal. No inventory or XP changes.</p>
     </form>
+    <script src="/js/lib/modernizr.js"></script>
+    <script src="/js/lib/underscore.min.js"></script>
+    <script src="/js/lib/class.js"></script>
+    <script src="/js/detect.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
     <script src="/js/lib/require-jquery.js"></script>
     <script src="/preview/preview.js"></script>
 </body>

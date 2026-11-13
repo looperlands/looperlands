@@ -10,10 +10,29 @@ get their own heading and eight extra sparks. The reveal dismisses automatically
 after 2.4–4 seconds, plus a 220ms exit when motion is enabled, and never captures
 input or delays the next cast.
 
+The compact card appears near the character, preferring the right side, then the
+left, with above and below as fallbacks. Its placement reserves room for the
+character's body, spring animation and clear space around the casting area, and
+clamps to the available viewport.
+Small screens use a narrower card. The card contains fish, rarity, quantity and XP;
+the habitat and added-to-inventory footer have been removed to keep it compact.
+Rarity anticipation, colour, particles, light rays and sound retain their impact.
+
+Players can turn **Settings → Interface → Fish Catch Cards** off independently.
+The preference is saved in their browser like the other visual settings. Disabled
+cards retain a short catch notification and sound, with the same server-awarded
+inventory and XP. The preview's **Show cards** checkbox exercises this behavior.
+
 The card inherits the existing progression cards' raster panel frame, GraphicPixel
 and AdvoCut fonts, warm text and plum surfaces. Its water-coloured specimen area
 uses the real fish artwork, cropped by `CardArtwork`. Rarity affects the accent
 and the water colour. There is no full-screen flash or camera shake.
+
+Uncommon and rarer tiers have a background glow; common catches have none.
+A bounded dark falloff behind the colour keeps
+it visible on bright map terrain; higher rarities increase its size and intensity.
+The catch sound is normalized to approximately -1 dB peak before the game's sound
+mix and saved volume controls are applied.
 
 `FISHING_CATCH` is a server-to-client receipt emitted after the inventory award
 and XP handling. It contains the fish ID, display name, rarity in the caught
@@ -22,7 +41,7 @@ It replaces fishing's use of the combat `KILL` message. Failed, expired and dupl
 attempts do not emit a receipt. A delayed receipt retains the casting map ID; the
 client ignores its reveal after leaving that map, dying or disconnecting.
 
-The reveal shows the awarded quantity and XP, caught habitat and water level.
+The reveal shows the awarded quantity and XP.
 Website-wide recorded-catch counts and first-recorded dates are not supplied by
 the game reward contract and are not invented for this card.
 
@@ -41,7 +60,13 @@ node bin/local-fishing-reveal-preview.js
 
 Open <http://127.0.0.1:8061>. Choose rarity, perfect or double catch, reduced
 motion and sound, then use **Catch a fish** to replay the production component.
+The background is the bright beach and ocean from the supplied in-game recording,
+with the browser chrome, HUD and completed reveal excluded. It has no page-wide
+dimming, so every rarity can be tested against the same demanding terrain.
 These receipts are examples; the preview does not award inventory or XP.
+The preview uses the production `AudioManager` and its full sound-slider mix,
+including the same MP3/OGG and Safari playback paths; it does not bypass that mix
+with a full-volume audio element. Its **Sound** checkbox mutes that same mixer.
 Set `FISHING_REVEAL_PREVIEW_PORT` to use a different loopback port.
 
 For a real catch, start a local game using [the native guide](../RUN-NATIVE-README.md),
