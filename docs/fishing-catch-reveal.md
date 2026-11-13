@@ -15,6 +15,11 @@ and AdvoCut fonts, warm text and plum surfaces. Its water-coloured specimen area
 uses the real fish artwork, cropped by `CardArtwork`. Rarity affects the accent
 and the water colour. There is no full-screen flash or camera shake.
 
+Every tier has a background glow. A bounded dark falloff behind the colour keeps
+it visible on bright map terrain; higher rarities increase its size and intensity.
+The catch sound is normalized to approximately -1 dB peak before the game's sound
+mix and saved volume controls are applied.
+
 `FISHING_CATCH` is a server-to-client receipt emitted after the inventory award
 and XP handling. It contains the fish ID, display name, rarity in the caught
 water, quantity, awarded XP, perfect-catch flag, map ID and required fishing level.
@@ -42,6 +47,9 @@ node bin/local-fishing-reveal-preview.js
 Open <http://127.0.0.1:8061>. Choose rarity, perfect or double catch, reduced
 motion and sound, then use **Catch a fish** to replay the production component.
 These receipts are examples; the preview does not award inventory or XP.
+The preview uses the production `AudioManager` and its full sound-slider mix,
+including the same MP3/OGG and Safari playback paths; it does not bypass that mix
+with a full-volume audio element. Its **Sound** checkbox mutes that same mixer.
 Set `FISHING_REVEAL_PREVIEW_PORT` to use a different loopback port.
 
 For a real catch, start a local game using [the native guide](../RUN-NATIVE-README.md),

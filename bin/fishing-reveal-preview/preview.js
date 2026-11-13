@@ -5,7 +5,7 @@ const previewIds = Object.values(previewFish);
 define('sprites', previewIds.map(id => 'text!../sprites/' + id + '.json'), function (...sources) {
     return Object.fromEntries(previewIds.map((id, index) => [id, JSON.parse(sources[index])]));
 });
-require(['fishingcatch', 'sprites', '../../shared/js/altnames'], function (FishingCatch, sprites) {
+require(['fishingcatch', 'sprites', 'audio', '../../shared/js/altnames'], function (FishingCatch, sprites, AudioManager) {
     const element = id => document.getElementById(id);
     const app = {game:{fish:sprites}, settings:{
         getReducedMotion:() => element('quiet').checked,
@@ -13,7 +13,10 @@ require(['fishingcatch', 'sprites', '../../shared/js/altnames'], function (Fishi
     }};
     const reveal = new FishingCatch(app);
     const xp = {common:10, uncommon:25, rare:75, epic:150, legendary:400};
-    const sound = new Audio('/audio/sounds/fishingsuccess.mp3');
+    // Match production's sound engine, base mix, browser fallback and mute behavior.
+    const audio = new AudioManager(app.game);
+    window.addEventListener('pagehide', () => audio.destroy(), {once:true});
+    element('sound').addEventListener('change', () => audio.setVolumes({sound:element('sound').checked ? 1 : 0}));
     function show() {
         const rarity = element('rarity').value;
         const quantity = element('double').checked ? 2 : 1;
@@ -22,7 +25,7 @@ require(['fishingcatch', 'sprites', '../../shared/js/altnames'], function (Fishi
         reveal.show({fish:id, name:AltNames.getName(id), rarity, quantity, perfect,
             experience:Math.round(xp[rarity] * (perfect ? 1.5 : 1)) * quantity,
             mapId:rarity === 'common' ? 'cobsfarm' : 'm88n2', requiredLevel:rarity === 'common' ? 1 : 10}, () => {
-            if (element('sound').checked) {sound.currentTime = 0; sound.play().catch(() => {});}
+            if (element('sound').checked) audio.playSound('fishingsuccess');
         });
     }
     element('controls').addEventListener('submit', event => {event.preventDefault(); show();});

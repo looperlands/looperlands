@@ -76,7 +76,7 @@ define(['cardartwork'], function (CardArtwork) {
             const effects = node('div', 'fc-effects');
             effects.setAttribute('aria-hidden', 'true');
             if (!quiet) {
-                if (tier > 0) effects.append(node('div', 'fc-wash'));
+                effects.append(node('div', 'fc-wash'));
                 if (tier >= 2) effects.append(node('div', 'fc-ring'));
                 if (tier >= 3) {
                     const rays = node('div', 'fc-rays');

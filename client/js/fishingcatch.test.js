@@ -113,7 +113,7 @@ test('the game refreshes statistics and plays the existing sound only for a disp
 test('rarity adds anticipation, impact and colour hooks, and sound lands on the reveal beat', () => {
     const {ui} = setup(); const sound = jest.fn();
     ui.show({...receipt, rarity:'common', perfect:false}, sound);
-    const commonSparks = ui.root.children[0].children[0].children.length;
+    const commonSparks = ui.root.children[0].children.find(el => el.className === 'fc-sparks').children.length;
     jest.advanceTimersByTime(369); expect(sound).not.toHaveBeenCalled();
     jest.advanceTimersByTime(1); expect(sound).toHaveBeenCalledTimes(1);
     ui.show({...receipt, rarity:'legendary', perfect:false}, sound);
