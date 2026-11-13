@@ -11044,6 +11044,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             canFish: function (gX, gY, keyboard) {
                 // Door traversal takes priority over overlapping or nearby water.
                 if (this.map.isDoor(gX, gY) || this.map.isDoor(this.player.gridX, this.player.gridY)) return false;
+                if (!this.map.isColliding(gX, gY)) {
+                    // Within casting range, a clear first step and target mean walking.
+                    const stepX = this.player.gridX + Math.sign(gX - this.player.gridX),
+                        stepY = this.player.gridY + Math.sign(gY - this.player.gridY);
+                    if (!this.map.isColliding(stepX, stepY)) return false;
+                }
                 if (this.player.isOnSameAxis(gX, gY)
                     && this.player.isNear({gridX: gX, gridY: gY}, 2)
                     && this.map.getLakeName(gX, gY)) {

@@ -389,3 +389,22 @@ test('Space attacks ordinary targets unless a usable training opening is availab
     expect(game.combatPrototype.technique).toHaveBeenCalledTimes(1);
     expect(game.makePlayerAttack).not.toHaveBeenCalled();
 });
+
+test.each(['d', 'ArrowRight'])('holding %s walks to the water edge without fishing across a walkable bank', async key => {
+    const {game, player, handler, frame, stopped} = createMovementGame();
+    let methods;
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'game.js'), 'utf8'), {
+        define: (_, factory) => factory(), Class: {extend: value => {methods = value;}},
+    });
+    game.canFish = methods.canFish;
+    player.getOneStepFurther = (x, y) => ({gridX: x + Math.sign(x - player.gridX), gridY: y});
+    game.map.isColliding = (x, y) => x >= 5;
+    game.map.getLakeName = (x, y) => x >= 5 ? 'pond' : null;
+    handler.handleKeyDown({key, code: key});
+    await Promise.resolve();
+    for (let i = 0; i < 40; i++) frame();
+    expect(player.gridX).toBe(4);
+    expect(player.isMoving()).toBe(false);
+    expect(stopped).toHaveBeenCalledTimes(1);
+    expect(game.canFish(5, 2, true)).toEqual({gridX: 5, gridY: 2});
+});
