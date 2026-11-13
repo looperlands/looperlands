@@ -32,6 +32,7 @@ test('server accepts a nearby cast from a rod and records the exact saved table'
     expect(player.pendingFish).toMatchObject({lakeName: 'cobFarmLake', mapId: 'world_one', expiresAt: 61000});
     expect(Lakes.cobFarmLake.fish[player.pendingFish.name]).toBeDefined();
     expect(world.announceSpawnFloat).toHaveBeenCalledWith(player, 4, 4);
+    expect(player.fishingSpot).toEqual({x: 4, y: 3});
     expect(equipment.getInventory).not.toHaveBeenCalled();
 });
 test.each([
@@ -116,4 +117,17 @@ test('parallel or repeated cast requests cannot replace an active catch', async 
     const fish = player.pendingFish;
     expect((await cast()).body.allowed).toBe(false);
     expect(player.pendingFish).toBe(fish);
+});
+
+test('a denied recast leaves the already equipped rod and remembered weapon intact', async () => {
+    holdSword(); ownRods(rod);
+    const sword = player.nftWeapon;
+    await cast();
+    const equippedRod = player.nftWeapon;
+    player.pendingFish = null;
+    equippedRod.getLevel = () => 0;
+    expect((await cast()).body.allowed).toBe(false);
+    expect(player.weapon).toBe(rod); expect(player.nftWeapon).toBe(equippedRod);
+    expect(player.fishingWeapon.nftWeapon).toBe(sword);
+    expect(equipment.getInventory).toHaveBeenCalledTimes(1);
 });

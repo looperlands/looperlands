@@ -19,7 +19,7 @@ const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
 const {completeFishingCatch} = require("./fishingresult");
-const {rememberFishingWeapon, restoreFishingWeapon, cancelFishing} = require("./fishingequipment");
+const {rememberFishingWeapon, cancelFishing} = require("./fishingequipment");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
@@ -52,6 +52,7 @@ module.exports = Player = Character.extend({
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
         this.pendingFish = null;
+        this.fishingSpot = null;
         this.consumableBuff = {};
         this.invincible = false;
 
@@ -650,10 +651,7 @@ module.exports = Player = Character.extend({
             const active = self.fishingRequest || self.pendingFish;
             self.fishingRequest = null;
             const completion = completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
-            if (active) {
-                restoreFishingWeapon(self);
-                self.server.announceDespawnFloat(self);
-            }
+            if (active) self.server.announceDespawnFloat(self);
             try {
                 await completion;
             } catch (error) {
@@ -1014,6 +1012,7 @@ module.exports = Player = Character.extend({
     equipWeapon: function (kind) {
         if (Types.isFishingRod(kind)) {this.equipSpecialItem(kind);return;}
         this.fishingWeapon = null;
+        this.fishingSpot = null;
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
@@ -1419,6 +1418,9 @@ module.exports = Player = Character.extend({
     },
 
     setPosition: function (x, y) {
+        if ((this.x !== x || this.y !== y) && (this.fishingSpot || this.fishingRequest || this.pendingFish)) {
+            cancelFishing(this);
+        }
         this._super(x, y);
         this.server?.server?.socialChat?.updateLocation(this);
     },
