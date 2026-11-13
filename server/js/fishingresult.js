@@ -9,6 +9,7 @@ async function completeFishingCatch(player, success, bullseye, {lakes, messages,
 
     const quantity = fish.double ? 2 : 1;
     const experience = (bullseye === true ? Math.round(fish.exp * 1.5) : fish.exp) * quantity;
+    const mapId = player.mapId;
     await player.playerEventBroker.lootEvent({kind: fish.name}, quantity, {source: 'catch'});
     const activity = {target: String(fish.name), quantity, lake: fish.lakeName, rarity: lakes[fish.lakeName].fish[fish.name]};
     player.server.server.activity?.record(player, 'fishing', activity);
@@ -16,7 +17,11 @@ async function completeFishingCatch(player, success, bullseye, {lakes, messages,
     // The weapon may already be restored while the inventory award is in flight.
     await rod?.syncExperience?.();
     player.handleExperience(experience);
-    player.server.pushToPlayer(player, new messages.Kill(fish.name, experience));
+    // Present only an awarded catch, using the rarity of these waters.
+    player.server.pushToPlayer(player, new messages.FishingCatch({
+        fish: fish.name, name: names.getName(fish.name), rarity: activity.rarity,
+        quantity, experience, perfect: bullseye === true, mapId, requiredLevel: fish.lakeLvl
+    }));
     discord.sendMessage(`🐟 **${player.name}** caught *${names.getName(fish.name)}!*${quantity === 1 ? '' : ' **[x2]**'} (Lake Level ${fish.lakeLvl})`);
     return activity;
 }

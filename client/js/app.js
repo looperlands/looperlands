@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics', 'fishingcatch'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics, FishingCatch) {
 
     var App = Class.extend({
         init: function () {
@@ -50,6 +50,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
         },
 
         setGame: function (game) {
+            this.fishingCatch?.destroy();
+            this.fishingCatch = null;
             this.game = game;
             this.isMobile = this.game.renderer.mobile;
             this.isTablet = this.game.renderer.tablet;
@@ -2193,6 +2195,13 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 }
             }
             this.fitGameToViewport();
+        },
+
+        showFishingCatch: function (receipt, onReveal) {
+            const game = this.game;
+            if (!game.started || game.player.isDead || game.disconnected || game.mapTransition?.active || receipt?.mapId !== game.mapId) return false;
+            if (!this.fishingCatch) this.fishingCatch = new FishingCatch(this);
+            return this.fishingCatch.show(receipt, onReveal);
         },
 
         showFishing: function () {

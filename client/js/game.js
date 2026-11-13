@@ -6383,6 +6383,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 clearTimeout(this.uniFishTimeout);
                 clearInterval(this.slidingFish);
                 this.app.hideFishing();
+                this.app.fishingCatch?.clear();
+                clearTimeout(this.fishingBarTimeout);
             },
 
             resetForMapTransition: function (map, storage) {
@@ -7880,6 +7882,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.player.onDeath(function () {
+                        self.app.fishingCatch?.clear();
                         self.arcadeSession?.close({resumeMusic: false, rearm: false});
                         self.beginPlayerDeath();
                     });
@@ -8287,8 +8290,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
                     });
 
+                    self.client.onFishingCatch(function (receipt) {
+                        self.renderStatistics();
+                        self.app.showFishingCatch(receipt, () => self.audioManager.playSound("fishingsuccess"));
+                    });
+
                     self.client.onPlayerKillMob(function (kind, xp) {
-                        // Fishing sends this XP message with its string item ID.
                         self.renderStatistics();
                         if (!Types.isMob(kind)) return;
                         let kindString = Types.getKindAsString(kind);
@@ -8461,6 +8468,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     });
 
                     self.client.onDisconnected(function (message) {
+                        self.app.fishingCatch?.clear();
                         if (self.mapTransition?.active) {
                             self.mapTransition.connectionLost();
                             return;
@@ -11065,6 +11073,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId && !self.mapTransition?.active;
                 if (!isCurrent()) return;
                 if (!this.player.isFishing && !this.fishingRequest) {
+                    clearTimeout(this.fishingBarTimeout);
+                    this.app.hideFishing();
+                    this.app.fishingCatch?.clear();
                     const request = this.fishingRequest = {};
                     self.player.isFishing = true;
 
@@ -11139,9 +11150,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 clearTimeout(this.uniFishTimeout);
                 clearInterval(this.slidingFish);
 
+                clearTimeout(this.fishingBarTimeout);
                 if (barHoldDuration) {
                     this.app.holdFishing(bullseye);
-                    setTimeout(self.app.hideFishing, barHoldDuration);
+                    this.fishingBarTimeout = setTimeout(() => self.app.hideFishing(), barHoldDuration);
                 } else {
                     this.app.hideFishing();
                 }
@@ -11183,6 +11195,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             clickFishingBar: function () {
+                if (!this.player.isFishing) return;
                 let self = this;
                 const markerOffset = 12; // 8 from the marker + 4 from the bar border
                 let clickPos = this.fishingData.fishPos + markerOffset;
@@ -11197,10 +11210,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     if (clickPos >= minBullseyePos && clickPos < maxBullseyePos) {
                         bullseye = true;
                     }
-                    self.audioManager.playSound("fishingsuccess");
-                    self.showNotification("You caught " + this.fishingData.fishName);
-                    self.stopFishing(true, 2000, bullseye);
-                    self.renderStatistics();
+                    self.stopFishing(true, false, bullseye);
                 } else {
                     self.audioManager.playSound("fishingfail");
                     self.showNotification("Failed to catch " + this.fishingData.fishName);

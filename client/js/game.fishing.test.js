@@ -103,7 +103,34 @@ test('a successful catch clears its escape timer and allows another cast immedia
     expect(game.floats[1]).toBeDefined();
     expect(game.app.showFishing).toHaveBeenCalledTimes(2);
     expect(game.client.sendFishingResult).toHaveBeenCalledTimes(1);
-    expect(game.showNotification).toHaveBeenCalledTimes(1);
+    expect(game.showNotification).not.toHaveBeenCalled();
+    expect(game.audioManager.playSound).not.toHaveBeenCalledWith('fishingsuccess');
+});
+
+test('a successful local result waits for the server award and cannot submit twice', async () => {
+    const {game, axios} = setup();
+    axios.get.mockResolvedValue(catchResponse);
+    game.startFishing(2, 3); await settle();
+    jest.advanceTimersByTime(12000);
+    game.fishingData.fishPos = game.fishingData.targetPos + game.fishingData.bullseyeRelPos - 12;
+    game.clickFishingBar(); game.clickFishingBar();
+    expect(game.client.sendFishingResult).toHaveBeenCalledTimes(1);
+    expect(game.showNotification).not.toHaveBeenCalled();
+    expect(game.audioManager.playSound).not.toHaveBeenCalledWith('fishingsuccess');
+});
+
+test('an old held bar cannot hide a new cast', async () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    const {game, axios} = setup();
+    game.player.isFishing = true;
+    game.stopFishing(false, 9000, false);
+    axios.get.mockResolvedValue(catchResponse);
+    game.startFishing(2, 3); await settle();
+    jest.advanceTimersByTime(6000);
+    game.app.hideFishing.mockClear();
+    jest.advanceTimersByTime(3000);
+    expect(game.app.hideFishing).not.toHaveBeenCalled();
+    expect(game.player.isFishing).toBe(true);
 });
 
 test('the escape timer starts at the bite and reports the fish escaping after seven seconds', () => {

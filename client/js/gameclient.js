@@ -51,6 +51,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.LIST] = this.receiveList;
             this.handlers[Types.Messages.DESTROY] = this.receiveDestroy;
             this.handlers[Types.Messages.KILL] = this.receiveKill;
+            this.handlers[Types.Messages.FISHING_CATCH] = data => this.fishingCatch_callback?.(data[1]);
             this.handlers[Types.Messages.HP] = this.receiveHitPoints;
             this.handlers[Types.Messages.BLINK] = this.receiveBlink;
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
@@ -864,6 +865,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         onPlayerKillMob: function(callback) {
             this.kill_callback = callback;
+        },
+
+        onFishingCatch: function(callback) {
+            this.fishingCatch_callback = callback;
         },
     
         onPopulationChange: function(callback) {

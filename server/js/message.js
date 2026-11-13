@@ -231,6 +231,15 @@ Messages.Kill = Message.extend({
     }
 });
 
+Messages.FishingCatch = Message.extend({
+    init: function(receipt) {
+        this.receipt = receipt;
+    },
+    serialize: function() {
+        return [Types.Messages.FISHING_CATCH, this.receipt];
+    }
+});
+
 Messages.List = Message.extend({
     init: function(ids) {
         this.ids = ids;

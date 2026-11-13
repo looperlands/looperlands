@@ -1,0 +1,57 @@
+/* A brief catch reveal using the game's panel frame, fonts and real fish sprites. */
+.fishing-catch { --fc-accent:#e4d0b6; --fc-water:#344347; --fc-surface:#342433; --fc-ink:#291d29; --fc-reveal:650ms; --fc-impact:370ms; --fc-size:1; position:fixed; left:50%; top:43%; width:248px; z-index:1250; transform:translate(-50%,-50%); pointer-events:none; color:#f4dfbc; font:12px/1.4 GraphicPixel,sans-serif; text-align:center; perspective:900px; }
+.fishing-catch[hidden],.fishing-catch [hidden] { display:none !important; }
+.fishing-catch * { box-sizing:border-box; }
+.fc-uncommon { --fc-accent:#b9e794; --fc-water:#375638; --fc-surface:#26382a; --fc-glow:#7bb54c55; }
+.fc-rare { --fc-accent:#7cdbff; --fc-water:#205575; --fc-surface:#1d3249; --fc-glow:#2cafffa3; }
+.fc-epic { --fc-accent:#e5b4ff; --fc-water:#66377d; --fc-surface:#382344; --fc-glow:#ba53efbb; }
+.fc-legendary { --fc-accent:#ffe08a; --fc-water:#815b25; --fc-surface:#46331e; --fc-glow:#ffbc35d9; }
+.fc-card { position:relative; z-index:1; scale:var(--fc-size); animation:fc-arrive var(--fc-reveal) cubic-bezier(.16,1,.3,1) both; }
+.fc-turn { position:relative; display:grid; transform-style:preserve-3d; transform:rotateY(180deg); animation:fc-flip var(--fc-reveal) cubic-bezier(.22,.7,.2,1) both; }
+.fc-face { grid-area:1/1; border:8px solid transparent; border-image:url('../img/common/panel.png') 12 fill / 8px / 0 stretch; padding:10px 12px 13px; backface-visibility:hidden; image-rendering:pixelated; box-shadow:0 12px 28px #100c1480; }
+.fc-front { transform:rotateY(180deg); border-image-source:url('../img/common/panel.png'); border-image-slice:12; background:var(--fc-surface); }
+.fc-rare .fc-front,.fc-epic .fc-front,.fc-legendary .fc-front { outline:2px solid var(--fc-accent); outline-offset:-5px; }
+.fc-back { display:grid; place-content:center; gap:24px; }
+.fc-hook { display:block; width:36px; height:46px; border:5px solid var(--fc-accent); border-top:0; border-radius:0 0 20px 20px; margin:auto; position:relative; }
+.fc-hook::before { content:''; position:absolute; right:-5px; top:-20px; height:24px; border-right:5px solid var(--fc-accent); }
+.fc-ripples { width:72px; height:12px; border:2px solid var(--fc-accent); border-radius:50%; }
+.fc-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; min-height:28px; padding-bottom:7px; }
+.fc-result { font:23px/1 AdvoCut,GraphicPixel,sans-serif; color:#f4dfbc; }
+.fc-perfect .fc-result { color:#f6d57d; }
+.fc-rarity { color:var(--fc-ink); background:var(--fc-accent); padding:4px 6px; font-size:10px; text-transform:capitalize; }
+.fc-art { height:140px; position:relative; display:grid; place-items:center; background:var(--fc-water); overflow:hidden; margin:0 -3px; }
+.fc-art::after { content:''; position:absolute; inset:0; background:#fff2d5; opacity:0; animation:fc-flash 320ms var(--fc-impact) ease-out both; }
+.fc-sprite { position:relative; display:block; width:108px; height:108px; z-index:1; image-rendering:pixelated; animation:fc-specimen 600ms var(--fc-impact) cubic-bezier(.16,1,.3,1) both; }
+.fc-shadow { position:absolute; bottom:17px; width:72px; height:8px; background:#17121c66; border-radius:50%; }
+.fc-art-status { position:absolute; inset:auto 5px 10px; font-size:10px; color:var(--fc-accent); }
+.fc-name { font:30px/1.08 AdvoCut,GraphicPixel,sans-serif; margin:14px 0 12px; overflow-wrap:anywhere; color:var(--fc-accent); }
+.fc-rewards { display:flex; justify-content:space-between; align-items:center; gap:10px; border-block:1px solid #9a6c545c; padding:9px 0; font-size:13px; }
+.fc-xp { color:var(--fc-accent); font-variant-numeric:tabular-nums; }
+.fc-quantity { color:#e4d0b6; font-variant-numeric:tabular-nums; }
+.fc-habitat { margin:10px 0 5px; color:#e4d0b6; font-size:10px; }
+.fc-saved { display:block; margin-top:5px; color:#d7ab97; font-size:10px; }
+.fc-effects { position:absolute; inset:0; pointer-events:none; }
+.fc-wash { position:absolute; left:50%; top:40%; width:700px; height:640px; background:radial-gradient(ellipse,var(--fc-glow),transparent 65%); opacity:0; transform:translate(-50%,-50%); animation:fc-wash 1900ms var(--fc-impact) ease-out both; }
+.fc-ring { position:absolute; left:50%; top:40%; width:180px; height:180px; border:4px solid var(--fc-accent); border-radius:50%; opacity:0; animation:fc-ring 850ms var(--fc-impact) cubic-bezier(.16,1,.3,1) both; }
+.fc-rays { position:absolute; left:50%; top:40%; }
+.fc-ray { position:absolute; left:-18px; bottom:0; width:36px; height:260px; background:linear-gradient(to top,transparent,var(--fc-accent)); clip-path:polygon(45% 0,55% 0,100% 100%,0 100%); transform-origin:50% 100%; opacity:0; animation:fc-ray 1200ms var(--fc-impact) ease-out both; }
+.fc-legendary .fc-ray { height:350px; width:48px; left:-24px; }
+.fc-sparks { position:absolute; left:50%; top:35%; z-index:2; }
+.fc-spark { position:absolute; width:4px; height:4px; background:var(--fc-accent); opacity:0; animation:fc-spark 900ms var(--fc-delay) ease-out both; }
+.fc-spark:nth-child(3n) { width:6px; height:6px; background:#fff0d7; }
+.fc-spark:nth-child(4n) { width:3px; height:3px; }
+.fc-leaving .fc-card { animation:fc-depart 220ms ease-in both; }
+.fc-quiet .fc-card,.fc-quiet .fc-turn,.fc-quiet .fc-sprite,.fc-quiet .fc-art::after { animation:none; }
+.fc-quiet .fc-effects { display:none; }
+@keyframes fc-arrive { 0% { opacity:0; transform:translateY(34px) rotate(-9deg) scale(.65); } 26% { opacity:1; transform:translateY(-8px) rotate(-4deg) scale(.92); } 48% { transform:translateY(-8px) rotate(4deg) scale(.88); } 68% { transform:translateY(2px) rotate(-2deg) scale(1.12); } 84% { transform:translateY(-2px) rotate(1deg) scale(.98); } 100% { opacity:1; transform:none; } }
+@keyframes fc-flip { 0%,24% { transform:rotateY(-12deg); } 44% { transform:rotateY(22deg); } 72% { transform:rotateY(195deg); } 100% { transform:rotateY(180deg); } }
+@keyframes fc-specimen { 0% { transform:translateY(12px) scale(.6); } 45% { transform:translateY(-7px) scale(1.13); } 75% { transform:translateY(2px) scale(.97); } 100% { transform:none; } }
+@keyframes fc-flash { 0% { opacity:.45; } 100% { opacity:0; } }
+@keyframes fc-spark { 0% { opacity:0; transform:translate(0,0) scale(1.6); } 12% { opacity:1; } 100% { opacity:0; transform:translate(var(--fc-x),var(--fc-y)) scale(.2); } }
+@keyframes fc-wash { 0% { opacity:0; transform:translate(-50%,-50%) scale(.45); } 14% { opacity:1; transform:translate(-50%,-50%) scale(1.12); } 55% { opacity:.7; } 100% { opacity:0; transform:translate(-50%,-50%) scale(1.2); } }
+@keyframes fc-ring { 0% { opacity:.9; transform:translate(-50%,-50%) scale(.6); } 100% { opacity:0; transform:translate(-50%,-50%) scale(2.7); } }
+@keyframes fc-ray { 0% { opacity:0; transform:rotate(var(--fc-angle)) scaleY(.45); } 12% { opacity:.55; transform:rotate(var(--fc-angle)) scaleY(1); } 100% { opacity:0; transform:rotate(calc(var(--fc-angle) + 12deg)) scaleY(1.2); } }
+@keyframes fc-depart { to { opacity:0; transform:translateY(-12px) scale(.94); } }
+@media (max-height:540px) { .fishing-catch { top:44%; width:220px; } .fc-art { height:96px; } .fc-sprite { width:80px; height:80px; } .fc-name { margin:9px 0; font-size:26px; } .fc-face { padding:7px 10px; } .fc-habitat { margin-top:7px; } }
+@media (max-width:380px) { .fishing-catch { width:min(236px,calc(100vw - 32px)); } }
+@media (prefers-reduced-motion:reduce) { .fishing-catch *,.fishing-catch *::after { animation:none !important; } .fc-sparks { display:none; } }
