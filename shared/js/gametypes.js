@@ -70,7 +70,8 @@ Types = {
         WORLD_TIME: 67,
         PLAYER_TRAIL: 68,
         PIXEL_FX: 69,
-        AVATAR_APPEARANCE: 70
+        AVATAR_APPEARANCE: 70,
+        FISHING_CATCH: 71
     },
 
     Entities: {

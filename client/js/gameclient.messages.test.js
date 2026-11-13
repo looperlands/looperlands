@@ -33,6 +33,18 @@ test('title updates reach existing players without spawning them again', () => {
     expect(renamed).toHaveBeenCalledWith(42, 'New Looper', 'New Looper');
 });
 
+test('confirmed fishing receipts have their own callback and never count as a combat kill', () => {
+    const {client, receive, messages: M} = setup();
+    const caught = jest.fn(), killed = jest.fn();
+    client.onFishingCatch(caught); client.onPlayerKillMob(killed);
+    const receipt = {fish:'m88njellyfish',name:'A jellyfish',rarity:'epic',quantity:2,experience:150,perfect:true,mapId:'m88n2',requiredLevel:10};
+    receive([[M.FISHING_CATCH, receipt]]);
+    expect(caught).toHaveBeenCalledWith(receipt);
+    expect(killed).not.toHaveBeenCalled();
+    client.dispose(); receive([[M.FISHING_CATCH, receipt]]);
+    expect(caught).toHaveBeenCalledTimes(1);
+});
+
 test('local clock updates are delivered after WELCOME on joining and reviving', () => {
     const {client, receive, messages: M} = setup();
     const order = [];

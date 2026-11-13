@@ -1,0 +1,135 @@
+/* Presentation of server-confirmed catches; never awards inventory or XP. */
+define(['cardartwork'], function (CardArtwork) {
+    const tiers = {
+        common: {reveal:650, impact:370, duration:2400, particles:8, distance:75, rays:0, scale:1},
+        uncommon: {reveal:720, impact:420, duration:2600, particles:12, distance:100, rays:0, scale:1},
+        rare: {reveal:880, impact:550, duration:3000, particles:24, distance:135, rays:0, scale:1.03},
+        epic: {reveal:1040, impact:680, duration:3400, particles:40, distance:170, rays:8, scale:1.07},
+        legendary: {reveal:1280, impact:850, duration:4000, particles:60, distance:215, rays:12, scale:1.12}
+    };
+    const node = (tag, className, text) => {
+        const element = document.createElement(tag);
+        element.className = className;
+        if (text != null) element.textContent = text;
+        return element;
+    };
+
+    class FishingCatch {
+        constructor(app) {
+            this.app = app;
+            this.root = node('section', 'fishing-catch');
+            this.root.hidden = true;
+            this.root.setAttribute('role', 'status');
+            this.root.setAttribute('aria-live', 'polite');
+            this.root.setAttribute('aria-atomic', 'true');
+            document.body.append(this.root);
+            this.onPageHide = () => this.destroy();
+            window.addEventListener('pagehide', this.onPageHide, {once: true});
+        }
+
+        show(receipt, onReveal) {
+            if (!receipt || typeof receipt.fish !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(receipt.fish) ||
+                typeof receipt.name !== 'string' || !Object.keys(tiers).includes(receipt.rarity) ||
+                !Number.isSafeInteger(receipt.quantity) || receipt.quantity < 1 ||
+                !Number.isFinite(receipt.experience) || receipt.experience < 0) return false;
+            this.clear();
+            const quiet = this.app.settings.getReducedMotion() || !this.app.settings.getCombatEffectsEnabled() ||
+                window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            const tier = Object.keys(tiers).indexOf(receipt.rarity);
+            const profile = tiers[receipt.rarity];
+            this.root.className = 'fishing-catch fc-' + receipt.rarity + (quiet ? ' fc-quiet' : '') + (receipt.perfect ? ' fc-perfect' : '');
+            this.root.style.setProperty('--fc-reveal', profile.reveal + 'ms');
+            this.root.style.setProperty('--fc-impact', profile.impact + 'ms');
+            this.root.style.setProperty('--fc-size', profile.scale);
+
+            const card = node('div', 'fc-card');
+            const turn = node('div', 'fc-turn');
+            const back = node('div', 'fc-face fc-back');
+            back.setAttribute('aria-hidden', 'true');
+            back.append(node('span', 'fc-hook'), node('span', 'fc-ripples'));
+            const front = node('div', 'fc-face fc-front');
+            const heading = node('div', 'fc-heading');
+            heading.append(node('span', 'fc-result', receipt.perfect ? 'Perfect catch!' : 'Caught!'),
+                node('span', 'fc-rarity', receipt.rarity));
+            const art = node('div', 'fc-art');
+            art.setAttribute('aria-hidden', 'true');
+            art.append(node('span', 'fc-shadow'));
+            this.sprite = node('span', 'fc-sprite');
+            const status = node('span', 'fc-art-status');
+            art.append(this.sprite, status);
+            const metadata = this.app.game.fish?.[receipt.fish] || this.app.game.sprites?.[receipt.fish];
+            CardArtwork.render(this.sprite, [{url: 'img/1/' + receipt.fish + '.png',
+                width: metadata?.width, height: metadata?.height,
+                animations: metadata?.animationData}], status, {slot: true});
+
+            const rewards = node('div', 'fc-rewards');
+            rewards.append(node('span', 'fc-quantity', '\u00d7' + receipt.quantity + ' fish'),
+                node('span', 'fc-xp', '+' + receipt.experience.toLocaleString('en-US') + ' XP'));
+            front.append(heading, art, node('h2', 'fc-name', receipt.name), rewards);
+            if (typeof receipt.mapId === 'string') {
+                const habitat = receipt.mapId.replace(/[_-]/g, ' ').replace(/^./, letter => letter.toUpperCase());
+                front.append(node('p', 'fc-habitat', habitat + (Number.isInteger(receipt.requiredLevel) && receipt.requiredLevel > 0
+                    ? ' \u00b7 Fishing level ' + receipt.requiredLevel + '+' : '')));
+            }
+            front.append(node('span', 'fc-saved', 'Added to inventory'));
+            turn.append(back, front); card.append(turn);
+            const effects = node('div', 'fc-effects');
+            effects.setAttribute('aria-hidden', 'true');
+            if (!quiet) {
+                if (tier > 0) effects.append(node('div', 'fc-wash'));
+                if (tier >= 2) effects.append(node('div', 'fc-ring'));
+                if (tier >= 3) {
+                    const rays = node('div', 'fc-rays');
+                    for (let i = 0; i < profile.rays; i++) {
+                        const ray = node('i', 'fc-ray');
+                        ray.style.setProperty('--fc-angle', (i * 360 / profile.rays) + 'deg');
+                        rays.append(ray);
+                    }
+                    effects.append(rays);
+                }
+                const sparks = node('div', 'fc-sparks');
+                const count = profile.particles + (receipt.perfect ? 8 : 0);
+                for (let i = 0; i < count; i++) {
+                    const spark = node('i', 'fc-spark');
+                    const angle = i / count * Math.PI * 2;
+                    const distance = profile.distance + i % 4 * 19;
+                    spark.style.setProperty('--fc-x', Math.cos(angle) * distance + 'px');
+                    spark.style.setProperty('--fc-y', Math.sin(angle) * distance - 32 + 'px');
+                    spark.style.setProperty('--fc-delay', (profile.impact + i % 3 * 18) + 'ms');
+                    sparks.append(spark);
+                }
+                effects.append(sparks);
+            }
+            this.root.append(effects, card);
+            this.root.hidden = false;
+            // The sound lands with the flip, and is cancelled with a stale reveal.
+            if (typeof onReveal === 'function') this.soundTimer = setTimeout(onReveal, quiet ? 0 : profile.impact);
+            this.timer = setTimeout(() => this.close(), profile.duration);
+            this.quiet = quiet;
+            return true;
+        }
+
+        close() {
+            clearTimeout(this.timer);
+            if (this.root.hidden) return;
+            this.root.classList.add('fc-leaving');
+            this.timer = setTimeout(() => this.clear(), this.quiet ? 0 : 220);
+        }
+
+        clear() {
+            clearTimeout(this.timer);
+            clearTimeout(this.soundTimer);
+            if (this.sprite) CardArtwork.cancel(this.sprite);
+            this.sprite = null;
+            this.root.hidden = true;
+            this.root.replaceChildren();
+        }
+
+        destroy() {
+            this.clear();
+            window.removeEventListener('pagehide', this.onPageHide);
+            this.root.remove();
+        }
+    }
+    return FishingCatch;
+});

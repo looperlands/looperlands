@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Fishing catch reveal · LooperLands</title>
+    <link rel="icon" href="/img/common/favicon.png">
+    <link rel="stylesheet" href="/css/fishing-catch.css">
+    <link rel="stylesheet" href="/preview/preview.css">
+</head>
+<body>
+    <header><h1>Fishing catch reveal</h1><p>A short celebration. Then back to the water.</p></header>
+    <main aria-label="Catch animation stage"><p id="ready" role="status">Loading fish artwork…</p></main>
+    <form id="controls">
+        <div class="options">
+            <label>Catch <select id="rarity"><option value="common">Common · Guppy</option><option value="uncommon">Uncommon · Clownfish</option><option value="rare">Rare · Pufferfish</option><option value="epic" selected>Epic · Jellyfish</option><option value="legendary">Legendary · Anglerfish</option></select></label>
+            <label class="check"><input type="checkbox" id="perfect" checked> Perfect catch</label>
+            <label class="check"><input type="checkbox" id="double"> Double catch</label>
+            <label class="check"><input type="checkbox" id="quiet"> Reduced motion</label>
+            <label class="check"><input type="checkbox" id="sound" checked> Sound</label>
+            <button type="submit" disabled>Catch a fish</button>
+        </div>
+        <p class="preview-note">Example rewards, using the in-game reveal. No inventory or XP changes.</p>
+    </form>
+    <script src="/js/lib/require-jquery.js"></script>
+    <script src="/preview/preview.js"></script>
+</body>
+</html>
