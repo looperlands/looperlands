@@ -35,6 +35,7 @@ function equipFishingRod(player, rod) {
 function restoreFishingWeapon(player) {
     const weapon = player.fishingWeapon;
     player.fishingWeapon = null;
+    player.fishingSpot = null;
     if (!weapon || !Types.isFishingRod(player.weapon)) return;
     player.getNFTWeapon()?.syncExperience();
     Object.assign(player, weapon);

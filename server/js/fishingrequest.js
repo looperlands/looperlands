@@ -27,8 +27,8 @@ async function requestFish(session, worlds, params, now = Date.now(), equipment 
         if (!rod) return denied('You need a fishing rod in your inventory to fish.');
         const rodLevel = rod.model?.getLevel(), lakeLvl = Lakes.getLakeLevel(lake);
         if (!Number.isFinite(rodLevel) || rodLevel < lakeLvl) return denied('You need level ' + lakeLvl + ' fishing to catch fish here.', 200, {reqLevel: lakeLvl});
+        equipped = player.weapon !== rod.kind;
         equipFishingRod(player, rod);
-        equipped = true;
         const trait = player.getNFTSpecialItemActiveTrait(), fish = Lakes.getRandomFish(lake, trait === 'lucky');
         if (!fish) return denied('No catch is available in this water.', 400);
         player.pendingFish = {name: fish, exp: Lakes.calculateFishExp(fish, lake), double: trait === 'double_catch', lakeLvl, lakeName: lake,
@@ -36,6 +36,7 @@ async function requestFish(session, worlds, params, now = Date.now(), equipment 
         const normal = Lakes.getDifficulty(rodLevel, lake, trait === 'upper_hand');
         const difficulty = player.playerClassModifiers.isModiferActive('fishing') ? player.playerClassModifiers.fishing : normal.difficulty;
         world.announceSpawnFloat(player, x, y);
+        player.fishingSpot = {x: player.x, y: player.y};
         accepted = true;
         return {status: 200, body: {allowed: true, fish, rod: Types.getKindAsString(rod.kind), difficulty, speed: Lakes.getFishSpeed(fish, lake), bullseyeSize: normal.bullseye, trait}};
     } catch (error) {
@@ -44,8 +45,8 @@ async function requestFish(session, worlds, params, now = Date.now(), equipment 
     } finally {
         if (player.fishingRequest === request) {
             player.fishingRequest = null;
-            if (!accepted && (equipped || (player.weapon === weapon && player.nftWeapon === model))) {
-                if (equipped) player.pendingFish = null;
+            if (!accepted && equipped) {
+                player.pendingFish = null;
                 restoreFishingWeapon(player);
             }
         }
