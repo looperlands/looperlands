@@ -46,6 +46,9 @@ node bin/local-fishing-reveal-preview.js
 
 Open <http://127.0.0.1:8061>. Choose rarity, perfect or double catch, reduced
 motion and sound, then use **Catch a fish** to replay the production component.
+The background is the bright beach and ocean from the supplied in-game recording,
+with the browser chrome, HUD and completed reveal excluded. It has no page-wide
+dimming, so every rarity can be tested against the same demanding terrain.
 These receipts are examples; the preview does not award inventory or XP.
 The preview uses the production `AudioManager` and its full sound-slider mix,
 including the same MP3/OGG and Safari playback paths; it does not bypass that mix
