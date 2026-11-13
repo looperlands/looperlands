@@ -140,12 +140,12 @@ test.each([['right',442,292,900,600],['left',842,292,900,600],['above',162,442,3
     const {ui,app,window} = setup(); window.innerWidth=width; window.innerHeight=height;
     app.game.player={x,y};
     app.game.renderer={getScreenPosition:(x,y)=>({x,y}),canvas:{getBoundingClientRect:()=>({left:0,top:0,right:width,bottom:height})}};
-    ui.root.offsetWidth=176;ui.root.offsetHeight=240;
+    ui.root.offsetWidth=164;ui.root.offsetHeight=240;
     ui.show({...receipt,rarity:'common'});
     const cx=parseFloat(ui.root.style.left),cy=parseFloat(ui.root.style.top),px=x+8,py=y+8;
-    if(side==='right')expect(cx-88).toBeGreaterThan(px+12);
-    if(side==='left')expect(cx+88).toBeLessThan(px-12);
+    if(side==='right')expect(cx-82).toBeGreaterThan(px+100);
+    if(side==='left')expect(cx+82).toBeLessThan(px-100);
     if(side==='above')expect(cy+120).toBeLessThan(py-12);
-    expect(cx-88).toBeGreaterThanOrEqual(0);expect(cx+88).toBeLessThanOrEqual(width);
+    expect(cx-82).toBeGreaterThanOrEqual(0);expect(cx+82).toBeLessThanOrEqual(width);
     expect(cy-120).toBeGreaterThanOrEqual(0);expect(cy+120).toBeLessThanOrEqual(height);
 });

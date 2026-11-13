@@ -12,7 +12,8 @@ input or delays the next cast.
 
 The compact card appears near the character, preferring the right side, then the
 left, with above and below as fallbacks. Its placement reserves room for the
-character's body and spring animation, and clamps to the available viewport.
+character's body, spring animation and clear space around the casting area, and
+clamps to the available viewport.
 Small screens use a narrower card. The card contains fish, rarity, quantity and XP;
 the habitat and added-to-inventory footer have been removed to keep it compact.
 Rarity anticipation, colour, particles, light rays and sound retain their impact.

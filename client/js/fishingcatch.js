@@ -125,7 +125,7 @@ define(['cardartwork'], function (CardArtwork) {
             // Reserve the largest spring frame so it never swings over the player.
             const halfWidth = this.root.offsetWidth * this.profile.scale * 1.12 / 2;
             const halfHeight = this.root.offsetHeight * this.profile.scale * 1.12 / 2;
-            const gap = Math.max(44, Math.abs(edge.x - origin.x) + 28);
+            const gap = Math.max(108, Math.abs(edge.x - origin.x) + 92);
             const minX = Math.max(8, viewport.left + 8) + halfWidth;
             const maxX = Math.min(window.innerWidth - 8, viewport.right - 8) - halfWidth;
             const top = viewport.bottom - viewport.top < halfHeight * 2 + 16 ? 8 : Math.max(8, viewport.top + 8);
