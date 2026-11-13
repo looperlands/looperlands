@@ -22,7 +22,7 @@ function setup() {
         sessionId: 'session', player: {id: 1, isFishing: false, orientation: 'right',
             getWeaponName: () => 'rod', getOrientationTo: () => 'right', idle: jest.fn(),
             animate: (name, speed, count, onEnd) => onEnd()},
-        map: {getLakeName: () => 'm88nDreamPond1', isDoor: () => false}, floats: {}, fish: {},
+        map: {getLakeName: () => 'm88nDreamPond1', isDoor: () => false, isColliding: () => true}, floats: {}, fish: {},
         fishingData: {fishName: null, fishPos: 0}, renderer: {scale: 1}, camera: {isVisible: () => true},
         app: {setFish: jest.fn(), setFishPos: jest.fn(), setFishingTarget: jest.fn(),
             showFishing: jest.fn(), hideFishing: jest.fn(), holdFishing: jest.fn()},
@@ -257,4 +257,60 @@ test('leaving a door tile does not start fishing instead of walking', () => {
     game.click({x: 2, y: 3, keyboard: true});
     expect(game.makePlayerGoTo).toHaveBeenCalledWith(2, 3);
     expect(game.startFishing).not.toHaveBeenCalled();
+});
+
+function dockFixture(mapId) {
+    const {game} = doorwayFixture();
+    const data = require(`../maps/world_client_${mapId}.json`);
+    const blocked = new Set([...data.collisions, ...data.blocking]);
+    game.map = {
+        isDoor: (x, y) => data.doors.some(door => door.x === x && door.y === y),
+        isColliding: (x, y) => blocked.has(y * data.width + x),
+        getLakeName: (x, y) => data.fishingTiles[y * data.width + x],
+    };
+    game.player.gridX = 155; game.player.gridY = 415;
+    game.player.isOnSameAxis = (x, y) => x === game.player.gridX || y === game.player.gridY;
+    game.player.isNear = pos => Math.abs(pos.gridX - game.player.gridX) + Math.abs(pos.gridY - game.player.gridY) <= 2;
+    game.player.getOneStepFurther = (x, y) => ({gridX: x + Math.sign(x - game.player.gridX), gridY: y + Math.sign(y - game.player.gridY)});
+    game.pathingGrid = Array.from({length: data.height}, () => Array(data.width).fill(0));
+    return {game};
+}
+
+for (const mapId of ['m88n', 'm88n2']) {
+    test.each([false, true])(`${mapId} dock movement does not fish past the next walkable tile (keyboard=%s)`, keyboard => {
+        const {game} = dockFixture(mapId);
+        expect(game.map.isColliding(155, 416)).toBe(false);
+        expect(game.map.getLakeName(155, 416)).toBeUndefined();
+        expect(game.map.getLakeName(155, 417)).toBe('m88ndarkpool');
+        game.click({x: 155, y: 416, keyboard});
+        expect(game.makePlayerGoTo).toHaveBeenCalledWith(155, 416);
+        expect(game.startFishing).not.toHaveBeenCalled();
+    });
+
+    test.each([false, true])(`${mapId} walkable tiles overlapping water still receive movement (keyboard=%s)`, keyboard => {
+        const {game} = dockFixture(mapId);
+        game.player.gridX = 154; game.player.gridY = 417;
+        expect(game.map.isColliding(155, 417)).toBe(false);
+        expect(game.map.getLakeName(155, 417)).toBe('m88ndarkpool');
+        game.click({x: 155, y: 417, keyboard});
+        expect(game.makePlayerGoTo).toHaveBeenCalledWith(155, 417);
+        expect(game.startFishing).not.toHaveBeenCalled();
+    });
+
+    test.each([false, true])(`${mapId} blocked water beside the dock remains fishable (keyboard=%s)`, keyboard => {
+        const {game} = dockFixture(mapId);
+        game.player.gridX = 155; game.player.gridY = 417;
+        expect(game.map.isColliding(156, 417)).toBe(true);
+        expect(game.map.getLakeName(156, 417)).toBe('m88ndarkpool');
+        game.click({x: 156, y: 417, keyboard});
+        expect(game.startFishing).toHaveBeenCalledWith(156, 417);
+        expect(game.makePlayerGoTo).not.toHaveBeenCalled();
+    });
+}
+
+test.each([false, true])('water beyond a blocked bank remains selectable within the two-tile cast range (keyboard=%s)', keyboard => {
+    const {game} = doorwayFixture();
+    game.map.isColliding = (x, y) => y === 3;
+    game.map.getLakeName = (x, y) => y === 4 ? 'pond' : null;
+    expect(game.canFish(2, 4, keyboard)).toEqual({gridX: 2, gridY: 4});
 });

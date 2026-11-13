@@ -4,13 +4,15 @@ Open **Gameplay → Fishing** in the Mapmaker Toolbox. Choose the map you want t
 
 ## Place fishing areas
 
-1. Choose **Draw fishing area**, then drag a box on the water. The box makes every covered tile fishable, including ground if you draw over it. Terrain artwork and collisions stay as authored in Tiled.
+1. Choose **Draw fishing area**, then drag a box on the water. The box marks every covered tile as a fishing area, including ground if you draw over it. Walkable ground keeps normal movement input. Terrain artwork and collisions stay as authored in Tiled.
 2. Drag the box to move it; drag an edge or corner to resize. Shift-drag pans, scroll zooms. Arrow keys move; Shift and arrows resize. Numeric tile coordinates also work on touchscreens.
 3. Set the required **rod level**, then choose catches with the visual item picker and assign a rarity to each one. Use registered fish only and include at least one common catch.
 4. Select another area from **Authored areas** to keep editing. **Save all changes** saves additions, edits and removals together to Tiled.
 5. Choose **Build this map**, wait for completion, then start a fresh playtest with a fishing rod at the appropriate level.
 
 Casting requires a living player with an owned fishing rod, standing in the same row or column, one or two tiles from a fishing tile. Clicking the water automatically equips the last-used owned rod, or the first owned rod if none has been used this session. The server waits for its level and traits to load and checks the saved fishing map, position and rod level before selecting a catch. The rod stays equipped between casts, including after catching, missing or losing a fish. Moving to another tile restores the previous weapon; manual equipment selections take precedence. If no rod is owned or its level is too low, the weapon stays equipped. The validator warns when an area has no reachable casting position under the built base collisions.
+
+Walkable docks and bank tiles keep normal movement, even when a fishing area overlaps them. Keyboard movement reaches the water's edge before casting instead of fishing past a walkable step. Water across a blocked bank remains selectable within the two-tile cast range.
 
 Changes remain drafts until saved. Reload and map switches ask before discarding changes. If Tiled or another tab changed the file, save is rejected and the draft is retained; reload and reapply it. Fishing areas may not affect the same tile. Rotated shapes, layer offsets and non-rectangles must be corrected in Tiled.
 
