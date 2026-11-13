@@ -52,7 +52,7 @@ test.each([false, true])('a missing rarity returns an allowed fishing response a
     vm.runInNewContext(source.slice(start, end), {
         app: {get: (url, callback) => { handler = callback; }}, Lakes, require: name=>require(name),
         cache: {get: () => ({mapId: 'main', entityId: 1})},
-        self: {worldsMap: {main: world}},
+        self: {worldsMap: {main: world}}, Date, dao: {},
     });
     const res = {status: jest.fn().mockReturnThis(), send: jest.fn(), json: jest.fn()};
     await handler({params: {sessionId: 'session', lakeName: 'm88nDreamPond1', x: '2', y: '3'}}, res);

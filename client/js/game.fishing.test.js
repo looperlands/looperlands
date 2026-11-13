@@ -133,3 +133,53 @@ test('fishing XP refreshes stats without treating a fish as a mob kill',()=>{
     vm.runInNewContext(source.slice(start,end),{self:game,Types:{isMob:kind=>typeof kind==='number',getKindAsString:()=> 'rat',Entities:{RAT:2}},AltNames:{getName:()=> 'rat'},_:{include:(items,value)=>items.includes(value)}});
     expect(()=>handler('cobguppy',13)).not.toThrow();expect(game.renderStatistics).toHaveBeenCalledTimes(1);expect(game.storage.incrementTotalKills).not.toHaveBeenCalled();handler(2,10);expect(game.storage.incrementTotalKills).toHaveBeenCalledTimes(1);
 });
+
+test('water can be selected while holding a weapon, with the same distance and axis rules', () => {
+    const {game} = setup();
+    game.player.weaponName = 'sword1';
+    game.player.isOnSameAxis = (x, y) => x === 2 || y === 2;
+    game.player.isNear = pos => Math.abs(pos.gridX - 2) + Math.abs(pos.gridY - 2) <= 2;
+    game.map.getLakeName = (x, y) => y === 4 ? 'pond' : null;
+    expect(game.canFish(2, 4, false)).toEqual({gridX: 2, gridY: 4});
+    expect(game.canFish(3, 4, false)).toBe(false);
+    expect(game.canFish(2, 5, false)).toBe(false);
+    game.player.getOneStepFurther = () => ({gridX: 2, gridY: 4});
+    expect(game.canFish(2, 3, true)).toEqual({gridX: 2, gridY: 4});
+});
+test('a cancelled pending request cannot cast a float or overlap a newer request', async () => {
+    const {game, axios} = setup();
+    let finish;
+    axios.get.mockReturnValue(new Promise(resolve => {finish = resolve;}));
+    game.startFishing(2, 3);
+    game.stopFishing(false, false, false);
+    game.startFishing(4, 5);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    finish(catchResponse); await settle();
+    expect(game.floats[1]).toBeUndefined();
+    expect(game.player.isFishing).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(game.client.sendFishingResult).toHaveBeenLastCalledWith(false, false);
+    game.startFishing(4, 5); expect(axios.get).toHaveBeenCalledTimes(2);
+});
+test('the accepted rod determines the float even before its equipment broadcast arrives', async () => {
+    const {game, axios} = setup();
+    axios.get.mockResolvedValue({data: {...catchResponse.data, rod: 'selected-rod'}});
+    game.startFishing(2, 3); await settle();
+    expect(game.floats[1].spriteName).toBe('item-selected-rod');
+});
+
+test('server equipment broadcasts update the local rod and restore the weapon and its metadata', () => {
+    const {game} = setup();
+    game.player.setWeaponName = name => {game.player.weaponName = name;};
+    const source = fs.readFileSync(require.resolve('./game'), 'utf8');
+    // This method uses global Types in the AMD runtime, just like normal gameplay.
+    let methods;
+    const rodKind = 10, swordKind = 11;
+    vm.runInNewContext(source, {define: (_, factory) => factory(), Class: {extend: value => {methods = value;}},
+        Types: {isArmor: () => false, isWeapon: kind => kind === swordKind, isFishingRod: kind => kind === rodKind}});
+    const metadata = {assetType: 'weapon', tokenHash: 'sword'};
+    methods.applyEquipmentAppearance.call(game, game.player, 'rod', rodKind);
+    expect(game.player.weaponName).toBe('rod');
+    methods.applyEquipmentAppearance.call(game, game.player, 'sword', swordKind, metadata);
+    expect(game.player.weaponName).toBe('sword'); expect(game.player.dynamicWeaponNFTData).toBe(metadata);
+});

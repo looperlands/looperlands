@@ -66,14 +66,14 @@ function setup() {
         app, storage, sessionId: storage.sessionId, mapId: 'source', username: 'Looper',
         started: true, isStopped: false, playerPositionReady: true, currentTime: 100,
         renderer, audioManager: audio, sprites, spritesets: [sprites], cursors: {hand: {}},
-        camera: {isVisible: () => false}, entities: {}, floats: {}, deathpositions: {},
+        camera: {isVisible: () => false}, entities: {}, floats: {}, deathpositions: {}, fishingData: {fishPos: 0, fishName: null},
         pendingEntityTargets: new Map(), pendingEntityAttackers: new Map(),
         zoningQueue: [], currentZoning: null, toggledLayers: {}, tileStages: {}, tileStageRevisions: {},
         tileActionStageRequestId: 0, worldAmbience: new modules.worldambience(),
         combatFeedback: effect(), toolImpactFeedback: effect(), worldFx: effect(), combatPrototype: effect(),
         infoManager: effect(), footstepFeedback: effect(), pickupFeedback: effect(),
         conversationHold: {start: jest.fn(), stop: jest.fn()}, arcadeSession: {close: jest.fn()},
-        client: {disable: jest.fn(), dispose: jest.fn()}, bubbleManager: new modules.bubble('#bubbles'),
+        client: {disable: jest.fn(), dispose: jest.fn(), sendFishingResult: jest.fn()}, bubbleManager: new modules.bubble('#bubbles'),
     });
     app.game = game;
     sandbox.self = game;
@@ -82,7 +82,7 @@ function setup() {
         tilesets: [{src: mapId + '.png'}], musicAreas: [],
         isOutOfBounds: (x, y) => x < 0 || y < 0 || x >= width || y >= height,
         isDoor: () => false, isColliding(x, y) {return this.isOutOfBounds(x, y) || this.grid[y][x] === 1;},
-        getLakeName: () => 'pond', getCurrentTrigger: () => null,
+        getLakeName: () => null, getCurrentTrigger: () => null,
         stopStreamCheck: jest.fn(), _initStreamCheck: jest.fn(), ready: callback => callback(),
     });
     game.map = map('source', 4, 4);

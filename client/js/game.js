@@ -6357,6 +6357,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             pauseForMapTransition: function () {
                 this.cancelAvatarAppearance?.(this.player);
+                if (this.player.isFishing) this.stopFishing(false, false, false);
                 this.app.hideChat();
                 this.started = false;
                 this.isStopped = true;
@@ -8784,8 +8785,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     if (entity.avatarAppearance?.nftId?.replace('0x', 'NFT_') === itemName) {
                         this.applyAvatarAppearance(entity, entity.avatarAppearance);
                     } else entity.setSprite(this.sprites[itemName]);
-                } else if (metadata || Types.isWeapon(itemKind)) {
+                } else if (metadata || Types.isWeapon(itemKind) || Types.isFishingRod(itemKind)) {
                     entity.setWeaponName(itemName);
+                    entity.dynamicWeaponNFTData = metadata;
+                    if (entity === this.player) {
+                        if (entity.isFishing && !Types.isFishingRod(itemKind)) this.stopFishing(false, false, false);
+                        this.renderStatistics();
+                    }
                 }
             },
 
@@ -10490,6 +10496,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.cancelAvatarAppearance?.(this.player);
                 this.audioManager?.soundscape?.clear();
                 const player = this.player;
+                if (player.isFishing) this.stopFishing(false, false, false);
                 const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
                 clearTimeout(this.playerDeathTimer);
                 clearTimeout(this.reviveTimer);
@@ -11027,19 +11034,16 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             canFish: function (gX, gY, keyboard) {
-                if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))) {
-                    if (this.player.isOnSameAxis(gX, gY)
-                        && this.player.isNear({gridX: gX, gridY: gY}, 2)
-                        && this.map.getLakeName(gX, gY)) {
-                        return {gridX: gX, gridY: gY};
-                    } else if (keyboard) { // let keyboard seek one tile further
-                        let tryPos = this.player.getOneStepFurther(gX, gY);
-                        if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
-                            return tryPos;
-                        }
+                if (this.player.isOnSameAxis(gX, gY)
+                    && this.player.isNear({gridX: gX, gridY: gY}, 2)
+                    && this.map.getLakeName(gX, gY)) {
+                    return {gridX: gX, gridY: gY};
+                } else if (keyboard) { // let keyboard seek one tile further
+                    let tryPos = this.player.getOneStepFurther(gX, gY);
+                    if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
+                        return tryPos;
                     }
                 }
-
                 return false;
             },
 
@@ -11060,18 +11064,24 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const self = this, player = this.player, map = this.map, sessionId = this.sessionId;
                 const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId && !self.mapTransition?.active;
                 if (!isCurrent()) return;
-                if (!this.player.isFishing) {
+                if (!this.player.isFishing && !this.fishingRequest) {
+                    const request = this.fishingRequest = {};
                     self.player.isFishing = true;
 
                     let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                     axios.get(url).then(function (response) {
+                        if (self.fishingRequest === request) self.fishingRequest = null;
                         if (!isCurrent()) return;
+                        if (!player.isFishing) {
+                            if (response.data.allowed) self.client.sendFishingResult(false, false);
+                            return;
+                        }
                         if (!response.data.allowed) {
                             self.player.isFishing = false;
                             self.showNotification(response.data.error || "You need level " + response.data.reqLevel + " fishing to fish here.");
                             return;
                         }
-                        let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
+                        let float = new Float(gX, gY, self.player.id, response.data.rod || self.player.getWeaponName());
                         self.castFloat(float);
                         let traitText = self.getFishingTraitProcText(response.data.trait);
 
@@ -11087,7 +11097,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             }
                         }, waitDuration);
                     }).catch(function (error) {
-                        if (!isCurrent()) return;
+                        if (self.fishingRequest === request) self.fishingRequest = null;
+                        if (!isCurrent() || !player.isFishing) return;
+                        // A lost response may still have equipped a rod on the server.
+                        self.client.sendFishingResult(false, false);
                         console.error("Error while requesting a fish.");
                         self.player.isFishing = false;
                         self.showNotification("Could not cast. Please try again.");
@@ -11133,7 +11146,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.app.hideFishing();
                 }
 
-                this.removeFloat(this.player.id);
+                if (this.floats[this.player.id]) this.removeFloat(this.player.id);
 
                 this.client.sendFishingResult(success, bullseye);
                 this.fishingData.fishPos = 0;

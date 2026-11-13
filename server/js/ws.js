@@ -1183,8 +1183,11 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", (req, res) => {
-            const result = require('./fishingrequest').requestFish(cache.get(req.params.sessionId), self.worldsMap, req.params);
+        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", async (req, res) => {
+            const result = await require('./fishingrequest').requestFish(cache.get(req.params.sessionId), self.worldsMap, req.params, Date.now(), {
+                getInventory: dao.getInventory,
+                createRod: (wallet, kind) => new (require('./nftspecialitem').NFTSpecialItem)(wallet, kind)
+            });
             res.status(result.status).send(result.body);
         });
 
