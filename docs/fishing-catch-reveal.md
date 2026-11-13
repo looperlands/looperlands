@@ -10,6 +10,17 @@ get their own heading and eight extra sparks. The reveal dismisses automatically
 after 2.4–4 seconds, plus a 220ms exit when motion is enabled, and never captures
 input or delays the next cast.
 
+The compact card appears near the character, preferring the right side, then the
+left, with above and below as fallbacks. Its placement reserves room for the
+character's body and spring animation, and clamps to the available viewport.
+Small screens use a narrower card and hide the secondary habitat/inventory footer.
+Rarity anticipation, colour, particles, light rays and sound retain their impact.
+
+Players can turn **Settings → Interface → Fish Catch Cards** off independently.
+The preference is saved in their browser like the other visual settings. Disabled
+cards retain a short catch notification and sound, with the same server-awarded
+inventory and XP. The preview's **Show cards** checkbox exercises this behavior.
+
 The card inherits the existing progression cards' raster panel frame, GraphicPixel
 and AdvoCut fonts, warm text and plum surfaces. Its water-coloured specimen area
 uses the real fish artwork, cropped by `CardArtwork`. Rarity affects the accent

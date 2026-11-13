@@ -80,6 +80,7 @@ class GameSettings {
 
         // Initialize checkbox states based on localStorage
         document.getElementById('combatEffectsEnabled').checked = this.getCombatEffectsEnabled();
+        document.getElementById('fishCatchCardsEnabled').checked = this.getFishCatchCardsEnabled();
         document.getElementById('musicEnabled').checked = this.getMusicEnabled();
         document.getElementById('streamMusicEnabled').checked = this.getStreamMusicEnabled();
         document.getElementById('centeredCamera').checked = this.getCenteredCamera();
@@ -281,6 +282,15 @@ class GameSettings {
         return localStorage.getItem('combatEffectsEnabled') === 'true';
     }
 
+    getFishCatchCardsEnabled() {
+        return localStorage.getItem('fishCatchCardsEnabled') !== 'false';
+    }
+
+    setFishCatchCardsEnabled(enabled) {
+        localStorage.setItem('fishCatchCardsEnabled', enabled ? 'true' : 'false');
+        if (!enabled) this.app.fishingCatch?.clear();
+    }
+
     setCombatEffectsEnabled(enabled) {
         localStorage.setItem('combatEffectsEnabled', enabled ? 'true' : 'false');
         if (!enabled && this.app.game && this.app.game.combatFeedback) {
@@ -328,6 +338,7 @@ class GameSettings {
         }
         this.refreshHitFeelOptions();
         this.setCombatEffectsEnabled(document.getElementById('combatEffectsEnabled').checked);
+        this.setFishCatchCardsEnabled(document.getElementById('fishCatchCardsEnabled').checked);
         if (this.getCombatEffectsEnabled()) this.app.game?.combatFeedback?.clear();
         this.app.game?.audioManager?.setVolumes?.(this.getAudioVolumes());
         this.setMusicEnabled(document.getElementById('musicEnabled').checked);

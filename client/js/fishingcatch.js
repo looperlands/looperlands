@@ -25,6 +25,11 @@ define(['cardartwork'], function (CardArtwork) {
             document.body.append(this.root);
             this.onPageHide = () => this.destroy();
             window.addEventListener('pagehide', this.onPageHide, {once: true});
+            this.onResize = () => {
+                clearTimeout(this.resizeTimer);
+                this.resizeTimer = setTimeout(() => this.position(), 100);
+            };
+            window.addEventListener('resize', this.onResize);
         }
 
         show(receipt, onReveal) {
@@ -33,10 +38,16 @@ define(['cardartwork'], function (CardArtwork) {
                 !Number.isSafeInteger(receipt.quantity) || receipt.quantity < 1 ||
                 !Number.isFinite(receipt.experience) || receipt.experience < 0) return false;
             this.clear();
+            if (!this.app.settings.getFishCatchCardsEnabled()) {
+                this.app.game.showNotification('Caught ' + receipt.name + (receipt.quantity > 1 ? ' \u00d7' + receipt.quantity : '') + ' \u00b7 +' + receipt.experience.toLocaleString('en-US') + ' XP');
+                if (typeof onReveal === 'function') onReveal();
+                return false;
+            }
             const quiet = this.app.settings.getReducedMotion() || !this.app.settings.getCombatEffectsEnabled() ||
                 window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
             const tier = Object.keys(tiers).indexOf(receipt.rarity);
             const profile = tiers[receipt.rarity];
+            this.profile = profile;
             this.root.className = 'fishing-catch fc-' + receipt.rarity + (quiet ? ' fc-quiet' : '') + (receipt.perfect ? ' fc-perfect' : '');
             this.root.style.setProperty('--fc-reveal', profile.reveal + 'ms');
             this.root.style.setProperty('--fc-impact', profile.impact + 'ms');
@@ -49,7 +60,7 @@ define(['cardartwork'], function (CardArtwork) {
             back.append(node('span', 'fc-hook'), node('span', 'fc-ripples'));
             const front = node('div', 'fc-face fc-front');
             const heading = node('div', 'fc-heading');
-            heading.append(node('span', 'fc-result', receipt.perfect ? 'Perfect catch!' : 'Caught!'),
+            heading.append(node('span', 'fc-result', receipt.perfect ? 'Perfect!' : 'Caught!'),
                 node('span', 'fc-rarity', receipt.rarity));
             const art = node('div', 'fc-art');
             art.setAttribute('aria-hidden', 'true');
@@ -102,11 +113,41 @@ define(['cardartwork'], function (CardArtwork) {
             }
             this.root.append(effects, card);
             this.root.hidden = false;
+            this.position();
             // The sound lands with the flip, and is cancelled with a stale reveal.
             if (typeof onReveal === 'function') this.soundTimer = setTimeout(onReveal, quiet ? 0 : profile.impact);
             this.timer = setTimeout(() => this.close(), profile.duration);
             this.quiet = quiet;
             return true;
+        }
+
+        position() {
+            const {renderer, player} = this.app.game;
+            if (this.root.hidden || !renderer?.getScreenPosition || !player) return;
+            const origin = renderer.getScreenPosition(player.x + 8, player.y + 8);
+            const bodyHalfWidth = Math.max(8, (player.sprite?.width || 16) / 2);
+            const edge = renderer.getScreenPosition(player.x + 8 + bodyHalfWidth, player.y + 8);
+            const viewport = renderer.canvas.getBoundingClientRect();
+            // Reserve the largest spring frame so it never swings over the player.
+            const halfWidth = this.root.offsetWidth * this.profile.scale * 1.12 / 2;
+            const halfHeight = this.root.offsetHeight * this.profile.scale * 1.12 / 2;
+            const gap = Math.max(28, Math.abs(edge.x - origin.x) + 12);
+            const minX = Math.max(8, viewport.left + 8) + halfWidth;
+            const maxX = Math.min(window.innerWidth - 8, viewport.right - 8) - halfWidth;
+            const top = viewport.bottom - viewport.top < halfHeight * 2 + 16 ? 8 : Math.max(8, viewport.top + 8);
+            const bottom = viewport.bottom - viewport.top < halfHeight * 2 + 16 ? window.innerHeight - 8 : Math.min(window.innerHeight - 8, viewport.bottom - 8);
+            const minY = top + halfHeight, maxY = bottom - halfHeight;
+            const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+            let x, y = clamp(origin.y - halfHeight * .2, minY, maxY);
+            if (origin.x + gap + halfWidth >= minX && origin.x + gap + halfWidth <= maxX) x = origin.x + gap + halfWidth;
+            else if (origin.x - gap - halfWidth >= minX && origin.x - gap - halfWidth <= maxX) x = origin.x - gap - halfWidth;
+            else {
+                x = clamp(origin.x, minX, maxX);
+                const above = origin.y - gap - halfHeight, below = origin.y + gap + halfHeight;
+                y = above >= minY ? above : below <= maxY ? below : clamp(origin.y, minY, maxY);
+            }
+            this.root.style.left = x + 'px';
+            this.root.style.top = y + 'px';
         }
 
         close() {
@@ -119,6 +160,7 @@ define(['cardartwork'], function (CardArtwork) {
         clear() {
             clearTimeout(this.timer);
             clearTimeout(this.soundTimer);
+            clearTimeout(this.resizeTimer);
             if (this.sprite) CardArtwork.cancel(this.sprite);
             this.sprite = null;
             this.root.hidden = true;
@@ -128,6 +170,7 @@ define(['cardartwork'], function (CardArtwork) {
         destroy() {
             this.clear();
             window.removeEventListener('pagehide', this.onPageHide);
+            window.removeEventListener('resize', this.onResize);
             this.root.remove();
         }
     }

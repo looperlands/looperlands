@@ -6,7 +6,7 @@ header { position:absolute; top:26px; left:32px; width:fit-content; max-width:ca
 h1 { margin:0; font:32px/1.1 AdvoCut,GraphicPixel,sans-serif; }
 header p { margin:8px 0 0; color:#d7ab97; font-size:12px; }
 main { min-height:100vh; display:grid; place-items:center; padding:110px 20px 200px; }
-#ready { font-size:12px; color:#d7ab97; }
+#ready { font-size:12px; color:#f4dfbc; background:#291d29; padding:10px 14px; max-width:calc(100vw - 32px); text-align:center; }
 form { position:fixed; left:24px; right:24px; bottom:22px; padding:18px 20px 12px; border:7px solid transparent; border-image:url('/img/common/panel.png') 12 fill / 7px / 0 stretch; }
 .options { display:flex; align-items:end; justify-content:center; flex-wrap:wrap; gap:16px; }
 label { display:flex; flex-direction:column; gap:6px; font-size:12px; }

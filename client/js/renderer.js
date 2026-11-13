@@ -91,6 +91,14 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             getHeight: function() {
                 return this.canvas.height;
             },
+
+            getScreenPosition: function(x, y) {
+                const bounds = this.canvas.getBoundingClientRect();
+                return {
+                    x: bounds.left + (x - this.camera.x) * this.scale * bounds.width / this.canvas.width,
+                    y: bounds.top + (y - this.camera.y) * this.scale * bounds.height / this.canvas.height
+                };
+            },
     
             setTileset: function(tileset) {
                 this.tilesetLoad?.reject(new Error('Tileset replaced'));
