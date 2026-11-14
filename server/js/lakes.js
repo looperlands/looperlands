@@ -195,8 +195,8 @@ const Lakes = {
         fish: {
             m88nnightmareduckyb: "common",
             m88nnightmareduckyv: "uncommon",
-            m88nnightmareduckyr: "epic",
-            m88nnightmareduckyg: "legendary",
+            m88nnightmareduckyg: "epic",
+            m88nnightmareduckyr: "legendary",
         }
     },
 

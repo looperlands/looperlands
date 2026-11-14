@@ -1482,9 +1482,14 @@ let Properties = {
         level: 69,
         drops: {
             taikoboost: 40,
-            GOLD: 40,
+            GOLD: 35,
             GOLD2: 10,
-            GOLD3: 2
+            GOLD3: 2,
+            candycorntreat: 3,
+            lollitreat: 2,
+            chocolatetreat: 1,
+            headstonetrick: 2,
+            spidertrick: 1
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
