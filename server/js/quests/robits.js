@@ -81,11 +81,11 @@ const quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.WHISPYBOBBY,
         target: Types.Entities.PUMPKINWARLOCK,
-        amount: 88888,
+        amount: 8,
         level: 1,
         medal: Types.Medals.SKULL,
         needToReturn: true,
-        xp: 90000,
+        xp: 20000,
     }
 ];
 

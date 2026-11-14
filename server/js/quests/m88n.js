@@ -1303,7 +1303,11 @@ const quests = [
         amount: 1,
         level: 10,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.M88NCOMPASS,
+            amount: 1
+        }
     },
     {
         id: "DRS_QUEST_1",

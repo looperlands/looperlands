@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="212" nextobjectid="2095">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="212" nextobjectid="2096">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_m88n2.png" width="2208" height="2512"/>
   <tile id="0">
@@ -1071262,7 +1071262,7 @@
    <tile/>
    <tile/>
    <tile gid="18606"/>
-   <tile/>
+   <tile gid="6368"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1071434,7 +1071434,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="6506"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1252733,7 +1252733,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="12664"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1252905,7 +1252905,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="12802"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7257882,6 +7257882,15 @@
     <property name="o" value="u"/>
     <property name="x" value="155"/>
     <property name="y" value="200"/>
+   </properties>
+  </object>
+  <object id="2095" x="384" y="832" width="16" height="16">
+   <properties>
+    <property name="nft" value="0xb41cf8ff7b4ecf6ac74d23ec4e23a3b70b5caf9dbd5db95dc14edc87aeb9bc9f"/>
+    <property name="nft_message" value="Hani, Helio Islands"/>
+    <property name="o" value="u"/>
+    <property name="x" value="15"/>
+    <property name="y" value="210"/>
    </properties>
   </object>
  </objectgroup>
