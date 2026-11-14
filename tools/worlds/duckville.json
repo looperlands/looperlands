@@ -83,6 +83,74 @@
       }
     },
     {
+      "sceneId": "970",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0,
+      "nightDarkness": 0,
+      "color": "#000000",
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/bird-shadow.png",
+            "plane": "foreground",
+            "width": 128,
+            "height": 128,
+            "factorX": 1,
+            "factorY": 1,
+            "opacity": 0.19,
+            "driftX": -4,
+            "driftY": -3,
+            "offsetX": 363,
+            "offsetY": 545,
+            "spacingX": 512,
+            "spacingY": 560,
+            "orbitRadius": 112,
+            "orbitPeriod": 9,
+            "orbitVariation": 1,
+            "scaleVariation": 0.5,
+            "activeSceneOnly": true,
+            "rotateToPath": true
+          }
+        ]
+      }
+    },
+    {
+      "sceneId": "978",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0,
+      "nightDarkness": 0,
+      "color": "#000000",
+      "particles": [],
+      "parallax": {
+        "layers": [
+          {
+            "image": "/img/parallax/bird-shadow.png",
+            "plane": "ground",
+            "width": 128,
+            "height": 128,
+            "factorX": 1,
+            "factorY": 1,
+            "opacity": 0.19,
+            "driftX": -4,
+            "driftY": -3,
+            "rotateToPath": true,
+            "activeSceneOnly": true,
+            "offsetX": 363,
+            "offsetY": 545,
+            "spacingX": 512,
+            "spacingY": 560,
+            "orbitRadius": 112,
+            "orbitPeriod": 9,
+            "orbitVariation": 1,
+            "scaleVariation": 0.5
+          }
+        ]
+      }
+    },
+    {
       "sceneId": "1002",
       "music": null,
       "cycle": true,
