@@ -84,3 +84,9 @@ Enable scene parallax and add root, trunk and canopy layers. Upload or select an
 
 Newly loaded repeating atmosphere images fade in over 0.8 seconds. Placed tree layers appear fully opaque immediately. Reduced motion shows them immediately. Recessed background layers appear fully opaque when ready so terrain cutouts never expose a transparent replacement.
 Visible placed tree images are requested before presenting a map frame. Rendering waits up to three seconds for each pending image; failed or stalled downloads cannot indefinitely block gameplay.
+
+Scene saves record the built Tiled layout in `sceneBaseline`. After a rebuild,
+unchanged scene fields follow Tiled renames and geometry changes; fields edited
+in Toolbox keep their overrides. New Tiled scenes appear and deleted Tiled scenes
+are removed. Toolbox scene order, removals, custom regions and atmosphere settings
+remain part of the saved layout. Reload map data after building to see the result.

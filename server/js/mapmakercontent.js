@@ -30,7 +30,7 @@ function applyMap(root, mapId, map) {
     require('../../shared/js/placedfxconfig').validate(document.placedFx, map);
     require('./localfxassets').validateSprites(root,document.placedFx);
     map = {...map, ambientSounds: document.ambientSounds, placedFx: document.placedFx};
-    return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes), document.atmosphere, document.weather), Tiles.document(root, mapId));
+    return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes, document.sceneBaseline), document.atmosphere, document.weather), Tiles.document(root, mapId));
 }
 
 function validate(root = projectRoot) {

@@ -653,6 +653,24 @@ describe("TileActionsController farming", () => {
         expect(world.placeStagedTileGroup).toHaveBeenCalledWith(10, 20, "lettuce", 1);
     });
 
+    test("removed farmland and incompatible plant types cannot restore persisted artwork or timers", async () => {
+        const farm = controller.getController("duckville");
+        farm.mapActionGrids.duckville = {"11.20": {action: "potFarm", plantTypes: "pot"}};
+        world.map = {};
+        for (const x of [10, 11]) plots[`duckville.${x}.20`] = {
+            mapId: "duckville", x, y: 20, crop: "M88NORANGE", state: "growing",
+            tileGroup: "tree1", wateredAt: now - 1000, readyAt: now + 100000,
+        };
+        plots["duckville.12.20"] = {mapId: "duckville", x: 12, y: 20, state: "prepared", tile: 17118};
+        await controller.loadPersistedPlots("duckville", world);
+        expect(world.placeStagedTileGroup).not.toHaveBeenCalled();
+        expect(world.placeStagedTile).not.toHaveBeenCalled();
+        expect(farm.stageTimers).toEqual({});
+        expect(farm.tileStages.duckville).toBeUndefined();
+        expect(dao.deleteFarmPlot).not.toHaveBeenCalled();
+        expect(await controller.findCurrentStage("avatar", "duckville", tileAction, world)).toBeNull();
+    });
+
     test("persisted plots hydrate into staged tiles", async () => {
         plots["duckville.10.20"] = {
             mapId: "duckville",

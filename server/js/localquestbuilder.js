@@ -91,7 +91,8 @@ function buildCatalog(root, mapId, registry = bundledDefinitions(), seasonalEven
         try {map.scenes = require('./localmapfiles').readJson(clientFile).scenes || [];}
         catch (_) {map.scenes = [];}
     }
-    map = require('./localworldscenes').applyScenes(map, require('./localworldauthoring').readDocument(root, mapId).scenes);
+    const worldDocument = require('./localworldauthoring').readDocument(root, mapId);
+    map = require('./localworldscenes').applyScenes(map, worldDocument.scenes, worldDocument.sceneBaseline);
     const npcs = new Set(), mobs = new Set();
     const kindId = value => typeof value === 'number' ? value : Types.getKindFromString(value);
     for (const value of Object.values(map.staticEntities || {})) {
