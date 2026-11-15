@@ -17,12 +17,13 @@ function assetType(nft) {
     const type = Types.getTypeFromString(nft.replace(/^0x/, 'NFT_'));
     return type === 'armor' ? 'looper' : type;
 }
-function goals(level) {
+const minEnemyLevel = level => Math.min(100,Math.max(1,level-2));
+function goals(level, combatLevel = level) {
     const band = catalog.difficulty.filter(row => row.minLevel <= level).pop() || catalog.difficulty[0];
     return catalog.objectives.map(row => {
         const target = row.id === 'combat' ? band.combat : row.target;
-        const range = row.id === 'combat' ? {minEnemyLevel:Math.max(1,Math.min(100,level)-2),maxEnemyLevel:Math.min(100,level+2)} : {};
-        return {...row, target, ...range, label:row.label.replace('{target}',target)+(row.id==='combat'?' (levels '+range.minEnemyLevel+'–'+range.maxEnemyLevel+')':'')};
+        const range = row.id === 'combat' ? {minEnemyLevel:minEnemyLevel(combatLevel)} : {};
+        return {...row, target, ...range, label:row.label.replace('{target}',target)+(row.id==='combat'?' (level '+range.minEnemyLevel+'+)':'')};
     });
 }
 function record(client, state, rows, now = Date.now()) {
@@ -35,7 +36,7 @@ function record(client, state, rows, now = Date.now()) {
         data.dailyLevels ||= {};
         const level = data.dailyLevels[day] || Math.max(1, Math.floor(Number(row.data?.avatarLevel) || 1));
         const goal = goals(level).find(item => item.id === objective);
-        if (objective==='combat' && (!Number.isInteger(row.data?.enemyLevel) || row.data.enemyLevel<goal.minEnemyLevel || row.data.enemyLevel>goal.maxEnemyLevel)) continue;
+        if (objective==='combat' && (!Number.isInteger(row.data?.enemyLevel) || row.data.enemyLevel<minEnemyLevel(Math.max(1, Math.floor(Number(row.data?.avatarLevel) || 1))))) continue;
         data.dailyLevels[day] ||= level;
         const limit = goal.target;
         data.objectives[day][objective] = Math.min(limit,(data.objectives[day][objective] || 0)+1);
@@ -59,7 +60,7 @@ function progress(client,state,wallet,now = Date.now(),level = 1) {
     const data = account(client,state,wallet), day = DailyPlay.dayOf(now), week = monday(day);
     const next = new Date(week); next.setUTCDate(next.getUTCDate()+7);
     return {balance:balance(client,state,wallet,now),
-        objectives:{level:data.dailyLevels?.[day] || level,locked:!!data.dailyLevels?.[day],daily:goals(data.dailyLevels?.[day] || level).map(row => ({...row,progress:data.objectives[day]?.[row.id] || 0})),dailyReward:catalog.dailyReward,dailyCompleted:completedDays(data).includes(day),
+        objectives:{level:data.dailyLevels?.[day] || level,locked:!!data.dailyLevels?.[day],daily:goals(data.dailyLevels?.[day] || level,level).map(row => ({...row,progress:data.objectives[day]?.[row.id] || 0})),dailyReward:catalog.dailyReward,dailyCompleted:completedDays(data).includes(day),
             weeklyDays:completedDays(data).filter(day => monday(day) === week).length,weeklyTarget:catalog.weeklyTarget,weeklyReward:catalog.weeklyReward,
             resetsAt:new Date(Date.parse(day)+86400000).toISOString(),weekResetsAt:next.toISOString()}};
 }

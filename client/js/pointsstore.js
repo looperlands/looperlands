@@ -252,7 +252,7 @@ define(['reforgefx', 'cardartwork', 'sprites'], function (Forge, CardArtwork, sp
         }
         renderObjectives(content) {
             const goals=this.data.objectives,spread=node('div','ps-spread'),daily=node('section','ps-page'),weekly=node('section','ps-page');
-            daily.append(node('h3','','Daily objectives'),node('p','ps-description','Earn '+goals.dailyReward+(goals.dailyReward===1?' point per challenge.':' points per challenge.')+' Complete all three for '+(goals.dailyReward*goals.daily.length)+' points.'),node('p','ps-footnote','Combat level '+(goals.level || 1)+(goals.locked?' · fixed for today':' · lock when you start')));
+            daily.append(node('h3','','Daily objectives'),node('p','ps-description','Earn '+goals.dailyReward+(goals.dailyReward===1?' point per challenge.':' points per challenge.')+' Complete all three for '+(goals.dailyReward*goals.daily.length)+' points.'),node('p','ps-footnote','Daily target level '+(goals.level || 1)+(goals.locked?' · fixed for today':' · lock when you start')));
             for(const goal of goals.daily) {
                 const completed=goal.progress>=goal.target;
                 const row=node('div','ps-goal');row.append(node('strong','',(completed?'✓ ':'')+goal.label),node('span','',completed?'Completed · +'+goals.dailyReward+' point'+(goals.dailyReward===1?'':'s'):goal.progress+' / '+goal.target),this.progressBar(goal.progress,goal.target,goal.label));daily.append(row);

@@ -53,20 +53,20 @@ test('daily difficulty uses avatar level and stays fixed across avatars and leve
     expect((await client.getPointsStore(wallet,30)).objectives.daily.map(row=>row.target)).toEqual([100,15,20]);
     await client.storeActivity([{id:crypto.randomUUID(),actorWallet:wallet,type:'kill',occurredAt:date,data:{avatarLevel:30,enemyLevel:30}}]);
     await client.storeActivity([{id:crypto.randomUUID(),actorWallet:wallet,type:'kill',occurredAt:date,data:{avatarLevel:1,enemyLevel:1}}]);
-    let overview=await client.getPointsStore(wallet,60);expect(overview.objectives.level).toBe(30);expect(overview.objectives.daily.map(row=>row.target)).toEqual([100,15,20]);expect(overview.objectives.daily[0].progress).toBe(1);
+    let overview=await client.getPointsStore(wallet,60);expect(overview.objectives.level).toBe(30);expect(overview.objectives.daily.map(row=>row.target)).toEqual([100,15,20]);expect(overview.objectives.daily[0].progress).toBe(2);
     expect(overview.objectives.dailyCompleted).toBe(false);
 });
 
-test('combat objectives count only enemies inside the fixed daily band',async()=>{
+test('combat objectives count enemies at or above the current avatar threshold',async()=>{
     const row=(enemyLevel)=>({id:crypto.randomUUID(),actorWallet:wallet,type:'kill',occurredAt:new Date().toISOString(),data:{avatarLevel:12,enemyLevel}});
     await client.storeActivity([row(9),row(undefined)]);let data=await client.getPointsStore(wallet,12);expect(data.objectives.daily[0].progress).toBe(0);expect(data.objectives.locked).toBe(false);
-    await client.storeActivity([row(10),row(30),row(1)]);data=await client.getPointsStore(wallet,50);expect(data.objectives.daily[0]).toMatchObject({progress:1,minEnemyLevel:10,maxEnemyLevel:14,target:75});expect(data.objectives.daily[0].label).toContain('levels 10–14');
+    await client.storeActivity([row(10),row(30),row(1)]);data=await client.getPointsStore(wallet,50);expect(data.objectives.daily[0]).toMatchObject({progress:2,minEnemyLevel:48,target:75});expect(data.objectives.daily[0].label).toContain('level 48+');
 });
 
-test('combat level bands cap at 100 for high-level avatars',async()=>{
-    let data=await client.getPointsStore(wallet,150);expect(data.objectives.daily[0]).toMatchObject({minEnemyLevel:98,maxEnemyLevel:100});
+test('combat minimum level caps at 100 without an upper limit',async()=>{
+    let data=await client.getPointsStore(wallet,150);expect(data.objectives.daily[0]).toMatchObject({minEnemyLevel:100});
     const row=enemyLevel=>({id:crypto.randomUUID(),actorWallet:wallet,type:'kill',occurredAt:new Date().toISOString(),data:{avatarLevel:150,enemyLevel}});
-    await client.storeActivity([row(97),row(98),row(100),row(101)]);data=await client.getPointsStore(wallet,1);expect(data.objectives.daily[0].progress).toBe(2);expect(data.objectives.daily[0].label).toContain('98–100');
+    await client.storeActivity([row(98),row(99),row(100),row(101)]);data=await client.getPointsStore(wallet,150);expect(data.objectives.daily[0].progress).toBe(2);expect(data.objectives.daily[0].label).toContain('level 100+');
 });
 
 test('each of three daily challenges pays once and only one weekly day is counted',async()=>{
