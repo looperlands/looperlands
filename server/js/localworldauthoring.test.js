@@ -240,3 +240,26 @@ test('fresh local games serve newly uploaded audio without requiring a client bu
         expect(map.ambientSounds[0].preset).toBe(asset.id);
     } finally {await new Promise(resolve => server.close(resolve));}
 });
+
+test('saving atmosphere captures a Tiled baseline so reload adopts later Tiled scene edits', async () => {
+    const base = await W.readTool(root, 'one', 'scenes');
+    base.entries[1].atmosphere = atmosphere('1');
+    const saved = await W.saveTool(root, {mapId: 'one', tool: 'scenes', revision: base.revision, entries: base.entries});
+    const file = 'client/maps/world_client_one.json', built = JSON.parse(fs.readFileSync(path.join(root, file)));
+    built.scenes[0].name = 'New winner'; built.scenes[0].w = 12; write(file, built);
+    const reloaded = await W.readTool(root, 'one', 'scenes');
+    expect(reloaded.entries[1]).toMatchObject({name: 'New winner', w: 12, atmosphere: atmosphere('1')});
+    await expect(W.saveTool(root, {mapId: 'one', tool: 'scenes', revision: saved.revision, entries: saved.entries})).rejects.toHaveProperty('status', 409);
+    expect(require('./mapmakercontent').applyMap(root, 'one', built).scenes[0]).toMatchObject({name: 'New winner', w: 12});
+});
+
+test('deleting a Tiled scene with atmosphere still lets Toolbox reload and save the remaining layout', async () => {
+    const base = await W.readTool(root, 'one', 'scenes'); base.entries[1].atmosphere = atmosphere('1');
+    await W.saveTool(root, {mapId: 'one', tool: 'scenes', revision: base.revision, entries: base.entries});
+    const file = 'client/maps/world_client_one.json', built = JSON.parse(fs.readFileSync(path.join(root, file)));
+    built.scenes = []; write(file, built);
+    const reloaded = await W.readTool(root, 'one', 'scenes');
+    expect(reloaded.entries).toEqual([{sceneId: '*', atmosphere: null}]);
+    await W.saveTool(root, {mapId: 'one', tool: 'scenes', revision: reloaded.revision, entries: reloaded.entries});
+    expect(W.readDocument(root, 'one').atmosphere).toEqual([]);
+});

@@ -31,8 +31,9 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere','scenes','sequences','weather','ambientSounds','placedFx'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes','sceneBaseline','sequences','weather','ambientSounds','placedFx'], 'World authoring source');
     if (value.weather != null) require('../../client/js/sceneenvironment').weather(value.weather);
+    if (value.sceneBaseline !== undefined) validateScenes(value.sceneBaseline, {width: Number.MAX_SAFE_INTEGER, height: Number.MAX_SAFE_INTEGER});
     if (value.version !== 1) fail('World authoring source requires version: 1.');
     for (const key of Object.values(tools)) list(value[key] == null && key === 'scenes' ? [] : value[key] === undefined ? [] : value[key], 100, key);
     return {...empty(), ...value};
@@ -129,7 +130,8 @@ async function catalog(root, mapId) {
     source(root, mapId);const assets = require('./localquestbuilder').buildCatalog(root, mapId);
     const server = require('./localmapfiles').readJson(safe(root, 'server/maps/world_server_' + mapId + '.json'));
     const builtClient = require('./localmapfiles').readJson(safe(root, 'client/maps/world_client_' + mapId + '.json'));
-    const client = applyScenes(builtClient, readDocument(root, mapId).scenes);
+    const doc = readDocument(root, mapId);
+    const client = applyScenes(builtClient, doc.scenes, doc.sceneBaseline);
     const doors = await require('./localdoorbuilder').readDoors(root, mapId);
     const routines = require('./localnpcbuilder').readBehavior(root, mapId).config.npcs;
     const Types = require('../../shared/js/gametypes');
@@ -148,10 +150,11 @@ async function catalog(root, mapId) {
         scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,collisions:server.collisions||[],music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
 }
 function sectionValue(doc, tool, catalog) {
-    return tool === 'scenes' ? {scenes:doc.scenes ?? null, atmosphere:doc.atmosphere, weather:doc.weather ?? null, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
+    return tool === 'scenes' ? {scenes:doc.scenes ?? null, sceneBaseline:doc.sceneBaseline ?? null, atmosphere:doc.atmosphere, weather:doc.weather ?? null, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
 }
 function sceneEntries(doc, catalog) {
-    const orphan = doc.atmosphere.find(row => row.sceneId !== '*' && !catalog.scenes.some(scene => String(scene.id) === row.sceneId));
+    const orphan = doc.atmosphere.find(row => row.sceneId !== '*' && !catalog.scenes.some(scene => String(scene.id) === row.sceneId) &&
+        !(doc.sceneBaseline || []).some(scene => String(scene.id) === row.sceneId && !catalog.builtScenes.some(built => String(built.id) === row.sceneId)));
     if (orphan) fail('Atmosphere refers to missing scene ' + orphan.sceneId + '. Remove its override through the atmosphere API or repair the source before editing scenes.', 422);
     return [{sceneId:'*'}, ...catalog.scenes.map(({id,name,x,y,w,h,weatherExposure}) => ({sceneId:String(id),name:name||'',x,y,w,h,...(weatherExposure === undefined ? {} : {weatherExposure})}))]
         .map(scene => ({...scene, atmosphere:doc.atmosphere.find(row => row.sceneId === scene.sceneId) || null}));
@@ -176,7 +179,7 @@ async function saveTool(root, input, beforeWrite = () => {}) {
             if(!object(row.atmosphere)||row.atmosphere.sceneId!==row.sceneId)fail('Atmosphere must belong to its scene.');
             return row.atmosphere;
         });
-        validateAtmosphere(atmosphere,{...options,scenes});require('./localparallaxassets').validateLayers(root,atmosphere);changes={scenes,atmosphere};
+        validateAtmosphere(atmosphere,{...options,scenes});require('./localparallaxassets').validateLayers(root,atmosphere);changes={scenes,atmosphere,sceneBaseline:require('./localworldscenes').sceneBaseline(options.builtScenes)};
         if (Object.hasOwn(input,'weather')) {
             if (input.weather !== null) require('../../client/js/sceneenvironment').weather(input.weather);
             changes.weather=input.weather;

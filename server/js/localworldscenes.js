@@ -13,9 +13,34 @@ function validateScenes(scenes, map) {
     }
     return scenes;
 }
-function applyScenes(map, scenes) {
-    if (scenes == null) return map;
-    validateScenes(scenes, map);
-    return {...map, scenes: scenes.map(scene => ({...(map.scenes || []).find(base => String(base.id) === String(scene.id)), ...scene}))};
+const layoutFields = ['id', 'name', 'x', 'y', 'w', 'h', 'weatherExposure'];
+function sceneBaseline(scenes) {
+    return scenes.map(scene => ({name: scene.name || '', ...Object.fromEntries(layoutFields.filter(key => scene[key] !== undefined).map(key => [key, scene[key]]))}));
 }
-module.exports = {validateScenes, applyScenes};
+function applyScenes(map, scenes, baseline) {
+    if (scenes == null) return map;
+    validateScenes(scenes, baseline ? {width: Number.MAX_SAFE_INTEGER, height: Number.MAX_SAFE_INTEGER} : map);
+    // Atmosphere adds this synthetic region after layout reconciliation, including in baked exports.
+    const built = new Map((map.scenes || []).filter(scene => scene.id !== 'mapmaker-default').map(scene => [String(scene.id), scene]));
+    const previous = new Map((baseline || []).map(scene => [String(scene.id), scene]));
+    const merged = [];
+    for (const scene of scenes) {
+        const id = String(scene.id), current = built.get(id), original = previous.get(id);
+        // A removed Tiled region must not survive as a copied Toolbox region.
+        if (original && !current) continue;
+        const next = {...current, ...scene};
+        if (original) for (const key of layoutFields) {
+            if (key !== 'id' && (key === 'name' ? scene[key] || '' : scene[key]) === (key === 'name' ? original[key] || '' : original[key])) {
+                if (current[key] === undefined) delete next[key];
+                else next[key] = current[key];
+            }
+        }
+        merged.push(next);
+    }
+    if (baseline) for (const [id, scene] of built) {
+        if (!previous.has(id) && !scenes.some(saved => String(saved.id) === id)) merged.push({...scene});
+    }
+    validateScenes(sceneBaseline(merged), map);
+    return {...map, scenes: merged};
+}
+module.exports = {validateScenes, applyScenes, sceneBaseline};

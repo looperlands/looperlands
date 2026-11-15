@@ -52,7 +52,7 @@ class DuckvilleTileActionsController {
             return this.mapActionGrids[map];
         }
         const grid = {};
-        const file = path.resolve(__dirname, "../../../client/maps", "world_client_" + map + ".json");
+        const file = path.join(this.root, "client/maps", "world_client_" + map + ".json");
         // Existing client exports already contain action names and tile positions.
         if (fs.existsSync(file)) {
             const mapData = JSON.parse(fs.readFileSync(file, "utf8"));
@@ -699,9 +699,12 @@ class DuckvilleTileActionsController {
             }));
         }
         for (const plot of plots || []) {
-            const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot, world) || "farm";
+            const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot, world);
             const farmDefinition = this.stageDefinitions[map]?.[farmDefinitionKey];
-            const tileAction = { gridX: plot.x, gridY: plot.y, name: farmDefinitionKey };
+            const tileAction = { ...this.getMapActionGrid(map)[plot.x + "." + plot.y], gridX: plot.x, gridY: plot.y, name: farmDefinitionKey };
+            // Persisted progress cannot reintroduce artwork removed or repurposed in Tiled.
+            if (!farmDefinition || (plot.crop && (!farmDefinition.crops?.[plot.crop] ||
+                !this.canPlantCropOnTile(farmDefinition.crops[plot.crop], farmDefinition, tileAction)))) continue;
             this.setTileActionStage(map, tileAction, plot);
             if (world) {
                 const crop = farmDefinition?.crops?.[plot.crop];
@@ -717,10 +720,7 @@ class DuckvilleTileActionsController {
     }
 
     getFarmDefinitionKeyForPlot(map, plot, world) {
-        const action = world?.map && this.getMapActionGrid(map)[plot.x + "." + plot.y];
-        if (action) {
-            return action.action;
-        }
+        if (world?.map) return this.getMapActionGrid(map)[plot.x + "." + plot.y]?.action || null;
         const definitions = this.stageDefinitions[map] || {};
         const entries = Object.entries(definitions);
 

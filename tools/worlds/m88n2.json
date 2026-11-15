@@ -616,5 +616,95 @@
       "h": 55
     }
   ],
-  "weather": null
+  "weather": null,
+  "sceneBaseline": [
+    {
+      "id": 1969,
+      "name": "Atlantis",
+      "x": 53,
+      "y": 47,
+      "w": 51,
+      "h": 20
+    },
+    {
+      "id": 1970,
+      "name": "An Underwater Cave",
+      "x": 53,
+      "y": 73,
+      "w": 51,
+      "h": 20
+    },
+    {
+      "id": 1971,
+      "name": "Lunaria",
+      "x": 39,
+      "y": 0,
+      "w": 133,
+      "h": 47
+    },
+    {
+      "id": 1972,
+      "name": "The Captain's Quarters - Floor 2",
+      "x": 0,
+      "y": 102,
+      "w": 34,
+      "h": 13
+    },
+    {
+      "id": 1982,
+      "name": "The Champagne Lounge - Floor 2",
+      "x": 72,
+      "y": 100,
+      "w": 35,
+      "h": 16
+    },
+    {
+      "id": 1983,
+      "name": "NightmareLand",
+      "x": 0,
+      "y": 120,
+      "w": 121,
+      "h": 60
+    },
+    {
+      "id": 1987,
+      "name": "69 Paradise Point East",
+      "x": 117,
+      "y": 47,
+      "w": 55,
+      "h": 26
+    },
+    {
+      "id": 1988,
+      "name": "147 Paradise Point East",
+      "x": 117,
+      "y": 73,
+      "w": 55,
+      "h": 25
+    },
+    {
+      "id": 2031,
+      "name": "The Forbidden City",
+      "x": 0,
+      "y": 180,
+      "w": 172,
+      "h": 38
+    },
+    {
+      "id": 2065,
+      "name": "Paradise Point West",
+      "x": 0,
+      "y": 218,
+      "w": 172,
+      "h": 70
+    },
+    {
+      "id": 2066,
+      "name": "Paradise Point West",
+      "x": 43,
+      "y": 334,
+      "w": 109,
+      "h": 55
+    }
+  ]
 }
