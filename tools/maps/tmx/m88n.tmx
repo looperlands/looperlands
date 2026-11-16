@@ -7454343,10 +7454343,10 @@
   </object>
   <object id="1942" name="CobsFarm" x="1792" y="144" width="16" height="16">
    <properties>
-    <property name="map" value="cobsfarm"/>
-    <property name="o" value="l"/>
-    <property name="x" value="155"/>
-    <property name="y" value="441"/>
+    <property name="map" value="cobsfarmcity"/>
+    <property name="o" value="d"/>
+    <property name="x" value="76"/>
+    <property name="y" value="407"/>
    </properties>
   </object>
   <object id="1945" name="LooperLands" x="2288" y="144" width="16" height="16">
