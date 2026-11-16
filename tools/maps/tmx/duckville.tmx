@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1175">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1182">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_duckville.png" width="2208" height="2512"/>
   <tile id="0">
@@ -368734,6 +368734,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -368743,8 +368744,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -370272,6 +370272,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -370281,6 +370282,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -370290,9 +370292,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -371820,6 +371820,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -371829,6 +371830,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -371838,9 +371840,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17933"/>
    <tile/>
    <tile/>
    <tile/>
@@ -422839,9 +422839,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8989"/>
+   <tile gid="8857"/>
+   <tile gid="8993"/>
    <tile/>
    <tile/>
    <tile/>
@@ -422894,9 +422894,9 @@
    <tile/>
    <tile gid="9416"/>
    <tile gid="9417"/>
-   <tile gid="9418"/>
-   <tile/>
-   <tile/>
+   <tile gid="8989"/>
+   <tile gid="8857"/>
+   <tile gid="8993"/>
    <tile/>
    <tile/>
    <tile/>
@@ -943512,7 +943512,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="33"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2824982,6 +2824982,44 @@
     <property name="y" value="65"/>
    </properties>
   </object>
+  <object id="1177" name="Cobs Farm City" x="1168" y="3600" width="16" height="16">
+   <properties>
+    <property name="collection" value="owls"/>
+    <property name="collection_message" value="Portal to anywhere you dream of..."/>
+    <property name="map" value="cobsfarmcity"/>
+    <property name="o" value="d"/>
+    <property name="x" value="76"/>
+    <property name="y" value="407"/>
+   </properties>
+  </object>
+  <object id="1178" name="Lunaria" x="1328" y="3600" width="16" height="16">
+   <properties>
+    <property name="map" value="m88n2"/>
+    <property name="nft" value="0x0f28b244e6951a81544b0eb68794e5e3a8842fb9aa04ad311933b0cd70f334db"/>
+    <property name="nft_message" value="Portal to anywhere you dream of..."/>
+    <property name="o" value="u"/>
+    <property name="x" value="54"/>
+    <property name="y" value="35"/>
+   </properties>
+  </object>
+  <object id="1179" name="Crono Leave" x="176" y="1104" width="16" height="16">
+   <properties>
+    <property name="nft" value="0x0f28b244e6951a81544b0eb68794e5e3a8842fb9aa04ad311933b0cd70f334db"/>
+    <property name="nft_message" value="Pounce Quickfoot"/>
+    <property name="o" value="d"/>
+    <property name="x" value="12"/>
+    <property name="y" value="71"/>
+   </properties>
+  </object>
+  <object id="1181" name="Crono Arrive" x="176" y="1136" width="16" height="16">
+   <properties>
+    <property name="nft" value="0x0f28b244e6951a81544b0eb68794e5e3a8842fb9aa04ad311933b0cd70f334db"/>
+    <property name="nft_message" value="Crono's Treehouse and Garden"/>
+    <property name="o" value="d"/>
+    <property name="x" value="13"/>
+    <property name="y" value="69"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="63" name="roaming" opacity="0.99">
   <object id="614" name="area5" type="MASTROM" x="2080" y="7040" width="224" height="256">
@@ -2825807,6 +2825845,16 @@
   <object id="1174" type="m88nkittentabby" x="1312" y="3584" width="96" height="64">
    <properties>
     <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="1175" type="PUMPKINWARLOCK" x="1776" y="2544" width="224" height="192">
+   <properties>
+    <property name="nb" value="1"/>
+   </properties>
+  </object>
+  <object id="1176" type="EVILPUMPKIN" x="1760" y="2720" width="944" height="64">
+   <properties>
+    <property name="nb" value="4"/>
    </properties>
   </object>
  </objectgroup>
@@ -3009698,9 +3009746,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3009871,7 +3009919,7 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3010042,7 +3010090,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
