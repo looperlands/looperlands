@@ -47,9 +47,9 @@
                     impact.y+Math.sin(angle)*distance*.7+(impact.dirY||0)*drift+progress*progress*8);
                 const size=(progress<.5?2:1)*scale;
                 if (impact.incoming) {
-                    ctx.fillStyle='#71253b';
+                    ctx.fillStyle=impact.deflected ? '#24465e' : '#71253b';
                     ctx.fillRect(x+scale,y+scale,size,size);
-                    ctx.fillStyle=i%3?'#ff665e':'#fff2cf';
+                    ctx.fillStyle=impact.deflected ? (i%3?'#7ac9ed':'#eafaff') : (i%3?'#ff665e':'#fff2cf');
                 } else {
                     ctx.fillStyle=i%3?'#ffb13b':'#fff2bf';
                 }

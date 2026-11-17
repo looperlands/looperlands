@@ -1155,6 +1155,12 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                 //this.drawOccupiedCells();
                 this.drawPathingCells();
+                const combatFeedback = {
+                    ...(!$("#minigame").hasClass("active")
+                        ? this.game.combatFeedback.getFrame(this.game.currentTime)
+                        : {target: null, impacts: []}),
+                    cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale
+                };
                 let [entityTextData, entityDrawData] = this.drawEntities();
                 let drawEntitiesData = {
                     "type": "entities",
@@ -1216,12 +1222,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     scene.darkness = 0;
                 }
     
-                const combatFeedback = {
-                    ...(!$("#minigame").hasClass("active")
-                        ? this.game.combatFeedback.getFrame(this.game.currentTime)
-                        : {target: null, impacts: []}),
-                    cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale
-                };
                 if(this.game.player) {
                     this.worker.postMessage({
                         type: "render",

@@ -8323,7 +8323,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                     });
 
-                    self.client.onPlayerChangeHealth(function (points, isRegen, attackerId) {
+                    self.client.onPlayerChangeHealth(function (points, isRegen, attackerId, deflected) {
                         var player = self.player,
                             diff,
                             isHurt;
@@ -8336,11 +8336,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             if (player.hitPoints <= 0) {
                                 player.die();
                             }
+                            if (points > 0 && !isRegen && (isHurt || (diff === 0 && deflected))) {
+                                const attacker = attackerId == null ? null : self.getEntityById(attackerId);
+                                self.combatFeedback.addPlayerImpact(Math.max(0, -diff), self.currentTime, attacker);
+                            }
                             if (isHurt) {
-                                if (points > 0 && !isRegen) {
-                                    const attacker = attackerId == null ? null : self.getEntityById(attackerId);
-                                    self.combatFeedback.addPlayerImpact(-diff, self.currentTime, attacker);
-                                }
                                 self.infoManager.addDamageInfo(diff, player.x, player.y - 15, "received", player.id);
                                 self.audioManager.playSound("hurt");
                                 self.storage.addDamage(-diff);
