@@ -21,7 +21,7 @@
             mask ||= new OffscreenCanvas(sW,sH);
             if(mask.width!==sW)mask.width=sW;if(mask.height!==sH)mask.height=sH;
             const m=mask.getContext('2d');m.clearRect(0,0,sW,sH);m.drawImage(image,sx,sy,sW,sH,0,0,sW,sH);
-            m.globalCompositeOperation='source-in';m.fillStyle='#fff2cf';m.fillRect(0,0,sW,sH);m.globalCompositeOperation='source-over';
+            m.globalCompositeOperation='source-in';m.fillStyle=effect.flashColor||'#fff2cf';m.fillRect(0,0,sW,sH);m.globalCompositeOperation='source-over';
             ctx.drawImage(mask,0,0,sW,sH,dx,dy,dW,dH);
         }else ctx.drawImage(image,sx,sy,sW,sH,dx,dy,dW,dH);
         ctx.restore();
@@ -38,10 +38,22 @@
                 ctx.beginPath();ctx.arc(x,y,18*scale,direction-1+progress,direction+.9+progress);ctx.stroke();
             }
             ctx.globalAlpha=1-progress;
+            const travel=(1-Math.pow(1-progress,3))*(impact.critical?22:16);
+            const drift=impact.incoming ? travel*.3 : 0;
             for(let i=0;i<impact.sparks;i++){
-                const angle=i/impact.sparks*Math.PI*2,distance=3+(1-Math.pow(1-progress,3))*(impact.critical?22:16);
-                const [x,y]=point(impact.x+Math.cos(angle)*distance,impact.y+Math.sin(angle)*distance*.7+progress*progress*8);
-                ctx.fillStyle=i%3?'#ffb13b':'#fff2bf';ctx.fillRect(x,y,(progress<.5?2:1)*scale,(progress<.5?2:1)*scale);
+                const angle=i/impact.sparks*Math.PI*2;
+                const distance=3+travel*(impact.incoming ? .65+(i%4)*.18 : 1);
+                const [x,y]=point(impact.x+Math.cos(angle)*distance+(impact.dirX||0)*drift,
+                    impact.y+Math.sin(angle)*distance*.7+(impact.dirY||0)*drift+progress*progress*8);
+                const size=(progress<.5?2:1)*scale;
+                if (impact.incoming) {
+                    ctx.fillStyle='#71253b';
+                    ctx.fillRect(x+scale,y+scale,size,size);
+                    ctx.fillStyle=i%3?'#ff665e':'#fff2cf';
+                } else {
+                    ctx.fillStyle=i%3?'#ffb13b':'#fff2bf';
+                }
+                ctx.fillRect(x,y,size,size);
             }
         }
         ctx.restore();

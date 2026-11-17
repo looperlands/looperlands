@@ -172,7 +172,7 @@ class CombatPrototype extends CombatController {
         const previousHp = player.hitPoints;
         player.hitPoints = Math.max(1, player.hitPoints - Math.ceil(player.maxHitPoints * fraction));
         if (kind === 'hurt' && player.hitPoints < previousHp) encounter.chargeHit++;
-        this.world.pushToPlayer(player, player.health());
+        this.world.pushToPlayer(player, player.health(player.hitPoints < previousHp ? encounter.mob.id : undefined));
         this.event(encounter, kind, label);
         if (player.hitPoints === 1) this.endRound(encounter, 'Try again');
     }

@@ -23,8 +23,9 @@ const cases = [
     ['Teleport', [actor], 'teleport_callback', [81, 42, 216]],
     ['LootMove', [actor, {id: 91}], 'lootmove_callback', [81, 91]],
     ['Attack', [81, 92], 'attack_callback', [81, 92]],
-    ['Health', [73, false], 'health_callback', [73, false]],
-    ['Health', [73, true], 'health_callback', [73, true]],
+    ['Health', [73, false], 'health_callback', [73, false, undefined]],
+    ['Health', [73, true], 'health_callback', [73, true, undefined]],
+    ['Health', [73, false, actor.id], 'health_callback', [73, false, actor.id]],
     ['HitPoints', [100], 'hp_callback', [100]],
     ['EquipItem', [actor, Types.Entities.SWORD1], 'equip_callback', [81, Types.Entities.SWORD1]],
     ['Chat', [actor, 'The path is safe.', true], 'chat_callback', [81, 'The path is safe.', {ambient: true}]],
@@ -103,4 +104,10 @@ test('quest rewards survive the wire and legacy packets remain readable', () => 
     expect(game.questComplete_callback).toHaveBeenLastCalledWith('Supplies', ['Thanks!'], 25, 1, reward);
     game.receiveAction([Types.Messages.QUEST_COMPLETE, 'Old quest', [], 10, 1]);
     expect(game.questComplete_callback).toHaveBeenLastCalledWith('Old quest', [], 10, 1, undefined);
+});
+
+test('health keeps the legacy packet layout and adds attacker identity only to damage updates', () => {
+    expect(new Messages.Health(73, false).serialize()).toEqual([Types.Messages.HEALTH, 73]);
+    expect(new Messages.Health(73, true).serialize()).toEqual([Types.Messages.HEALTH, 73, 1]);
+    expect(new Messages.Health(73, false, actor.id).serialize()).toEqual([Types.Messages.HEALTH, 73, 0, actor.id]);
 });

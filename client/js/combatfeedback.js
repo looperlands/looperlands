@@ -34,6 +34,11 @@ define(['mob', 'hitfeel'], function (Mob, HitFeel) {
             if (this.impacts.length > MAX_IMPACTS) this.impacts.shift();
         }
 
+        addPlayerImpact(damage, time, attacker) {
+            this.syncMap();
+            this.hitFeel.addPlayerImpact(damage, time, attacker);
+        }
+
         addShake(time) {
             if (!this.shakeEnabled()) return;
             this.syncMap();
@@ -42,7 +47,7 @@ define(['mob', 'hitfeel'], function (Mob, HitFeel) {
         }
 
         addCounterShake(time) {
-            if (this.hitFeel.enabled) this.hitFeel.addShake(time, true);
+            if (this.hitFeel.enabled) this.hitFeel.addShake(time, 1.4);
             else this.addShake(time);
         }
 

@@ -843,7 +843,7 @@ module.exports = World = cls.Class.extend({
 
         if (entity.type === 'player') {
             // A player is only aware of his own hitpoints
-            this.pushToPlayer(entity, entity.health());
+            this.pushToPlayer(entity, entity.health(damage > 0 ? attacker.id : undefined));
         }
 
         if (attacker.type === 'player') {
