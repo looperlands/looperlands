@@ -31,7 +31,7 @@ function checkRuntimeDependencies(directory) {
             for (const worker of source.matchAll(/new\s+(?:Shared)?Worker\s*\(\s*(["'])([^"']+)\1\s*[,)]/g)) {
                 checkAsset(worker[2]);
             }
-            for (const dependency of source.matchAll(/\bimportScripts\s*\(\s*(["'])([^"']+)\1\s*\)/g)) {
+            for (const dependency of source.matchAll(/\b(?:importScripts|loadImg)\s*\(\s*(["'])([^"']+)\1\s*\)/g)) {
                 checkAsset(dependency[2], path.dirname(file));
             }
             // Literal import() URLs resolve from their script, not the document.

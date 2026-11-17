@@ -490,6 +490,20 @@ body.upscaled.game {background:#000;}
     z-index: 2;
 }
 
+#shadow-proxy-toggle {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    padding: 6px 12px;
+    color: #fff2cf;
+    background: #211b24;
+    border: 1px solid #a89177;
+    font: 14px 'GraphicPixel', sans-serif;
+    cursor: pointer;
+}
+
 .item.inventory-changed, #inventorybutton.inventory-changed {
     outline: 2px solid #ffd66b;
     outline-offset: -3px;

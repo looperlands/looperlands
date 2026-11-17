@@ -12,7 +12,7 @@ let sprites = {};
 let lightEmittingTiles = {};
 let lights = [];
 let obstacles = [];
-let bodyMap, heightShadows;
+let bodyMap, heightShadows, proxyAtlasRequest;
 
 let hasLoadedFont = false;
 let fontLoadPromise = null;
@@ -118,6 +118,27 @@ async function loadImg(src) {
     } catch (e) {
         console.log(e, src);
     }
+}
+
+async function setBodyMap(map) {
+    bodyMap = map;
+    heightShadows = null;
+    if (!map) return;
+    // The main-map height atlas is independent of the player's display-scale tileset.
+    proxyAtlasRequest ??= loadImg('../img/common/height-proxies/main.png').then(image => {
+        if (!image) proxyAtlasRequest = null;
+        return image;
+    });
+    const atlas = await proxyAtlasRequest;
+    if (map !== bodyMap) return;
+    if (!atlas) {
+        self.postMessage({type: 'shadowProxyAtlas', ready: false});
+        return;
+    }
+    if (!self.HeightShadows) importScripts('height-shadows-worker.js');
+    if (!self.SceneEnvironment) importScripts('sceneenvironment.js');
+    heightShadows = new self.HeightShadows.Pass(map, atlas);
+    self.postMessage({type: 'shadowProxyAtlas', ready: true});
 }
 
 async function loadFont() {
@@ -392,8 +413,9 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
 
         ctx.restore();
     } else {
-        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime, view);
+        const proxyView = renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime, view);
         tileLights = [];
+        return proxyView;
     }
 }
 
@@ -424,7 +446,6 @@ onmessage = (e) => {
         const {requestId, src} = e.data;
         const previousTileset = tileset;
         tileset = undefined;
-        heightShadows = null;
         clearImageCache();
         terrainCache.clear();
         previousTileset?.close?.();
@@ -466,7 +487,7 @@ onmessage = (e) => {
             viewportWidth: canvases.background.width, viewportHeight: canvases.background.height}) || [];
         frameCutoutKey = JSON.stringify(frameCutouts);
         const renderDataLength = e.data.renderData.length;
-        let cursorCommand, combatTextCommand;
+        let cursorCommand, combatTextCommand, proxyView;
         for (let i = 0; i < renderDataLength; i++) {
             let renderData = e.data.renderData[i];
             if (!renderData) continue;
@@ -481,12 +502,21 @@ onmessage = (e) => {
             } else if (renderData.type === "entities") {
                 drawEntities(renderData);
             } else {
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options, e.data.mapId, e.data.worldTime, renderData.revision, view);
+                const result = render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options, e.data.mapId, e.data.worldTime, renderData.revision, view);
+                if (result) proxyView = result;
             }
         }
 
         let combinedCanvas = canvases["combined"];
         let combinedCtx = contexes["combined"];
+
+        if (proxyView) {
+            composingWorld = false;
+            combinedCtx.drawImage(proxyView, 0, 0, combinedCanvas.width, combinedCanvas.height);
+            if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
+            scheduleNextFrame();
+            return;
+        }
 
         // World buffers are native pixel art resolution. Text keeps its display resolution.
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
@@ -538,11 +568,12 @@ onmessage = (e) => {
     }  else if (e.data.type === "setLights") {
         lights = e.data.lights ?? [];
     } else if (e.data.type === "setObstacles") {
-        bodyMap = e.data.bodyMap;
-        heightShadows = null;
         obstacles = e.data.obstacles;
         obstacles = transformObstacles(obstacles);
         obstacleRevision++;
+        return setBodyMap(e.data.bodyMap);
+    } else if (e.data.type === 'retryShadowProxyAtlas') {
+        if (bodyMap && !heightShadows) return setBodyMap(bodyMap);
     }  else if (e.data.type === "setLightEmittingTiles") {
         lightEmittingTiles = e.data.lightEmittingTiles || {};
         terrainCache.clear();
@@ -858,18 +889,22 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     ctx.fillStyle = `rgba(${rgb.join(',')}, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const outdoors = scene.weatherExposure && scene.weatherExposure !== 'auto' ? scene.weatherExposure === 'outdoor'
-        : scene.dn_cycle === true || scene.dn_cycle === 'true';
-    if (mapId === 'main' && bodyMap?.data && tileset && bounded && outdoors && view && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
-        if (!self.HeightShadows) importScripts('height-shadows-worker.js');
-        if (!heightShadows) heightShadows = new self.HeightShadows.Pass(bodyMap, tileset);
+    const inspect = options?.inspectShadowProxies === true;
+    if (heightShadows && mapId === 'main' && bounded && view && self.SceneEnvironment.outdoors(scene) &&
+        (inspect || OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
         const clock = worldTime ?? serverTime + performance.now();
         const daylight = atmosphereLight?.daylight ?? getMainMapCycleIntensity(clock / CYCLE_DURATION);
         const sky = self.HeightShadows.skyLight(clock, scene.authoringAtmosphere?.dayNight, daylight);
-        if (sky.strength > .001) {
-            const scenery = rendererExtensions?.shadowBodies?.(frameExtensions, {...view, viewportWidth: canvas.width, viewportHeight: canvas.height}) || [];
-            heightShadows.draw(ctx, view, scene, sky, view.entityData, sprites,
-                {shadows: OPTION_SHADOWS, playerShadow: OPTION_PLAYER_SHADOW}, scenery);
+        if (inspect || sky.strength > .001) {
+            const scenery = rendererExtensions?.shadowBodies?.(frameExtensions, {...view,
+                viewportWidth: canvas.width, viewportHeight: canvas.height,
+                casterClip: self.HeightShadows.casterClip(canvas.width, canvas.height)}) || [];
+            const proxyView = heightShadows.draw(ctx, view, scene, sky, view.entityData, sprites,
+                {shadows: OPTION_SHADOWS, playerShadow: OPTION_PLAYER_SHADOW}, scenery, inspect);
+            if (proxyView) {
+                ctx.restore();
+                return proxyView;
+            }
         }
     }
 

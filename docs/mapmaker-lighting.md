@@ -22,6 +22,16 @@ Place a rectangle or polygon blocker between a light and the area you want shade
 
 Edit polygon vertices as `x,y` pairs separated by spaces. For example, `0,0 32,0 32,32 0,32` makes a 2 × 2 tile box on a 16-pixel map. Move the whole polygon using Origin X/Y or map placement. Rotated and unsupported Tiled shapes remain available in Tiled.
 
+## Main-map sun and moon shadows
+
+Outdoor scenes on the main map cast shadows from the height and depth of buildings, trees, props and moving characters. The sun follows the game clock. Low sun stretches the shadows, and moonlight casts a fainter shadow.
+
+![Town house, oak, boulder and noticeboard with their corresponding blue-to-magenta height proxies](town-shadow-proxies.png)
+
+Build the client with `node bin/build-client.js` and run `node bin/local-parallax-preview.js`. Open the printed launcher URL and choose **Inspect shadow proxies**. In Town, the blue pixels are close to the ground and the magenta pixels are higher. Click **Show cast shadows** to compare the same objects from the same spot. The launcher also has morning, afternoon and moonlight starts.
+
+The [main tile proxy atlas](../client/img/common/height-proxies/main.png) uses the same tile positions as the main artwork. To add a static body, define its bounds, front height, roof slope and depth in the [atlas generator](../tools/maps/generate_main_height_proxies.py). Run `python3 tools/maps/generate_main_height_proxies.py` with Pillow installed to regenerate the PNG. Characters use their current animation frame so their bodies move with them.
+
 ## Preview, save and playtest
 
 The map uses the same lighting and shadow renderer as the game, with all current lighting objects and your unsaved draft. **Preview darkness** helps inspect lights without changing the map atmosphere; turn **Preview lighting** off to see the original artwork. Markers and radius rings are editor guides. The preview uses the last built artwork and excludes player lights and tile-emitted lights. Fire flicker pauses when reduced motion is enabled. Full-map lighting previews use lower resolution than close-ups.

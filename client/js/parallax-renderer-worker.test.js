@@ -239,7 +239,8 @@ test('forest shadow bodies stay attached to the placed roots as the camera and c
     Object.assign(s.layer, {image: '/img/parallax/forest-canopy-lower.png', placed: true,
         width: 80, height: 100, factorX: 1.2, swayX: 4});
     Object.assign(s.state.scenes[0], {id: 628, placements: [{x: 250, y: 350, flipX: true}]});
-    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, sceneId: '628'};
+    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, sceneId: '628',
+        casterClip: require('./height-shadows-worker').casterClip(320, 240)};
     s.renderer.shadowBodies(s.state, view); await flush();
     const bodies = s.renderer.shadowBodies(s.state, view);
     expect(bodies).toHaveLength(1);

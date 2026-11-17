@@ -115,11 +115,28 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     ]);
 });
 
-test('height shadows run only on outdoor main-map frames and respect both existing shadow switches', () => {
+test('the main-map atlas powers outdoor shadows and the live proxy view', async () => {
     const worker = setup(), draw = jest.fn();
-    worker.sandbox.self.HeightShadows = {Pass: class { draw(...args) {draw(...args);} }, skyLight: () => ({strength: .4})};
+    const atlas = {}, proxyView = {}, construct = jest.fn();
+    worker.sandbox.fetch = jest.fn(async () => ({blob: () => atlas}));
+    worker.sandbox.createImageBitmap = async blob => blob;
+    worker.sandbox.self.postMessage = jest.fn();
+    worker.sandbox.self.SceneEnvironment = require('./sceneenvironment');
+    worker.sandbox.self.HeightShadows = {Pass: class {
+        constructor(...args) { construct(...args); }
+        draw(...args) { draw(...args); return args[8] ? proxyView : undefined; }
+    }, skyLight: () => ({strength: .4})};
     vm.runInContext('worldClock = self.WorldTime', worker.sandbox);
-    worker.send({type: 'setObstacles', obstacles: [], bodyMap: {width: 1, data: [1]}});
+    const bodyMap = {width: 1, data: [1]};
+    const configure = () => worker.send({type: 'setObstacles', obstacles: [], bodyMap});
+    const firstLoad = configure();
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: null});
+    await firstLoad;
+    expect(construct).not.toHaveBeenCalled();
+    await configure();
+    expect(worker.sandbox.fetch.mock.calls).toEqual([['../img/common/height-proxies/main.png']]);
+    expect(construct).toHaveBeenCalledWith(bodyMap, atlas);
+    expect(worker.sandbox.self.postMessage).toHaveBeenCalledWith({type: 'shadowProxyAtlas', ready: true});
     const data = frame();
     data.mapId = 'main';
     data.scene.dn_cycle = 'true';
@@ -134,13 +151,36 @@ test('height shadows run only on outdoor main-map frames and respect both existi
     expect(draw.mock.calls[1][6]).toEqual({shadows: false, playerShadow: true});
     options.playerShadow = false;
     worker.send(data);
+    expect(draw).toHaveBeenCalledTimes(2);
+    options.inspectShadowProxies = true;
+    worker.send(data);
+    expect(worker.canvases.combined.ctx.drawImage.mock.lastCall[0]).toBe(proxyView);
+    options.inspectShadowProxies = false;
     options.shadows = true;
     data.scene.weatherExposure = 'indoor';
     worker.send(data);
     data.scene.weatherExposure = 'outdoor';
     data.mapId = 'duckville';
     worker.send(data);
-    expect(draw).toHaveBeenCalledTimes(2);
+    expect(draw).toHaveBeenCalledTimes(3);
+    expect(worker.canvases.combined.ctx.drawImage.mock.lastCall[0]).toBe(worker.canvases.lighting);
+});
+
+test('a failed proxy image can be retried without restarting the game', async () => {
+    const worker = setup(), api = worker.sandbox;
+    api.self.postMessage = jest.fn();
+    api.self.SceneEnvironment = require('./sceneenvironment');
+    api.self.HeightShadows = {Pass: jest.fn()};
+    api.fetch = jest.fn(async () => ({blob: () => 'atlas'}));
+    api.createImageBitmap = jest.fn().mockRejectedValueOnce(new Error('Image unavailable')).mockResolvedValue('atlas');
+    api.console = {log: jest.fn()};
+    const map = {width: 1, data: [1]};
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: map});
+    expect(api.self.postMessage).toHaveBeenCalledWith({type: 'shadowProxyAtlas', ready: false});
+    expect(api.self.HeightShadows.Pass).not.toHaveBeenCalled();
+    await worker.send({type: 'retryShadowProxyAtlas'});
+    expect(api.self.HeightShadows.Pass).toHaveBeenCalledWith(map, 'atlas');
+    expect(api.self.postMessage).toHaveBeenLastCalledWith({type: 'shadowProxyAtlas', ready: true});
 });
 
 test('effect lights use the current overhead mask inside the native scene lighting pass',()=>{

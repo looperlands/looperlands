@@ -1098,6 +1098,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                   "options": {
                       'shadows': this.game.app.settings.getRenderShadows(),
                       'playerShadow': this.game.app.settings.getRenderPlayerShadow(),
+                      inspectShadowProxies: this.inspectShadowProxies === true,
                       'dynamicLights': this.game.app.settings.getEnableDynamicLights(),
                       'ambience': this.game.worldFx?.enabled('ambience', false) !== false,
                   }

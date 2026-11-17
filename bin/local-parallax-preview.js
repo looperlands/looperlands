@@ -80,7 +80,11 @@ server.app.get('/parallax/play/:scene', async (req, res) => {
         });
         const session = await response.json();
         if (!response.ok) throw new Error(session.error || 'Could not start preview');
-        res.redirect(session.url);
+        const gameUrl = new URL(session.url, process.env.APP_URL);
+        if (mapId === 'main' && ['0', '1'].includes(req.query.shadowProxies)) {
+            gameUrl.searchParams.set('shadowProxies', req.query.shadowProxies);
+        }
+        res.redirect(gameUrl.pathname + gameUrl.search);
     } catch (error) {res.status(500).send(error.message);}
 });
 server.app.get('/parallax/', (req, res) => res.type('html').send(`<!doctype html>
@@ -90,6 +94,13 @@ server.app.get('/parallax/', (req, res) => res.type('html').send(`<!doctype html
 body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-serif}main{max-width:780px;margin:10vh auto;padding:24px}h1{font-size:40px;line-height:1.1;letter-spacing:-1px}p{color:#acb9ad}nav{display:flex;gap:16px;flex-wrap:wrap;margin:32px 0}a{color:#e7e6d5}nav a{border:1px solid #57765b;background:#23392b;padding:22px;border-radius:6px;text-decoration:none}nav a:hover{background:#38543e}.label{color:#b6d487;font-size:13px;letter-spacing:2px;text-transform:uppercase}small{color:#acb9ad}
 </style><main><div class="label">Main, Duckville &amp; DreamLand / local preview</div><h1>A little more depth.</h1>
 <p>A breeze through town, sand across the desert, smoke above lava, and a deep sky beneath DreamLand. Explore the viewpoints, each with its own gentle movement and depth.</p>
+<h2>Town shadow playtest</h2>
+<p><a href="/parallax/play/town?time=16:00&amp;shadowProxies=1">Inspect shadow proxies</a> ·
+<a href="/parallax/play/town?time=07:00&amp;shadowProxies=0">Morning shadows</a> ·
+<a href="/parallax/play/town?time=16:00&amp;shadowProxies=0">Afternoon shadows</a> ·
+<a href="/parallax/play/town?time=20:00&amp;shadowProxies=0">Moonlight</a> ·
+<a href="/img/common/height-proxies/main.png">Open the tile proxy atlas</a></p>
+<p>Blue marks low surfaces and magenta marks high ones. Use the button above the game to switch between the height buffer and its cast shadows while you walk.</p>
 <nav>${Object.entries(destinations).map(([id, destination]) => `<a href="/parallax/play/${id}">${destination.label}</a>`).join('')}</nav>
 <p>Move with WASD or the arrow keys. Walk in both directions to compare the terrain and overhead layers, or stand still to watch the weather drift. Settings → Reduced motion anchors the layers to the map and pauses the drift.</p>
 <p><a href="/parallax/play/forest?time=12:55">Forest rain</a> · <a href="/parallax/play/forest?time=18:00">Forest dusk</a> · <a href="/parallax/play/forest?time=20:55">Forest night rain</a></p>
