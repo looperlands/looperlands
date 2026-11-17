@@ -3,7 +3,7 @@ const path = require('path');
 const vm = require('vm');
 
 function setup() {
-    const worker = {self: {}, console, postMessage: jest.fn(), requestAnimationFrame: jest.fn()};
+    const worker = {self: {}, console, performance: {now: () => 0}, postMessage: jest.fn(), requestAnimationFrame: jest.fn()};
     worker.importScripts = file => vm.runInNewContext(fs.readFileSync(path.join(__dirname, file), 'utf8'), worker);
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8') + '\ntileset = {}; hasLoadedFont = true;', worker);
     worker.onmessage({data: {type: 'registerExtension', module: 'picnic-renderer-worker.js'}});

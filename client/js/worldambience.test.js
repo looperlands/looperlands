@@ -14,7 +14,7 @@ function setup(reducedMotion = false) {
         requestAnimationFrame, define: factory => { WorldAmbience = factory(); }
     });
     const worker = {self: {WorldTime, WorldParticles: require('./worldparticles-worker')}, console, postMessage: jest.fn(), requestAnimationFrame,
-        importScripts: jest.fn(), Date: {now: () => 100000}};
+        importScripts: jest.fn(), Date: {now: () => 100000}, performance: {now: () => 0}};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8') + '\ntileset = {}; hasLoadedFont = true;', worker);
     worker.OffscreenCanvas = class {
         constructor(width,height) {this.width=width; this.height=height;}

@@ -6,7 +6,7 @@ class Npc extends Character {}
 let renderer;
 vm.runInNewContext(fs.readFileSync(require.resolve('./renderer'), 'utf8'), {
     Class: {extend: methods => methods},
-    Types: {Orientations: {UP: 1}, alwaysOnTop: () => false, isFieldEffect: () => false},
+    Types: {Orientations: {UP: 1}, alwaysOnTop: () => false, isFieldEffect: () => false, isChest: kind => kind === 'chest'},
     define: (_, factory) => { renderer = factory(null, Item, Character, Character, null, Mob, Npc); },
 });
 test.each([false, true])('body and equipment recoil together with flipped=%s; shadow stays planted', flip => {
@@ -38,6 +38,24 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
     expect(renderer.drawEntity.call(host,actor)[1].healthBar).toBeUndefined();
 });
 
+
+test('outdoor body draws honor character and chest shadow settings', () => {
+    const sprite = {id: 1, name: 'body', width: 16, height: 16, offsetX: 0, offsetY: 0};
+    const base = {x: 0, y: 0, sprite, currentAnimation: {currentFrame: {x: 0, y: 0}},
+        isVisible: () => true, hasShadow: () => false};
+    const host = {scale: 1, tilesize: 16, drawEntityName: jest.fn(),
+        game: {map: {mapId: 'main'}, shadows: {small: {id: 2, width: 16, height: 16}}}};
+    const draws = actor => renderer.drawEntity.call(host, actor)[1].drawData.map(part => [part.spriteName, part.shadowBody]);
+    const player = Object.assign(new Character(), base, {canHoldWeapon: false});
+    host.game.player = player;
+    expect(draws(player)).toEqual([['body', undefined]]);
+    player.hasShadow = () => true;
+    expect(draws(player)).toEqual([['shadow16', undefined], ['body', 'player']]);
+    const chest = {...base, kind: 'chest'};
+    expect(draws(chest)).toEqual([['body', 'scenery']]);
+    chest.sprite = {...sprite, hasShadow: false};
+    expect(draws(chest)).toEqual([['body', undefined]]);
+});
 
 test('trainer uses only its custom level/nameplate, while ordinary mob labels remain', () => {
     const actor=Object.assign(new Mob(), {id:7,name:'ogre',level:6,x:0,y:0});

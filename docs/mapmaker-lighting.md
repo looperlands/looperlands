@@ -28,9 +28,11 @@ Outdoor scenes on the main map cast shadows from the height and depth of buildin
 
 ![Town house, oak, boulder and noticeboard with their corresponding blue-to-magenta height proxies](town-shadow-proxies.png)
 
-Build the client with `node bin/build-client.js` and run `node bin/local-parallax-preview.js`. Open the printed launcher URL and choose **Inspect shadow proxies**. In Town, the blue pixels are close to the ground and the magenta pixels are higher. Click **Show cast shadows** to compare the same objects from the same spot. The launcher also has morning, afternoon and moonlight starts.
+Build the client with `node bin/build-client.js` and run `node bin/local-parallax-preview.js`. Open the printed launcher URL and choose **Afternoon shadows** for Town or **Forest tree shadows**. Drag **Time of day** between 07:00 and 16:00 to see shadows cross to the other side of the same objects. The slider holds the selected minute until you click **Resume clock**. Click **Show shadow proxies** to see each object's height. Blue pixels are close to the ground and magenta pixels are higher.
 
-The [main tile proxy atlas](../client/img/common/height-proxies/main.png) uses the same tile positions as the main artwork. To add a static body, define its bounds, front height, roof slope and depth in the [atlas generator](../tools/maps/generate_main_height_proxies.py). Run `python3 tools/maps/generate_main_height_proxies.py` with Pillow installed to regenerate the PNG. Characters use their current animation frame so their bodies move with them.
+The [height atlas](../client/img/common/height-proxies/main.png) and the [mask for painted shadows](../client/img/common/height-proxies/main-baked-shadows.png) share the main tilesheet's coordinates. To add a static body, define its outline, height profile and depth in the [atlas generator](../tools/maps/generate_main_height_proxies.py). If the artwork includes a painted ground shadow, mark its bounds there too. The renderer removes that paint where outdoor scenery casts a new shadow. Run `python3 tools/maps/generate_main_height_proxies.py` with Pillow installed to regenerate both images. Moving characters use the visible pixels of their current animation frame. Rats and snakes have a low body profile that keeps their tails near the ground.
+
+The renderer paints sky shadows onto the terrain before drawing players, mobs and equipment. In the Forest the roots, trunk and three canopy layers share their drawing positions with their shadow proxies. The raised foliage lets light pass under the crown while the trunk casts from its foot.
 
 ## Preview, save and playtest
 

@@ -50,7 +50,8 @@ test('the HUD reads the same clock and preview phase as lighting and fireflies',
     let tick, app, displayed;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8'), {
         Class: {extend: value => value}, setInterval: callback => {tick = callback;},
-        define: (dependencies, factory) => {app = factory(() => ({text: value => {displayed = value;}}));}
+        define: (dependencies, factory) => {app = factory(...dependencies.map(name => name === 'jquery'
+            ? () => ({text: value => {displayed = value;}}) : name === 'worldtime-worker' ? WorldTime : {}));}
     });
     app.game = game; app.calculateTime(); tick();
     expect(displayed).toBe('17:00');
@@ -62,6 +63,22 @@ test('the HUD reads the same clock and preview phase as lighting and fireflies',
     expect(WorldTime.mainDaylight(game.getWorldTime())).toBe(1);
     game.previewTimeMode = 'cycle'; tick();
     expect(displayed).toBe('17:00');
+});
+
+test('the local inspector scrubs every minute while the synchronized clock keeps running underneath', () => {
+    const clock = {now: 1000}, game = gameClock(clock);
+    game.syncWorldTime(20 * minute);
+    game.localPreviewHour = 7;
+    expect(game.getWorldTime()).toBe(20 * minute);
+    game.syncLocalWorldTime(30 * minute);
+    for (let time = 0; time < 1440; time++) {
+        game.localPreviewHour = time / 60;
+        expect(WorldTime.minuteOfDay(game.getWorldTime())).toBe(time);
+    }
+    clock.now += minute;
+    expect(WorldTime.minuteOfDay(game.getWorldTime())).toBe(1439);
+    game.localPreviewHour = undefined;
+    expect(game.getWorldTime()).toBe(31 * minute);
 });
 
 function lighting() {

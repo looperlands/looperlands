@@ -477,7 +477,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     }
     
                     if(entity.isVisible()) {
-                        if(entity.hasShadow()) {
+                        const hasContactShadow = entity.hasShadow();
+                        if(hasContactShadow) {
                             entityData.drawData.push({
                                 "id": shadow.id,
                                 "spriteName": "shadow16",
@@ -522,12 +523,12 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                             }
                         }
     
+                        const castsBodyShadow = this.game.map?.mapId === 'main' && !a && !entity.isDead &&
+                            (entity instanceof Character ? hasContactShadow : Types.isChest(entity.kind) && sprite.hasShadow !== false);
                         entityData.drawData.push({
                             "id": sprite.id,
                             "spriteName": entity.sprite.name,
-                            ...(this.game.map?.mapId === 'main' && !a && !entity.isDead &&
-                                (entity instanceof Character || Types.isChest(entity.kind))
-                                ? {shadowBody: entity === this.game.player ? 'player' : 'scenery'} : {}),
+                            ...(castsBodyShadow ? {shadowBody: entity === this.game.player ? 'player' : 'scenery'} : {}),
                             "sx": x,
                             "sy": y,
                             "sW": w,

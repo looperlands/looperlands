@@ -10,6 +10,9 @@
     const marginX = Math.ceil(maxHeight * maxReach) + 2;
     const marginY = Math.ceil(maxHeight * maxNorthReach) + 2;
     const cacheStep = 48;
+    const feather = 2; // native pixels of coverage on either side of a silhouette
+    // These sprites are drawn from above, with tails lying on the ground.
+    const lowAnimals = new Set(['rat', 'snake'].flatMap(name => [name, name + '_silhouette']));
     function casterClip(width, height) {
         // Both visible receivers and offscreen artwork project down to their footprint.
         return {left: -marginX, right: width + marginX, top: -marginY - maxHeight, bottom: height + marginY + maxHeight};
@@ -32,7 +35,7 @@
         else phase = .5 + .5 * (sinceRise - toNoon) / (dayHours - toNoon);
         const angle = phase * Math.PI, elevation = Math.sin(angle);
         const reach = .4 + (maxReach - .4) * (1 - elevation);
-        const strength = sun ? .39 * daylight : .19 * (1 - daylight) * Math.min(1, elevation * 5);
+        const strength = sun ? .33 * daylight : .15 * (1 - daylight) * Math.min(1, elevation * 5);
         return {x: Math.cos(angle) * reach, y: -maxNorthReach + .28 * elevation, strength};
     }
 
@@ -42,31 +45,68 @@
 
     // Screen y + height is the ground coordinate beneath the receiver. Extrude
     // backwards by its physical depth to build the surface that casts shadows.
-    function project(face, width, depths) {
+    function project(face, width, depths, raised, supports) {
         let groundTop = Infinity, groundBottom = -Infinity;
+        // Adjacent raised pixels at the same elevation/depth form a horizontal
+        // strip. Keep the strips separate from solids that extend to the ground.
+        const elevated = raised ? {levels: [], top: Infinity, bottom: -Infinity, minZ: maxHeight} : null;
         for (let i = 0; i < face.length; i++) {
             if (!face[i]) continue;
             const end = Math.floor(i / width) + face[i];
             const depth = typeof depths === 'number' ? depths : depths[i];
+            if (raised?.[i]) {
+                const z = face[i], x = i % width;
+                let count = 1;
+                while (x + count < width && raised[i + count] && face[i + count] === z &&
+                    (typeof depths === 'number' || depths[i + count] === depth)) count++;
+                (elevated.levels[z] ??= []).push({x, y: end - depth, width: count, depth});
+                elevated.top = Math.min(elevated.top, end - depth);
+                elevated.bottom = Math.max(elevated.bottom, end);
+                elevated.minZ = Math.min(elevated.minZ, z);
+                i += count - 1;
+                continue;
+            }
             groundTop = Math.min(groundTop, end - depth);
             groundBottom = Math.max(groundBottom, end);
         }
-        if (!Number.isFinite(groundTop)) return {width, face, ground: new Uint8Array(0), groundTop: 0};
+        if (!Number.isFinite(groundTop)) return {width, face, elevated, ground: new Uint8Array(0), groundTop: 0};
         const ground = new Uint8Array(width * (groundBottom - groundTop + 1));
         for (let i = 0; i < face.length; i++) {
             const z = face[i];
-            if (!z) continue;
+            if (!z || raised?.[i]) continue;
             const end = i + (z - groundTop) * width;
             const depth = typeof depths === 'number' ? depths : depths[i];
+            const peak = supports?.[i] || z;
             for (let p = end - depth * width; p <= end; p += width) {
-                if (ground[p] < z) ground[p] = z;
+                if (ground[p] < peak) ground[p] = peak;
             }
         }
-        return {width, face, ground, groundTop};
+        return {width, face, elevated, ground, groundTop};
     }
 
     function makeStamp(rgba, width, height, body) {
         const face = new Uint8Array(width * height);
+        if (body.raised) {
+            const depths = new Uint8Array(face.length);
+            // Each column through the leaf silhouette cuts a rounded crown. Its
+            // ground depth shrinks toward the tips while its center stays rooted.
+            for (let x = 0; x < width; x++) {
+                let top = 0, bottom = height - 1;
+                while (top <= bottom && rgba[(top * width + x) * 4 + 3] < 176) top++;
+                while (bottom >= top && rgba[(bottom * width + x) * 4 + 3] < 176) bottom--;
+                const span = bottom - top + 1, middle = (top + bottom) / 2;
+                for (let y = top; y <= bottom; y++) {
+                    const i = y * width + x;
+                    if (rgba[i * 4 + 3] < 176) continue;
+                    const normalized = 2 * (y - middle) / span;
+                    const section = span / height * Math.sqrt(1 - normalized * normalized);
+                    const depth = Math.round(body.depth * section);
+                    depths[i] = depth;
+                    face[i] = Math.max(0, bodyHeight(body.base - y, body.front, body.slope) - Math.round((body.depth - depth) / 2));
+                }
+            }
+            return project(face, width, depths, face);
+        }
         for (let y = 0; y < height; y++) {
             const z = bodyHeight(body.base - y, body.front, body.slope);
             for (let x = 0; x < width; x++) {
@@ -77,12 +117,54 @@
         return project(face, width, body.depth);
     }
 
+    function makeActorStamp(rgba, width, height, pose) {
+        const face = new Uint8Array(width * height);
+        let top = height, bottom = -1, left = width, right = -1;
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (rgba[(y * width + x) * 4 + 3] < 176) continue;
+                left = Math.min(left, x); right = Math.max(right, x);
+                top = Math.min(top, y); bottom = Math.max(bottom, y);
+            }
+        }
+        if (bottom < top) return project(face, width, 0);
+        if (pose === 'low') {
+            // Two distance sweeps round the torso while leaving narrow tails at ground level.
+            for (let y = top; y <= bottom; y++) {
+                for (let x = left; x <= right; x++) {
+                    const i = y * width + x;
+                    if (rgba[i * 4 + 3] >= 176) {
+                        face[i] = 1 + Math.min(x === left ? 0 : face[i - 1], y === top ? 0 : face[i - width]);
+                    }
+                }
+            }
+            for (let y = bottom; y >= top; y--) {
+                for (let x = right; x >= left; x--) {
+                    const i = y * width + x;
+                    face[i] = Math.min(face[i], 1 + (x === right ? 0 : face[i + 1]),
+                        1 + (y === bottom ? 0 : face[i + width]));
+                }
+            }
+            // These top-down poses show the full width of the back. The distance
+            // to its outline is a radius; use the diameter for torso height.
+            // Whiskers, toes and one-pixel tails stay one pixel above the floor.
+            for (let i = 0; i < face.length; i++) {
+                if (face[i]) face[i] = Math.min(maxHeight, 2 * face[i] - 1);
+            }
+            return project(face, width, 2);
+        }
+        // Animation cells often contain considerable transparent padding. The
+        // visible figure sets its height and foot contact, even on flipped frames.
+        return makeStamp(rgba, width, height, {base: bottom + 1, front: (bottom - top + 1) * .55,
+            slope: .7, depth: Math.max(1, Math.min(8, Math.round((right - left + 1) * .12)))});
+    }
+
     function readProxyTile(atlas, id) {
         const columns = atlas.width / tileSize;
         const left = (id - 1) % columns * tileSize;
         const top = Math.floor((id - 1) / columns) * tileSize;
         if (id < 1 || top + tileSize > atlas.height) return null;
-        let face, depths;
+        let face, depths, raised, supports;
         for (let y = 0; y < tileSize; y++) {
             let source = ((top + y) * atlas.width + left) * 4;
             for (let x = 0; x < tileSize; x++, source += 4) {
@@ -94,9 +176,19 @@
                 const i = y * tileSize + x;
                 face[i] = atlas.data[source + 1];
                 depths[i] = 255 - atlas.data[source + 2];
+                const marker = atlas.data[source] - Math.min(255, 3 * face[i]);
+                if (face[i] && marker === -1) {
+                    raised ??= new Uint8Array(tileSize * tileSize);
+                    raised[i] = 1;
+                } else if (face[i] && marker > 0) {
+                    // The visible bark ends below foliage that hides the rest
+                    // of its solid trunk. That trunk keeps the same footprint.
+                    supports ??= new Uint8Array(tileSize * tileSize);
+                    supports[i] = Math.min(maxHeight, face[i] + marker);
+                }
             }
         }
-        return face ? project(face, tileSize, depths) : null;
+        return face ? project(face, tileSize, depths, raised, supports) : null;
     }
 
     function blit(target, stride, rows, pixels, width, x, y, flip) {
@@ -111,17 +203,135 @@
         }
     }
 
-    function place(field, stamp, worldX, worldY, flip = false, casts = true) {
+    function place(field, stamp, worldX, worldY, flip = false, casts = true, receives = true) {
         const x = Math.round(worldX) - field.x, y = Math.round(worldY) - field.y;
-        blit(field.face, field.width, field.height, stamp.face, stamp.width, x, y, flip);
-        if (casts) blit(field.ground, field.width, field.height, stamp.ground, stamp.width, x, y + stamp.groundTop, flip);
+        if (receives) blit(field.face, field.width, field.height, stamp.face, stamp.width, x, y, flip);
+        if (!casts) return;
+        blit(field.ground, field.width, field.height, stamp.ground, stamp.width, x, y + stamp.groundTop, flip);
+        if (stamp.elevated?.levels.length) {
+            field.raised ??= [];
+            field.raised.push({stamp, x, y, flip});
+        }
+    }
+
+    function shadowBuffers(field, mask) {
+        return {peaks: new Float32Array(field.ground.length), blockerHeights: new Uint8Array(field.ground.length),
+            coverage: new Uint8ClampedArray((mask.width + 2 * feather) * (mask.height + 2 * feather))};
+    }
+
+    // Project both caster and receiver along the light onto z=0. They share a
+    // ray exactly when the projected cells overlap; the higher surface blocks
+    // the lower one. No material is assumed between a raised strip and earth.
+    function projectRaised(field, light, buffers, left, top, mask) {
+        if (!field.raised?.length) return;
+        const cache = buffers.raised ??= {heights: new Uint8Array(field.ground.length), rasters: new WeakMap(),
+            dx: new Int16Array(maxHeight + 1), dy: new Int16Array(maxHeight + 1)};
+        // A change smaller than half a native pixel at maximum height can reuse
+        // the same light direction for every swaying tree and map tile.
+        const lightX = Math.round(-light.x * maxHeight), lightY = Math.round(-light.y * maxHeight);
+        const turned = lightX !== cache.lightX || lightY !== cache.lightY;
+        const previous = cache.placements;
+        let moved = cache.count !== field.raised.length;
+        if (!turned && !moved && previous !== field.raised) {
+            for (let i = 0; i < field.raised.length; i++) {
+                const a = previous[i], b = field.raised[i];
+                if (a.stamp !== b.stamp || a.x !== b.x || a.y !== b.y || a.flip !== b.flip) {moved = true; break;}
+            }
+        }
+        if (turned) {
+            cache.lightX = lightX; cache.lightY = lightY;
+            for (let z = 1; z <= maxHeight; z++) {
+                cache.dx[z] = Math.round(lightX * z / maxHeight);
+                cache.dy[z] = Math.round(lightY * z / maxHeight);
+            }
+        }
+        // Only rays passing through visible receivers can contribute. Forest
+        // crowns sit above the drawing layer, so the visible ground and roots
+        // usually restrict the work to the viewport even at a low sun angle.
+        const viewX = Math.max(0, left - field.x - feather), viewY = Math.max(0, top - field.y - feather);
+        const endX = Math.min(field.width, left - field.x + mask.width + feather);
+        const endY = Math.min(field.height, top - field.y + mask.height + feather);
+        let receiverHeight = 0;
+        for (let y = viewY; y < endY; y++) {
+            const end = y * field.width + endX;
+            for (let i = y * field.width + viewX; i < end; i++) if (field.face[i] > receiverHeight) receiverHeight = field.face[i];
+        }
+        const x0 = Math.max(0, viewX + Math.min(0, cache.dx[receiverHeight]));
+        const x1 = Math.min(field.width, endX + Math.max(0, cache.dx[receiverHeight]));
+        const projectedY = receiverHeight + cache.dy[receiverHeight];
+        const y0 = Math.max(0, viewY + Math.min(0, projectedY));
+        const y1 = Math.min(field.height, endY + Math.max(0, projectedY));
+        const window = cache.window;
+        const outside = !window || x0 < window.x0 || x1 > window.x1 || y0 < window.y0 || y1 > window.y1;
+        if (!turned && !moved && !outside) return cache;
+        cache.window = {x0: Math.max(0, x0 - cacheStep), x1: Math.min(field.width, x1 + cacheStep),
+            y0: Math.max(0, y0 - cacheStep), y1: Math.min(field.height, y1 + cacheStep)};
+        cache.placements = field.raised;
+        cache.count = field.raised.length;
+        cache.heights.fill(0);
+        for (let i = 0; i < field.raised.length; i++) {
+            const {stamp, x, y, flip} = field.raised[i];
+            const raster = raisedRaster(stamp, flip, cache, x, y);
+            if (!raster) continue;
+            const left = x + raster.x, top = y + raster.y;
+            const firstX = Math.max(left, cache.window.x0), lastX = Math.min(left + raster.width, cache.window.x1);
+            const firstY = Math.max(top, cache.window.y0), lastY = Math.min(top + raster.height, cache.window.y1);
+            // The projected blocks are column-major so only on-screen columns are copied.
+            for (let col = firstX; col < lastX; col++) {
+                let source = (col - left) * raster.height + firstY - top;
+                const end = col * field.height + lastY;
+                for (let target = col * field.height + firstY; target < end; target++, source++) {
+                    const z = raster.pixels[source];
+                    if (z > cache.heights[target]) cache.heights[target] = z;
+                }
+            }
+        }
+        return cache;
+    }
+
+    function raisedRaster(stamp, flip, cache, worldX, worldY) {
+        const {levels, top, bottom, minZ} = stamp.elevated, maxZ = levels.length - 1;
+        const {dx, dy, window} = cache;
+        const x = Math.min(dx[minZ - 1], dx[maxZ]), y = top + Math.min(dy[minZ - 1], dy[maxZ]);
+        const width = stamp.width + Math.max(dx[minZ - 1], dx[maxZ]) - x;
+        const height = bottom + Math.max(dy[minZ - 1], dy[maxZ]) - y + 1;
+        if (worldX + x >= window.x1 || worldX + x + width <= window.x0 ||
+            worldY + y >= window.y1 || worldY + y + height <= window.y0) return;
+        let directions = cache.rasters.get(stamp);
+        if (!directions) {directions = []; cache.rasters.set(stamp, directions);}
+        const raster = directions[flip ? 1 : 0] ??= {};
+        if (raster.lightX === cache.lightX && raster.lightY === cache.lightY) return raster;
+        const length = width * height;
+        if (!raster.workspace || raster.workspace.length < length) raster.workspace = new Uint8Array(length);
+        const pixels = raster.workspace.subarray(0, length);
+        pixels.fill(0);
+        // Paint low to high in the stamp's own coordinates. Each strip fills a
+        // contiguous run down a column; moving, mirrored and repeated trees
+        // only have to copy this small silhouette while the sun holds its angle.
+        for (let z = minZ; z <= maxZ; z++) {
+            const strips = levels[z];
+            if (!strips) continue;
+            const minX = Math.min(dx[z], dx[z - 1]) - x, maxX = Math.max(dx[z], dx[z - 1]) - x;
+            const minY = Math.min(dy[z], dy[z - 1]) - y, maxY = Math.max(dy[z], dy[z - 1]) - y;
+            for (let i = 0; i < strips.length; i++) {
+                const strip = strips[i];
+                const left = flip ? stamp.width - strip.x - strip.width : strip.x;
+                const right = left + strip.width + maxX;
+                const y0 = strip.y + minY, y1 = strip.y + strip.depth + 1 + maxY;
+                for (let col = left + minX; col < right; col++) pixels.fill(z, col * height + y0, col * height + y1);
+            }
+        }
+        return Object.assign(raster, {x, y, width, height, pixels, lightX: cache.lightX, lightY: cache.lightY});
     }
 
     // The tallest obstruction along a digital ray can sit between two point
     // samples. Cache its apparent height to the sunward edge of each block,
     // so five probes include every native pixel across the full shadow reach.
-    function shade(field, left, top, mask, light, peaks = new Float32Array(field.ground.length)) {
+    function shade(field, left, top, mask, light, buffers = shadowBuffers(field, mask)) {
         const {face, ground, width, height} = field;
+        const {peaks, blockerHeights, coverage} = buffers;
+        const raised = projectRaised(field, light, buffers, left, top, mask);
+        const sampleWidth = mask.width + 2 * feather, sampleHeight = mask.height + 2 * feather;
         const horizontal = Math.abs(light.x) >= Math.abs(light.y);
         const reach = Math.abs(horizontal ? light.x : light.y);
         const sign = Math.sign(horizontal ? light.x : light.y) || 1;
@@ -140,12 +350,12 @@
             minorOffsets[i] = Math.round(q * slope);
             nextBlock[i] = i + sign * (block - ((q % block + block) % block));
         }
-        const x = left - field.x, y = top - field.y;
+        const x = left - field.x - feather, y = top - field.y - feather;
         const farX = Math.round(maxHeight * light.x), farY = Math.round(maxHeight * light.y);
         const x0 = Math.max(0, x + Math.min(0, farX) - 1);
-        const x1 = Math.min(width - 1, x + mask.width + Math.max(0, farX) + 1);
+        const x1 = Math.min(width - 1, x + sampleWidth + Math.max(0, farX) + 1);
         const y0 = Math.max(0, y + Math.min(0, farY) - 1);
-        const y1 = Math.min(height - 1, y + mask.height + maxHeight + Math.max(0, farY) + 1);
+        const y1 = Math.min(height - 1, y + sampleHeight + maxHeight + Math.max(0, farY) + 1);
         const majorMin = horizontal ? x0 : y0, majorMax = horizontal ? x1 : y1;
         const minorMin = horizontal ? y0 : x0, minorMax = horizontal ? y1 : x1;
         const start = sign > 0 ? majorMax : majorMin, end = sign > 0 ? majorMin : majorMax;
@@ -156,7 +366,14 @@
             let index = i * majorStride + minorMin * minorStride;
             for (let j = minorMin; j <= minorMax; j++, index += minorStride) {
                 const beyond = !reset && j + minorStep >= minorMin && j + minorStep <= minorMax;
-                peaks[index] = beyond ? Math.max(ground[index], peaks[index + step] - risePerPixel) : ground[index];
+                const incoming = beyond ? peaks[index + step] - risePerPixel : 0;
+                if (incoming > ground[index]) {
+                    peaks[index] = incoming;
+                    blockerHeights[index] = blockerHeights[index + step];
+                } else {
+                    peaks[index] = ground[index];
+                    blockerHeights[index] = ground[index];
+                }
             }
         }
         // Adjacent receivers share their last four probes. Resolve those block
@@ -171,27 +388,40 @@
                     if (k < majorMin || k > majorMax) break;
                     const across = j + minorOffsets[k] - minorOffsets[i];
                     if (across < minorMin || across > minorMax) break;
-                    peak = Math.max(peak, peaks[k * majorStride + across * minorStride] - tap * block * risePerPixel);
+                    const probe = k * majorStride + across * minorStride;
+                    const candidate = peaks[probe] - tap * block * risePerPixel;
+                    if (candidate > peak) {
+                        peak = candidate;
+                        blockerHeights[index] = blockerHeights[probe];
+                    }
                 }
                 peaks[index] = peak;
             }
         }
-        for (let row = 0, pixel = 3; row < mask.height; row++) {
-            for (let col = 0; col < mask.width; col++, pixel += 4) {
+        for (let row = 0, i = 0; row < sampleHeight; row++) {
+            for (let col = 0; col < sampleWidth; col++, i++) {
                 const fx = x + col, fy = y + row;
+                if (fx < 0 || fy < 0 || fx >= width || fy >= height) {coverage[i] = 0; continue;}
                 // Sloped surfaces can project several artwork rows into one ground
                 // cell. Sample the visible (front) edge of an elevated receiver.
                 const z = face[fy * width + fx], footY = fy + z + (z > 0 ? 1 : 0);
                 const first = horizontal ? fx : footY, minor = horizontal ? footY : fx;
-                let clearance = 0;
+                let clearance = 0, rayDistance = 0;
                 if (minor >= minorMin && minor <= minorMax && first >= majorMin && first <= majorMax) {
-                    clearance = peaks[first * majorStride + minor * minorStride] - z;
+                    const origin = first * majorStride + minor * minorStride;
+                    clearance = peaks[origin] - z;
+                    rayDistance = blockerHeights[origin] - peaks[origin];
                     const next = nextBlock[first];
-                    if (clearance < 4 && next >= majorMin && next <= majorMax) {
+                    if (next >= majorMin && next <= majorMax) {
                         const across = minor + minorOffsets[next] - minorOffsets[first];
                         if (across >= minorMin && across <= minorMax) {
                             const heightAtNext = z + Math.abs(next - first) * risePerPixel;
-                            clearance = Math.max(clearance, peaks[next * majorStride + across * minorStride] - heightAtNext);
+                            const probe = next * majorStride + across * minorStride;
+                            const candidate = peaks[probe] - heightAtNext;
+                            if (candidate > clearance) {
+                                clearance = candidate;
+                                rayDistance = blockerHeights[probe] - z - clearance;
+                            }
                         }
                     }
                 }
@@ -201,9 +431,59 @@
                     const contact = ground[(fy + z) * width + fx] - z;
                     clearance -= .5 + Math.max(0, Math.min(3, contact));
                 }
-                mask.data[pixel] = 255 * light.strength * Math.min(1, clearance / 4);
+                if (raised) {
+                    const px = fx + raised.dx[z], py = fy + z + raised.dy[z];
+                    if (px >= 0 && px < width && py >= 0 && py < height) {
+                        const distance = raised.heights[px * height + py] - z;
+                        // Quantizing a curved surface can put neighboring pixels
+                        // on the same ray. Allow the same tolerance as a solid roof.
+                        const above = distance - (z ? 3.5 : 0);
+                        if (above > 0 && above > clearance) {clearance = above; rayDistance = distance;}
+                    }
+                }
+                // Preserve contact contrast and fade the far end of a long shadow.
+                const distance = Math.min(1, rayDistance / 90);
+                coverage[i] = 255 * light.strength * (1 - .28 * distance) * Math.min(1, clearance / (4 + 8 * distance));
             }
         }
+        resolveCoverage(field, x, y, mask, coverage);
+    }
+
+    function resolveCoverage(field, x, y, mask, coverage) {
+        const {width, face} = field;
+        // A separable tent feathers the mask at native resolution. The two-pixel
+        // border is traced in world coordinates so panning never changes its edges.
+        // Keep elevated surfaces sharp against neighboring ground shadows.
+        const stride = mask.width + 2 * feather;
+        for (let row = 0; row < mask.height + 2 * feather; row++) {
+            const line = row * stride;
+            for (let col = 0; col < mask.width; col++) {
+                const i = line + col, center = i + feather;
+                const world = (y + row) * width + x + col + feather;
+                if (!face[world] && !face[world - feather] && !face[world + feather]) {
+                    coverage[i] = (coverage[i] + 4 * coverage[i + 1] + 6 * coverage[center]
+                        + 4 * coverage[i + 3] + coverage[i + 4]) / 16;
+                } else coverage[i] = coverage[center];
+            }
+        }
+        for (let row = 0, pixel = 3; row < mask.height; row++) {
+            for (let col = 0; col < mask.width; col++, pixel += 4) {
+                const i = row * stride + col, center = i + feather * stride;
+                const world = (y + row + feather) * width + x + col + feather;
+                if (!face[world] && !face[world - feather * width] && !face[world + feather * width]) {
+                    mask.data[pixel] = (coverage[i] + 4 * coverage[i + stride] + 6 * coverage[center]
+                        + 4 * coverage[center + stride] + coverage[center + 2 * stride]) / 16;
+                } else mask.data[pixel] = coverage[center];
+            }
+        }
+    }
+
+    function casterDraw(actor, spriteImages, scale) {
+        if (actor.globalAlpha < .25 || actor.dissolve?.visible < .5) return;
+        const draw = actor.drawData.find(part => part.shadowBody);
+        if (!draw || !spriteImages[draw.spriteName]?.image) return;
+        const width = Math.round(draw.dW / scale), height = Math.round(draw.dH / scale);
+        if (width >= 1 && width <= 256 && height >= 1 && height <= 256) return draw;
     }
 
     class Pass {
@@ -229,7 +509,8 @@
             if (flipY) {ctx.translate(0, height); ctx.scale(1, -1);}
             ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
             ctx.restore();
-            return makeStamp(ctx.getImageData(0, 0, width, height).data, width, height, body);
+            const pixels = ctx.getImageData(0, 0, width, height).data;
+            return typeof body === 'string' ? makeActorStamp(pixels, width, height, body) : makeStamp(pixels, width, height, body);
         }
 
         tile(id) {
@@ -240,7 +521,8 @@
         sprite(image, sx, sy, sw, sh, width, height, body, flipY = false) {
             let frames = this.sprites.get(image);
             if (!frames) {frames = new Map(); this.sprites.set(image, frames);}
-            const key = [sx, sy, sw, sh, width, height, body.base, body.front, body.slope, body.depth, flipY].join(',');
+            const profile = typeof body === 'string' ? body : [body.base, body.front, body.slope, body.depth, !!body.raised];
+            const key = [sx, sy, sw, sh, width, height, profile, flipY].join(',');
             if (!frames.has(key)) {
                 if (frames.size >= 128) frames.delete(frames.keys().next().value);
                 frames.set(key, this.read(image, sx, sy, sw, sh, width, height, body, flipY));
@@ -276,8 +558,8 @@
             return field;
         }
 
-        draw(ctx, view, scene, light, actors, spriteImages, options, scenery, inspect = false) {
-            const width = ctx.canvas.width, height = ctx.canvas.height;
+        draw(canvas, view, scene, light, actors, spriteImages, options, scenery, inspect = false) {
+            const {width, height} = canvas;
             const left = -Math.round(-view.cameraX), top = -Math.round(-view.cameraY);
             const terrain = this.terrain(left, top, width, height, scene);
             if (!this.mask || this.mask.width !== width || this.mask.height !== height) {
@@ -285,7 +567,7 @@
                 this.output = this.surface.getContext('2d');
                 this.mask = this.output.createImageData(width, height);
                 this.proxyPixels = null;
-                this.rayPeaks = new Float32Array(terrain.ground.length);
+                this.shadowBuffers = shadowBuffers(terrain, this.mask);
                 for (let i = 0; i < this.mask.data.length; i += 4) {
                     this.mask.data[i] = 24; this.mask.data[i + 1] = 32; this.mask.data[i + 2] = 52;
                 }
@@ -295,27 +577,30 @@
             this.face.set(terrain.face);
             if (options.shadows) this.ground.set(terrain.ground);
             else this.ground.fill(0);
-            const field = {...terrain, face: this.face, ground: this.ground};
+            const raised = options.shadows ? terrain.raised : null;
+            // Live scenery has its own placements, including swaying foliage.
+            const field = {...terrain, face: this.face, ground: this.ground, raised: scenery.length && options.shadows ? [...(raised || [])] : raised};
             for (const tree of scenery) {
                 const {image, width, height, body} = tree;
                 const stamp = this.sprite(image, 0, 0, image.width, image.height, width, height, body);
-                place(field, stamp, tree.x, tree.y, tree.flipX, options.shadows);
+                // Sorted trunks and foreground foliage are drawn after the
+                // ground mask. Roots painted into the ground can receive it.
+                place(field, stamp, tree.x, tree.y, tree.flipX, options.shadows, inspect || tree.receivesOnGround === true);
             }
             const scale = view.scale;
             for (const actor of actors) {
-                if (actor.globalAlpha < .25 || actor.dissolve?.visible < .5) continue;
-                const draw = actor.drawData.find(part => part.shadowBody);
-                const image = draw && spriteImages[draw.spriteName]?.image;
-                if (!image) continue;
+                const draw = casterDraw(actor, spriteImages, scale);
+                if (!draw) continue;
+                const image = spriteImages[draw.spriteName].image;
                 const w = Math.round(draw.dW / scale), h = Math.round(draw.dH / scale);
-                if (w < 1 || h < 1 || w > 256 || h > 256) continue;
                 const flipX = actor.scaleX === -1, flipY = actor.scaleY === -1;
                 const x = (actor.translateX + (flipX ? -draw.dx - draw.dW : draw.dx)) / scale;
                 const y = (actor.translateY + (flipY ? -draw.dy - draw.dH : draw.dy)) / scale;
-                const base = Math.round(actor.depthY - y);
-                const body = {base, front: Math.round(h * .46), slope: .68, depth: Math.max(2, Math.min(12, Math.round(w * .18)))};
+                const body = lowAnimals.has(draw.spriteName) ? 'low' : 'upright';
                 const stamp = this.sprite(image, draw.sx, draw.sy, draw.sW, draw.sH, w, h, body, flipY);
-                place(field, stamp, x, y, flipX, draw.shadowBody === 'player' ? options.playerShadow : options.shadows);
+                // Actors cast onto the world layer drawn underneath them. Their
+                // visible pixels only belong in the diagnostic height image.
+                place(field, stamp, x, y, flipX, draw.shadowBody === 'player' ? options.playerShadow : options.shadows, inspect);
             }
             if (inspect) {
                 this.proxyPixels ??= this.output.createImageData(width, height);
@@ -333,10 +618,10 @@
                 this.output.putImageData(this.proxyPixels, 0, 0);
                 return this.surface;
             }
-            shade(field, left, top, this.mask, light, this.rayPeaks);
+            shade(field, left, top, this.mask, light, this.shadowBuffers);
             this.output.putImageData(this.mask, 0, 0);
-            ctx.drawImage(this.surface, 0, 0);
+            return this.surface;
         }
     }
-    return {Pass, skyLight, casterClip, bodyHeight, makeStamp, readProxyTile, place, shade};
+    return {Pass, skyLight, casterClip, casterDraw, bodyHeight, makeStamp, makeActorStamp, readProxyTile, place, shade};
 });

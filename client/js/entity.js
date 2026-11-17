@@ -158,6 +158,7 @@ define(function() {
         setHighlight: function(value) {
             if(value === true) {
                 if(!this.sprite.silhouetteSprite) {
+                    if (!this.sprite.image?.width || !this.sprite.image.height) return;
                     this.sprite.createSilhouette();
                 }
                 this.sprite = this.sprite.silhouetteSprite;

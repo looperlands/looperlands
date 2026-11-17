@@ -234,20 +234,54 @@ test('placed trunks expose world depth and use display scale for actor interleav
     expect(s.ctx.drawImage.mock.calls[0].slice(1)).toEqual([330, 300, 240, 300]);
 });
 
-test('forest shadow bodies stay attached to the placed roots as the camera and canopy move', async () => {
-    const s = setup();
-    Object.assign(s.layer, {image: '/img/parallax/forest-canopy-lower.png', placed: true,
-        width: 80, height: 100, factorX: 1.2, swayX: 4});
-    Object.assign(s.state.scenes[0], {id: 628, placements: [{x: 250, y: 350, flipX: true}]});
-    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, sceneId: '628',
-        casterClip: require('./height-shadows-worker').casterClip(320, 240)};
+test.each([false, true])('forest roots, trunk and all crowns share their drawn pose (flipped %s)', async flipX => {
+    const s = setup(), {bodyHeight, casterClip} = require('./height-shadows-worker');
+    const forest = require('../../tools/worlds/main.json').atmosphere.find(scene => scene.sceneId === '628').parallax;
+    const tree = forest.placements.find(p => p.y > 200 && p.flipX === flipX);
+    const layers = forest.layers.filter(layer => layer.placed);
+    const scene = {id: '628', x: 0, y: 0, w: 120, h: 120, placements: [tree], layers};
+    s.state.scenes = [scene];
+    const view = {viewportWidth: 320, viewportHeight: 240, scale: 2, sceneId: '628', casterClip: casterClip(320, 240)};
+    Object.assign(s.ctx.canvas, {width: 640, height: 480});
+    const frame = (offset, time) => {
+        Object.assign(view, {cameraX: tree.x - 150 + offset, cameraY: tree.y - 150 + offset, parallaxTime: time});
+        s.ctx.drawImage.mockClear(); s.ctx.translate.mockClear();
+        const bodies = s.renderer.shadowBodies(s.state, view);
+        s.renderer.ground(s.ctx, s.state, view);
+        s.renderer.entries(s.state, view).forEach(entry => entry.draw(s.ctx));
+        s.renderer.foreground(s.ctx, s.state, view);
+        expect(bodies.map(body => body.receivesOnGround)).toEqual([true, false, false, false, false]);
+        expect(s.ctx.drawImage).toHaveBeenCalledTimes(5);
+        bodies.forEach((sprite, i) => {
+            const [, drawX, drawY, drawW, drawH] = s.ctx.drawImage.mock.calls[i];
+            const [x, y] = flipX ? s.ctx.translate.mock.calls[i] : [drawX, drawY];
+            expect(sprite.flipX).toBe(flipX);
+            expect(sprite.width).toBe(drawW / view.scale);
+            expect(sprite.height).toBe(drawH / view.scale);
+            expect(sprite.x).toBe(Math.round(view.cameraX + (x - (flipX ? drawW : 0)) / view.scale));
+            expect(sprite.y).toBe(Math.round(view.cameraY + y / view.scale));
+        });
+        return bodies;
+    };
+    Object.assign(view, {cameraX: tree.x - 150, cameraY: tree.y - 150});
     s.renderer.shadowBodies(s.state, view); await flush();
-    const bodies = s.renderer.shadowBodies(s.state, view);
-    expect(bodies).toHaveLength(1);
-    expect(bodies[0]).toMatchObject({x: 210, y: 300, flipX: true, body: {base: 50}});
-    s.time(4200);
-    expect(s.renderer.shadowBodies(s.state, {...view, cameraX: 123.5, cameraY: 219})).toEqual(bodies);
-    expect(s.renderer.shadowBodies(s.state, {...view, sceneId: 624})).toEqual([]);
+    const [roots, trunk, ...crowns] = frame(0, 0);
+    expect(roots.body.raised).toBeUndefined();
+    expect(roots.body.front).toBeLessThan(5);
+    const trunkFoot = trunk.y + trunk.body.base;
+    expect(trunkFoot - trunk.body.depth).toBeLessThanOrEqual(tree.y);
+    expect(trunkFoot).toBeGreaterThanOrEqual(tree.y);
+    for (const crown of crowns) {
+        const {base, front, slope, depth, raised} = crown.body;
+        expect(raised).toBe(true);
+        const middle = crown.height / 2;
+        const midFoot = crown.y + middle + bodyHeight(base - middle, front, slope);
+        expect(Math.abs(midFoot - depth / 2 - tree.y)).toBeLessThanOrEqual(1);
+    }
+    const moved = frame(61.5, 1800);
+    expect([moved[0].x, moved[0].y]).toEqual([roots.x, roots.y]);
+    expect(moved.at(-1).x).not.toBe(crowns.at(-1).x);
+    expect(s.renderer.shadowBodies(s.state, {...view, sceneId: 'other'})).toEqual([]);
 });
 
 test('overhead trees follow ambient darkness and exclude higher-priority regions', async () => {

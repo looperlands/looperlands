@@ -535,8 +535,15 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
     				<canvas id="entities"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
-				<div id="time"></div>
-                <button type="button" id="shadow-proxy-toggle" hidden disabled>Loading shadow proxies…</button>
+                <div id="shadow-preview">
+                    <time id="time"></time>
+                    <div id="shadow-preview-clock" hidden>
+                        <label for="shadow-preview-time">Time of day</label>
+                        <input type="range" id="shadow-preview-time" min="0" max="1439" step="1">
+                        <button type="button" id="shadow-preview-live" disabled>Resume clock</button>
+                    </div>
+                    <button type="button" id="shadow-proxy-toggle" hidden disabled>Loading shadow proxies…</button>
+                </div>
     			<div id="bubbles">
     			</div>
 			<div id="evolution-notification" role="status" aria-live="polite" aria-atomic="true"></div>

@@ -6609,7 +6609,10 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             getWorldTime: function () {
-                return WorldTime.previewTime(this.localWorldTimeOverride ? 'cycle' : this.previewTimeMode, (this.serverTime || 0) + performance.now());
+                const time = (this.serverTime || 0) + performance.now();
+                return this.localWorldTimeOverride
+                    ? WorldTime.previewTime('cycle', time, this.localPreviewHour)
+                    : WorldTime.previewTime(this.previewTimeMode, time);
             },
 
             syncLocalWorldTime: function (time) {

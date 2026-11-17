@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics', 'fishingcatch'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics, FishingCatch) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics', 'fishingcatch', 'worldtime-worker'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics, FishingCatch, WorldTime) {
 
     var App = Class.extend({
         init: function () {
@@ -31,22 +31,14 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
         },
 
         calculateTime: function() {
-            let self = this;
-            setInterval(function() {
+            setInterval(() => this.updateClockDisplay(), 1000);
+        },
 
-                const cycleTime = 1000 * 60 * 60 // 1 hour
-                const cycleProgress = ((self.game?.getWorldTime() ?? self.timeOffset + performance.now()) % cycleTime) / cycleTime;
-                const cycleAngle = cycleProgress * Math.PI * 2;
-                const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
-
-                // Human-readable time, based on angle
-                const timeHours = Math.floor(cycleProgress * 24);
-                const timeMinutes = Math.floor(cycleProgress * 24 * 60) % 60;
-
-                let time = `${String(timeHours).padStart(2, '0')}:${String(timeMinutes).padStart(2, '0')}`;
-
-                $('#time').text(time);
-            }, 1000);
+        updateClockDisplay: function() {
+            const minute = WorldTime.minuteOfDay(this.game?.getWorldTime() ?? this.timeOffset + performance.now());
+            const time = String(Math.floor(minute / 60)).padStart(2, '0') + ':' + String(minute % 60).padStart(2, '0');
+            $('#time').text(time);
+            this.onClockDisplay?.(minute, time);
         },
 
         setGame: function (game) {

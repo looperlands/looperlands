@@ -117,14 +117,16 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
 
 test('the main-map atlas powers outdoor shadows and the live proxy view', async () => {
     const worker = setup(), draw = jest.fn();
-    const atlas = {}, proxyView = {}, construct = jest.fn();
-    worker.sandbox.fetch = jest.fn(async () => ({blob: () => atlas}));
+    worker.setTileset({width: 320, height: 3000});
+    const atlas = {}, mask = {}, castSurface = {}, proxyView = {}, construct = jest.fn();
+    const urls = ['../img/common/height-proxies/main.png', '../img/common/height-proxies/main-baked-shadows.png'];
+    worker.sandbox.fetch = jest.fn(async url => ({blob: () => url === urls[1] ? mask : atlas}));
     worker.sandbox.createImageBitmap = async blob => blob;
     worker.sandbox.self.postMessage = jest.fn();
     worker.sandbox.self.SceneEnvironment = require('./sceneenvironment');
-    worker.sandbox.self.HeightShadows = {Pass: class {
+    worker.sandbox.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
         constructor(...args) { construct(...args); }
-        draw(...args) { draw(...args); return args[8] ? proxyView : undefined; }
+        draw(...args) { draw(...args); return args[8] ? proxyView : castSurface; }
     }, skyLight: () => ({strength: .4})};
     vm.runInContext('worldClock = self.WorldTime', worker.sandbox);
     const bodyMap = {width: 1, data: [1]};
@@ -134,36 +136,72 @@ test('the main-map atlas powers outdoor shadows and the live proxy view', async 
     await firstLoad;
     expect(construct).not.toHaveBeenCalled();
     await configure();
-    expect(worker.sandbox.fetch.mock.calls).toEqual([['../img/common/height-proxies/main.png']]);
+    expect(worker.sandbox.fetch.mock.calls.map(([url]) => url)).toEqual(urls);
     expect(construct).toHaveBeenCalledWith(bodyMap, atlas);
     expect(worker.sandbox.self.postMessage).toHaveBeenCalledWith({type: 'shadowProxyAtlas', ready: true});
     const data = frame();
     data.mapId = 'main';
     data.scene.dn_cycle = 'true';
+    data.scene.width = 2;
+    const actor = data.renderData.find(layer => layer.type === 'entities').entityData[0];
+    actor.drawData[0].shadowBody = 'player';
+    actor.drawData.unshift({...actor.drawData[0], shadowBody: undefined, spriteName: 'shadow16'});
+    vm.runInContext("sprites.shadow16 = {image: 'contact-shadow'}", worker.sandbox);
+    const actorContext = worker.canvases.entities.ctx;
+    function drewBlob() {
+        const drawn = actorContext.drawImage.mock.calls.some(([image]) => image === 'contact-shadow');
+        actorContext.drawImage.mockClear();
+        return drawn;
+    }
+    function tileSource(x) {
+        const terrain = worker.canvases.background.ctx.drawImage.mock.lastCall[0];
+        const tile = terrain.ctx.drawImage.mock.calls.find(call => call[1] === x * 16)[0];
+        return tile.ctx.drawImage.mock.calls[0][0];
+    }
     const options = data.renderData.find(layer => layer.id === 'lights').options;
     options.shadows = true;
     worker.send(data);
+    const cleaned = tileSource(0), original = tileSource(3);
+    expect(cleaned.ctx.drawImage.mock.calls.map(([image]) => image)).toEqual([original, mask]);
+    expect(cleaned.ctx.globalCompositeOperation).toBe('destination-out');
+    const painted = actorContext.drawImage.mock.calls.map(([image]) => image);
+    expect(painted).toEqual([worker.canvases.background, castSurface, 'contact-shadow', {avatar: true}]);
+    expect(worker.canvases.highEntities.ctx.drawImage.mock.calls.map(([image]) => image)).toEqual([worker.canvases.high, castSurface]);
+    expect(worker.canvases.lighting.ctx.drawImage.mock.calls.some(([image]) => image === castSurface)).toBe(false);
+    expect(drewBlob()).toBe(true);
     expect(draw).toHaveBeenCalledTimes(1);
     expect(draw.mock.calls[0][6]).toEqual({shadows: true, playerShadow: false});
     options.shadows = false;
     options.playerShadow = true;
     worker.send(data);
+    expect(tileSource(0)).toBe(original);
+    expect(drewBlob()).toBe(false);
     expect(draw.mock.calls[1][6]).toEqual({shadows: false, playerShadow: true});
     options.playerShadow = false;
     worker.send(data);
+    expect(drewBlob()).toBe(true);
     expect(draw).toHaveBeenCalledTimes(2);
     options.inspectShadowProxies = true;
     worker.send(data);
     expect(worker.canvases.combined.ctx.drawImage.mock.lastCall[0]).toBe(proxyView);
+    expect(drewBlob()).toBe(true);
     options.inspectShadowProxies = false;
     options.shadows = true;
+    options.playerShadow = true;
     data.scene.weatherExposure = 'indoor';
     worker.send(data);
+    expect(tileSource(0)).toBe(original);
+    expect(drewBlob()).toBe(true);
     data.scene.weatherExposure = 'outdoor';
     data.mapId = 'duckville';
     worker.send(data);
+    expect(drewBlob()).toBe(true);
     expect(draw).toHaveBeenCalledTimes(3);
     expect(worker.canvases.combined.ctx.drawImage.mock.lastCall[0]).toBe(worker.canvases.lighting);
+    data.mapId = 'main';
+    actor.drawData[1].spriteName = 'still-loading';
+    worker.send(data);
+    expect(drewBlob()).toBe(true);
 });
 
 test('a failed proxy image can be retried without restarting the game', async () => {
@@ -489,6 +527,24 @@ test('trunks interleave with actor feet while ground effects remain beneath them
     expect(draws.map(op => op.method === 'fillRect' ? op.args[0] : 'actor')).toEqual(['actor', 'actor', 25, 'actor', 45, 'actor']);
 });
 
+test('paints every fallback contact below overlapping actors, equipment and depth-sorted scenery', () => {
+    const worker = setup(), message = frame();
+    vm.runInContext(`for (const name of ['shadow16', 'player', 'weapon', 'mob']) sprites[name] = {image: name};
+        rendererExtensions = {draw(){}, sorted(){return [{y: 32, draw(ctx){ctx.drawImage('trunk', 0, 0);}}];}};`, worker.sandbox);
+    const actors = message.renderData.find(row => row.type === 'entities');
+    const base = actors.entityData[0];
+    function actor(depthY, globalAlpha, parts) {
+        return {...base, depthY, globalAlpha, drawData: parts.map(spriteName => ({...base.drawData[0], spriteName}))};
+    }
+    actors.entityData = [actor(31, 1, ['shadow16', 'player', 'weapon']), actor(33, .4, ['shadow16', 'mob']),
+        {...actor(34, 1, ['shadow16', 'mob']), dissolve: {visible: 0, pixelSize: 3}}];
+    const calls = [], ctx = worker.canvases.entities.ctx;
+    ctx.drawImage.mockImplementation(image => { if (typeof image === 'string') calls.push([image, ctx.globalAlpha]); });
+    worker.send(message);
+    expect(calls.map(([image]) => image)).toEqual(['shadow16', 'shadow16', 'player', 'weapon', 'trunk', 'mob']);
+    expect(calls.slice(0, 2)).toEqual([['shadow16', 1], ['shadow16', .4]]);
+});
+
 test('night particles use the authored daylight window and shared map weather takes precedence', () => {
     const worker=setup(), E=require('./sceneenvironment');
     worker.sandbox.importScripts=jest.fn();
@@ -497,8 +553,12 @@ test('night particles use the authored daylight window and shared map weather ta
     expect(worker.sceneDaylight(scene,12/24*3600000)).toBe(1);
     const draw=jest.fn();worker.sandbox.self.SceneWeather={...require('./weather-worker'),draw};
     scene.weather={...E.defaults.weather,type:'rain',intensity:.6};
-    worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},12/24*3600000);
+    const clock = 12/24*3600000;
+    worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},clock,1000);
     expect(draw.mock.calls[0][1]).toMatchObject({rain:.6,sunrays:0});
+    worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},clock,1016);
+    expect(draw.mock.calls[1][1]).toEqual(draw.mock.calls[0][1]);
+    expect(draw.mock.calls.map(call=>call[3])).toEqual([1000,1016]);
     draw.mockClear();scene.weather=null;
     worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},12/24*3600000);
     expect(draw).not.toHaveBeenCalled();
