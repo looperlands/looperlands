@@ -66,8 +66,8 @@ module.exports = Character = Entity.extend({
         return new Messages.Attack(this.id, this.target);
     },
     
-    health: function(attackerId) {
-        return new Messages.Health(this.hitPoints, false, attackerId);
+    health: function(attackerId, deflected) {
+        return new Messages.Health(this.hitPoints, false, attackerId, deflected);
     },
     
     regen: function() {

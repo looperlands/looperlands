@@ -109,19 +109,21 @@ test('a heavy hit on the hero adds directional recoil, a warm flash and a bounde
     const {feedback, game, mob, player, animation} = setup();
     player.maxHitPoints = 100;
     feedback.addPlayerImpact(20, 1000, mob);
+    const firstFrame = feedback.frame(1000);
     expect(feedback.getOffset(player, 1000)).toEqual({x: -7, y: 0});
     expect(feedback.getOffset(mob, 1000)).toEqual({x: 0, y: 0});
     expect(feedback.pose(player, animation, 1010)).toBeNull();
     expect(player).toMatchObject({x: 16, y: 32, currentAnimation: animation});
     const data = {drawData: []};
-    feedback.decorate(player, data, 2, 1050);
+    feedback.decorate(player, data, 2, 1090);
     expect(data.hitFeel).toMatchObject({flash: true, flashColor: '#ff7068'});
     expect(data.hitFeel.squashY).toBeLessThan(1);
-    expect(feedback.frame(1000)).toMatchObject({
+    expect(firstFrame).toMatchObject({
         shake: {x: 2, y: 0},
         hitFeel: [{x: 24, y: 36, slash: false, incoming: true, sparks: 12}]
     });
     feedback.addPlayerImpact(1, 1100);
+    feedback.frame(1100);
     expect(feedback.frame(1150).shake).toEqual({x: 0, y: 0});
     expect(feedback.getOffset(player, 1100)).toEqual({x: 0, y: -5});
     expect(feedback.getOffset(player, 1300)).toEqual({x: 0, y: 0});
@@ -146,4 +148,31 @@ test('hero damage respects camera and reduced-motion settings, while the flash c
     const disabled = {drawData: []};
     feedback.decorate(player, disabled, 2, 1010);
     expect(disabled.hitFeel).toBeUndefined();
+});
+
+test('a frame delay cannot spend the incoming flash, recoil or camera pulse before they are drawn', () => {
+    const {feedback, mob, player} = setup();
+    feedback.addPlayerImpact(5, 1000, mob);
+    const frame = feedback.frame(1250);
+    expect(frame.hitFeel[0]).toMatchObject({incoming: true, age: 0});
+    expect(frame.shake.x).toBe(1);
+    expect(feedback.getOffset(player, 1250)).toEqual({x: -5, y: 0});
+    const data = {drawData: []};
+    feedback.decorate(player, data, 2, 1320);
+    expect(data.hitFeel).toMatchObject({flash: true, flashColor: undefined});
+    feedback.decorate(player, data, 2, 1350);
+    expect(data.hitFeel).toMatchObject({flash: true, flashColor: '#ff7068'});
+});
+
+test('armor deflection gives the hero a cool flash and light recoil without camera shake', () => {
+    const {feedback, mob, player} = setup();
+    feedback.addPlayerImpact(0, 1000, mob);
+    expect(feedback.frame(1080)).toMatchObject({
+        shake: {x: 0, y: 0},
+        hitFeel: [{incoming: true, deflected: true, sparks: 6, slash: false}]
+    });
+    expect(feedback.getOffset(player, 1080)).toEqual({x: -3, y: 0});
+    const data = {drawData: []};
+    feedback.decorate(player, data, 2, 1080);
+    expect(data.hitFeel).toMatchObject({flash: true, flashColor: '#beeaff'});
 });

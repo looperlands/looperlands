@@ -266,3 +266,16 @@ test('lethal damage still uses the player death transition', () => {
     expect(self.combatFeedback.addPlayerImpact).not.toHaveBeenCalled();
     expect(self.playerhurt_callback).toHaveBeenCalledTimes(1);
 });
+
+test('only an explicitly marked armor deflection makes an impact at unchanged HP', () => {
+    const {self, attacker} = healthHandler();
+    self.client.health_callback(100, true);
+    self.client.health_callback(100, false, attacker.id);
+    expect(self.combatFeedback.addPlayerImpact).not.toHaveBeenCalled();
+    self.client.health_callback(100, false, attacker.id, true);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenCalledTimes(1);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenCalledWith(0, 1200, attacker);
+    expect(self.player.hitPoints).toBe(100);
+    expect(self.infoManager.addDamageInfo).not.toHaveBeenCalled();
+    expect(self.storage.addDamage).not.toHaveBeenCalled();
+});

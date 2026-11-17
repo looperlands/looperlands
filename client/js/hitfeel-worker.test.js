@@ -54,14 +54,17 @@ test('absent impact data draws nothing',()=>{
     expect(ctx.fillRect).not.toHaveBeenCalled();expect(ctx.arc).not.toHaveBeenCalled();expect(ctx.restore).toHaveBeenCalledTimes(1);
 });
 
-test('incoming sparks use a dark backing and warm colors without an outgoing slash', () => {
+test.each([
+    [false, ['#71253b', '#fff2cf', '#71253b', '#ff665e']],
+    [true, ['#24465e', '#eafaff', '#24465e', '#7ac9ed']]
+])('incoming sparks with deflected=%s use a distinct palette without an outgoing slash', (deflected, palette) => {
     const colors = [];
     const ctx = {...context(), arc: jest.fn(), fillRect: jest.fn(() => colors.push(ctx.fillStyle))};
     renderer.drawImpacts(ctx, {
         scale: 2, cameraX: 10, cameraY: 20,
-        hitFeel: [{x: 25, y: 32, age: 0, slash: false, sparks: 2, incoming: true}]
+        hitFeel: [{x: 25, y: 32, age: 0, slash: false, sparks: 2, incoming: true, deflected}]
     });
     expect(ctx.arc).not.toHaveBeenCalled();
-    expect(colors).toEqual(['#71253b', '#fff2cf', '#71253b', '#ff665e']);
+    expect(colors).toEqual(palette);
     expect(ctx.fillRect.mock.calls[0]).toEqual([38, 26, 4, 4]);
 });
