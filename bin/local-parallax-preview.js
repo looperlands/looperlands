@@ -40,9 +40,13 @@ server.onRequestStatus(() => JSON.stringify(Object.values(server.worldsMap).map(
 server.onError(error => console.error(error));
 const destinations = {
     duckville: {label: 'Duckville · dragon shadow', mapId: 'duckville', x: 58, y: 444},
-    'duckville-cave': {label: 'Duckville cave · no shadows', mapId: 'duckville', x: 112, y: 428},
+    'duckville-trees': {label: 'Duckville · tree shadows', mapId: 'duckville', x: 67, y: 437, timeOfDay: '16:00'},
+    'duckville-cave': {label: 'Duckville cave · firelit tree', mapId: 'duckville', x: 112, y: 428},
     birds: {label: 'Main · bird shadows', x: 42, y: 216},
     town: {label: 'Town · garden breeze', x: 42, y: 216},
+    campfire: {label: 'Town · campfire at night', x: 77, y: 224, timeOfDay: '22:00'},
+    windows: {label: 'Town · window light at night', x: 49, y: 206, timeOfDay: '22:00'},
+    torch: {label: 'Megamag · cave wall torch', x: 151, y: 164},
     beach: {label: 'Beach · clouds', x: 44, y: 272},
     forest: {label: 'Forest · layered trees', x: 42, y: 166},
     graveyard: {label: 'Graveyard · mist', x: 44, y: 123},
@@ -76,13 +80,13 @@ server.app.get('/parallax/play/:scene', async (req, res) => {
         const response = await fetch(process.env.APP_URL + '/local/api/session', {
             method: 'POST', headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({...catalog.defaults, mapId, checkpointId: 1, ...spawn,
-                title: 'Parallax explorer', level: 50, timeOfDay: typeof req.query.time === 'string' ? req.query.time : '12:00', localDoorAccess: 'allow-all'})
+                title: 'Parallax explorer', level: 50, timeOfDay: typeof req.query.time === 'string' ? req.query.time : destination.timeOfDay ?? '12:00', localDoorAccess: 'allow-all'})
         });
         const session = await response.json();
         if (!response.ok) throw new Error(session.error || 'Could not start preview');
         const gameUrl = new URL(session.url, process.env.APP_URL);
         gameUrl.searchParams.set('previewClock', '1');
-        if (mapId === 'main' && ['0', '1'].includes(req.query.shadowProxies)) {
+        if (['0', '1'].includes(req.query.shadowProxies)) {
             gameUrl.searchParams.set('shadowProxies', req.query.shadowProxies);
         }
         res.redirect(gameUrl.pathname + gameUrl.search);
@@ -101,7 +105,7 @@ body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-seri
 <a href="/parallax/play/town?time=16:00&amp;shadowProxies=0">Afternoon shadows</a> ·
 <a href="/parallax/play/town?time=20:00&amp;shadowProxies=0">Moonlight</a> ·
 <a href="/parallax/play/forest?time=07:00&amp;shadowProxies=0">Forest tree shadows</a> ·
-<a href="/img/common/height-proxies/main.png">Open the tile proxy atlas</a></p>
+<a href="/img/common/height-proxies/main.png">Open the Town proxy atlas</a></p>
 <p>Drag <strong>Time of day</strong> to compare the shadows from the same spot. The slider holds the selected minute until you choose <strong>Resume clock</strong>. In the proxy view, blue marks low surfaces and magenta marks high ones.</p>
 <nav>${Object.entries(destinations).map(([id, destination]) => `<a href="/parallax/play/${id}">${destination.label}</a>`).join('')}</nav>
 <p>Move with WASD or the arrow keys. Walk in both directions to compare the terrain and overhead layers, or stand still to watch the weather drift. Settings → Reduced motion anchors the layers to the map and pauses the drift.</p>

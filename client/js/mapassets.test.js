@@ -1,10 +1,10 @@
 const fs = require('fs');
 const vm = require('vm');
 
-function fixture(renderer = {}, connection = {}) {
+function fixture(renderer = {}, connection = {}, catalog = require('../img/common/height-proxies/catalog.json')) {
     let MapAssets;
     vm.runInNewContext(fs.readFileSync(require.resolve('./mapassets'), 'utf8'), {
-        define: factory => {MapAssets = factory();}, URL, AbortSignal,
+        define: (_, factory) => {MapAssets = factory(JSON.stringify(catalog));}, URL, AbortSignal,
     });
     const fetch = jest.fn(async () => ({ok: true, arrayBuffer: async () => new ArrayBuffer(0)}));
     const document = {baseURI: 'https://game.test/_client/' + 'a'.repeat(40) + '/'};
@@ -86,4 +86,14 @@ test('preloads follow the current asset base after a client release is adopted',
     await settle();
     expect(f.fetch).toHaveBeenCalledTimes(4);
     expect(f.fetch.mock.calls[2][0]).toBe(f.document.baseURI + 'maps/world_client_duckville.js');
+});
+
+test('map scenery uses the registered tilesheet profile and its optional paint mask', () => {
+    const {MapAssets} = fixture();
+    expect(MapAssets.shadowProfile('main')).toEqual({height: 'main.png', paint: 'main-baked-shadows.png'});
+    expect(MapAssets.shadowProfile('duckville')).toEqual({height: 'duckville.png'});
+    expect(MapAssets.shadowProfile('m88n')).toBeNull();
+    const shared = fixture({}, {}, {oa: {height: 'oa.png'}});
+    expect(shared.MapAssets.shadowProfile('oadungeon')).toBe(shared.MapAssets.shadowProfile('oaoverworld'));
+    expect(shared.MapAssets.shadowProfile('toString')).toBeNull();
 });

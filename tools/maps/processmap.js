@@ -418,9 +418,24 @@ module.exports = function processMap(json, options) {
         map.lights.push(newLight);
     }
 
-    var processShadows = function (shadow, idx) {
-        map.shadows.push(shadow);
-    }
+    var processShadows = function (shadow) {
+        // Adding Tiled properties wraps the polygon in a one-element array.
+        const result = {...shadow};
+        if (Array.isArray(result.polygon)) result.polygon = result.polygon[0];
+        const properties = [].concat(shadow.properties || []).flatMap(group => [].concat(group.property || []));
+        const owner = properties.find(property => property.name === 'proxyOwner');
+        if (owner) {
+            // Offsets follow the polygon when its owner and shadow move together in Tiled.
+            const tile = /^tile:(\d+),(-?\d+),(-?\d+)$/.exec(owner.value);
+            const tree = /^tree:(-?\d+),(-?\d+)$/.exec(owner.value);
+            if (tile) result.proxyOwner = {gid: Number(tile[1]),
+                tileX: Math.floor(shadow.x / map.tilesize) + Number(tile[2]),
+                tileY: Math.floor(shadow.y / map.tilesize) + Number(tile[3])};
+            if (tree) result.proxyOwner = {rootX: Math.round(shadow.x) + Number(tree[1]), rootY: Math.round(shadow.y) + Number(tree[2])};
+            if (result.proxyOwner && properties.length === 1) delete result.properties;
+        }
+        map.shadows.push(result);
+    };
 
     var processChestArea = function (area) {
         var chestArea = {

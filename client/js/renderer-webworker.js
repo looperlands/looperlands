@@ -13,6 +13,7 @@ let lightEmittingTiles = {};
 let lights = [];
 let obstacles = [];
 let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask, skyTileset;
+let framePointShadows, actorPointShadows;
 
 let hasLoadedFont = false;
 let fontLoadPromise = null;
@@ -23,6 +24,7 @@ const MAIN_MAP_MIN_LIGHT_INTENSITY = 0.18;
 const MAIN_MAP_MAX_LIGHT_INTENSITY = 0.95;
 const MAX_LIGHTS_TO_RENDER = 100;
 const MAX_SHADOWS_TO_RENDER = 100;
+const DEFAULT_POINT_SHADOW_STRENGTH = .65;
 
 let OPTION_SHADOWS = true;
 let OPTION_DYNAMIC_LIGHTS = true;
@@ -39,6 +41,7 @@ function transformObstacles(obstacles) {
     }
 
     obstacles.forEach(obstacle => {
+        const owner = obstacle.proxyOwner;
         // if we get an object with x, y, width, height, convert it to a polygon
         if (obstacle.width !== undefined && obstacle.height !== undefined) {
             obstacle = [
@@ -56,6 +59,7 @@ function transformObstacles(obstacles) {
             });
         }
 
+        if (owner) obstacle.proxyOwner = owner;
         transformedObstacles.push(obstacle);
     })
 
@@ -63,23 +67,17 @@ function transformObstacles(obstacles) {
 }
 
 function fireAnimation(lightSource, time) {
-    const flickerStrength = 0.05; // Controls how much the light flickers
-    const positionVariation = 0.8; // Controls how much the light "jumps" in position
-    const radiusVariation = 0.15; // Controls the variation in light radius
-    const intensityVariation = 0.01; // Controls the variation in light intensity
-
-    // Simulate flickering by adjusting the radius and intensity with sine and random noise
-    const flicker = Math.sin(time * 3) * flickerStrength + Math.random() * flickerStrength;
-
-    // Adjust radius with a slight random flicker
-    lightSource.radius = Math.max(2, lightSource.radius * (1 + flicker * radiusVariation));
-
-    // Adjust intensity to simulate the flickering effect
-    lightSource.intensity = Math.max(0.3, lightSource.intensity * (1 + flicker * intensityVariation));
-
-    // Optional: Add a slight movement to simulate the light source "dancing"
-    lightSource.x += (Math.random() - 0.5) * positionVariation;
-    lightSource.y += (Math.random() - 0.5) * positionVariation;
+    // A flame changes over real time. Several rates give each emitter its own
+    // irregular rhythm, independent of frame rate and the day/night slider.
+    const t = time / 1000, phase = lightSource.x * .37 + lightSource.y * .23;
+    const pulse = .53 * Math.sin(t * 5.1 + phase) + .31 * Math.sin(t * 9.7 - phase) +
+        .16 * Math.sin(t * 16.3 + phase * .7);
+    const sway = Math.sin(t * 6.3 + phase) * .65 + Math.sin(t * 11.1 - phase) * .35;
+    lightSource.radius = (lightSource.radius || 1) * (1 + .045 * pulse);
+    lightSource.intensity = Math.min(1, (lightSource.intensity ?? 1) * (1 + .09 * pulse));
+    lightSource.x += .55 * sway;
+    lightSource.y -= .45 * pulse;
+    lightSource.flamePulse = pulse;
 }
 
 class Sprite {
@@ -123,22 +121,24 @@ async function loadImg(src) {
 async function setBodyMap(map) {
     bodyMap = map;
     heightShadows = null;
-    if (!map) return;
-    // Both masks share the native tilesheet coordinates at every display scale.
-    proxyAtlasRequest ??= Promise.all([
-        loadImg('../img/common/height-proxies/main.png'),
-        loadImg('../img/common/height-proxies/main-baked-shadows.png'),
-    ]).then(images => {
-        if (images.some(image => !image)) {
-            for (const image of images) image?.close?.();
-            proxyAtlasRequest = null;
-            return [];
-        }
-        return images;
-    });
-    const [atlas, mask] = await proxyAtlasRequest;
+    bakedShadowMask = skyTileset = null;
+    if (!map) {
+        self.postMessage({type: 'shadowProxyAtlas', available: false, ready: false});
+        return;
+    }
+    self.postMessage({type: 'shadowProxyAtlas', loading: true, ready: false});
+    const {height, paint} = map.profile;
+    if (!proxyAtlasRequest || proxyAtlasRequest.height !== height || proxyAtlasRequest.paint !== paint) {
+        proxyAtlasRequest?.images.then(images => images.forEach(image => image?.close?.()));
+        const base = '../img/common/height-proxies/';
+        proxyAtlasRequest = {height, paint, images: Promise.all([loadImg(base + height), paint ? loadImg(base + paint) : null])};
+    }
+    const [atlas, mask] = await proxyAtlasRequest.images;
     if (map !== bodyMap) return;
-    if (!atlas) {
+    if (!atlas || (paint && !mask)) {
+        atlas?.close?.();
+        mask?.close?.();
+        proxyAtlasRequest = null;
         self.postMessage({type: 'shadowProxyAtlas', ready: false});
         return;
     }
@@ -340,6 +340,7 @@ let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
 let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
 let framePending = false, nextFrameTime;
+let frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
     if (framePending) return;
@@ -355,7 +356,12 @@ function scheduleNextFrame() {
             if (nextFrameTime === undefined || time - nextFrameTime > 250) nextFrameTime = time;
             do { nextFrameTime += FRAME_INTERVAL; } while (nextFrameTime <= time + 0.5);
         }
-        postMessage({type: 'rendered'});
+        const message = {type: 'rendered'};
+        if (pendingPanelShadow) {
+            message.panelShadow = pendingPanelShadow;
+            pendingPanelShadow = null;
+        }
+        postMessage(message);
     }
     requestAnimationFrame(ready);
 }
@@ -372,6 +378,14 @@ function resizeWorkerLayers(scale) {
             terrainCache.delete(id);
         }
     }
+}
+
+// Tile artwork and animation frames share one emitter at the center of the map cell.
+function tileLightAt(tile) {
+    const source = lightEmittingTiles?.[tile.tileid + 1];
+    if (!source) return;
+    return {...source, x: (getX(tile.cellid + 1, tile.gridW) + .5) * tilesize,
+        y: (Math.floor(tile.cellid / tile.gridW) + .5) * tilesize};
 }
 
 function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
@@ -392,7 +406,8 @@ function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
         for (const tile of tiles) {
             const tx = getX(tile.cellid + 1, tile.gridW) * tilesize;
             const ty = Math.floor(tile.cellid / tile.gridW) * tilesize;
-            if (lightEmittingTiles?.[tile.tileid + 1]) tileSources.push({...lightEmittingTiles[tile.tileid + 1], x: tx, y: ty});
+            const source = tileLightAt(tile);
+            if (source) tileSources.push(source);
             if (tx + 16 > x && ty + 16 > y && tx < x + buffer.width && ty < y + buffer.height) {
                 drawTile(bufferCtx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, 1, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, id === 'background' ? frameCutouts : []);
             }
@@ -427,19 +442,12 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
         // Render the game world normally (tiles, entities, etc.)
         for (let i = 0; i < tilesLength; i++) {
             let tile = tiles[i];
-            if (tile.id !== -1) {
+            if (tile.tileid !== -1) {
                 // Render your tile here as usual...
                 drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, id === 'background' ? frameCutouts : []);
 
-                if (lightEmittingTiles && lightEmittingTiles[String(parseInt(tile.tileid + 1))]) {
-                    let lightEmittingTile = Object.assign({}, lightEmittingTiles[tile.tileid + 1]);
-
-                    let destX = getX(tile.cellid + 1, tile.gridW) * tilesize;
-                    let destY = Math.floor(tile.cellid / tile.gridW) * tilesize;
-                    lightEmittingTile.x = destX;
-                    lightEmittingTile.y = destY;
-                    tileLights.push(lightEmittingTile);
-                }
+                const source = tileLightAt(tile);
+                if (source) tileLights.push(source);
             }
         }
 
@@ -512,14 +520,18 @@ onmessage = (e) => {
         composingWorld = true;
         frameExtensions = e.data.extensions;
         const scene = e.data.scene;
-        const skyOptions = heightShadows && view && e.data.mapId === 'main' && boundedScene(scene) && self.SceneEnvironment.outdoors(scene)
-            ? e.data.renderData.find(layer => layer?.id === 'lights')?.options : null;
+        const lightOptions = e.data.renderData.find(layer => layer?.id === 'lights')?.options;
+        const profileOptions = heightShadows && view && e.data.mapId === bodyMap?.mapId && boundedScene(scene) ? lightOptions : null;
+        const skyOptions = profileOptions && self.SceneEnvironment.outdoors(scene) ? profileOptions : null;
+        const inspect = profileOptions?.inspectShadowProxies === true;
         const animationClock = (e.data.serverTime ?? 0) + frameTime;
         const clock = e.data.worldTime ?? animationClock;
         const atmosphere = authoredLightAt(scene, clock);
-        const shadowSurface = skyOptions && renderSkyShadows(view, scene, clock, atmosphere, skyOptions);
-        const inspect = skyOptions?.inspectShadowProxies === true;
-        setSkyTerrain(skyOptions && skyOptions.shadows !== false ? scene : null);
+        frameSky = null;
+        const shadowSurface = (inspect || skyOptions) && renderSkyShadows(view, scene, clock, atmosphere, profileOptions);
+        framePointShadows = !inspect && view && lightOptions && (lightOptions.shadows !== false || lightOptions.playerShadow !== false)
+            ? {view, scene, mapId: e.data.mapId, options: lightOptions, pass: skyOptions ? heightShadows : null} : null;
+        setSkyTerrain(bakedShadowMask && skyOptions && skyOptions.shadows !== false ? scene : null);
         const tileAppearance = rendererExtensions?.tileAppearance?.(frameExtensions) || [];
         const appearanceKey = JSON.stringify(tileAppearance);
         if (appearanceKey !== frameTileAppearanceKey) {
@@ -550,6 +562,7 @@ onmessage = (e) => {
         }
 
         let combinedCanvas = canvases["combined"];
+        framePointShadows = null;
         let combinedCtx = contexes["combined"];
 
         if (inspect && shadowSurface) {
@@ -792,7 +805,7 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
         if (skyOptions) {
             const caster = self.HeightShadows.casterDraw(entity, sprites, scale);
             if (caster && (caster.shadowBody === 'player' ? skyOptions.playerShadow : skyOptions.shadows) !== false) continue;
-        }
+        } else if (hasLocalCast(entity, drawEntitiesData, framePointShadows)) continue;
         ctx.save();
         applyActorTransform(ctx, entity, cameraX, cameraY, scale);
         drawEntitySprite(ctx, entity, contact, scale);
@@ -802,6 +815,7 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
     const scenery = composingWorld ? rendererExtensions?.sorted?.(frameExtensions, {
         ...drawEntitiesData, viewportWidth: canvas.width, viewportHeight: canvas.height
     }) || [] : [];
+    if (framePointShadows) framePointShadows.foreground = () => pointForeground(drawEntitiesData, scenery);
     let sceneryIndex = 0;
     const drawSceneryUntil = depth => {
         while (sceneryIndex < scenery.length && scenery[sceneryIndex].y <= depth) scenery[sceneryIndex++].draw(ctx);
@@ -840,6 +854,45 @@ function applyActorTransform(ctx, entity, cameraX, cameraY, scale) {
     if (entity.scaleX !== undefined && entity.scaleY !== undefined) ctx.scale(entity.scaleX, entity.scaleY);
 }
 
+function pointForeground(view, scenery) {
+    const {width, height} = canvases.entities;
+    const {ctx, canvas} = scratchCanvas(pointForegroundScratch, width, height);
+    ctx.save();
+    ctx.scale(1 / view.scale, 1 / view.scale);
+    // Depth-sorted scenery and all visible actor parts sit above ground casts.
+    // Drawing the sprite alpha here also preserves recoil, gear, and dissolution.
+    for (const entry of scenery) entry.draw(ctx);
+    // Extensions can paint outside their sprite metadata. Preserve their whole stencil.
+    let regions = scenery.length ? null : [];
+    function drawActors(overhead) {
+        for (const actor of view.entityData) {
+            if (actor.groundEffect) continue;
+            ctx.save();
+            applyActorTransform(ctx, actor, view.cameraX, view.cameraY, view.scale);
+            let transform;
+            for (const draw of actor.drawData) {
+                if (draw.spriteName === 'shadow16' || !!draw.renderAbove !== overhead) continue;
+                drawEntitySprite(ctx, actor, draw, view.scale);
+                if (!regions) continue;
+                if (draw.a || actor.hitFeel) { regions = null; continue; }
+                transform ??= ctx.getTransform();
+                const x = transform.e + draw.dx * transform.a, y = transform.f + draw.dy * transform.d;
+                const right = x + draw.dW * transform.a, bottom = y + draw.dH * transform.d;
+                regions.push({left: Math.min(x, right), top: Math.min(y, bottom),
+                    right: Math.max(x, right), bottom: Math.max(y, bottom)});
+            }
+            ctx.restore();
+        }
+    }
+    drawActors(false);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.drawImage(canvases.high, 0, 0, width * view.scale, height * view.scale);
+    ctx.globalCompositeOperation = 'source-over';
+    drawActors(true);
+    ctx.restore();
+    return {canvas, regions};
+}
+
 function drawEntitySprite(ctx, entity, draw, scale) {
     const {spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a, renderAbove} = draw;
     const sprite = sprites[spriteName];
@@ -876,21 +929,41 @@ function drawEntitySprite(ctx, entity, draw, scale) {
 lastTime = null;
 
 let worldClock = null;
-function getMainMapCycleIntensity(cycleProgress) {
+function cycleDaylight(mapId, time) {
+    if (mapId !== 'main') return .5 + .5 * Math.sin(time % CYCLE_DURATION / CYCLE_DURATION * Math.PI * 2);
     if (!worldClock) {
         importScripts('worldtime-worker.js');
         worldClock = self.WorldTime;
     }
-    return worldClock.mainDaylight(cycleProgress * CYCLE_DURATION);
+    return worldClock.mainDaylight(time);
+}
+
+// The spot gradient starts half a spread to either side of its heading.
+// The extrema of a sector lie at its center, its ends, or a cardinal axis.
+function beamBounds(light) {
+    const spread = parseInt(light.spread);
+    if (!(spread > 0 && spread < 360) || light.global) return null;
+    const heading = toRad((parseInt(light.angle) || 0) + 90), half = toRad(spread / 2);
+    const start = heading - half, end = heading + half, limit = Math.cos(half);
+    const dx = Math.cos(heading), dy = Math.sin(heading);
+    const radius = (light.radius || 1) * tilesize * (light.animation ? 1.045 : 1);
+    return {
+        x: Math.floor(light.x + radius * (dx <= -limit ? -1 : Math.min(0, Math.cos(start), Math.cos(end)))) - 1,
+        right: Math.ceil(light.x + radius * (dx >= limit ? 1 : Math.max(0, Math.cos(start), Math.cos(end)))) + 1,
+        y: Math.floor(light.y + radius * (dy <= -limit ? -1 : Math.min(0, Math.sin(start), Math.sin(end)))) - 1,
+        bottom: Math.ceil(light.y + radius * (dy >= limit ? 1 : Math.max(0, Math.sin(start), Math.sin(end)))) + 1,
+    };
 }
 
 function lightIntersectsView(light, cameraX, cameraY, width, height) {
     const dx = light.x - cameraX, dy = light.y - cameraY;
-    // Leave a pixel of room for the small positional/radius flicker at viewport edges.
-    const radius = (light.radius || 1) * tilesize * (light.animation ? 1.02 : 1) + 1;
-    return light.global
-        ? dx + light.w >= 0 && dy + light.h >= 0 && dx <= width && dy <= height
-        : dx + radius >= 0 && dy + radius >= 0 && dx - radius <= width && dy - radius <= height;
+    if (light.global) return dx + light.w >= 0 && dy + light.h >= 0 && dx <= width && dy <= height;
+    const radius = (light.radius || 1) * tilesize * (light.animation ? 1.045 : 1) + 1;
+    if (dx + radius < 0 || dy + radius < 0 || dx - radius > width || dy - radius > height) return false;
+    if (dx >= 0 && dx <= width && dy >= 0 && dy <= height) return true;
+    const bounds = beamBounds(light);
+    return !bounds || bounds.right >= cameraX && bounds.bottom >= cameraY &&
+        bounds.x <= cameraX + width && bounds.y <= cameraY + height;
 }
 
 function authoredLightAt(scene, clock) {
@@ -903,14 +976,78 @@ function renderSkyShadows(view, scene, clock, atmosphere, options) {
     const inspect = options.inspectShadowProxies === true;
     const shadows = options.shadows !== false, playerShadow = options.playerShadow !== false;
     if (!inspect && !shadows && !playerShadow) return;
-    const daylight = atmosphere?.daylight ?? getMainMapCycleIntensity(clock / CYCLE_DURATION);
-    const sky = self.HeightShadows.skyLight(clock, scene.authoringAtmosphere?.dayNight, daylight);
-    if (!inspect && sky.strength <= .001) return;
+    const legacyCycle = !atmosphere && bodyMap.mapId !== 'main';
+    const daylight = atmosphere?.daylight ?? cycleDaylight(bodyMap.mapId, clock);
+    const cycle = legacyCycle ? {dawn: 0, dusk: 12, duskDuration: 0} : scene.authoringAtmosphere?.dayNight;
+    const sky = self.HeightShadows.skyLight(clock, cycle, daylight);
+    frameSky = sky;
     const canvas = canvases.background;
-    const scenery = rendererExtensions?.shadowBodies?.(frameExtensions, {...view,
+    const scenery = frameShadowBodies(view, canvas);
+    return heightShadows.draw(canvas, view, scene, sky, view.entityData, sprites, {shadows, playerShadow}, scenery, inspect);
+}
+
+function frameShadowBodies(view, canvas) {
+    return rendererExtensions?.shadowBodies?.(frameExtensions, {...view,
         viewportWidth: canvas.width, viewportHeight: canvas.height,
         casterClip: self.HeightShadows.casterClip(canvas.width, canvas.height)}) || [];
-    return heightShadows.draw(canvas, view, scene, sky, view.entityData, sprites, {shadows, playerShadow}, scenery, inspect);
+}
+
+function playerLantern() {
+    return {
+        id: 9999,
+        x: playerPosition.x + 8,
+        y: playerPosition.y + 6,
+        radius: 4,
+        innerRadius: 0,
+        intensity: 0.2,
+        shadow: .45,
+        owner: 'player',
+    };
+}
+
+function lightInScene(light, scene) {
+    return !boundedScene(scene) || (light.x >= scene.x * tilesize && light.x < (scene.x + scene.width) * tilesize &&
+        light.y >= scene.y * tilesize && light.y < (scene.y + scene.height) * tilesize);
+}
+
+function pointContribution(light, x, y) {
+    const dx = x - light.x, dy = y - light.y, range = (light.radius || 1) * tilesize;
+    const spread = Number(light.spread);
+    if (spread > 0 && spread < 360) {
+        const angle = Math.atan2(dy, dx) - ((Number(light.angle) || 0) + 90) * Math.PI / 180;
+        if (Math.cos(angle) < Math.cos(spread * Math.PI / 360)) return 0;
+    }
+    return Math.max(0, 1 - Math.hypot(dx, dy) / range) * (light.intensity ?? 1) * (light.shadow ?? DEFAULT_POINT_SHADOW_STRENGTH);
+}
+
+function hasLocalCast(entity, view, state) {
+    if (!state) return false;
+    const draw = entity.drawData.find(part => part.shadowBody);
+    if (!draw || state.options[draw.shadowBody === 'player' ? 'playerShadow' : 'shadows'] === false) return false;
+    const x = entity.translateX / view.scale + (entity.scaleX === -1 ? -8 : 8);
+    const y = entity.depthY ?? entity.translateY / view.scale + 16;
+    state.contactLights ??= lights.concat(tileLights, playerLantern()).filter(light =>
+        !light.global && light.shadow !== 0 && lightInScene(light, state.scene));
+    const illuminated = state.contactLights.some(light => {
+        if (light.owner === 'player' && draw.shadowBody === 'player') return false;
+        return pointContribution(light, x, y) >= .02;
+    });
+    if (!illuminated) return false;
+    if (!self.HeightShadows) importScripts('height-shadows-worker.js');
+    return !!self.HeightShadows.casterDraw(entity, sprites, view.scale);
+}
+
+function preparePointShadows(state) {
+    if (!state) return;
+    if (!state.pass) {
+        if (!self.HeightShadows) importScripts('height-shadows-worker.js');
+        state.pass = (state.mapId === bodyMap?.mapId && heightShadows) || (actorPointShadows ??= new self.HeightShadows.Pass());
+        const {view, scene, options} = state, canvas = canvases.background;
+        state.pass.prepare(canvas, view, scene, view.entityData, sprites,
+            {shadows: options.shadows !== false, playerShadow: options.playerShadow !== false}, frameShadowBodies(view, canvas));
+    }
+    state.pass.pointFrame.foreground = state.foreground;
+    return state.pass;
 }
 
 function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime,
@@ -923,15 +1060,10 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     if (atmosphereLight) {
         GLOBAL_LIGHT_INTENSITY = 1 - atmosphereLight.darkness;
     } else if(scene.dn_cycle && scene.dn_cycle !== "false") {
-        const cycleProgress = ((worldTime ?? serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
-        if (mapId === 'main') {
-            const cycleIntensity = getMainMapCycleIntensity(cycleProgress);
-            GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAIN_MAP_MAX_LIGHT_INTENSITY - MAIN_MAP_MIN_LIGHT_INTENSITY) + MAIN_MAP_MIN_LIGHT_INTENSITY;
-        } else {
-            const cycleAngle = cycleProgress * Math.PI * 2;
-            const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
-            GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
-        }
+        const daylight = cycleDaylight(mapId, worldTime ?? serverTime + performance.now());
+        const min = mapId === 'main' ? MAIN_MAP_MIN_LIGHT_INTENSITY : MIN_GLOBAL_LIGHT_INTENSITY;
+        const max = mapId === 'main' ? MAIN_MAP_MAX_LIGHT_INTENSITY : MAX_GLOBAL_LIGHT_INTENSITY;
+        GLOBAL_LIGHT_INTENSITY = min + daylight * (max - min);
     } else {
         GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
     }
@@ -949,8 +1081,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const bounded = boundedScene(scene);
-    const inScene = light => !bounded || (light.x >= scene.x * tilesize && light.x < (scene.x + scene.width) * tilesize &&
-        light.y >= scene.y * tilesize && light.y < (scene.y + scene.height) * tilesize);
+    const inScene = light => lightInScene(light, scene);
     if (bounded) {
         // Clip the entire pass, including ambient tint, tile lights, flicker and the player's lantern.
         clipToScene(ctx, scene, cameraX, cameraY);
@@ -962,46 +1093,58 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     ctx.fillStyle = `rgba(${rgb.join(',')}, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const time = performance.now()
+    const time = performance.now();
+    // Panels share one screen-space direction sampled at the player's feet.
+    // Reuse the visible emitters and the sky direction that this frame already drew.
+    const samplePanels = composingWorld && time >= nextPanelSample;
+    let panelX = 3, panelY = 6, brightest = .02;
+    if (samplePanels && frameSky?.strength > .02) {
+        brightest = frameSky.strength * 3;
+        panelX = -frameSky.x * 7;
+        panelY = -frameSky.y * 12;
+    }
+    function drawSource(source) {
+        if (samplePanels && !source.global && !source.owner) {
+            const x = playerPosition.x + 8, y = playerPosition.y + tilesize;
+            const strength = pointContribution(source, x, y);
+            if (strength > brightest) {
+                brightest = strength;
+                const dx = x - source.x, dy = y - source.y, distance = Math.max(tilesize, Math.hypot(dx, dy));
+                panelX = 9 * dx / distance;
+                panelY = 9 * dy / distance;
+            }
+        }
+        if (!source.global && source.shadow == null) source = {...source, shadow: DEFAULT_POINT_SHADOW_STRENGTH};
+        const light = source.animation && OPTION_DYNAMIC_LIGHTS ? updateAnimatedLightSource(source, time) : source;
+        const pointPass = !source.global && source.shadow > 0 ? preparePointShadows(framePointShadows) : null;
+        drawLightSource(ctx, light, cameraX, cameraY, pointPass, source);
+    }
 
     if(lightSources) {
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
             return inScene(lightSource) && lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
-        }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
-            if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
-                lightSource = updateAnimatedLightSource(lightSource, time);
-            }
-            drawLightSource(ctx, lightSource, cameraX, cameraY);
-        });
+        }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(drawSource);
     }
 
     // Draw tile lights
     for(let i = 0; i < tileLights.length; i++) {
-        let lightSource = tileLights[i];
+        const lightSource = tileLights[i];
         if (!inScene(lightSource)) continue;
         if (!lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height)) continue;
-        lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
-
-        if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
-            lightSource = updateAnimatedLightSource(tileLights[i], time);
-        }
-
-        drawLightSource(ctx, lightSource, cameraX, cameraY);
+        drawSource(lightSource);
     }
 
-    // Player holds lantern
-    const lantern = {
-        id: 9999,
-        x: playerPosition.x + 8,
-        y: playerPosition.y + 6,
-        radius: 4,
-        innerRadius: 0,
-        intensity: 0.2,
-        shadow: 0,
-    };
-    if (inScene(lantern)) drawLightSource(ctx, lantern, cameraX, cameraY);
+    const lantern = playerLantern();
+    if (inScene(lantern) && lightIntersectsView(lantern, cameraX, cameraY, canvas.width, canvas.height)) drawSource(lantern);
+    if (samplePanels) {
+        nextPanelSample = time + 200;
+        const x = Math.round(panelX), y = Math.round(panelY);
+        if (x !== panelShadow?.x || y !== panelShadow?.y) {
+            panelShadow = pendingPanelShadow = {x, y};
+        }
+    }
     if (composingWorld) {
         rendererExtensions?.draw('lighting', ctx, frameExtensions, {cameraX, cameraY, scale: 1,
             sources: {overhead: canvases.highEntities}});
@@ -1031,6 +1174,7 @@ function updateAnimatedLightSource(lightSource, time) {
 }
 
 const lightScratch = {}, shadowScratch = {}, gradientScratch = {};
+const pointForegroundScratch = {}, pointMaskScratch = {};
 let obstacleRevision = 0;
 function scratchCanvas(scratch, width, height) {
     if (!scratch.canvas) scratch.canvas = new OffscreenCanvas(width, height);
@@ -1039,11 +1183,11 @@ function scratchCanvas(scratch, width, height) {
     const ctx = scratch.canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     ctx.globalCompositeOperation = 'source-over';
-    ctx.clearRect(0, 0, scratch.canvas.width, scratch.canvas.height);
+    ctx.clearRect(0, 0, width, height);
     return {canvas: scratch.canvas, ctx};
 }
 
-function drawLightSource(ctx, light, cameraX, cameraY) {
+function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light) {
     const lightX = light.x - cameraX, lightY = light.y - cameraY;
     const innerRadius = (light.innerRadius || 0) * tilesize;
     const outerRadius = (light.radius || 1) * tilesize;
@@ -1091,7 +1235,35 @@ function drawLightSource(ctx, light, cameraX, cameraY) {
     }
 
     let output = gradientCanvas;
-    if (light.shadow > 0 && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
+    const region = {x: 0, y: 0, width, height};
+    if (pointPass && !light.global && light.shadow > 0 && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
+        const mask = pointPass.pointMask(source, beamBounds(source));
+        const frame = pointPass.pointFrame;
+        const independent = OPTION_SHADOWS ? (frame.obstacles ??= obstacles.filter(p =>
+            !p.proxyOwner || !pointPass.ownsPointBlocker(p.proxyOwner, frame.scenery))) : [];
+        const blockers = independent.filter(p => polygonIntersectsLight(p, source, outerRadius));
+        if (mask || blockers.length) {
+            const screenX = lightX - outerRadius, screenY = lightY - outerRadius;
+            // Keep integer crop offsets so a subpixel flame samples the identical native pixels.
+            region.x = Math.max(0, Math.floor(-screenX));
+            region.y = Math.max(0, Math.floor(-screenY));
+            region.width = Math.min(width, Math.ceil(ctx.canvas.width - screenX)) - region.x;
+            region.height = Math.min(height, Math.ceil(ctx.canvas.height - screenY)) - region.y;
+            if (region.width <= 0 || region.height <= 0) return;
+            const scratch = scratchCanvas(lightScratch, region.width, region.height);
+            scratch.ctx.drawImage(gradientCanvas, region.x, region.y, region.width, region.height, 0, 0, region.width, region.height);
+            if (blockers.length) {
+                scratch.ctx.save();
+                scratch.ctx.translate(-region.x, -region.y);
+                subtractShadows(scratch.ctx, light, blockers, width, height);
+                scratch.ctx.restore();
+            }
+            if (mask) {
+                subtractPointMask(scratch.ctx, mask, frame, light, source, region, screenX, screenY);
+            }
+            output = scratch.canvas;
+        }
+    } else if (light.shadow > 0 && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
         const staticShadow = !light.animation || !OPTION_DYNAMIC_LIGHTS;
         const shadowKey = [gradientKey, 'shadow', light.x, light.y, light.shadow, OPTION_SHADOWS, obstacleRevision].join(',');
         if (staticShadow && OPTION_SHADOWS && obstacles.length) {
@@ -1107,7 +1279,7 @@ function drawLightSource(ctx, light, cameraX, cameraY) {
         }
         // Buildings stay cached even while the player's shadow moves.
         const movingPolygons = !staticShadow && OPTION_SHADOWS ? obstacles.slice() : [];
-        if (OPTION_PLAYER_SHADOW && playerPosition) {
+        if (OPTION_PLAYER_SHADOW && playerPosition && source.owner !== 'player') {
             const playerPolygon = transformObstacles([{
                 x: playerPosition.x + 6, y: playerPosition.y + 6, width: 6, height: 6
             }])[0];
@@ -1121,9 +1293,41 @@ function drawLightSource(ctx, light, cameraX, cameraY) {
         }
     }
     ctx.globalCompositeOperation = 'screen';
-    ctx.drawImage(output, 0, 0, width, height,
-        light.global ? lightX : lightX - outerRadius,
-        light.global ? lightY : lightY - outerRadius, width, height);
+    ctx.drawImage(output, 0, 0, region.width, region.height,
+        light.global ? lightX : lightX - outerRadius + region.x,
+        light.global ? lightY : lightY - outerRadius + region.y, region.width, region.height);
+}
+
+function subtractPointMask(ctx, mask, frame, light, source, region, screenX, screenY) {
+    const radius = (light.radius || 1) * tilesize;
+    // A taller flame shortens its projection about its source while its foot stays put.
+    const stretch = 1 - .016 * (light.flamePulse || 0);
+    const x = radius + (mask.x - source.x) * stretch + source.x - light.x - region.x;
+    const y = radius + (mask.y - source.y) * stretch + source.y - light.y - region.y;
+    const w = mask.canvas.width * stretch, h = mask.canvas.height * stretch;
+    const left = Math.max(0, Math.floor(x)), top = Math.max(0, Math.floor(y));
+    const right = Math.min(region.width, Math.ceil(x + w)), bottom = Math.min(region.height, Math.ceil(y + h));
+    if (right <= left || bottom <= top) return;
+
+    const foreground = frame.foregroundSurface ??= frame.foreground?.();
+    const screenLeft = screenX + region.x + left, screenTop = screenY + region.y + top;
+    const cw = right - left, ch = bottom - top;
+    // Leave one pixel of rasterization margin for moving subpixel flames.
+    const overlap = foreground && (!foreground.regions || foreground.regions.some(r =>
+        r.left < screenLeft + cw + 1 && r.right > screenLeft - 1 && r.top < screenTop + ch + 1 && r.bottom > screenTop - 1));
+    const flameOpacity = light.animation === 'fire' ? .78 + .055 * (light.flamePulse || 0) : 1;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = Math.min(1, light.shadow * flameOpacity);
+    if (overlap) {
+        const clipped = scratchCanvas(pointMaskScratch, cw, ch);
+        clipped.ctx.drawImage(mask.canvas, x - left, y - top, w, h);
+        clipped.ctx.globalCompositeOperation = 'destination-out';
+        clipped.ctx.drawImage(foreground.canvas, screenLeft, screenTop, cw, ch, 0, 0, cw, ch);
+        ctx.drawImage(clipped.canvas, 0, 0, cw, ch, left, top, cw, ch);
+    } else {
+        ctx.drawImage(mask.canvas, x, y, w, h);
+    }
+    ctx.globalAlpha = 1;
 }
 
 function polygonIntersectsLight(polygon, light, radius) {
@@ -1342,7 +1546,7 @@ function sceneDaylight(scene, time) {
         const config = scene.authoringAtmosphere;
         return config.cycle ? worldClock.atmosphereLight(config, time).daylight : 1 - config.dayDarkness;
     }
-    return getMainMapCycleIntensity(time / CYCLE_DURATION);
+    return cycleDaylight('main', time);
 }
 function drawSceneWeather(context, scene, view, time, animationClock) {
     const config = scene?.weather !== undefined ? scene.weather : scene?.authoringAtmosphere?.weather;

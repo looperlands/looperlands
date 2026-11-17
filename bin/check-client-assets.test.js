@@ -121,3 +121,27 @@ test('validates automatically registered Toolbox sprites embedded in the bundle'
     write('img/1/item-moon_shard.png');
     expect(check().status).toBe(0);
 });
+
+test('verifies the atlas and optional paint images registered by the built shadow catalog', () => {
+    const id = 'text!../img/common/height-proxies/catalog.json', folder = 'img/common/height-proxies/';
+    const profiles = {harbor: {height: 'quay.png', paint: 'quay-paint.png'}, caves: {height: 'rock.png'}};
+    write('js/game.js', `define('${id}', function () {return ${JSON.stringify(JSON.stringify(profiles))};});
+        define('mapassets', ['${id}'], function () {});`);
+    // Stale loose metadata cannot satisfy the catalog used inside the game bundle.
+    write(folder + 'catalog.json', '{}');
+    write(folder + 'quay.png');
+    const incomplete = check();
+    expect(incomplete.status).not.toBe(0);
+    expect(incomplete.stderr).toContain(folder + 'quay-paint.png');
+    expect(incomplete.stderr).toContain(folder + 'rock.png');
+    write(folder + 'quay-paint.png'); write(folder + 'rock.png');
+    expect(check().status).toBe(0);
+
+    write('js/game.js', `define('mapassets', ['${id}'], function () {});`);
+    fs.unlinkSync(path.join(fixture, folder, 'catalog.json'));
+    expect(check().stderr).toContain(folder + 'catalog.json');
+    write(folder + 'catalog.json', JSON.stringify({island: {height: 'island.png'}}));
+    expect(check().stderr).toContain(folder + 'island.png');
+    write(folder + 'island.png');
+    expect(check().status).toBe(0);
+});

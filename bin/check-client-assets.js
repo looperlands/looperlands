@@ -43,11 +43,25 @@ function checkRuntimeDependencies(directory) {
     }
 }
 
-function checkStartupSprites() {
+const proxyCatalog = 'img/common/height-proxies/catalog.json';
+const proxyModule = 'text!../' + proxyCatalog;
+
+function checkProxyImages(profiles) {
+    for (const [tileset, entry] of Object.entries(profiles)) {
+        if (!entry || typeof entry.height !== 'string' || !entry.height ||
+            (entry.paint !== undefined && (typeof entry.paint !== 'string' || !entry.paint))) {
+            throw new Error('Invalid shadow proxy profile in client build: ' + tileset);
+        }
+        for (const image of [entry.height, entry.paint].filter(Boolean)) checkAsset(path.dirname(proxyCatalog) + '/' + image);
+    }
+}
+
+function checkBundledAssets() {
     const file = path.join(buildDir, 'js/game.js');
     if (!fs.existsSync(file)) return;
     const nodes = [acorn.parse(fs.readFileSync(file, 'utf8'), {ecmaVersion: 'latest'})];
     const names = new Set(), sprites = new Map();
+    let profiles, needsProxyCatalog = false;
     while (nodes.length) {
         const node = nodes.pop();
         if (node.type === 'AssignmentExpression' && node.left.type === 'MemberExpression' &&
@@ -57,6 +71,16 @@ function checkStartupSprites() {
                 throw new Error('Client build startup sprite names must be a literal string array.');
             }
             for (const value of node.right.elements) names.add(value.value);
+        }
+        if (node.type === 'CallExpression' && node.callee.name === 'define') {
+            const [id, dependencies] = node.arguments;
+            if (dependencies?.elements?.some(item => item?.value === proxyModule)) needsProxyCatalog = true;
+            if (id?.value === proxyModule) {
+                const factory = node.arguments[node.arguments.length - 1];
+                const content = factory.body?.body?.find(statement => statement.type === 'ReturnStatement')?.argument;
+                if (typeof content?.value !== 'string') throw new Error('Invalid shadow proxy catalog in client build.');
+                profiles = JSON.parse(content.value);
+            }
         }
         // The optimizer embeds JSON as named text modules; these remain available
         // after the standalone sprites directory is removed from the final build.
@@ -93,6 +117,12 @@ function checkStartupSprites() {
             } else if (value?.type) nodes.push(value);
         }
     }
+    if (profiles === undefined && needsProxyCatalog) {
+        checkAsset(proxyCatalog);
+        const catalogPath = path.join(buildDir, proxyCatalog);
+        if (fs.existsSync(catalogPath)) profiles = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    }
+    if (profiles !== undefined) checkProxyImages(profiles);
     for (const name of names) {
         const sprite = sprites.get(name);
         if (!sprite) throw new Error('Client build is missing startup sprite metadata: ' + name);
@@ -116,9 +146,9 @@ for (const script of html.matchAll(/<script\b[^>]*>/gi)) {
 }
 
 checkRuntimeDependencies(path.join(buildDir, 'js'));
-checkStartupSprites();
+checkBundledAssets();
 
 if (missing.size) {
     throw new Error('Client build is missing runtime assets: ' + [...missing].join(', '));
 }
-console.log('All local entry, worker, dynamic-import and startup sprite assets are present in the client build.');
+console.log('All local entry, worker, dynamic-import and registered image assets are present in the client build.');

@@ -1140,6 +1140,25 @@ body.inventory .inventorySidebar {
     opacity: 100;
 }
 
+/* One soft cast per floating surface. Direction follows the scene light at the player. */
+body {
+    --panel-shadow-x: 3px;
+    --panel-shadow-y: 6px;
+    --panel-shadow: var(--panel-shadow-x) var(--panel-shadow-y) 10px 1px rgb(19 17 28 / 34%);
+}
+#canvasborder > .panel,
+#canvasborder > .inventorySidebar,
+#canvasborder > #shop-popup,
+#shadow-preview.active,
+#canvasborder > #player-name-hint,
+.field-guide .fg-panel {
+    box-shadow: var(--panel-shadow);
+}
+/* The minimap scrolls transparent art inside a padded, invisible frame. */
+#miniMap {
+    filter: drop-shadow(var(--panel-shadow-x) var(--panel-shadow-y) 5px rgb(19 17 28 / 34%));
+}
+
 .panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: opacity 120ms ease-out;}
 
 @media (prefers-reduced-motion: reduce) {

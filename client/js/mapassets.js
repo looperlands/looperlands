@@ -1,4 +1,5 @@
-define(function () {
+define(['text!../img/common/height-proxies/catalog.json'], function (catalog) {
+    const shadowProfiles = JSON.parse(catalog);
     const sharedTilesets = {oa: 'oa', oadungeon: 'oa', oaoverworld: 'oa'};
     const validMap = value => typeof value === 'string' && /^[a-zA-Z0-9_-]+$/.test(value);
 
@@ -16,6 +17,11 @@ define(function () {
 
         static tilesetId(mapId) {
             return sharedTilesets[mapId] || mapId;
+        }
+
+        static shadowProfile(mapId) {
+            const tileset = MapAssets.tilesetId(mapId);
+            return Object.hasOwn(shadowProfiles, tileset) ? shadowProfiles[tileset] : null;
         }
 
         static paths(mapId, renderer) {

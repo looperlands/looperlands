@@ -39,12 +39,12 @@ test.each([false, true])('body and equipment recoil together with flipped=%s; sh
 });
 
 
-test('outdoor body draws honor character and chest shadow settings', () => {
+test.each(['main', 'duckville'])('character and chest body draws honor shadow settings on %s', mapId => {
     const sprite = {id: 1, name: 'body', width: 16, height: 16, offsetX: 0, offsetY: 0};
     const base = {x: 0, y: 0, sprite, currentAnimation: {currentFrame: {x: 0, y: 0}},
         isVisible: () => true, hasShadow: () => false};
     const host = {scale: 1, tilesize: 16, drawEntityName: jest.fn(),
-        game: {map: {mapId: 'main'}, shadows: {small: {id: 2, width: 16, height: 16}}}};
+        game: {map: {mapId}, shadows: {small: {id: 2, width: 16, height: 16}}}};
     const draws = actor => renderer.drawEntity.call(host, actor)[1].drawData.map(part => [part.spriteName, part.shadowBody]);
     const player = Object.assign(new Character(), base, {canHoldWeapon: false});
     host.game.player = player;

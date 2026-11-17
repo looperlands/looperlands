@@ -4,6 +4,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
         init: function (loadMultiTilesheets, game, mapId) {
             this.game = game;
             this.mapId = mapId;
+            this.shadowProfile = MapAssets.shadowProfile(mapId);
             this.data = [];
             this.isLoaded = false;
             this.tilesetsLoaded = false;

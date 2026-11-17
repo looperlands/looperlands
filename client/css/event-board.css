@@ -41,7 +41,7 @@
     background: var(--ev-surface);
     border: 7px solid transparent;
     border-image: url('../img/common/panel.png') 12 fill / 7px / 0 stretch;
-    box-shadow: 0 16px 48px #100c1477;
+    box-shadow: var(--panel-shadow);
     pointer-events: auto;
 }
 .game-events .ev-header {display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; background: var(--ev-raised); flex-shrink: 0;}

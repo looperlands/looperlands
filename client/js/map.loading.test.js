@@ -1,7 +1,7 @@
 const fs = require('fs'), vm = require('vm'), _ = require('underscore');
 let MapAssets;
 vm.runInNewContext(fs.readFileSync(require.resolve('./mapassets'), 'utf8'), {
-    define: factory => {MapAssets = factory();},
+    define: (_, factory) => {MapAssets = factory(JSON.stringify(require('../img/common/height-proxies/catalog.json')));},
 });
 const raw = () => ({width: 2, height: 2, tilesize: 16, data: [1, 1, 1, 1],
     collisions: [1], blocking: [2], plateau: [3], doors: [], triggers: [], checkpoints: []});

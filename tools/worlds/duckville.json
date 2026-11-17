@@ -30,7 +30,7 @@
           }
         ]
       },
-      "cycle": false,
+      "cycle": true,
       "dayDarkness": 0,
       "nightDarkness": 0,
       "color": "#000000",

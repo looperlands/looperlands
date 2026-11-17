@@ -1,4 +1,4 @@
-// Native-pixel height fields for the main map's outdoor lighting.
+// Native-pixel height fields for scenery, characters and scene lighting.
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) module.exports = factory();
     else root.HeightShadows = factory();
@@ -491,12 +491,14 @@
             this.map = map;
             this.tiles = new Map();
             this.sprites = new WeakMap();
-            this.reader = new OffscreenCanvas(proxyAtlas.width, proxyAtlas.height);
+            this.reader = new OffscreenCanvas(proxyAtlas?.width || 1, proxyAtlas?.height || 1);
             this.readContext = this.reader.getContext('2d', {willReadFrequently: true});
-            this.readContext.drawImage(proxyAtlas, 0, 0);
-            this.atlas = this.readContext.getImageData(0, 0, proxyAtlas.width, proxyAtlas.height);
-            // Keep only the decoded atlas. The small reader is reused for actor frames.
-            this.reader.width = this.reader.height = 1;
+            if (proxyAtlas) {
+                this.readContext.drawImage(proxyAtlas, 0, 0);
+                this.atlas = this.readContext.getImageData(0, 0, proxyAtlas.width, proxyAtlas.height);
+                // Keep only the decoded atlas. Reuse the small reader for actor frames.
+                this.reader.width = this.reader.height = 1;
+            }
         }
 
         read(image, sx, sy, sw, sh, width, height, body, flipY = false) {
@@ -518,6 +520,19 @@
             return this.tiles.get(id);
         }
 
+        ownsPointBlocker(owner, scenery) {
+            if (!owner) return false;
+            if (owner.gid) {
+                if (!this.map?.data) return false;
+                const {tileX, tileY, gid} = owner;
+                if (tileX < 0 || tileX >= this.map.width || tileY < 0) return false;
+                const cell = this.map.data[tileY * this.map.width + tileX];
+                return (Array.isArray(cell) ? cell.includes(gid) : cell === gid) && !!this.tile(gid);
+            }
+            return Number.isInteger(owner.rootX) && Number.isInteger(owner.rootY) &&
+                scenery.some(tree => tree.rootX === owner.rootX && tree.rootY === owner.rootY);
+        }
+
         sprite(image, sx, sy, sw, sh, width, height, body, flipY = false) {
             let frames = this.sprites.get(image);
             if (!frames) {frames = new Map(); this.sprites.set(image, frames);}
@@ -531,14 +546,16 @@
         }
 
         terrain(left, top, width, height, scene) {
-            const x = Math.floor(left / cacheStep) * cacheStep - marginX;
-            const y = Math.floor(top / cacheStep) * cacheStep - marginY;
-            const stride = width + 2 * marginX + cacheStep, rows = height + 2 * marginY + maxHeight + cacheStep;
+            const padX = this.map ? marginX : tileSize * 2, padY = this.map ? marginY : tileSize * 2;
+            const x = Math.floor(left / cacheStep) * cacheStep - padX;
+            const y = Math.floor(top / cacheStep) * cacheStep - padY;
+            const stride = width + 2 * padX + cacheStep, rows = height + 2 * padY + maxHeight + cacheStep;
             const cached = this.staticField;
             if (cached && cached.x === x && cached.y === y && cached.width === stride && cached.height === rows && cached.sceneId === scene.id) return cached;
             const length = stride * rows;
             const field = {x, y, width: stride, height: rows, sceneId: scene.id,
                 face: new Uint8Array(length), ground: new Uint8Array(length)};
+            if (!this.map) { this.staticField = field; return field; }
             // Include artwork just above the field whose elevated surface projects into it.
             const firstX = Math.max(scene.x, Math.floor(x / tileSize));
             const firstY = Math.max(scene.y, Math.floor((y - maxHeight) / tileSize));
@@ -558,19 +575,11 @@
             return field;
         }
 
-        draw(canvas, view, scene, light, actors, spriteImages, options, scenery, inspect = false) {
+        prepare(canvas, view, scene, actors, spriteImages, options, scenery, inspect = false) {
             const {width, height} = canvas;
             const left = -Math.round(-view.cameraX), top = -Math.round(-view.cameraY);
             const terrain = this.terrain(left, top, width, height, scene);
-            if (!this.mask || this.mask.width !== width || this.mask.height !== height) {
-                this.surface = new OffscreenCanvas(width, height);
-                this.output = this.surface.getContext('2d');
-                this.mask = this.output.createImageData(width, height);
-                this.proxyPixels = null;
-                this.shadowBuffers = shadowBuffers(terrain, this.mask);
-                for (let i = 0; i < this.mask.data.length; i += 4) {
-                    this.mask.data[i] = 24; this.mask.data[i + 1] = 32; this.mask.data[i + 2] = 52;
-                }
+            if (!this.face || this.face.length !== terrain.face.length) {
                 this.face = new Uint8Array(terrain.face.length);
                 this.ground = new Uint8Array(terrain.ground.length);
             }
@@ -580,12 +589,15 @@
             const raised = options.shadows ? terrain.raised : null;
             // Live scenery has its own placements, including swaying foliage.
             const field = {...terrain, face: this.face, ground: this.ground, raised: scenery.length && options.shadows ? [...(raised || [])] : raised};
+            const dynamic = [];
             for (const tree of scenery) {
                 const {image, width, height, body} = tree;
                 const stamp = this.sprite(image, 0, 0, image.width, image.height, width, height, body);
                 // Sorted trunks and foreground foliage are drawn after the
                 // ground mask. Roots painted into the ground can receive it.
                 place(field, stamp, tree.x, tree.y, tree.flipX, options.shadows, inspect || tree.receivesOnGround === true);
+                if (options.shadows || tree.receivesOnGround) dynamic.push({stamp, x: Math.round(tree.x), y: Math.round(tree.y),
+                    flip: !!tree.flipX, casts: options.shadows, receives: tree.receivesOnGround === true});
             }
             const scale = view.scale;
             for (const actor of actors) {
@@ -600,7 +612,26 @@
                 const stamp = this.sprite(image, draw.sx, draw.sy, draw.sW, draw.sH, w, h, body, flipY);
                 // Actors cast onto the world layer drawn underneath them. Their
                 // visible pixels only belong in the diagnostic height image.
-                place(field, stamp, x, y, flipX, draw.shadowBody === 'player' ? options.playerShadow : options.shadows, inspect);
+                const casts = draw.shadowBody === 'player' ? options.playerShadow : options.shadows;
+                place(field, stamp, x, y, flipX, casts, inspect);
+                dynamic.push({stamp, x: Math.round(x), y: Math.round(y), flip: flipX, casts, player: draw.shadowBody === 'player'});
+            }
+            this.pointFrame = {field, terrain, dynamic, scenery, left, top, width, height, sceneShadows: options.shadows};
+            return this.pointFrame;
+        }
+
+        draw(canvas, view, scene, light, actors, spriteImages, options, scenery, inspect = false) {
+            const {field, terrain, left, top, width, height} = this.prepare(canvas, view, scene, actors, spriteImages, options, scenery, inspect);
+            if (!inspect && light.strength <= .001) return;
+            if (!this.mask || this.mask.width !== width || this.mask.height !== height) {
+                this.surface = new OffscreenCanvas(width, height);
+                this.output = this.surface.getContext('2d');
+                this.mask = this.output.createImageData(width, height);
+                this.proxyPixels = null;
+                this.shadowBuffers = shadowBuffers(terrain, this.mask);
+                for (let i = 0; i < this.mask.data.length; i += 4) {
+                    this.mask.data[i] = 24; this.mask.data[i + 1] = 32; this.mask.data[i + 2] = 52;
+                }
             }
             if (inspect) {
                 this.proxyPixels ??= this.output.createImageData(width, height);
@@ -621,6 +652,41 @@
             shade(field, left, top, this.mask, light, this.shadowBuffers);
             this.output.putImageData(this.mask, 0, 0);
             return this.surface;
+        }
+
+        pointMask(light, beam) {
+            if (!this.pointPass) {
+                if (!self.PointShadows) importScripts('point-shadows-worker.js');
+                this.pointPass = new self.PointShadows.Pass();
+            }
+            return this.pointPass.mask(this.pointFrame, light, (bounds, source, highest) => this.pointField(light.owner, bounds, source, highest), beam);
+        }
+
+        pointField(owner, bounds, source, highest) {
+            const frame = this.pointFrame;
+            if (owner !== 'player' || !frame.dynamic.some(p => p.player && p.casts)) return frame.field;
+            if (frame.heldField) return frame.heldField;
+            // Only the carried light omits its carrier. Recompose the solid
+            // cells so a mob or wall sharing the player's footprint still blocks.
+            if (this.heldGround?.length !== frame.field.ground.length) this.heldGround = new Uint8Array(frame.field.ground.length);
+            const {field} = frame;
+            const left = bounds ? Math.max(0, Math.min(source.x, bounds.x) - field.x - 1) : 0;
+            const right = bounds ? Math.min(field.width, Math.max(source.x, bounds.right) - field.x + 1) : field.width;
+            const top = bounds ? Math.max(0, Math.min(source.y, bounds.y) - field.y - 1) : 0;
+            const bottom = bounds ? Math.min(field.height, Math.max(source.y, bounds.bottom + highest) - field.y + 1) : field.height;
+            for (let row = top; row < bottom; row++) {
+                const start = row * field.width + left, end = row * field.width + right;
+                if (frame.sceneShadows) this.heldGround.set(frame.terrain.ground.subarray(start, end), start);
+                else this.heldGround.fill(0, start, end);
+            }
+            for (const p of frame.dynamic) {
+                if (p.player || !p.casts || !p.stamp.ground.length) continue;
+                const x = p.x - field.x, y = p.y - field.y + p.stamp.groundTop;
+                if (x >= right || y >= bottom || x + p.stamp.width <= left || y + p.stamp.ground.length / p.stamp.width <= top) continue;
+                blit(this.heldGround, field.width, field.height, p.stamp.ground, p.stamp.width, x, y, p.flip);
+            }
+            frame.heldField = {...frame.field, ground: this.heldGround};
+            return frame.heldField;
         }
     }
     return {Pass, skyLight, casterClip, casterDraw, bodyHeight, makeStamp, makeActorStamp, readProxyTile, place, shade};
