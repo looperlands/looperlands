@@ -1,0 +1,4 @@
+{
+    "main": {"height": "main.png", "paint": "main-baked-shadows.png"},
+    "duckville": {"height": "duckville.png"}
+}

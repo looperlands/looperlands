@@ -3,10 +3,47 @@ import unittest
 
 from PIL import Image
 
-from generate_main_height_proxies import ARTWORK, ATLAS, BAKED_SHADOWS, ROOT, make_atlas, make_shadow_mask
+from generate_main_height_proxies import ARTWORK, ATLAS, BAKED_SHADOWS, ROOT, make_atlas, make_duckville_atlas, make_shadow_mask
 
 
 class HeightProxyAtlasTest(unittest.TestCase):
+    def test_duckville_trees_match_the_placed_roots_and_real_cavern_fire(self):
+        with Image.open(ROOT / 'client/img/1/tilesheet_duckville.png') as artwork, \
+                Image.open(ATLAS.with_name('duckville.png')) as atlas:
+            self.assertEqual(atlas.size, (artwork.width, 7 * 16))
+            self.assertEqual(atlas.tobytes(), make_duckville_atlas(artwork).tobytes())
+            with (ROOT / 'client/maps/world_client_duckville.json').open() as file:
+                world = json.load(file)
+            self.assertEqual(world['tilesetColumns'] * 16, atlas.width)
+            self.assertTrue(any(light['x'] == 113.5 * 16 and light['y'] == 427.5 * 16 and
+                                light['animation'] == 'fire' for light in world['lights']))
+            # Sample each silhouette on its map grid. The outdoor tree uses the
+            # alternate roots from atlas row 6; the cavern tree uses row 5.
+            samples = [
+                ((529, 54), (113, 425), True), ((543, 67), (113, 426), False),
+                ((543, 80), (113, 427), False), ((621, 57), (69, 434), True),
+                ((592, 72), (68, 435), False), ((592, 96), (68, 436), False),
+            ]
+            for (ax, ay), (mx, my), raised in samples:
+                with self.subTest(source=(ax, ay), tile=(mx, my)):
+                    gid = ay // 16 * world['tilesetColumns'] + ax // 16 + 1
+                    self.assertIn(gid, world['data'][my * world['width'] + mx])
+                    self.assertEqual(artwork.getpixel((ax, ay))[3], 255)
+                    red, z, blue, alpha = atlas.getpixel((ax, ay))
+                    self.assertEqual(alpha, 255)
+                    self.assertEqual(red, 3 * z - int(raised))
+                    self.assertGreater(z, 0)
+                    self.assertGreater(255 - blue, 0)
+            # A gap between branches is transparent. Either set of painted
+            # toes joins the common trunk with one native pixel of height loss.
+            self.assertEqual(atlas.getpixel((581, 61))[3], 0)
+            for x in (543, 592):
+                above = atlas.getpixel((x, 79))[1]
+                for root in (80, 96):
+                    self.assertEqual(atlas.getpixel((x, root))[1], above - 1)
+            for mx, my in [(112, 428), (67, 437)]:
+                self.assertNotIn(my * world['width'] + mx, world['collisions'])
+
     def test_checked_in_atlas_matches_profiles_and_outdoor_artwork(self):
         with Image.open(ARTWORK) as source, Image.open(ATLAS) as atlas:
             self.assertEqual(atlas.size, source.size)

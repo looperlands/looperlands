@@ -307,3 +307,34 @@ test('a moving canopy casts away from its roots and leaves the cached terrain cl
     draw([tree]);
     expect(pass.ground.some(Boolean)).toBe(true);
 });
+
+test('map polygon fallbacks yield only to their specific placed and decoded shadow body', () => {
+    const map = require('../maps/world_client_main.json');
+    const forest = map.scenes.find(scene => scene.name === 'Forest');
+    const assembly = require('../../tools/worlds/main.json').atmosphere.find(scene => scene.sceneId === String(forest.id)).parallax;
+    const scenery = assembly.placements.map(p => ({rootX: forest.x * 16 + p.x, rootY: forest.y * 16 + p.y}));
+    const pass = Object.create(Pass.prototype);
+    pass.map = map;
+    pass.tile = jest.fn(() => ({}));
+
+    const town = map.shadows.filter(shadow => [620, 621, 623].includes(shadow.id) || (shadow.id >= 671 && shadow.id <= 681));
+    const trees = map.shadows.filter(shadow => shadow.id >= 682 && shadow.id <= 694);
+    expect(town.filter(shadow => shadow.proxyOwner?.gid)).toHaveLength(14);
+    expect(trees.filter(shadow => Number.isInteger(shadow.proxyOwner?.rootX))).toHaveLength(13);
+    expect([...town, ...trees].every(s => pass.ownsPointBlocker(s.proxyOwner, scenery))).toBe(true);
+    // A disabled parallax layer, missing tileset body, edited map placement or
+    // independently authored polygon keeps its ordinary point-light silhouette.
+    expect(trees.some(s => pass.ownsPointBlocker(s.proxyOwner, []))).toBe(false);
+    expect(pass.ownsPointBlocker(null, scenery)).toBe(false);
+    expect(pass.ownsPointBlocker({...town[0].proxyOwner, tileX: 0, tileY: 0}, scenery)).toBe(false);
+    pass.tile.mockReturnValue(null);
+    expect(pass.ownsPointBlocker(town[0].proxyOwner, scenery)).toBe(false);
+});
+
+test('an actor-only pass retains tile-owned authored blockers while the main atlas is loading', () => {
+    const owner = {gid: 4, tileX: 0, tileY: 0};
+    const pending = Object.create(Pass.prototype);
+    expect(pending.ownsPointBlocker(owner, [])).toBe(false);
+    const ready = Object.assign(Object.create(Pass.prototype), {map: {width: 1, data: [4]}, tile: () => ({})});
+    expect(ready.ownsPointBlocker(owner, [])).toBe(true);
+});

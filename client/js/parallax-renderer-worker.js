@@ -225,7 +225,7 @@
             if (x >= clip.right || y >= clip.bottom || x + width <= clip.left || y + height <= clip.top) continue;
             const image = imageFor(layer.image);
             const opacity = finite(layer.opacity, 1, 0, 1);
-            if (image) result.push({image, x, y, width, height, opacity, worldY, flipX: placement.flipX === true});
+            if (image) result.push({image, x, y, width, height, opacity, worldX, worldY, flipX: placement.flipX === true});
         }
         return result;
     }
@@ -314,7 +314,8 @@
                 const x = Math.round(sprite.x + view.cameraX), y = Math.round(sprite.y + view.cameraY);
                 const body = forestBody(part, width, height, sprite.worldY - y);
                 result.push({image: sprite.image, x, y, width, height, body, flipX: sprite.flipX,
-                    receivesOnGround: layer.plane === 'ground'});
+                    receivesOnGround: layer.plane === 'ground',
+                    ...(part === 'trunk' ? {rootX: sprite.worldX, rootY: sprite.worldY} : {})});
             }
         }
         return result;

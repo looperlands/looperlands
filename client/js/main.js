@@ -285,7 +285,7 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
 
             const preview = new URLSearchParams(window.location.search);
             const proxyMode = preview.get('shadowProxies');
-            const inspectShadows = mapId === 'main' && (proxyMode === '1' || proxyMode === '0');
+            const inspectShadows = proxyMode === '1' || proxyMode === '0';
             if (preview.get('previewClock') === '1' || inspectShadows) {
                 const controls = document.getElementById('shadow-preview');
                 const clock = document.getElementById('shadow-preview-clock');
@@ -317,11 +317,12 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 const updateButton = () => {
                     toggle.textContent = game.renderer.inspectShadowProxies ? 'Show cast shadows' : 'Show shadow proxies';
                 };
-                toggle.hidden = false;
                 game.renderer.worker.addEventListener('message', ({data}) => {
                     if (data.type !== 'shadowProxyAtlas') return;
+                    toggle.hidden = data.available === false;
                     atlasReady = data.ready;
-                    toggle.disabled = false;
+                    toggle.disabled = !!data.loading;
+                    if (data.loading) {toggle.textContent = 'Loading shadow proxies…'; return;}
                     if (atlasReady) updateButton();
                     else toggle.textContent = 'Retry loading shadow proxies';
                 });

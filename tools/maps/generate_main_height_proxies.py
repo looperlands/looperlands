@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake the main tilesheet's inspectable body-height atlas. Requires Pillow."""
+"""Bake inspectable body-height atlases from the native map artwork. Requires Pillow."""
 
 import argparse
 import math
@@ -175,6 +175,13 @@ def slate_house_surface(x, y, body):
     return surface, body.depth
 
 
+def body_pixel(height, depth, elevated=False, support=0):
+    # Red below its display value marks raised material. Extra red extends
+    # solid support above the visible face while preserving its ground site.
+    red = min(255, 3 * height) - int(elevated) + max(0, support - height)
+    return red, height, 255 - depth, 255
+
+
 def make_atlas(source):
     atlas = Image.new('RGBA', source.size)
     for body in BODIES:
@@ -233,20 +240,81 @@ def make_atlas(source):
                             support = round(20 + 27 * math.sqrt(1 - distance * distance))
                 z = math.floor(z + .5)
                 if z > 0:
-                    # Red below the display value marks an elevated leaf/panel;
-                    # excess red adds hidden solid height at the visible foot.
-                    red = min(255, 3 * z) - int(elevated) + max(0, support - z)
-                    atlas.putpixel((left + x, top + y), (red, z, 255 - thickness, 255))
+                    atlas.putpixel((left + x, top + y), body_pixel(z, thickness, elevated, support))
     return atlas
+
+
+class BareTree(NamedTuple):
+    # An upright connected sprite ending in one 16px root tile row. Duckville
+    # substitutes the row immediately below it for roots growing among stones.
+    bounds: tuple
+    trunk_x: float
+    trunk_radius: float
+    fork_y: int
+
+
+DUCKVILLE_TREES = (
+    BareTree((528, 32, 560, 96), 15.5, 5.5, 30),
+    BareTree((560, 16, 624, 96), 32, 8, 54),
+)
+
+
+def make_duckville_atlas(source):
+    height = max(tree.bounds[3] + 16 for tree in DUCKVILLE_TREES)
+    atlas = Image.new('RGBA', (source.width, height))
+    for tree in DUCKVILLE_TREES:
+        left, top, right, bottom = tree.bounds
+        art = source.crop(tree.bounds).getchannel('A')
+        root_top = art.height - 16
+        # Set the trunk's front and back around the middle of the painted roots.
+        ground_y = art.getbbox()[3] - 1 - round(tree.trunk_radius * .65)
+        for x in range(art.width):
+            distance = abs(x - tree.trunk_x) / tree.trunk_radius
+            half_depth = tree.trunk_radius * .65 * math.sqrt(max(0, 1 - distance * distance))
+            for y in range(root_top):
+                if not art.getpixel((x, y)):
+                    continue
+                # The shaft is solid at its base and narrows toward the first
+                # fork. Outstretched limbs occupy only their illustrated height.
+                taper = min(1, .25 + .75 * y / tree.fork_y)
+                elevated = distance >= taper
+                z = round(ground_y + half_depth) - y
+                depth = 2 if elevated else max(2, round(2 * half_depth * taper))
+                atlas.putpixel((left + x, top + y), body_pixel(z, depth, elevated))
+            for row_top in (bottom - 16, bottom):
+                roots = source.crop((left + x, row_top, left + x + 1, row_top + 16)).getchannel('A')
+                contact = roots.getbbox()
+                if not contact:
+                    continue
+                foot = contact[3] - 1
+                # Blend the root fan from the shaft's front at the seam to the
+                # per-column painted toe. Both root variants share the same shaft.
+                for y in range(foot):
+                    if roots.getpixel((0, y)):
+                        seam = ground_y + half_depth - root_top
+                        z = max(1, round(seam * (foot - y) / foot))
+                        depth = min(z, max(1, round(2 * half_depth)))
+                        atlas.putpixel((left + x, row_top + y), body_pixel(z, depth))
+    return atlas
+
+
+def generate(map_id):
+    artwork = ROOT / f'client/img/1/tilesheet_{map_id}.png'
+    with Image.open(artwork) as image:
+        source = image.convert('RGBA')
+    if map_id == 'duckville':
+        yield ATLAS.with_name('duckville.png'), make_duckville_atlas(source)
+    else:
+        yield ATLAS, make_atlas(source)
+        yield BAKED_SHADOWS, make_shadow_mask(source)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--check', action='store_true', help='verify both checked-in PNGs')
+    parser.add_argument('--map', choices=['main', 'duckville'], default='main', help='map tilesheet to profile')
+    parser.add_argument('--check', action='store_true', help='verify checked-in PNGs against the artwork')
     args = parser.parse_args()
-    with Image.open(ARTWORK) as artwork:
-        source = artwork.convert('RGBA')
-    for target, generated in [(ATLAS, make_atlas(source)), (BAKED_SHADOWS, make_shadow_mask(source))]:
+    for target, generated in generate(args.map):
         if args.check:
             with Image.open(target) as current:
                 if current.size != generated.size or current.convert('RGBA').tobytes() != generated.tobytes():

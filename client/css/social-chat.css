@@ -5,7 +5,7 @@
     min-height:260px; z-index:90; background:#3e2832; color:#e4d0b6;
     border:12px solid transparent; border-image:url('../img/common/panel.png') 12 fill round;
     border-radius:0; image-rendering:pixelated;
-    box-shadow:0 6px 18px #10101060;
+    box-shadow:var(--panel-shadow);
     font:16px/1.4 GraphicPixel,sans-serif; text-align:left; overflow:visible;
     user-select:text;
 }

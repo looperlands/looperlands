@@ -266,6 +266,8 @@ test.each([false, true])('forest roots, trunk and all crowns share their drawn p
     Object.assign(view, {cameraX: tree.x - 150, cameraY: tree.y - 150});
     s.renderer.shadowBodies(s.state, view); await flush();
     const [roots, trunk, ...crowns] = frame(0, 0);
+    expect(trunk).toMatchObject({rootX: tree.x, rootY: tree.y});
+    expect([roots, ...crowns].every(sprite => sprite.rootX === undefined)).toBe(true);
     expect(roots.body.raised).toBeUndefined();
     expect(roots.body.front).toBeLessThan(5);
     const trunkFoot = trunk.y + trunk.body.base;

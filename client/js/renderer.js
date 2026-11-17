@@ -66,6 +66,11 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let self = this;
                 this.worker.addEventListener("message", (e) => {
                     if (e.data.type === "rendered") {
+                        if (e.data.panelShadow) {
+                            const style = document.body.style;
+                            style.setProperty('--panel-shadow-x', e.data.panelShadow.x + 'px');
+                            style.setProperty('--panel-shadow-y', e.data.panelShadow.y + 'px');
+                        }
                         self.game.tick();
                     } else if (e.data.type === 'tilesetReady') {
                         self.handleTilesetReady(e.data);
@@ -523,7 +528,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                             }
                         }
     
-                        const castsBodyShadow = this.game.map?.mapId === 'main' && !a && !entity.isDead &&
+                        const castsBodyShadow = !a && !entity.isDead &&
                             (entity instanceof Character ? hasContactShadow : Types.isChest(entity.kind) && sprite.hasShadow !== false);
                         entityData.drawData.push({
                             "id": sprite.id,
@@ -1125,7 +1130,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     this.worker.postMessage({"type": "setLights", "lights": this.game.map.lights})
                     const map = this.game.map;
                     this.worker.postMessage({type: 'setObstacles', obstacles: map.shadows,
-                        bodyMap: map.mapId === 'main' ? {width: map.width, data: map.data} : null});
+                        bodyMap: map.shadowProfile ? {mapId: map.mapId, width: map.width, data: map.data, profile: map.shadowProfile} : null});
                     this.worker.postMessage({"type": "setLightEmittingTiles", "lightEmittingTiles": this.game.map.lightTiles})
                     this.syncedLights = true;
                 }

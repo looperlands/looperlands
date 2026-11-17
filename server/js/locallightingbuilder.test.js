@@ -16,7 +16,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
    <properties><property name="intensity" value="0.6"/><property name="color" value="255,180,90"/><property name="future" value="keep"/></properties><ellipse/>
   </object>
  </objectgroup>
- <objectgroup id="3" name="shadows"><object id="8" x="96" y="64"><polygon points="0,0 16,0 16,32 0,32"/></object></objectgroup>
+ <objectgroup id="3" name="shadows"><object id="8" x="96" y="64"><properties><property name="proxyOwner" value="tile:234,1,2"/></properties><polygon points="0,0 16,0 16,32 0,32"/></object></objectgroup>
  <objectgroup id="4" name="doors"><object id="20" x="0" y="0"/></objectgroup>
 </map>\n`;
 beforeEach(() => {
@@ -82,6 +82,10 @@ test('creates missing and self-closing layers, allocates unique IDs, removes obj
 });
 test('new radial, area and polygon objects survive the normal TMX and client exporter', async () => {
     let data = await add('torch');data = await add('area', 'one', data);data = await add('shadow-polygon', 'one', data);
+    const edited = data.objects.find(row => row.id === '8');
+    data = await saveObject(root, {mapId: 'one', operation: 'update', objectId: edited.id, revision: data.revision,
+        object: {...edited, x: 112, name: 'Moved legacy shadow'}});
+    expect(data.objects.find(row => row.id === '8').properties.proxyOwner).toBe('tile:234,1,2');
     const jsonFile = path.join(root, 'converted.json');
     // The converter has no lxml dependency in this test: use ElementTree for its element traversal.
     const converter = fs.readFileSync(path.resolve(__dirname, '../../tools/maps/tmx2json.py'), 'utf8').replace('from lxml import etree', 'import xml.etree.ElementTree as etree');
@@ -89,6 +93,8 @@ test('new radial, area and polygon objects survive the normal TMX and client exp
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     let built;try {built = processMap(JSON.parse(fs.readFileSync(jsonFile)), {mode: 'client'});} finally {log.mockRestore();}
     expect(built.lights).toHaveLength(3);expect(built.shadows).toHaveLength(2);
+    expect(built.shadows.find(s => s.id === 8).proxyOwner).toEqual({gid: 234, tileX: 8, tileY: 6});
+    expect(built.shadows.find(s => s.id !== 8).proxyOwner).toBeUndefined();
     for (const row of data.objects.filter(r => r.kind === 'light')) expect(built.lights.find(l => String(l.id) === row.id)).toEqual(L.light(row, 16));
     for (const shadow of built.shadows) {expect(shadow.polygon.points).toBeTruthy();expect(shadow.width).toBeUndefined();}
 });

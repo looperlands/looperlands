@@ -19,12 +19,12 @@ function setup() {
     }
     class Canvas {
         constructor(width, height, id = 'scratch') {
-            this.width = width; this.height = height; this.ctx = context(id); allocations.push(this);
+            this.width = width; this.height = height; this.ctx = context(id); this.ctx.canvas = this; allocations.push(this);
         }
         getContext() { return this.ctx; }
     }
     const sandbox = {
-        self: {WorldTime: require('./worldtime-worker'), WorldParticles: require('./worldparticles-worker')},
+        self: {WorldTime: require('./worldtime-worker'), WorldParticles: require('./worldparticles-worker'), postMessage: jest.fn()},
         OffscreenCanvas: Canvas, console, performance: {now: () => now},
         requestAnimationFrame: callback => pendingFrames.push(callback),
         postMessage: message => {if (message.type === 'rendered') acknowledgements.push(now);}
@@ -115,6 +115,50 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     ]);
 });
 
+test('panel shadow updates follow the sun and nearby indoor fire at the player', async () => {
+    const worker = setup(), api = worker.sandbox, messages = [];
+    api.postMessage = message => { if (message.type === 'rendered') messages.push(message); };
+    api.fetch = async () => ({blob: () => ({})});
+    api.createImageBitmap = async image => image;
+    api.self.SceneEnvironment = require('./sceneenvironment');
+    api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
+        constructor() { this.pointFrame = {}; }
+        draw() {}
+        prepare() {}
+        pointMask() { return null; }
+    }};
+    vm.runInContext('worldClock = self.WorldTime', api);
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: {
+        mapId: 'main', profile: {height: 'main.png'}, width: 1, data: [1]
+    }});
+    const packet = frame();
+    packet.mapId = 'main';
+    packet.scene.dn_cycle = true;
+    packet.renderData.find(layer => layer.id === 'lights').options.shadows = true;
+    const sample = time => {
+        worker.advance(time);
+        worker.send(packet);
+        worker.advance(time + 17);
+        return messages.at(-1).panelShadow;
+    };
+    packet.worldTime = 7 * 150000;
+    const morning = sample(1000);
+    expect(morning.x).toBeLessThan(0);
+    expect([morning.x, morning.y].every(Number.isInteger)).toBe(true);
+    expect(sample(1250)).toBeUndefined();
+    packet.worldTime = 16 * 150000;
+    expect(sample(1500).x).toBeGreaterThan(0);
+
+    packet.scene = {...packet.scene, dn_cycle: false, weatherExposure: 'indoor', darkness: .9};
+    worker.send({type: 'setLights', lights: [{x: 80, y: 40, radius: 6, intensity: 1, animation: 'fire'}]});
+    packet.player = {x: 104, y: 32};
+    expect(sample(1750).x).toBeGreaterThan(0);
+    packet.player.x = 40;
+    expect(sample(2000).x).toBeLessThan(0);
+    worker.send({type: 'setLights', lights: []});
+    expect(sample(2250)).toEqual({x: 3, y: 6});
+});
+
 test('the main-map atlas powers outdoor shadows and the live proxy view', async () => {
     const worker = setup(), draw = jest.fn();
     worker.setTileset({width: 320, height: 3000});
@@ -129,7 +173,7 @@ test('the main-map atlas powers outdoor shadows and the live proxy view', async 
         draw(...args) { draw(...args); return args[8] ? proxyView : castSurface; }
     }, skyLight: () => ({strength: .4})};
     vm.runInContext('worldClock = self.WorldTime', worker.sandbox);
-    const bodyMap = {width: 1, data: [1]};
+    const bodyMap = {mapId: 'main', profile: {height: 'main.png', paint: 'main-baked-shadows.png'}, width: 1, data: [1]};
     const configure = () => worker.send({type: 'setObstacles', obstacles: [], bodyMap});
     const firstLoad = configure();
     await worker.send({type: 'setObstacles', obstacles: [], bodyMap: null});
@@ -212,7 +256,7 @@ test('a failed proxy image can be retried without restarting the game', async ()
     api.fetch = jest.fn(async () => ({blob: () => 'atlas'}));
     api.createImageBitmap = jest.fn().mockRejectedValueOnce(new Error('Image unavailable')).mockResolvedValue('atlas');
     api.console = {log: jest.fn()};
-    const map = {width: 1, data: [1]};
+    const map = {mapId: 'main', profile: {height: 'main.png', paint: 'main-baked-shadows.png'}, width: 1, data: [1]};
     await worker.send({type: 'setObstacles', obstacles: [], bodyMap: map});
     expect(api.self.postMessage).toHaveBeenCalledWith({type: 'shadowProxyAtlas', ready: false});
     expect(api.self.HeightShadows.Pass).not.toHaveBeenCalled();
@@ -383,17 +427,64 @@ test('avatar names and titles share the body screen position on the art grid', (
     }
 });
 
-test('fire flicker never changes the map light or compounds radius, intensity and position over time', () => {
+test('static and animated tile lights stay centered on the artwork as the fire animates', () => {
+    const worker = setup();
+    worker.send({type: 'setLightEmittingTiles', lightEmittingTiles: {241: {radius: 2}}});
+    const packet = frame();
+    const floor = packet.renderData.find(layer => layer.id === 'background');
+    const fire = {...floor.tiles[0], tileid: 240, cellid: 33};
+    floor.tiles = [fire];
+    const animated = {...floor, clear: false, tiles: [{...fire, cellid: 34, slideOffsetX: 16}]};
+    packet.renderData.splice(2, 0, animated);
+    const ctx = worker.canvases.lighting.ctx;
+    for (const offset of [16, 32]) {
+        animated.tiles[0].slideOffsetX = offset;
+        ctx.drawImage.mockClear();
+        worker.send(packet);
+        const centers = ctx.drawImage.mock.calls.slice(0, 2).map(call => [call[5] + 32, call[6] + 32]);
+        expect(centers).toEqual([[56, 24], [72, 24]]);
+    }
+});
+
+test('an offscreen window only enters the lighting pass when its cone can reach the camera', () => {
+    const worker = setup(), ctx = worker.canvases.lighting.ctx;
+    worker.setPlayer({x: -1000, y: -1000});
+    const lamp = {x: 64, y: 105, radius: 8, spread: 145, intensity: .5};
+    const canvas = worker.canvases.lighting;
+    canvas.width = canvas.height = 96;
+    const run = sources => {
+        ctx.drawImage.mockClear();
+        worker.renderLightOverlay(sources, 0, 0, 1, 0, {darkness: .8}, [], {shadows: false, playerShadow: false}, 'fixture', 0);
+        return ctx.drawImage.mock.calls.length;
+    };
+    expect(run([{...lamp, angle: 0}])).toBe(0);
+    expect(run([{...lamp, angle: 180}])).toBe(1);
+    expect(run([{...lamp, spread: 0}])).toBe(1);
+    expect(run([{...lamp, angle: 0, spread: 270}])).toBe(1);
+    expect(run([{...lamp, x: -9, y: 64, angle: 90}])).toBe(0);
+    expect(run([{...lamp, x: -9, y: 64, angle: 270}])).toBe(1);
+});
+
+test('fire pulses smoothly around authored settings, stays local to each source and pauses with dynamic lights', () => {
     const worker = setup();
     const base = {x:100,y:200,radius:4,intensity:0.8,animation:'fire'};
-    for (let time = 0; time < 2000; time++) {
+    const pulses = [];
+    let previous = worker.updateAnimatedLightSource(base, 0);
+    for (let time = 0; time < 2000; time += 16) {
         const animated = worker.updateAnimatedLightSource(base, time);
-        expect(animated).not.toBe(base);
-        expect(animated.radius).toBeGreaterThanOrEqual(3.97);
-        expect(animated.radius).toBeLessThan(4.07);
-        expect(Math.abs(animated.x - base.x)).toBeLessThanOrEqual(0.4);
-        expect(Math.abs(animated.y - base.y)).toBeLessThanOrEqual(0.4);
+        pulses.push(animated.flamePulse);
+        expect(animated).toEqual(worker.updateAnimatedLightSource(base, time));
+        expect(Math.abs(animated.radius - base.radius)).toBeLessThanOrEqual(.18);
+        expect(Math.abs(animated.intensity - base.intensity)).toBeLessThanOrEqual(.072);
+        expect(Math.abs(animated.x - base.x)).toBeLessThanOrEqual(.55);
+        expect(Math.abs(animated.y - base.y)).toBeLessThanOrEqual(.45);
+        expect(Math.abs(animated.flamePulse - previous.flamePulse)).toBeLessThan(.14);
+        previous = animated;
     }
+    expect(Math.max(...pulses) - Math.min(...pulses)).toBeGreaterThan(1);
+    expect(worker.updateAnimatedLightSource({...base, x: 150}, 0).flamePulse).not.toEqual(pulses[0]);
+    worker.options(true, true, false);
+    expect(worker.updateAnimatedLightSource(base, 0)).toBe(base);
     expect(base).toEqual({x:100,y:200,radius:4,intensity:0.8,animation:'fire'});
 });
 
@@ -562,4 +653,178 @@ test('night particles use the authored daylight window and shared map weather ta
     draw.mockClear();scene.weather=null;
     worker.drawSceneWeather({},scene,{cameraX:0,cameraY:0,scale:1},12/24*3600000);
     expect(draw).not.toHaveBeenCalled();
+});
+
+test.each(['main', 'duckville', 'unprofiled'])('indoor finite lights in %s use the configured terrain or actor-only field', async mapId => {
+    const worker = setup();
+    const authored = {x: 24, y: 32, radius: 4, intensity: .6, shadow: .8};
+    const fallback = {x: 44, y: 32, radius: 4, intensity: .4, shadow: 0};
+    worker.send({type: 'setLights', lights: [authored, fallback]});
+    const pass = {pointFrame: {}, prepare: jest.fn(), pointMask: jest.fn(), draw: jest.fn()};
+    const construct = jest.fn(() => pass);
+    worker.sandbox.self.HeightShadows = {Pass: construct, casterClip: () => ({})};
+    worker.sandbox.self.SceneEnvironment = {outdoors: () => false};
+    const profile = require('../img/common/height-proxies/catalog.json')[mapId];
+    worker.sandbox.fetch = jest.fn(async () => ({blob: async () => ({})}));
+    worker.sandbox.createImageBitmap = jest.fn(async blob => blob);
+    const bodyMap = profile ? {mapId, profile, width: 1, data: [1]} : null;
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap});
+    if (profile) expect(construct).toHaveBeenCalledWith(bodyMap, expect.any(Object));
+    construct.mockClear();
+    const packet = frame();
+    packet.mapId = mapId;
+    packet.renderData.find(data => data.id === 'lights').options.shadows = true;
+    worker.send(packet);
+    expect(construct).toHaveBeenCalledTimes(profile ? 0 : 1);
+    expect(pass.prepare).toHaveBeenCalledTimes(1);
+    expect(pass.prepare.mock.calls[0][3]).toBe(packet.renderData.find(data => data.type === 'entities').entityData);
+    expect(pass.pointMask.mock.calls.map(([source]) => source)).toContain(authored);
+    expect(pass.pointMask.mock.calls.map(([source]) => source)).not.toContain(fallback);
+    expect(pass.draw).not.toHaveBeenCalled();
+});
+
+test('the foreground stencil keeps depth-sorted trunks and equipment lit but cuts out opaque overhead terrain', () => {
+    const worker = setup(); worker.loadSprite();
+    const view = frame().renderData.find(d => d.type === 'entities');
+    view.entityData[0].drawData.push({...view.entityData[0].drawData[0], spriteName: 'held-item', renderAbove: true});
+    vm.runInContext("sprites['held-item'] = {image: 'item'}", worker.sandbox);
+    const mask = worker.sandbox.pointForeground(view, [{draw: ctx => ctx.drawImage('trunk', 0, 0)}]);
+    const passes = mask.canvas.ctx.drawImage.mock.calls.map(call => call[0]);
+    expect(passes).toEqual(['trunk', {avatar: true}, worker.canvases.high, 'item']);
+});
+
+test('an indoor foot-contact sprite gives way inside an external torch beam and returns outside it', () => {
+    const worker = setup(), packet = frame();
+    packet.mapId = 'duckville';
+    const settings = packet.renderData.find(layer => layer.id === 'lights').options;
+    settings.shadows = true; settings.playerShadow = true;
+    const view = packet.renderData.find(layer => layer.type === 'entities'), actor = view.entityData[0];
+    actor.drawData[0].shadowBody = 'player';
+    actor.drawData.unshift({...actor.drawData[0], spriteName: 'shadow16', shadowBody: undefined});
+    const pass = {pointFrame: {}, prepare: jest.fn(), pointMask: jest.fn()};
+    worker.sandbox.self.HeightShadows = {...require('./height-shadows-worker'), Pass: jest.fn(() => pass)};
+    vm.runInContext("sprites.shadow16 = {image: 'contact'}", worker.sandbox);
+    function contact(lights) {
+        worker.send({type: 'setLights', lights});
+        worker.canvases.entities.ctx.drawImage.mockClear();
+        worker.send(packet);
+        return worker.canvases.entities.ctx.drawImage.mock.calls.some(([image]) => image === 'contact');
+    }
+    const torch = {x: 40, y: 30, radius: 3, shadow: .8, spread: 70, angle: 0};
+    expect(contact([])).toBe(true); // The carried lantern cannot replace its carrier's contact.
+    expect(contact([torch])).toBe(false);
+    expect(contact([{...torch, angle: 180}])).toBe(true);
+    expect(contact([{...torch, x: 300}])).toBe(true);
+    expect(contact([{...torch, shadow: 0}])).toBe(true);
+});
+
+test('point lights restrict their scratch work to the viewport and clip only foreground that intersects a cast', () => {
+    const worker = setup(), target = worker.canvases.lighting;
+    target.width = 100; target.height = 80;
+    const foreground = new worker.Canvas(100, 80), mask = new worker.Canvas(64, 64);
+    const getForeground = jest.fn(() => ({canvas: foreground, regions: [{left: 4, top: 20, right: 10, bottom: 26}]}));
+    const frame = {foreground: getForeground};
+    const shadow = {canvas: mask, x: -22, y: 3};
+    const pass = {pointFrame: frame, pointMask: () => shadow};
+    const lamp = {x: 10, y: 35, radius: 2, shadow: .7};
+
+    worker.drawLightSource(target.ctx, lamp, 0, 0, pass);
+    const light = target.ctx.drawImage.mock.calls.at(-1)[0];
+    expect(light.ctx.clearRect).toHaveBeenLastCalledWith(0, 0, 42, 64);
+    const clipped = light.ctx.drawImage.mock.calls.at(-1)[0];
+    expect(clipped.ctx.drawImage).toHaveBeenCalledWith(foreground, 0, 3, 42, 64, 0, 0, 42, 64);
+
+    shadow.x = 58; shadow.y = 0;
+    worker.drawLightSource(target.ctx, {...lamp, x: 90, y: 32}, 0, 0, pass);
+    expect(light.ctx.drawImage.mock.calls.at(-1)[0]).toBe(mask);
+    expect(getForeground).toHaveBeenCalledTimes(1);
+
+    shadow.x = 95; shadow.y = 76;
+    worker.drawLightSource(target.ctx, {...lamp, x: 127, y: 108}, 0, 0, pass);
+    expect(light.ctx.clearRect).toHaveBeenLastCalledWith(0, 0, 5, 4);
+    expect(target.ctx.drawImage.mock.calls.at(-1).slice(1)).toEqual([0, 0, 5, 4, 95, 76, 5, 4]);
+});
+
+test('foreground coverage keeps flipped gear in screen coordinates and treats custom painting conservatively', () => {
+    const worker = setup(), view = frame().renderData.find(layer => layer.type === 'entities');
+    const realCanvas = worker.sandbox.OffscreenCanvas;
+    worker.sandbox.OffscreenCanvas = class extends realCanvas {
+        constructor(...args) {
+            super(...args);
+            this.ctx.getTransform = () => ({a: -1 / 3, d: 1 / 3, e: 20, f: 32});
+        }
+    };
+    const actor = view.entityData[0];
+    actor.drawData[0] = {...actor.drawData[0], dx: -6, dy: -9, dW: 24, dH: 30};
+    expect(worker.sandbox.pointForeground(view, []).regions).toEqual([{left:14, right:22, top:29, bottom:39}]);
+    actor.drawData[0].a = .2;
+    expect(worker.sandbox.pointForeground(view, []).regions).toBeNull();
+    expect(worker.sandbox.pointForeground(view, [{draw(){}}]).regions).toBeNull();
+});
+
+test('a tileset with a height atlas and no paint mask casts and inspects without altering its tile artwork', async () => {
+    const worker = setup(), api = worker.sandbox;
+    const original = {width: 320, height: 320}, atlas = {}, cast = {}, diagnostic = {};
+    const draw = jest.fn((...args) => args[8] ? diagnostic : cast);
+    const pass = {draw, pointFrame: {}, pointMask: jest.fn()};
+    const construct = jest.fn(() => pass);
+    worker.setTileset(original);
+    api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: construct, skyLight: () => ({strength: .5})};
+    api.self.SceneEnvironment = {outdoors: () => true};
+    api.fetch = jest.fn(async () => ({blob: async () => atlas}));
+    api.createImageBitmap = jest.fn(async blob => blob);
+    vm.runInContext('worldClock = self.WorldTime', api);
+    const profile = require('../img/common/height-proxies/catalog.json').duckville;
+    const bodyMap = {mapId: 'duckville', width: 1, data: [1], profile};
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap});
+    expect(api.fetch.mock.calls.map(([url]) => url)).toEqual(['../img/common/height-proxies/duckville.png']);
+    expect(construct).toHaveBeenCalledWith(bodyMap, atlas);
+    const packet = frame(); packet.mapId = 'duckville';
+    const lights = packet.renderData.find(layer => layer.id === 'lights');
+    lights.options.shadows = true;
+    worker.send(packet);
+    expect(draw).toHaveBeenCalledTimes(1);
+    const background = worker.canvases.background.ctx.drawImage.mock.lastCall[0];
+    const firstTile = background.ctx.drawImage.mock.calls.find(call => call[1] === 0)[0];
+    expect(firstTile.ctx.drawImage.mock.calls[0][0]).toBe(original);
+    expect(worker.canvases.entities.ctx.drawImage.mock.calls.some(([image]) => image === cast)).toBe(true);
+    lights.options.inspectShadowProxies = true;
+    worker.send(packet);
+    expect(worker.canvases.combined.ctx.drawImage.mock.lastCall[0]).toBe(diagnostic);
+    // An in-flight client frame for a different map must not use this atlas.
+    packet.mapId = 'main'; lights.options.shadows = false;
+    worker.send(packet);
+    expect(draw).toHaveBeenCalledTimes(2);
+});
+
+test('a slower tileset load cannot replace the active profile after changing maps', async () => {
+    const worker = setup(), api = worker.sandbox;
+    const oldAtlas = {close: jest.fn()}, oldPaint = {close: jest.fn()}, currentAtlas = {close: jest.fn()};
+    const catalog = require('../img/common/height-proxies/catalog.json');
+    const oldMap = {mapId: 'main', width: 1, data: [1], profile: catalog.main};
+    const currentMap = {mapId: 'duckville', width: 1, data: [2], profile: catalog.duckville};
+    let release;
+    const delayed = new Promise(resolve => { release = () => resolve(oldAtlas); });
+    api.fetch = jest.fn(async url => ({blob: () => url.endsWith('/main.png') ? delayed :
+        Promise.resolve(url.endsWith('/duckville.png') ? currentAtlas : oldPaint)}));
+    api.createImageBitmap = jest.fn(async blob => blob);
+    api.self.HeightShadows = {Pass: jest.fn()};
+    api.self.SceneEnvironment = require('./sceneenvironment');
+    const obsolete = worker.send({type: 'setObstacles', obstacles: [], bodyMap: oldMap});
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: currentMap});
+    release(); await obsolete;
+    expect(api.self.HeightShadows.Pass).toHaveBeenCalledTimes(1);
+    expect(api.self.HeightShadows.Pass).toHaveBeenCalledWith(currentMap, currentAtlas);
+    expect(oldAtlas.close).toHaveBeenCalledTimes(1);
+    expect(oldPaint.close).toHaveBeenCalledTimes(1);
+    expect(currentAtlas.close).not.toHaveBeenCalled();
+    const ready = api.self.postMessage.mock.calls.map(([m]) => m).filter(m => m.ready);
+    expect(ready).toHaveLength(1);
+    // Reuse image data, rebuilding the height field for this map's own tiles.
+    const otherMap = {...currentMap, mapId: 'other', data: [3]};
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: otherMap});
+    expect(api.self.HeightShadows.Pass).toHaveBeenLastCalledWith(otherMap, currentAtlas);
+    expect(api.fetch).toHaveBeenCalledTimes(3);
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap: null});
+    expect(api.self.postMessage).toHaveBeenLastCalledWith({type: 'shadowProxyAtlas', available: false, ready: false});
 });

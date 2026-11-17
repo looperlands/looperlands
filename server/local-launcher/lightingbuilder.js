@@ -148,7 +148,13 @@
             property(row, 'intensity', 'Intensity', draft.properties.light ?? '1', {type: 'number', min: 0, max: 1, step: 'any'}).addEventListener('input', () => {if (Object.hasOwn(draft.properties, 'light')) draft.properties.light = null;});
             field(row, 'Color', () => {const c = L.light(draft, data.dimensions.tilewidth).color || {r: 255, g: 255, b: 255};return '#' + [c.r, c.g, c.b].map(v => Number(v).toString(16).padStart(2, '0')).join('');}, value => {draft.properties.color = [1, 3, 5].map(i => parseInt(value.slice(i, i + 2), 16)).join(',');}, {type: 'color'});
             field(row, 'Animation', () => draft.properties.animation || '', value => {draft.properties.animation = value || null;}, {choices: [['', 'Steady'], ['fire', 'Fire flicker']], required: false});
-            if (round) property(form, 'shadow', 'Shadow strength', '0', {type: 'number', min: 0, max: 1, step: 'any'});
+            if (round) {
+                const strength = property(form, 'shadow', 'Shadow strength', '', {type: 'number', min: 0, max: 1, step: 'any', required: false});
+                strength.placeholder = 'Auto';
+                strength.addEventListener('input', () => {
+                    if (!strength.value && !strength.validity.badInput) {draft.properties.shadow = null; touch();}
+                });
+            }
             else form.append(el('p', 'Area lights fill their rectangle. Use a round light for projected shadows.', {className: 'field-hint'}));
             if (round) {
                 const advanced = details(form, 'Spotlight & falloff'), fields = grid(advanced);
