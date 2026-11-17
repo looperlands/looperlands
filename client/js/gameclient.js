@@ -461,7 +461,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         
             if(this.health_callback) {
-                this.health_callback(points, isRegen);
+                this.health_callback(points, isRegen, data[3], data[4] === true);
             }
         },
     

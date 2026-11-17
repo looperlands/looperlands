@@ -87,17 +87,17 @@ Messages.Attack = Message.extend({
 });
 
 Messages.Health = Message.extend({
-    init: function(points, isRegen) {
+    init: function(points, isRegen, attackerId, deflected = false) {
         this.points = points;
         this.isRegen = isRegen;
+        this.attackerId = attackerId;
+        this.deflected = deflected;
     },
     serialize: function() {
-        var health = [Types.Messages.HEALTH,
-                      this.points];
-        
-        if(this.isRegen) {
-            health.push(1);
-        }
+        const health = [Types.Messages.HEALTH, this.points];
+        if (this.isRegen) health.push(1);
+        else if (this.deflected) health.push(0, this.attackerId ?? null, true);
+        else if (this.attackerId != null) health.push(0, this.attackerId);
         return health;
     }
 });

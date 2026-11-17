@@ -47,3 +47,14 @@ test('a fixed loot override creates one item and skips the normal loot roll',()=
     expect(world.getDroppedItem).not.toHaveBeenCalled();expect(world.createItem).toHaveBeenCalledTimes(1);
     expect(world.createItem).toHaveBeenCalledWith(99,3,4);expect(world.handleItemDespawn).toHaveBeenCalledTimes(1);
 });
+
+test('the server reports a zero-damage contact as an armor deflection', () => {
+    const world = Object.create(moduleStub.exports);
+    world.pushToPlayer = jest.fn();
+    const health = {packet: 'deflected'};
+    const player = {id: 1, type: 'player', hitPoints: 100, health: jest.fn(() => health)};
+    const attacker = {id: 7, type: 'mob'};
+    world.handleHurtEntity(player, attacker, 0);
+    expect(player.health).toHaveBeenCalledWith(attacker.id, true);
+    expect(world.pushToPlayer).toHaveBeenCalledWith(player, health);
+});
