@@ -19,6 +19,7 @@ define(function() {
             if (this.game.app?.settings?.isCombatInfoVisible?.(type) === false) return;
             const time = this.game.currentTime;
             const combat = ['inflicted', 'received', 'healed'].includes(type);
+            const counter = presentation.motion === 'counter';
             const amount = combat ? Number(value) : NaN;
             const targetKey = entityId === undefined ? x + ':' + y : entityId;
             // Keep critical and ordinary hits separate, and anchor the window to the first hit.
@@ -45,7 +46,7 @@ define(function() {
                     info.fillColor = presentation.color || info.fillColor;
                     info.strokeColor = '#352137';
                 }
-                if (type !== 'comboPraise' && presentation.motion !== 'counter') this.damageLanes[targetKey] = {lane: lane + (info.praise ? 1 : 0), time: time};
+                if (type !== 'comboPraise' && !counter) this.damageLanes[targetKey] = {lane: lane + (info.praise ? 1 : 0), time: time};
                 if (combat) this.damageStacks[key] = {id: id, time: time};
                 info.x += [-4, 4, -8, 8][lane % 4];
                 info.combat = true;
@@ -70,16 +71,18 @@ define(function() {
                 info.critical = combat && critical === true;
                 info.reducedMotion = this.game.app.settings.getReducedMotion();
                 if (Number.isFinite(amount)) info.setAmount(amount);
-                if (type === 'inflicted' && info.critical) {
-                    info.initialX = x - 10; info.drift = -4; info.lift = 12;
+                // Reserve opposite sides of the target regardless of event order or stacking.
+                if (type === 'inflicted') {
+                    info.initialX -= 24;
+                    info.drift -= 16;
+                    if (info.critical) info.lift = 12;
                 }
-                if (presentation.motion === 'counter') {
-                    // Socket events and queued damage can arrive in either order.
-                    const criticalStack = this.damageStacks['inflicted:' + targetKey + ':true'];
-                    const criticalInfo = criticalStack && this.infos[criticalStack.id];
-                    info.initialX = x + 10;
-                    info.initialY = (criticalInfo?.initialY ?? y - (lane % 4) * 16) - 24;
-                    info.drift = 4; info.lift = 14; info.tilt = 0.04;
+                if (counter) {
+                    info.initialX = x + 36;
+                    info.initialY = y - 22;
+                    info.drift = 20;
+                    info.lift = 24;
+                    info.tilt = 0.04;
                 }
                 info.update(time);
             }
