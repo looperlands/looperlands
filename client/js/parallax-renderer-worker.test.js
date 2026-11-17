@@ -234,6 +234,21 @@ test('placed trunks expose world depth and use display scale for actor interleav
     expect(s.ctx.drawImage.mock.calls[0].slice(1)).toEqual([330, 300, 240, 300]);
 });
 
+test('forest shadow bodies stay attached to the placed roots as the camera and canopy move', async () => {
+    const s = setup();
+    Object.assign(s.layer, {image: '/img/parallax/forest-canopy-lower.png', placed: true,
+        width: 80, height: 100, factorX: 1.2, swayX: 4});
+    Object.assign(s.state.scenes[0], {id: 628, placements: [{x: 250, y: 350, flipX: true}]});
+    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, sceneId: '628'};
+    s.renderer.shadowBodies(s.state, view); await flush();
+    const bodies = s.renderer.shadowBodies(s.state, view);
+    expect(bodies).toHaveLength(1);
+    expect(bodies[0]).toMatchObject({x: 210, y: 300, flipX: true, body: {base: 50}});
+    s.time(4200);
+    expect(s.renderer.shadowBodies(s.state, {...view, cameraX: 123.5, cameraY: 219})).toEqual(bodies);
+    expect(s.renderer.shadowBodies(s.state, {...view, sceneId: 624})).toEqual([]);
+});
+
 test('overhead trees follow ambient darkness and exclude higher-priority regions', async () => {
     const s = setup();
     Object.assign(s.layer, {placed: true, plane: 'foreground', width: 80, height: 100});
