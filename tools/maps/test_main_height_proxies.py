@@ -20,7 +20,7 @@ class HeightProxyAtlasTest(unittest.TestCase):
                 ('Town boulder', 282, 18, 48, 213, 7),
                 ('Town pipe', 288, 669, 84, 198, 8),
                 ('Desert column', 28, 1280, 64, 94, 7),
-                ('Desert posts', 6, 576, 9, 92, 5),
+                ('Desert posts', 6, 576, 9, 92, 7),
                 ('Desert fossil', 22, 656, 19, 93, 10),
                 ('Smith barrel', 159, 2096, 148, 442, 5),
                 ('Smith anvil', 159, 2066, 153, 440, 4),
@@ -51,6 +51,40 @@ class HeightProxyAtlasTest(unittest.TestCase):
             for point in [(260, 193), (27, 2045), (10, 2933), (282, 40), (34, 50)]:
                 self.assertEqual(mask.getpixel(point)[3], 0, point)
             self.assertIsNone(mask.crop((256, 192, 320, 224)).getbbox())
+
+    def test_desert_pillars_clear_every_placed_shadow_tile_and_keep_the_sand(self):
+        with (ROOT / 'client/maps/world_client_main.json').open() as file:
+            desert = json.load(file)
+        columns = desert['tilesetColumns']
+
+        def tile(sheet, gid):
+            x = (gid - 1) % columns * 16
+            y = (gid - 1) // columns * 16
+            return sheet.crop((x, y, x + 16, y + 16))
+
+        with Image.open(ARTWORK) as source, Image.open(BAKED_SHADOWS) as mask, Image.open(ATLAS) as atlas:
+            for map_x, cap_gid in [(46, 704), (51, 703)]:
+                self.assertIn(cap_gid, desert['data'][98 * desert['width'] + map_x])
+                # The artist placed the shadow tip two cells to the right, using
+                # different atlas rows than the three shadow tiles beside the feet.
+                for dx, dy, gid in [(2, 1, 685), (2, 2, 705), (1, 1, 725), (1, 2, 745), (1, 3, 765)]:
+                    base_gid, shadow_gid = desert['data'][(98 + dy) * desert['width'] + map_x + dx]
+                    self.assertEqual(shadow_gid, gid)
+                    sand = tile(source, base_gid)
+                    self.assertIsNone(tile(mask, base_gid).getbbox())
+                    overlay = tile(source, shadow_gid)
+                    self.assertNotEqual(Image.alpha_composite(sand, overlay).tobytes(), sand.tobytes())
+                    overlay.paste((0, 0, 0, 0), mask=tile(mask, shadow_gid).getchannel('A'))
+                    self.assertEqual(Image.alpha_composite(sand, overlay).tobytes(), sand.tobytes())
+                # The flat cap meets a rounded shaft, deeper centrally than at the rim.
+                x = (cap_gid - 1) % columns * 16
+                self.assertEqual(atlas.getpixel((x + 7, 570))[1], 42)
+                self.assertEqual(atlas.getpixel((x + 7, 579))[1], 42)
+                edge = atlas.getpixel((x, 599))
+                middle = atlas.getpixel((x + 7, 599))
+                self.assertGreater(middle[1], edge[1])
+                self.assertGreater(255 - middle[2], 255 - edge[2])
+                self.assertEqual(mask.getpixel((x + 7, 622))[3], 0)
 
     def test_board_panel_and_oak_crown_allow_light_underneath(self):
         with Image.open(ATLAS) as atlas:

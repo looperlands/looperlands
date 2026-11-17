@@ -59,7 +59,7 @@ BODIES = [
     Body((149, 2084, 173, 2111), 21, .42, 5),    # smith's barrel
     Body((146, 2056, 175, 2075), 13, .40, 4),    # smith's anvil
     Body((268, 656, 309, 709), 37, .38, 8),      # Town pipe and rim
-    Body((0, 569, 64, 623), 44, .42, 5),         # carved posts
+    Body((0, 569, 64, 623), 42, 0, 0, 'column'),  # four sandstone pillar variants
     Body((0, 626, 60, 699), 18, .44, 10),        # raised fossil rib cage
     Body((4, 392, 31, 415), 15, .42, 6),         # beach parasol and pole
 ]
@@ -76,7 +76,8 @@ SHADOW_PAINT = [
     (2, 325, 51, 375), (2, 501, 51, 551), (258, 1488, 307, 1537),      # huts
     (176, 270, 208, 305), (0, 62, 24, 81), (0, 87, 24, 113),           # cactus and graves
     (64, 29, 80, 32), (0, 1488, 72, 1536), (9, 1278, 70, 1319),         # stakes, palm and column
-    (270, 675, 320, 711), (0, 588, 80, 625), (0, 663, 60, 701),         # pipe, posts and ribs
+    (270, 675, 320, 711), (0, 663, 60, 701),                            # pipe and ribs
+    (0, 617, 64, 624), (64, 544, 80, 624),                              # pillar feet and separate cast tiles
     (0, 407, 32, 417),                                                  # parasol
 ]
 
@@ -195,6 +196,11 @@ def make_atlas(source):
                 span = (extent[3] - extent[1]) / art.height
                 front *= span
                 depth = max(1, round(depth * span))
+            elif body.shape == 'column':
+                # The cap and foot are matching ellipses, 42 native pixels apart.
+                # Their painted contour gives each variant its own near and far edge.
+                base = extent[3] - 1
+                depth = base - (extent[1] + front)
             elif body.shape == 'gable':
                 # The ridge runs front to back. The front gable rises from
                 # both eaves to the ridge; the roof behind it has the same height.
@@ -209,7 +215,9 @@ def make_atlas(source):
                 # The event board's cap, panel and crossbar end above its two legs.
                 elevated = body.shape == 'board' and y < 46
                 support = 0
-                if body.shape == 'slate-house':
+                if body.shape == 'column':
+                    thickness = min(depth, y - extent[1])
+                elif body.shape == 'slate-house':
                     z, thickness = slate_house_surface(x, y, body)
                 elif body.shape == 'crown':
                     thickness = 3
