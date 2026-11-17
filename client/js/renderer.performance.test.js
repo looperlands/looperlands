@@ -115,6 +115,34 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     ]);
 });
 
+test('height shadows run only on outdoor main-map frames and respect both existing shadow switches', () => {
+    const worker = setup(), draw = jest.fn();
+    worker.sandbox.self.HeightShadows = {Pass: class { draw(...args) {draw(...args);} }, skyLight: () => ({strength: .4})};
+    vm.runInContext('worldClock = self.WorldTime', worker.sandbox);
+    worker.send({type: 'setObstacles', obstacles: [], bodyMap: {width: 1, data: [1]}});
+    const data = frame();
+    data.mapId = 'main';
+    data.scene.dn_cycle = 'true';
+    const options = data.renderData.find(layer => layer.id === 'lights').options;
+    options.shadows = true;
+    worker.send(data);
+    expect(draw).toHaveBeenCalledTimes(1);
+    expect(draw.mock.calls[0][6]).toEqual({shadows: true, playerShadow: false});
+    options.shadows = false;
+    options.playerShadow = true;
+    worker.send(data);
+    expect(draw.mock.calls[1][6]).toEqual({shadows: false, playerShadow: true});
+    options.playerShadow = false;
+    worker.send(data);
+    options.shadows = true;
+    data.scene.weatherExposure = 'indoor';
+    worker.send(data);
+    data.scene.weatherExposure = 'outdoor';
+    data.mapId = 'duckville';
+    worker.send(data);
+    expect(draw).toHaveBeenCalledTimes(2);
+});
+
 test('effect lights use the current overhead mask inside the native scene lighting pass',()=>{
     const worker=setup(),registry=require('./render-extensions-worker')(),draw=jest.fn();
     registry.register('spark-light',{layer:'lighting',draw});

@@ -37,6 +37,16 @@
             }
             return tiles;
         },
+        shadowBodies(data = {}, view) {
+            const bodies = [];
+            for (const [id, extension] of extensions) {
+                if (!extension.shadowBodies || data[id] == null) continue;
+                try {bodies.push(...extension.shadowBodies(data[id], view).slice(0, 512 - bodies.length));}
+                catch (error) {extensions.delete(id); console.error('Disabled render extension ' + id + ': ' + error.message);}
+                if (bodies.length >= 512) break;
+            }
+            return bodies;
+        },
         sorted(data = {}, view) {
             const entries = [];
             for (const [id, extension] of extensions) {

@@ -7,7 +7,7 @@
         const parallax = factory();
         root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
         root.RendererExtensions.register('parallax-ground', {layer: 'ground', subpixel: true, draw: parallax.ground});
-        root.RendererExtensions.register('parallax-entities', {layer: 'entities', entries: parallax.entries});
+        root.RendererExtensions.register('parallax-entities', {layer: 'entities', entries: parallax.entries, shadowBodies: parallax.shadowBodies});
         root.RendererExtensions.register('parallax-foreground', {layer: 'foreground', draw: parallax.foreground});
     }
 })(typeof self !== 'undefined' ? self : null, function (options = {}) {
@@ -277,6 +277,27 @@
         return result;
     }
 
+    function shadowBodies(state, view) {
+        const result = [];
+        const scene = state.scenes?.find(area => String(area.id) === String(view.sceneId));
+        if (!scene?.placements?.length) return result;
+        // The proxy stays rooted while the illustrated canopy sways or shifts with the camera.
+        const anchored = {...view, reducedMotion: true};
+        const clip = {left: -208, top: -368, right: view.viewportWidth + 208, bottom: view.viewportHeight + 208};
+        for (const layer of scene.layers || []) {
+            const trunk = layer.image === '/img/parallax/forest-trunk.png';
+            if (!layer.placed || (!trunk && layer.image !== '/img/parallax/forest-canopy-lower.png')) continue;
+            for (const sprite of placedSprites(layer, scene, anchored, clip)) {
+                const width = Math.round(sprite.width), height = Math.round(sprite.height);
+                const x = Math.round(sprite.x + view.cameraX), y = Math.round(sprite.y + view.cameraY);
+                result.push({image: sprite.image, x, y, width, height, flipX: sprite.flipX,
+                    body: {base: Math.round(sprite.worldY - y), front: Math.round(height * (trunk ? .68 : .43)),
+                        slope: trunk ? .8 : .55, depth: Math.round(width * (trunk ? .1 : .17))}});
+            }
+        }
+        return result;
+    }
+
     function ready(state, view) {
         let complete = true;
         for (const scene of (Array.isArray(state?.scenes) ? state.scenes : []).slice(0, 100)) {
@@ -344,6 +365,7 @@
     return {
         ready,
         entries,
+        shadowBodies,
         terrainCutouts,
         background: (ctx, state, view) => draw('background', ctx, state, view),
         ground: (ctx, state, view) => draw('ground', ctx, state, view),

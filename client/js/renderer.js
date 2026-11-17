@@ -525,6 +525,9 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         entityData.drawData.push({
                             "id": sprite.id,
                             "spriteName": entity.sprite.name,
+                            ...(this.game.map?.mapId === 'main' && !a && !entity.isDead &&
+                                (entity instanceof Character || Types.isChest(entity.kind))
+                                ? {shadowBody: entity === this.game.player ? 'player' : 'scenery'} : {}),
                             "sx": x,
                             "sy": y,
                             "sW": w,
@@ -1118,7 +1121,9 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                 if(this.game.map && !this.syncedLights) {
                     this.worker.postMessage({"type": "setLights", "lights": this.game.map.lights})
-                    this.worker.postMessage({"type": "setObstacles", "obstacles": this.game.map.shadows})
+                    const map = this.game.map;
+                    this.worker.postMessage({type: 'setObstacles', obstacles: map.shadows,
+                        bodyMap: map.mapId === 'main' ? {width: map.width, data: map.data} : null});
                     this.worker.postMessage({"type": "setLightEmittingTiles", "lightEmittingTiles": this.game.map.lightTiles})
                     this.syncedLights = true;
                 }
