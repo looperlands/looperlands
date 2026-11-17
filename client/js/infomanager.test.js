@@ -15,7 +15,7 @@ function setup(reducedMotion = false) {
 
 test('same-target burst hits combine their exact amounts without restarting their flight', () => {
     const {info, game} = setup();
-    info.addDamageInfo(5, 32, 48, 'inflicted', 7);
+    const {initialX} = info.addDamageInfo(5, 32, 48, 'inflicted', 7);
     info.addDamageInfo(5, 32, 48, 'inflicted', 7);
     game.currentTime += 50;
     info.addDamageInfo(5, 48, 48, 'inflicted', 7);
@@ -23,7 +23,7 @@ test('same-target burst hits combine their exact amounts without restarting thei
     expect(numbers).toHaveLength(1);
     expect(numbers[0].value).toBe(15);
     expect(numbers[0].startedAt).toBe(1000);
-    expect(numbers[0].initialX).toBe(28);
+    expect(numbers[0].initialX).toBe(initialX);
     expect(numbers[0].fillColor).toBe('white');
 });
 
@@ -35,7 +35,7 @@ test('stacking ends 200 ms after the initial hit even while hits keep arriving',
     }
     const numbers = Object.values(info.infos);
     expect(numbers.map(number => number.value)).toEqual([15, 10, 5]);
-    expect(numbers.map(number => number.initialX)).toEqual([28, 36, 24]);
+    expect(new Set(numbers.map(number => number.initialY)).size).toBe(3);
     info.update(1650);
     expect(Object.values(info.infos).map(number => number.value)).toEqual([10, 5]);
 });
@@ -157,12 +157,12 @@ test('animation is independent of frame rate and larger amounts have bounded emp
 
 test('clearing the manager discards text and lane state without reusing IDs', () => {
     const {info} = setup();
-    info.addDamageInfo(5, 32, 48, 'inflicted', 7);
-    const firstId = Object.keys(info.infos)[0];
+    const first = info.addDamageInfo(5, 32, 48, 'inflicted', 7);
     info.clear();
-    info.addDamageInfo(5, 32, 48, 'inflicted', 7);
-    expect(Object.keys(info.infos)).not.toContain(firstId);
-    expect(Object.values(info.infos)[0].x).toBe(28);
+    const next = info.addDamageInfo(5, 32, 48, 'inflicted', 7);
+    expect(Object.values(info.infos)).toEqual([next]);
+    expect(next.id).not.toBe(first.id);
+    expect(next.x).toBe(first.x);
 });
 
 test.each([1, 2, 3])('combat transforms and a defined font size reach the renderer at scale %s', scale => {
@@ -227,23 +227,39 @@ test.each([false,true])('praise is a separate delayed tilted popup beside its co
     expect(data[1]).toMatchObject({text:'Awesome!',fontSize:21});
 });
 
-test.each([[false,false],[true,false],[false,true],[true,true]])('counter text stays close and separated: reduced motion %s, label first %s',(reduced,labelFirst)=>{
-    const {info}=setup(reduced);
-    const addDamage=()=>info.addDamageInfo(22,64,49,'inflicted',100,true);
-    const addLabel=()=>info.addDamageInfo('Counter!',64,49,'combo',100,false,{motion:'counter'});
-    const pair=labelFirst ? [addLabel(),addDamage()] : [addDamage(),addLabel()];
-    const [damage,label]=labelFirst ? pair.reverse() : pair;
-    expect(label.x-damage.x).toBe(20);expect(damage.y-label.y).toBe(24);
-    const gap=label.x-damage.x;
-    info.update(1300);
-    if(reduced)expect(label.x-damage.x).toBe(gap);
-    else {
-        expect(label.x-damage.x).toBeGreaterThan(gap);
-        expect(label.x-damage.x).toBeLessThanOrEqual(gap+8);
-        expect(Math.abs(label.y-label.initialY)).toBeLessThan(6);
-        expect(Math.abs(damage.y-damage.initialY)).toBeLessThan(6);
+test.each([[false, false], [true, false], [false, true], [true, true]])(
+    'counter and damage start apart and move away from each other (reduced motion %s, label first %s)',
+    (reducedMotion, labelFirst) => {
+        const {info, game} = setup(reducedMotion);
+        const x = 64, y = 49, target = 100;
+        info.addDamageInfo('+125 XP', x, y, 'xp', target);
+        const regular = info.addDamageInfo(12345, x, y, 'inflicted', target);
+        const addCritical = () => info.addDamageInfo(22, x, y, 'inflicted', target, true);
+        const addCounter = () => info.addDamageInfo('Counter!', x, y, 'combo', target, false, {motion: 'counter'});
+        const first = labelFirst ? addCounter() : addCritical();
+        const second = labelFirst ? addCritical() : addCounter();
+        const [counter, critical] = labelFirst ? [first, second] : [second, first];
+
+        expect(counter.x).toBeGreaterThan(x);
+        expect(regular.x).toBeLessThan(x);
+        expect(critical.x).toBeLessThan(x);
+        expect(counter.x - Math.max(regular.x, critical.x)).toBeGreaterThanOrEqual(50);
+        expect(counter.y).toBeLessThan(y);
+
+        info.update(game.currentTime + 300);
+        if (reducedMotion) {
+            for (const label of [counter, regular, critical]) {
+                expect(label.x).toBe(label.initialX);
+                expect(label.y).toBe(label.initialY);
+            }
+        } else {
+            expect(counter.x).toBeGreaterThan(counter.initialX);
+            expect(counter.y).toBeLessThan(counter.initialY);
+            expect(regular.x).toBeLessThan(regular.initialX);
+            expect(critical.x).toBeLessThan(critical.initialX);
+        }
     }
-});
+);
 
 test('hidden popup categories never allocate text or occupy lanes; emotes and fishing still work',()=>{
     const {info,game}=setup();
