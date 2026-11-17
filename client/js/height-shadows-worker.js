@@ -4,54 +4,15 @@
     else root.HeightShadows = factory();
 })(typeof self !== 'undefined' ? self : null, function () {
     const tileSize = 16;
-    const atlasColumns = 20;
     const maxHeight = 160;
-    const margin = 208;
+    const maxReach = 2.05;
+    const maxNorthReach = .5;
+    const marginX = Math.ceil(maxHeight * maxReach) + 2;
+    const marginY = Math.ceil(maxHeight * maxNorthReach) + 2;
     const cacheStep = 48;
-    // Five intervals along the ray. Neighbouring world pixels sample different
-    // points in each interval, so a thin caster does not repeat in five bands.
-    const rayStops = [1, 6, 16, 34, 59, 100];
-    const rayFractions = [.125, .625, .875, .375];
-    const sampleWeights = [1, .95, .88, .8, .72];
-
-    // Each atlas region describes one body, even when the map places its tiles on different layers.
-    // GIDs are one-based. Base, front height and physical depth are native pixels; slope is rise/run.
-    function region(first, columns, rows, base, front, slope, depth, stone = false) {
-        return {first, columns, rows, base, front, slope, depth, stone};
-    }
-    const profiles = [
-        region(44, 8, 8, 121, 62, .43, 18),       // slate-roof timber house
-        region(204, 7, 9, 144, 65, .54, 20),      // red gable
-        region(1452, 8, 10, 155, 70, .48, 20),   // blue gable
-        region(2453, 8, 10, 150, 66, .44, 20),   // blacksmith
-        region(2501, 5, 8, 122, 50, .52, 16),    // potion shop
-        region(213, 4, 5, 79, 26, .68, 12),      // oak
-        region(658, 3, 3, 47, 22, .76, 6),       // bare tree
-        region(814, 3, 4, 60, 26, .74, 7),       // dead tree
-        region(1698, 3, 4, 61, 24, .75, 7),      // graveyard tree
-        region(18, 3, 4, 52, 15, .38, 8),        // boulder
-        region(758, 3, 3, 47, 15, .4, 7),        // mirrored boulder
-        region(257, 2, 2, 29, 7, .38, 4, true),  // grass-backed stones
-        region(259, 2, 2, 29, 7, .38, 4, true),
-        region(98, 1, 1, 15, 4, .4, 2),          // loose stone
-        region(141, 2, 3, 47, 14, .46, 7),       // canvas tent
-        region(281, 3, 4, 62, 25, .55, 8),       // covered well
-        region(381, 3, 5, 71, 36, .5, 8),        // timber hut
-        region(332, 2, 3, 46, 19, .7, 4),        // cactus
-        region(3601, 4, 4, 59, 32, .65, 4),      // event board and feet
-        region(81, 1, 1, 15, 10, .55, 2),        // headstones
-        region(101, 1, 1, 15, 8, .55, 2),
-        region(717, 3, 1, 15, 8, .6, 2),         // fence
-        region(5, 1, 1, 15, 8, .65, 2),          // palisade stakes
-        region(25, 1, 1, 15, 9, .65, 2)
-    ];
-    const tiles = new Map();
-    for (const body of profiles) {
-        for (let y = 0; y < body.rows; y++) {
-            for (let x = 0; x < body.columns; x++) {
-                tiles.set(body.first + x + y * atlasColumns, {...body, base: body.base - y * tileSize});
-            }
-        }
+    function casterClip(width, height) {
+        // Both visible receivers and offscreen artwork project down to their footprint.
+        return {left: -marginX, right: width + marginX, top: -marginY - maxHeight, bottom: height + marginY + maxHeight};
     }
 
     function skyLight(time, cycle, daylight) {
@@ -70,37 +31,72 @@
         else if (sinceRise < toNoon) phase = .5 * sinceRise / toNoon;
         else phase = .5 + .5 * (sinceRise - toNoon) / (dayHours - toNoon);
         const angle = phase * Math.PI, elevation = Math.sin(angle);
-        const reach = .4 + 1.65 * (1 - elevation);
+        const reach = .4 + (maxReach - .4) * (1 - elevation);
         const strength = sun ? .39 * daylight : .19 * (1 - daylight) * Math.min(1, elevation * 5);
-        return {x: Math.cos(angle) * reach, y: -(.24 + .3 * elevation) * reach, strength};
+        return {x: Math.cos(angle) * reach, y: -maxNorthReach + .28 * elevation, strength};
     }
 
     function bodyHeight(rise, front, slope) {
         return Math.min(maxHeight, Math.max(0, Math.round(Math.min(rise, front) + Math.max(0, rise - front) * slope)));
     }
 
-    // Screen y + height is the ground coordinate beneath that pixel. Extrude behind
-    // the front face to give a thin sign, a tree crown and a deep roof different footprints.
-    function makeStamp(rgba, width, height, body) {
-        const face = new Uint8Array(width * height);
-        const groundTop = bodyHeight(body.base, body.front, body.slope) - body.depth;
-        const groundBottom = height + bodyHeight(body.base - height + 1, body.front, body.slope);
+    // Screen y + height is the ground coordinate beneath the receiver. Extrude
+    // backwards by its physical depth to build the surface that casts shadows.
+    function project(face, width, depths) {
+        let groundTop = Infinity, groundBottom = -Infinity;
+        for (let i = 0; i < face.length; i++) {
+            if (!face[i]) continue;
+            const end = Math.floor(i / width) + face[i];
+            const depth = typeof depths === 'number' ? depths : depths[i];
+            groundTop = Math.min(groundTop, end - depth);
+            groundBottom = Math.max(groundBottom, end);
+        }
+        if (!Number.isFinite(groundTop)) return {width, face, ground: new Uint8Array(0), groundTop: 0};
         const ground = new Uint8Array(width * (groundBottom - groundTop + 1));
-        for (let y = 0; y < height; y++) {
-            const z = bodyHeight(body.base - y, body.front, body.slope);
+        for (let i = 0; i < face.length; i++) {
+            const z = face[i];
             if (!z) continue;
-            for (let x = 0; x < width; x++) {
-                const pixel = y * width + x, color = pixel * 4;
-                if (rgba[color + 3] < 176) continue; // Ignore the translucent baked drop shadow.
-                if (body.stone && rgba[color + 1] > rgba[color] + 15) continue;
-                face[pixel] = z;
-                const end = (y + z - groundTop) * width + x;
-                for (let i = end - body.depth * width; i <= end; i += width) {
-                    if (ground[i] < z) ground[i] = z;
-                }
+            const end = i + (z - groundTop) * width;
+            const depth = typeof depths === 'number' ? depths : depths[i];
+            for (let p = end - depth * width; p <= end; p += width) {
+                if (ground[p] < z) ground[p] = z;
             }
         }
         return {width, face, ground, groundTop};
+    }
+
+    function makeStamp(rgba, width, height, body) {
+        const face = new Uint8Array(width * height);
+        for (let y = 0; y < height; y++) {
+            const z = bodyHeight(body.base - y, body.front, body.slope);
+            for (let x = 0; x < width; x++) {
+                const i = y * width + x;
+                if (rgba[i * 4 + 3] >= 176) face[i] = z;
+            }
+        }
+        return project(face, width, body.depth);
+    }
+
+    function readProxyTile(atlas, id) {
+        const columns = atlas.width / tileSize;
+        const left = (id - 1) % columns * tileSize;
+        const top = Math.floor((id - 1) / columns) * tileSize;
+        if (id < 1 || top + tileSize > atlas.height) return null;
+        let face, depths;
+        for (let y = 0; y < tileSize; y++) {
+            let source = ((top + y) * atlas.width + left) * 4;
+            for (let x = 0; x < tileSize; x++, source += 4) {
+                if (!atlas.data[source + 3]) continue;
+                if (!face) {
+                    face = new Uint8Array(tileSize * tileSize);
+                    depths = new Uint8Array(tileSize * tileSize);
+                }
+                const i = y * tileSize + x;
+                face[i] = atlas.data[source + 1];
+                depths[i] = 255 - atlas.data[source + 2];
+            }
+        }
+        return face ? project(face, tileSize, depths) : null;
     }
 
     function blit(target, stride, rows, pixels, width, x, y, flip) {
@@ -121,48 +117,106 @@
         if (casts) blit(field.ground, field.width, field.height, stamp.ground, stamp.width, x, y + stamp.groundTop, flip);
     }
 
-    function shade(field, left, top, mask, light, samples) {
-        const {ground, face, width} = field;
-        const rays = rayFractions.map(fraction => sampleWeights.map((weight, i) => {
-            const z = Math.round(rayStops[i] + fraction * (rayStops[i + 1] - rayStops[i]));
-            const offset = Math.round(z * light.x) + Math.round(z * light.y) * width;
-            return {z, offset, weight};
-        }));
-        const stride = mask.width + 1, strength = 255 * light.strength;
-        // Sample one extra row and column. The same world pixel resolves identically
-        // at a camera edge and in the middle of the viewport.
-        for (let y = 0, i = 0; y <= mask.height; y++) {
-            let sample = (top - field.y + y) * width + left - field.x;
-            const row = ((top + y) & 1) * 2;
-            for (let x = 0; x <= mask.width; x++, sample++, i++) {
-                const z = face[sample], foot = sample + z * width;
-                const ray = rays[row + ((left + x) & 1)];
-                let occlusion = 0;
-                for (let step = 0; step < ray.length; step++) {
-                    const tap = ray[step];
-                    const clearance = ground[foot + tap.offset] - z - tap.z;
-                    if (clearance > 0) occlusion = Math.max(occlusion, tap.weight * Math.min(1, clearance / 4));
-                    if (occlusion >= tap.weight) break;
-                }
-                samples[i] = strength * occlusion;
+    // The tallest obstruction along a digital ray can sit between two point
+    // samples. Cache its apparent height to the sunward edge of each block,
+    // so five probes include every native pixel across the full shadow reach.
+    function shade(field, left, top, mask, light, peaks = new Float32Array(field.ground.length)) {
+        const {face, ground, width, height} = field;
+        const horizontal = Math.abs(light.x) >= Math.abs(light.y);
+        const reach = Math.abs(horizontal ? light.x : light.y);
+        const sign = Math.sign(horizontal ? light.x : light.y) || 1;
+        const majorStride = horizontal ? 1 : width;
+        const minorStride = horizontal ? width : 1;
+        const majorSize = horizontal ? width : height;
+        const majorOrigin = horizontal ? field.x : field.y;
+        const block = Math.max(1, Math.ceil(maxHeight * reach / 4));
+        const slope = reach ? (horizontal ? light.y : light.x) / reach : 0;
+        const risePerPixel = reach ? 1 / reach : maxHeight;
+        const minorOffsets = new Int32Array(majorSize);
+        const nextBlock = new Int32Array(majorSize);
+        for (let i = 0; i < majorSize; i++) {
+            // Both the ray and its block boundaries are anchored to the world.
+            const q = sign * (i + majorOrigin);
+            minorOffsets[i] = Math.round(q * slope);
+            nextBlock[i] = i + sign * (block - ((q % block + block) % block));
+        }
+        const x = left - field.x, y = top - field.y;
+        const farX = Math.round(maxHeight * light.x), farY = Math.round(maxHeight * light.y);
+        const x0 = Math.max(0, x + Math.min(0, farX) - 1);
+        const x1 = Math.min(width - 1, x + mask.width + Math.max(0, farX) + 1);
+        const y0 = Math.max(0, y + Math.min(0, farY) - 1);
+        const y1 = Math.min(height - 1, y + mask.height + maxHeight + Math.max(0, farY) + 1);
+        const majorMin = horizontal ? x0 : y0, majorMax = horizontal ? x1 : y1;
+        const minorMin = horizontal ? y0 : x0, minorMax = horizontal ? y1 : x1;
+        const start = sign > 0 ? majorMax : majorMin, end = sign > 0 ? majorMin : majorMax;
+        for (let i = start; sign * (i - end) >= 0; i -= sign) {
+            const minorStep = minorOffsets[i + sign] - minorOffsets[i];
+            const step = sign * majorStride + minorStep * minorStride;
+            const reset = nextBlock[i] === i + sign || i === start;
+            let index = i * majorStride + minorMin * minorStride;
+            for (let j = minorMin; j <= minorMax; j++, index += minorStride) {
+                const beyond = !reset && j + minorStep >= minorMin && j + minorStep <= minorMax;
+                peaks[index] = beyond ? Math.max(ground[index], peaks[index + step] - risePerPixel) : ground[index];
             }
         }
-        // Resolve only the shadow alpha. The atlas and actor pixels retain their sharp edges.
-        for (let y = 0, pixel = 3; y < mask.height; y++) {
-            for (let x = 0, i = y * stride; x < mask.width; x++, i++, pixel += 4) {
-                mask.data[pixel] = (samples[i] + samples[i + 1] + samples[i + stride] + samples[i + stride + 1]) * .25;
+        // Adjacent receivers share their last four probes. Resolve those block
+        // starts once, in the opposite order so every source is still local.
+        for (let i = end; sign * (start - i) >= 0; i += sign) {
+            if (nextBlock[i] !== i + sign * block) continue;
+            for (let j = minorMin; j <= minorMax; j++) {
+                const index = i * majorStride + j * minorStride;
+                let peak = peaks[index];
+                for (let tap = 1; tap < 4; tap++) {
+                    const k = i + tap * sign * block;
+                    if (k < majorMin || k > majorMax) break;
+                    const across = j + minorOffsets[k] - minorOffsets[i];
+                    if (across < minorMin || across > minorMax) break;
+                    peak = Math.max(peak, peaks[k * majorStride + across * minorStride] - tap * block * risePerPixel);
+                }
+                peaks[index] = peak;
+            }
+        }
+        for (let row = 0, pixel = 3; row < mask.height; row++) {
+            for (let col = 0; col < mask.width; col++, pixel += 4) {
+                const fx = x + col, fy = y + row;
+                // Sloped surfaces can project several artwork rows into one ground
+                // cell. Sample the visible (front) edge of an elevated receiver.
+                const z = face[fy * width + fx], footY = fy + z + (z > 0 ? 1 : 0);
+                const first = horizontal ? fx : footY, minor = horizontal ? footY : fx;
+                let clearance = 0;
+                if (minor >= minorMin && minor <= minorMax && first >= majorMin && first <= majorMax) {
+                    clearance = peaks[first * majorStride + minor * minorStride] - z;
+                    const next = nextBlock[first];
+                    if (clearance < 4 && next >= majorMin && next <= majorMax) {
+                        const across = minor + minorOffsets[next] - minorOffsets[first];
+                        if (across >= minorMin && across <= minorMax) {
+                            const heightAtNext = z + Math.abs(next - first) * risePerPixel;
+                            clearance = Math.max(clearance, peaks[next * majorStride + across * minorStride] - heightAtNext);
+                        }
+                    }
+                }
+                // Several steep roof rows may round onto the same footprint pixel.
+                // Bound the correction so a taller wall still shades its lower face.
+                if (z) {
+                    const contact = ground[(fy + z) * width + fx] - z;
+                    clearance -= .5 + Math.max(0, Math.min(3, contact));
+                }
+                mask.data[pixel] = 255 * light.strength * Math.min(1, clearance / 4);
             }
         }
     }
 
     class Pass {
-        constructor(map, atlas) {
+        constructor(map, proxyAtlas) {
             this.map = map;
-            this.atlas = atlas;
             this.tiles = new Map();
             this.sprites = new WeakMap();
-            this.reader = new OffscreenCanvas(1, 1);
+            this.reader = new OffscreenCanvas(proxyAtlas.width, proxyAtlas.height);
             this.readContext = this.reader.getContext('2d', {willReadFrequently: true});
+            this.readContext.drawImage(proxyAtlas, 0, 0);
+            this.atlas = this.readContext.getImageData(0, 0, proxyAtlas.width, proxyAtlas.height);
+            // Keep only the decoded atlas. The small reader is reused for actor frames.
+            this.reader.width = this.reader.height = 1;
         }
 
         read(image, sx, sy, sw, sh, width, height, body, flipY = false) {
@@ -179,13 +233,7 @@
         }
 
         tile(id) {
-            const body = tiles.get(id);
-            if (!body) return;
-            if (!this.tiles.has(id)) {
-                const size = this.atlas.width / atlasColumns;
-                this.tiles.set(id, this.read(this.atlas, (id - 1) % atlasColumns * size,
-                    Math.floor((id - 1) / atlasColumns) * size, size, size, tileSize, tileSize, body));
-            }
+            if (!this.tiles.has(id)) this.tiles.set(id, readProxyTile(this.atlas, id));
             return this.tiles.get(id);
         }
 
@@ -201,9 +249,9 @@
         }
 
         terrain(left, top, width, height, scene) {
-            const x = Math.floor(left / cacheStep) * cacheStep - margin;
-            const y = Math.floor(top / cacheStep) * cacheStep - margin;
-            const stride = width + 2 * margin + cacheStep, rows = height + 2 * margin + maxHeight + cacheStep;
+            const x = Math.floor(left / cacheStep) * cacheStep - marginX;
+            const y = Math.floor(top / cacheStep) * cacheStep - marginY;
+            const stride = width + 2 * marginX + cacheStep, rows = height + 2 * marginY + maxHeight + cacheStep;
             const cached = this.staticField;
             if (cached && cached.x === x && cached.y === y && cached.width === stride && cached.height === rows && cached.sceneId === scene.id) return cached;
             const length = stride * rows;
@@ -228,7 +276,7 @@
             return field;
         }
 
-        draw(ctx, view, scene, light, actors, spriteImages, options, scenery) {
+        draw(ctx, view, scene, light, actors, spriteImages, options, scenery, inspect = false) {
             const width = ctx.canvas.width, height = ctx.canvas.height;
             const left = -Math.round(-view.cameraX), top = -Math.round(-view.cameraY);
             const terrain = this.terrain(left, top, width, height, scene);
@@ -236,7 +284,8 @@
                 this.surface = new OffscreenCanvas(width, height);
                 this.output = this.surface.getContext('2d');
                 this.mask = this.output.createImageData(width, height);
-                this.samples = new Uint8Array((width + 1) * (height + 1));
+                this.proxyPixels = null;
+                this.rayPeaks = new Float32Array(terrain.ground.length);
                 for (let i = 0; i < this.mask.data.length; i += 4) {
                     this.mask.data[i] = 24; this.mask.data[i + 1] = 32; this.mask.data[i + 2] = 52;
                 }
@@ -268,10 +317,26 @@
                 const stamp = this.sprite(image, draw.sx, draw.sy, draw.sW, draw.sH, w, h, body, flipY);
                 place(field, stamp, x, y, flipX, draw.shadowBody === 'player' ? options.playerShadow : options.shadows);
             }
-            shade(field, left, top, this.mask, light, this.samples);
+            if (inspect) {
+                this.proxyPixels ??= this.output.createImageData(width, height);
+                const pixels = this.proxyPixels.data;
+                for (let y = 0, i = 0; y < height; y++) {
+                    let cell = (top - field.y + y) * field.width + left - field.x;
+                    for (let x = 0; x < width; x++, cell++, i += 4) {
+                        const z = field.face[cell];
+                        pixels[i] = Math.min(255, z * 3);
+                        pixels[i + 1] = z;
+                        pixels[i + 2] = z ? 255 : 0;
+                        pixels[i + 3] = 255;
+                    }
+                }
+                this.output.putImageData(this.proxyPixels, 0, 0);
+                return this.surface;
+            }
+            shade(field, left, top, this.mask, light, this.rayPeaks);
             this.output.putImageData(this.mask, 0, 0);
             ctx.drawImage(this.surface, 0, 0);
         }
     }
-    return {Pass, skyLight, bodyHeight, makeStamp, place, shade};
+    return {Pass, skyLight, casterClip, bodyHeight, makeStamp, readProxyTile, place, shade};
 });

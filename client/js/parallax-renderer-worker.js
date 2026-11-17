@@ -283,11 +283,10 @@
         if (!scene?.placements?.length) return result;
         // The proxy stays rooted while the illustrated canopy sways or shifts with the camera.
         const anchored = {...view, reducedMotion: true};
-        const clip = {left: -208, top: -368, right: view.viewportWidth + 208, bottom: view.viewportHeight + 208};
         for (const layer of scene.layers || []) {
             const trunk = layer.image === '/img/parallax/forest-trunk.png';
             if (!layer.placed || (!trunk && layer.image !== '/img/parallax/forest-canopy-lower.png')) continue;
-            for (const sprite of placedSprites(layer, scene, anchored, clip)) {
+            for (const sprite of placedSprites(layer, scene, anchored, view.casterClip)) {
                 const width = Math.round(sprite.width), height = Math.round(sprite.height);
                 const x = Math.round(sprite.x + view.cameraX), y = Math.round(sprite.y + view.cameraY);
                 result.push({image: sprite.image, x, y, width, height, flipX: sprite.flipX,

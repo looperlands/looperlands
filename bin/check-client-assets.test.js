@@ -45,10 +45,13 @@ test('detects missing renderer and pathfinder workers referenced by built JavaSc
 
 test('checks static worker imports relative to the worker and leaves dynamic map imports to runtime', () => {
     write('js/mapworker.js', "importScripts('lib/underscore.min.js'); importScripts('../maps/world_client_' + event.data + '.js');");
+    write('js/renderer-webworker.js', "loadImg('../img/common/height-proxies/main.png');");
     const result = check();
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('js/lib/underscore.min.js');
+    expect(result.stderr).toContain('img/common/height-proxies/main.png');
     write('js/lib/underscore.min.js');
+    write('img/common/height-proxies/main.png');
     expect(check().status).toBe(0);
 });
 
@@ -61,9 +64,12 @@ test('checks literal dynamic imports relative to the importing script', () => {
     expect(check().status).toBe(0);
 });
 
-test('production pruning retains the on-demand arcade module', () => {
+test('production pruning retains on-demand arcade and shadow dependencies', () => {
     write('js/minigame.js', "import('./arcade.js');");
     write('js/arcade.js');
+    write('js/renderer-webworker.js', "importScripts('height-shadows-worker.js'); importScripts('sceneenvironment.js');");
+    write('js/height-shadows-worker.js');
+    write('js/sceneenvironment.js');
     write('js/unused-module.js');
     const build = fs.readFileSync(path.join(__dirname, 'build.sh'), 'utf8');
     const pruning = build.match(/^find \$BUILDDIR\/js[\s\S]+?-delete$/m)[0];

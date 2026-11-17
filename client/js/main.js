@@ -282,6 +282,35 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     		game.setup('#bubbles', canvas, background, foreground, input);
     		game.setStorage(app.storage);
     		app.setGame(game);
+
+            const proxyMode = new URLSearchParams(window.location.search).get('shadowProxies');
+            if (mapId === 'main' && (proxyMode === '1' || proxyMode === '0')) {
+                const toggle = document.getElementById('shadow-proxy-toggle');
+                let atlasReady = false;
+                game.renderer.inspectShadowProxies = proxyMode === '1';
+                const updateButton = () => {
+                    toggle.textContent = game.renderer.inspectShadowProxies ? 'Show cast shadows' : 'Show shadow proxies';
+                };
+                toggle.hidden = false;
+                game.renderer.worker.addEventListener('message', ({data}) => {
+                    if (data.type !== 'shadowProxyAtlas') return;
+                    atlasReady = data.ready;
+                    toggle.disabled = false;
+                    if (atlasReady) updateButton();
+                    else toggle.textContent = 'Retry loading shadow proxies';
+                });
+                toggle.onclick = event => {
+                    event.stopPropagation();
+                    if (atlasReady) {
+                        game.renderer.inspectShadowProxies = !game.renderer.inspectShadowProxies;
+                        updateButton();
+                    } else {
+                        toggle.disabled = true;
+                        toggle.textContent = 'Loading shadow proxies…';
+                        game.renderer.worker.postMessage({type: 'retryShadowProxyAtlas'});
+                    }
+                };
+            }
     		
     		if(app.isDesktop && app.supportsWorkers) {
     		    game.loadMap(mapId);

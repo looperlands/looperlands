@@ -52,7 +52,7 @@ test('opaque sprite rows make a vertical face and sloped roof with physical dept
 
 function mask(scene, left, top, width, height, x) {
     const result = {width, height, data: new Uint8ClampedArray(width * height * 4)};
-    shade(scene, left, top, result, {x, y: 0, strength: .4}, new Uint8Array((width + 1) * (height + 1)));
+    shade(scene, left, top, result, {x, y: 0, strength: .4});
     return result.data.filter((_, i) => i % 4 === 3);
 }
 
@@ -70,4 +70,37 @@ test('a tall body casts onto lower receivers and the filtered result stays fixed
     }
     scene.face.fill(50);
     expect(mask(scene, 120, 20, 110, 5, 1).some(Boolean)).toBe(false);
+});
+
+test.each([[1, 0], [-1, 0], [0, -1], [-1, 1]])(
+    'a one-pixel caster makes a continuous shadow along the (%i, %i) light ray',
+    (x, y) => {
+        const size = 320, middle = 160, height = 140;
+        const scene = field(size, size);
+        scene.ground[middle * size + middle] = height;
+        const view = {width: size, height: size, data: new Uint8ClampedArray(size * size * 4)};
+        shade(scene, 0, 0, view, {x, y, strength: .4});
+        const alpha = (px, py) => view.data[(py * size + px) * 4 + 3];
+        const ray = Array.from({length: height}, (_, distance) =>
+            alpha(middle - distance * x, middle - distance * y));
+        expect(Math.min(...ray)).toBeGreaterThan(0);
+        expect(alpha(middle - height * x, middle - height * y)).toBe(0);
+        expect(alpha(middle + x, middle + y)).toBe(0);
+        // The neighbouring parallel ray never crosses this caster.
+        expect(alpha(middle - 36 * x + y, middle - 36 * y - x)).toBe(0);
+    }
+);
+
+test('a sloped body receives light across its crown and still shades its vertical front', () => {
+    const width = 32, height = 60, base = 59, front = 18;
+    const body = {base, front, slope: .68, depth: 8};
+    const sprite = new Uint8Array(width * height * 4).fill(255);
+    const scene = field(160, 160);
+    place(scene, makeStamp(sprite, width, height, body), 50, 20);
+    const view = {width, height, data: new Uint8ClampedArray(width * height * 4)};
+    shade(scene, 50, 20, view, {x: -.8, y: -.35, strength: .4});
+    const alpha = row => view.data[(row * width + 16) * 4 + 3];
+    const crown = Array.from({length: base - front}, (_, row) => alpha(row));
+    expect(Math.max(...crown)).toBe(0);
+    expect(alpha(base - 5)).toBeGreaterThan(75);
 });
