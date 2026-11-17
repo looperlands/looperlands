@@ -98,9 +98,52 @@ test('normal hits keep the camera steady; critical hits and confirmed kills shak
 });
 test('counter pulses remain bounded across AoE and normal hits cannot restart or extend shake',()=>{
     const {feedback,mob}=setup();
-    feedback.addShake(1000,true);
-    for(let time=1010;time<1150;time+=10){feedback.addImpact(mob,10,time,true);feedback.addShake(time,true);}
+    feedback.addShake(1000,1.4);
+    for(let time=1010;time<1150;time+=10){feedback.addImpact(mob,10,time,true);feedback.addShake(time,1.4);}
     feedback.addImpact(mob,10,1140,false);expect(feedback.frame(1150).shake).toEqual({x:0,y:0});
     feedback.addImpact(mob,10,1200,false);expect(feedback.frame(1200).shake).toEqual({x:0,y:0});
-    feedback.addShake(1250,true);expect(feedback.frame(1250).shake.x).toBeGreaterThan(0);
+    feedback.addShake(1250,1.4);expect(feedback.frame(1250).shake.x).toBeGreaterThan(0);
+});
+
+test('a heavy hit on the hero adds directional recoil, a warm flash and a bounded camera pulse', () => {
+    const {feedback, game, mob, player, animation} = setup();
+    player.maxHitPoints = 100;
+    feedback.addPlayerImpact(20, 1000, mob);
+    expect(feedback.getOffset(player, 1000)).toEqual({x: -7, y: 0});
+    expect(feedback.getOffset(mob, 1000)).toEqual({x: 0, y: 0});
+    expect(feedback.pose(player, animation, 1010)).toBeNull();
+    expect(player).toMatchObject({x: 16, y: 32, currentAnimation: animation});
+    const data = {drawData: []};
+    feedback.decorate(player, data, 2, 1050);
+    expect(data.hitFeel).toMatchObject({flash: true, flashColor: '#ff7068'});
+    expect(data.hitFeel.squashY).toBeLessThan(1);
+    expect(feedback.frame(1000)).toMatchObject({
+        shake: {x: 2, y: 0},
+        hitFeel: [{x: 24, y: 36, slash: false, incoming: true, sparks: 12}]
+    });
+    feedback.addPlayerImpact(1, 1100);
+    expect(feedback.frame(1150).shake).toEqual({x: 0, y: 0});
+    expect(feedback.getOffset(player, 1100)).toEqual({x: 0, y: -5});
+    expect(feedback.getOffset(player, 1300)).toEqual({x: 0, y: 0});
+    expect(feedback.frame(1380).hitFeel).toEqual([]);
+    expect(feedback.combo).toBe(0);
+    expect(game.audioManager.playConfirmedImpact).not.toHaveBeenCalled();
+});
+
+test('hero damage respects camera and reduced-motion settings, while the flash can stand on its own', () => {
+    const {feedback, settings, mob, player} = setup();
+    settings.getCameraShakeEnabled = () => false;
+    feedback.addPlayerImpact(5, 1000, mob);
+    expect(feedback.frame(1000).shake).toEqual({x: 0, y: 0});
+    expect(feedback.getOffset(player, 1000).x).toBeLessThan(0);
+    settings.getReducedMotion = () => true;
+    expect(feedback.getOffset(player, 1010)).toEqual({x: 0, y: 0});
+    expect(feedback.frame(1010).hitFeel).toEqual([]);
+    const data = {drawData: []};
+    feedback.decorate(player, data, 2, 1010);
+    expect(data.hitFeel).toMatchObject({flash: true, flashColor: '#ff7068', squashY: 1});
+    settings.getCombatEffectsEnabled = () => false;
+    const disabled = {drawData: []};
+    feedback.decorate(player, disabled, 2, 1010);
+    expect(disabled.hitFeel).toBeUndefined();
 });

@@ -225,3 +225,44 @@ test('camera shake is independent of optional impact bursts and still respects r
     settings.getReducedMotion=()=>true;
     expect(feedback.getFrame(1010).shake).toEqual({x:0,y:0});
 });
+
+function healthHandler() {
+    const gameSource = fs.readFileSync(path.join(__dirname, 'game.js'), 'utf8');
+    const start = gameSource.indexOf('self.client.onPlayerChangeHealth(function');
+    const end = gameSource.indexOf('\n                    });', start) + '\n                    });'.length;
+    const attacker = {id: 7};
+    const player = {id: 1, x: 32, y: 48, hitPoints: 100, die: jest.fn()};
+    const self = {
+        player, currentTime: 1200, getEntityById: id => id === attacker.id ? attacker : undefined,
+        combatFeedback: {addPlayerImpact: jest.fn()}, infoManager: {addDamageInfo: jest.fn()},
+        audioManager: {playSound: jest.fn()}, storage: {addDamage: jest.fn()},
+        playerhurt_callback: jest.fn(), updateBars: jest.fn(),
+        client: {onPlayerChangeHealth: handler => { self.client.health_callback = handler; }}
+    };
+    vm.runInNewContext(gameSource.slice(start, end), {self});
+
+    return {self, attacker};
+}
+
+test('a confirmed HP decrease produces one incoming impact and a single hurt sound', () => {
+    const {self, attacker} = healthHandler();
+    self.client.health_callback(80, false, attacker.id);
+    self.client.health_callback(80, false, attacker.id);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenCalledTimes(1);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenCalledWith(20, 1200, attacker);
+    expect(self.audioManager.playSound).toHaveBeenCalledTimes(1);
+    expect(self.audioManager.playSound).toHaveBeenCalledWith('hurt');
+    self.client.health_callback(75, false);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenLastCalledWith(5, 1200, null);
+    self.client.health_callback(100, true);
+    expect(self.combatFeedback.addPlayerImpact).toHaveBeenCalledTimes(2);
+    expect(self.player.hitPoints).toBe(100);
+});
+
+test('lethal damage still uses the player death transition', () => {
+    const {self} = healthHandler();
+    self.client.health_callback(0, false, 7);
+    expect(self.player.die).toHaveBeenCalledTimes(1);
+    expect(self.combatFeedback.addPlayerImpact).not.toHaveBeenCalled();
+    expect(self.playerhurt_callback).toHaveBeenCalledTimes(1);
+});
