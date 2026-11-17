@@ -490,19 +490,43 @@ body.upscaled.game {background:#000;}
     z-index: 2;
 }
 
-#shadow-proxy-toggle {
+#shadow-preview.active {
     position: absolute;
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
-    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px 10px;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    padding: 4px 8px;
     color: #fff2cf;
     background: #211b24;
     border: 1px solid #a89177;
     font: 14px 'GraphicPixel', sans-serif;
+}
+#shadow-preview.active #time {
+    position: static;
+    min-width: 5ch;
+    text-align: center;
+    color: inherit;
+    font: inherit;
+}
+#shadow-preview-clock:not([hidden]) { display: flex; align-items: center; gap: 6px; }
+#shadow-preview-time { width: clamp(72px, 14vw, 160px); accent-color: #ebbb74; }
+#shadow-preview button {
+    padding: 4px 7px;
+    background: #392f32;
+    border: 1px solid #a89177;
+    font: inherit;
+    color: inherit;
     cursor: pointer;
 }
+#shadow-preview button:disabled { opacity: .64; cursor: default; }
 
 .item.inventory-changed, #inventorybutton.inventory-changed {
     outline: 2px solid #ffd66b;

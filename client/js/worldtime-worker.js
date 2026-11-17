@@ -16,6 +16,9 @@
         if (Number.isFinite(hour) && hour >= 0 && hour < 24) return hour / 24 * duration;
         return mode === 'day' ? 20 * 60000 : mode === 'night' ? 50 * 60000 : time;
     }
+    function minuteOfDay(time) {
+        return Math.floor(((time % duration) + duration) % duration / (duration / 1440));
+    }
     function isInRange(time, range) {
         if (range === undefined) return true;
         if (typeof range !== 'string' || !Number.isFinite(time)) return false;
@@ -23,7 +26,7 @@
         if (!match || Number(match[1]) > 23 || Number(match[3]) > 23) return false;
         const start = Number(match[1]) * 60 + Number(match[2]);
         const end = Number(match[3]) * 60 + Number(match[4]);
-        const minute = ((time % duration) + duration) % duration / duration * 1440;
+        const minute = minuteOfDay(time);
         // Equal endpoints mean all day. Overnight windows wrap through midnight.
         return start === end || (start < end ? minute >= start && minute < end : minute >= start || minute < end);
     }
@@ -54,5 +57,5 @@
             color: '#' + tint.map(value => Math.round(value).toString(16).padStart(2, '0')).join('')};
     }
     function atmosphereDarkness(config, time) {return atmosphereLight(config, time).darkness;}
-    return {duration, mainDaylight, previewTime, isInRange, atmosphereDarkness, atmosphereLight};
+    return {duration, mainDaylight, previewTime, minuteOfDay, isInRange, atmosphereDarkness, atmosphereLight};
 });

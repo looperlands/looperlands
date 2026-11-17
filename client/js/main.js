@@ -283,8 +283,34 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     		game.setStorage(app.storage);
     		app.setGame(game);
 
-            const proxyMode = new URLSearchParams(window.location.search).get('shadowProxies');
-            if (mapId === 'main' && (proxyMode === '1' || proxyMode === '0')) {
+            const preview = new URLSearchParams(window.location.search);
+            const proxyMode = preview.get('shadowProxies');
+            const inspectShadows = mapId === 'main' && (proxyMode === '1' || proxyMode === '0');
+            if (preview.get('previewClock') === '1' || inspectShadows) {
+                const controls = document.getElementById('shadow-preview');
+                const clock = document.getElementById('shadow-preview-clock');
+                const slider = document.getElementById('shadow-preview-time');
+                const resume = document.getElementById('shadow-preview-live');
+                controls.classList.add('active');
+                for (const type of ['click', 'mousemove', 'touchstart', 'keydown']) {
+                    controls.addEventListener(type, event => event.stopPropagation());
+                }
+                app.onClockDisplay = (minute, time) => {
+                    clock.hidden = !game.localWorldTimeOverride;
+                    slider.value = minute;
+                    slider.setAttribute('aria-valuetext', time);
+                    resume.disabled = game.localPreviewHour === undefined;
+                };
+                slider.oninput = () => {
+                    game.localPreviewHour = slider.valueAsNumber / 60;
+                    app.updateClockDisplay();
+                };
+                resume.onclick = () => {
+                    game.localPreviewHour = undefined;
+                    app.updateClockDisplay();
+                };
+            }
+            if (inspectShadows) {
                 const toggle = document.getElementById('shadow-proxy-toggle');
                 let atlasReady = false;
                 game.renderer.inspectShadowProxies = proxyMode === '1';
@@ -299,8 +325,7 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                     if (atlasReady) updateButton();
                     else toggle.textContent = 'Retry loading shadow proxies';
                 });
-                toggle.onclick = event => {
-                    event.stopPropagation();
+                toggle.onclick = () => {
                     if (atlasReady) {
                         game.renderer.inspectShadowProxies = !game.renderer.inspectShadowProxies;
                         updateButton();

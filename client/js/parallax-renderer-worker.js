@@ -205,7 +205,7 @@
         return clip.right > clip.left && clip.bottom > clip.top ? clip : null;
     }
 
-    function placedSprites(layer, scene, view, clip, time = now()) {
+    function placedSprites(layer, scene, view, clip, time = view.parallaxTime ?? now()) {
         const result = [], placements = Array.isArray(scene.placements) ? scene.placements : [];
         const centerX = view.viewportWidth / 2, centerY = view.viewportHeight / 2;
         const factorX = view.reducedMotion ? 1 : finite(layer.factorX, 1, 0.5, 2);
@@ -277,21 +277,44 @@
         return result;
     }
 
+    const forestParts = new Map([
+        ['/img/parallax/forest-roots.png', 'roots'],
+        ['/img/parallax/forest-trunk.png', 'trunk'],
+        ['/img/parallax/forest-canopy-lower.png', 'crown'],
+        ['/img/parallax/forest-canopy-upper.png', 'crown']
+    ]);
+
+    function forestBody(part, width, height, rootY) {
+        if (part === 'roots') {
+            // Root tips surround the anchor on the ground, including those toward the viewer.
+            return {base: height, front: Math.max(1, Math.round(height * .06)), slope: 0, depth: 1};
+        }
+        if (part === 'trunk') {
+            // The last four percent of the illustrated trunk overlaps the near roots.
+            const base = rootY + Math.round(height * .04);
+            return {base, front: base, slope: 1, depth: Math.max(1, Math.round(width * .10))};
+        }
+        // At mid-crown the front foliage sits half a canopy depth in front of the root.
+        // Each row rises along the crown while leaving open air back to the ground.
+        const depth = Math.max(1, Math.round(width * .45));
+        const middle = height / 2, slope = .72;
+        const elevation = rootY - middle + depth / 2;
+        return {base: Math.round(middle + elevation / slope), front: 0, slope, depth, raised: true};
+    }
+
     function shadowBodies(state, view) {
         const result = [];
         const scene = state.scenes?.find(area => String(area.id) === String(view.sceneId));
         if (!scene?.placements?.length) return result;
-        // The proxy stays rooted while the illustrated canopy sways or shifts with the camera.
-        const anchored = {...view, reducedMotion: true};
         for (const layer of scene.layers || []) {
-            const trunk = layer.image === '/img/parallax/forest-trunk.png';
-            if (!layer.placed || (!trunk && layer.image !== '/img/parallax/forest-canopy-lower.png')) continue;
-            for (const sprite of placedSprites(layer, scene, anchored, view.casterClip)) {
+            const part = forestParts.get(layer.image);
+            if (!part || !layer.placed || !visibleLayer(layer, scene, view)) continue;
+            for (const sprite of placedSprites(layer, scene, view, view.casterClip)) {
                 const width = Math.round(sprite.width), height = Math.round(sprite.height);
                 const x = Math.round(sprite.x + view.cameraX), y = Math.round(sprite.y + view.cameraY);
-                result.push({image: sprite.image, x, y, width, height, flipX: sprite.flipX,
-                    body: {base: Math.round(sprite.worldY - y), front: Math.round(height * (trunk ? .68 : .43)),
-                        slope: trunk ? .8 : .55, depth: Math.round(width * (trunk ? .1 : .17))}});
+                const body = forestBody(part, width, height, sprite.worldY - y);
+                result.push({image: sprite.image, x, y, width, height, body, flipX: sprite.flipX,
+                    receivesOnGround: layer.plane === 'ground'});
             }
         }
         return result;
@@ -328,7 +351,7 @@
 
     function draw(plane, ctx, state, view) {
         if (!state || !view || ![view.cameraX, view.cameraY, view.scale].every(Number.isFinite) || view.scale <= 0) return;
-        const time = now();
+        const time = view.parallaxTime ?? now();
         const viewportWidth = ctx.canvas.width / view.scale, viewportHeight = ctx.canvas.height / view.scale;
         view = {...view, viewportWidth, viewportHeight};
         for (const scene of (Array.isArray(state.scenes) ? state.scenes : []).slice(0, 100)) {

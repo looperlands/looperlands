@@ -251,7 +251,7 @@ test.each([0, 0.5, 0.9])('impacts keep a contrasting border while fading at prog
 });
 
 test('clears a departed cursor with the output frame and skips pending cursor assets', () => {
-    const sandbox = {self: {}, console, requestAnimationFrame: jest.fn(), postMessage: jest.fn()};
+    const sandbox = {self: {}, console, performance: {now: () => 0}, requestAnimationFrame: jest.fn(), postMessage: jest.fn()};
     const api = vm.runInNewContext(`${source}\ntileset = {loaded: true}; hasLoadedFont = true;\n({setCursorImage: image => {cursors.hand = image;}});`, sandbox);
     const contexts = {};
     for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'combined']) {
