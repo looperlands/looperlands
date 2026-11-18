@@ -766,6 +766,37 @@ test('point lights restrict their scratch work to the viewport and clip only for
     expect(target.ctx.drawImage.mock.calls.at(-1).slice(1)).toEqual([0, 0, 5, 4, 95, 76, 5, 4]);
 });
 
+test('a half-pixel Desert lamp blits only its active scratch pixels at the viewport edge', () => {
+    const worker = setup(), target = worker.canvases.lighting;
+    target.width = 480; target.height = 224;
+    const mask = {canvas: new worker.Canvas(128, 128), x: 494, y: 1410};
+    const pass = {pointFrame: {}, pointMask: () => mask};
+    const lamp = {x: 494, y: 1244.5, radius: 15, intensity: .25, shadow: .5};
+    // First populate the shared surface past the last row needed at the cactus.
+    worker.drawLightSource(target.ctx, lamp, 448, 1300, pass);
+    worker.drawLightSource(target.ctx, lamp, 448, 1408, pass);
+    const [scratch, ...blit] = target.ctx.drawImage.mock.calls.at(-1);
+    expect(scratch.height).toBeGreaterThan(77);
+    expect(blit).toEqual([0, 0, 286, 77, 0, 0, 286, 77]);
+});
+
+test('the campfire pulses while its receiver mask stays registered to native terrain pixels', () => {
+    const worker = setup(), target = worker.canvases.lighting;
+    const mask = {canvas: new worker.Canvas(96, 96), x: 1184, y: 3484};
+    const pass = {pointFrame: {}, pointMask: () => mask};
+    const source = {x: 1256, y: 3576, radius: 10, intensity: .75, shadow: .5, animation: 'fire'};
+    const cameraX = 992.35, cameraY = 3472.65;
+    for (const time of [0, 150, 400, 900]) {
+        const flame = worker.updateAnimatedLightSource(source, time);
+        worker.drawLightSource(target.ctx, flame, cameraX, cameraY, pass, source);
+        const [scratch, , , , , screenX, screenY] = target.ctx.drawImage.mock.calls.at(-1);
+        const [image, srcX, srcY, width, height, x, y, destWidth, destHeight] = scratch.ctx.drawImage.mock.calls.at(-1);
+        expect(image).toBe(mask.canvas);
+        expect([destWidth, destHeight]).toEqual([width, height]);
+        expect([screenX + x - srcX, screenY + y - srcY]).toEqual([192, 11]);
+    }
+});
+
 test('foreground coverage keeps flipped gear in screen coordinates and treats custom painting conservatively', () => {
     const worker = setup(), view = frame().renderData.find(layer => layer.type === 'entities');
     const realCanvas = worker.sandbox.OffscreenCanvas;

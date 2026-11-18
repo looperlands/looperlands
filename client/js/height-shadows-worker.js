@@ -12,6 +12,13 @@
     const cacheStep = 48;
     const coverageTile = 16; // A filter reaches at most one neighbouring tile in each axis.
     const feather = 2, cloudFeather = 6; // native pixels on either side of a silhouette
+    // Bit-reversed ranks distribute the diagonal steps of a digital ray evenly.
+    // As the sun turns, an edge can gain a step without moving existing steps
+    // back and forth along a stationary building or character.
+    const rayStepRanks = new Uint8Array(256);
+    for (let i = 1; i < rayStepRanks.length; i++) {
+        rayStepRanks[i] = (rayStepRanks[i >> 1] >> 1) | ((i & 1) << 7);
+    }
     // These sprites are drawn from above, with tails lying on the ground.
     const lowAnimals = new Set(['rat', 'snake'].flatMap(name => [name, name + '_silhouette']));
     function casterClip(width, height) {
@@ -410,10 +417,12 @@
         const majorStride = horizontal ? 1 : width, minorStride = horizontal ? width : 1;
         const start = sign > 0 ? majorMax : majorMin, end = sign > 0 ? majorMin : majorMax;
         const origin = horizontal ? field.x : field.y;
-        let offset = Math.round((start + origin) * sign * slope);
+        const diagonalSteps = Math.round(Math.abs(slope) * rayStepRanks.length);
+        const direction = Math.sign(slope);
         for (let major = start; sign * (major - end) >= 0; major -= sign) {
-            const next = Math.round((major + origin) * sign * slope);
-            const cross = offset - next;
+            // Identify the same world edge when traversing it in either direction.
+            const edge = origin + major + (sign < 0 ? -1 : 0);
+            const cross = rayStepRanks[edge & 255] < diagonalSteps ? direction : 0;
             const step = sign * majorStride + cross * minorStride;
             let i = major * majorStride + minorMin * minorStride;
             for (let minor = minorMin; minor <= minorMax; minor++, i += minorStride) {
@@ -424,7 +433,6 @@
                 const upstreamHeight = (upstream >>> 16) - distance * rise;
                 horizon[i] = upstreamHeight > z ? upstream + 1 : z << 16;
             }
-            offset = next;
         }
     }
 
@@ -652,7 +660,7 @@
                 const x = (actor.translateX + (flipX ? -draw.dx - draw.dW : draw.dx)) / scale;
                 const y = (actor.translateY + (flipY ? -draw.dy - draw.dH : draw.dy)) / scale;
                 const body = lowAnimals.has(draw.spriteName) ? 'low' : 'upright';
-                const stamp = this.sprite(image, draw.sx, draw.sy, draw.sW, draw.sH, w, h, body, flipY);
+                const stamp = this.sprite(image, draw.shadowSx ?? draw.sx, draw.sy, draw.sW, draw.sH, w, h, body, flipY);
                 // Actors cast onto the world layer drawn underneath them. Their
                 // visible pixels only belong in the diagnostic height image.
                 const casts = draw.shadowBody === 'player' ? options.playerShadow : options.shadows;
