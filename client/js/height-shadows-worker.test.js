@@ -398,3 +398,21 @@ test('a moving caster clears its old feathered edge across filter tiles and crop
     shade(scene, 7, 15, original, light);
     expect(original.data.some(Boolean)).toBe(false);
 });
+
+test('the soft edge of a stationary cast advances without reversing as the sun turns', () => {
+    const scene = field(88, 72);
+    scene.x = 970; scene.y = 3540;
+    for (let y = 24; y < 46; y++) scene.ground[y * scene.width + 25] = 52;
+    const mask = {width: 1, height: 48, data: new Uint8ClampedArray(48 * 4)};
+    let first, previous, travel = 0;
+    for (let frame = 0; frame <= 80; frame++) {
+        shade(scene, scene.x + 58, scene.y + 6, mask, {x: -1, y: .18 + frame * .001, strength: .8});
+        const edge = Array.from({length: mask.height}, (_, i) => mask.data[4 * i + 3]);
+        first ??= edge;
+        if (previous) travel += edge.reduce((sum, value, i) => sum + Math.abs(value - previous[i]), 0);
+        previous = edge;
+    }
+    const displacement = previous.reduce((sum, value, i) => sum + Math.abs(value - first[i]), 0);
+    expect(displacement).toBeGreaterThan(100);
+    expect(travel).toBe(displacement);
+});

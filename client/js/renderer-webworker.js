@@ -1248,9 +1248,13 @@ function scratchCanvas(scratch, width, height) {
 }
 
 function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light) {
-    const lightX = light.x - cameraX, lightY = light.y - cameraY;
     const innerRadius = (light.innerRadius || 0) * tilesize;
     const outerRadius = (light.radius || 1) * tilesize;
+    // Blit the active rectangle of shared scratch canvases on the terrain's pixel grid.
+    // At half a pixel, nearest-neighbour sampling can pick up the previous light's edge.
+    const offsetX = Math.round(-cameraX), offsetY = Math.round(-cameraY);
+    const screenX = Math.round(light.global ? light.x : light.x - outerRadius) + offsetX;
+    const screenY = Math.round(light.global ? light.y : light.y - outerRadius) + offsetY;
     const intensity = light.intensity ?? 1;
     const color = light.color || {r: 255, g: 255, b: 255};
     const spread = parseInt(light.spread || 0), innerSpread = parseInt(light.innerSpread || 0);
@@ -1295,7 +1299,7 @@ function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light
     }
 
     let output = gradientCanvas;
-    const region = {x: 0, y: 0, width, height};
+    const region = {x: screenX, y: screenY, width, height};
     if (pointPass && !light.global && light.shadow > 0 && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
         const mask = pointPass.pointMask(source, beamBounds(source));
         const frame = pointPass.pointFrame;
@@ -1303,23 +1307,22 @@ function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light
             !p.proxyOwner || !pointPass.ownsPointBlocker(p.proxyOwner, frame.scenery))) : [];
         const blockers = independent.filter(p => polygonIntersectsLight(p, source, outerRadius));
         if (mask || blockers.length) {
-            const screenX = lightX - outerRadius, screenY = lightY - outerRadius;
-            // Keep integer crop offsets so a subpixel flame samples the identical native pixels.
-            region.x = Math.max(0, Math.floor(-screenX));
-            region.y = Math.max(0, Math.floor(-screenY));
-            region.width = Math.min(width, Math.ceil(ctx.canvas.width - screenX)) - region.x;
-            region.height = Math.min(height, Math.ceil(ctx.canvas.height - screenY)) - region.y;
+            region.x = Math.max(0, screenX);
+            region.y = Math.max(0, screenY);
+            region.width = Math.min(screenX + width, ctx.canvas.width) - region.x;
+            region.height = Math.min(screenY + height, ctx.canvas.height) - region.y;
             if (region.width <= 0 || region.height <= 0) return;
+            const cropX = region.x - screenX, cropY = region.y - screenY;
             const scratch = scratchCanvas(lightScratch, region.width, region.height);
-            scratch.ctx.drawImage(gradientCanvas, region.x, region.y, region.width, region.height, 0, 0, region.width, region.height);
+            scratch.ctx.drawImage(gradientCanvas, cropX, cropY, region.width, region.height, 0, 0, region.width, region.height);
             if (blockers.length) {
                 scratch.ctx.save();
-                scratch.ctx.translate(-region.x, -region.y);
+                scratch.ctx.translate(-cropX, -cropY);
                 subtractShadows(scratch.ctx, light, blockers, width, height);
                 scratch.ctx.restore();
             }
             if (mask) {
-                subtractPointMask(scratch.ctx, mask, frame, light, source, region, screenX, screenY);
+                subtractPointMask(scratch.ctx, mask, frame, light, region, offsetX, offsetY);
             }
             output = scratch.canvas;
         }
@@ -1354,38 +1357,33 @@ function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light
     }
     ctx.globalCompositeOperation = 'screen';
     ctx.drawImage(output, 0, 0, region.width, region.height,
-        light.global ? lightX : lightX - outerRadius + region.x,
-        light.global ? lightY : lightY - outerRadius + region.y, region.width, region.height);
+        region.x, region.y, region.width, region.height);
 }
 
-function subtractPointMask(ctx, mask, frame, light, source, region, screenX, screenY) {
-    const radius = (light.radius || 1) * tilesize;
-    // A taller flame shortens its projection about its source while its foot stays put.
-    const stretch = 1 - .016 * (light.flamePulse || 0);
-    const x = radius + (mask.x - source.x) * stretch + source.x - light.x - region.x;
-    const y = radius + (mask.y - source.y) * stretch + source.y - light.y - region.y;
-    const w = mask.canvas.width * stretch, h = mask.canvas.height * stretch;
-    const left = Math.max(0, Math.floor(x)), top = Math.max(0, Math.floor(y));
-    const right = Math.min(region.width, Math.ceil(x + w)), bottom = Math.min(region.height, Math.ceil(y + h));
+function subtractPointMask(ctx, mask, frame, light, region, offsetX, offsetY) {
+    // The mask includes elevated receivers such as tree crowns. Keep those pixels
+    // registered to the artwork while the flame changes radius, position and opacity.
+    const x = mask.x + offsetX - region.x, y = mask.y + offsetY - region.y;
+    const left = Math.max(0, x), top = Math.max(0, y);
+    const right = Math.min(region.width, x + mask.canvas.width), bottom = Math.min(region.height, y + mask.canvas.height);
     if (right <= left || bottom <= top) return;
 
     const foreground = frame.foregroundSurface ??= frame.foreground?.();
-    const screenLeft = screenX + region.x + left, screenTop = screenY + region.y + top;
+    const screenLeft = region.x + left, screenTop = region.y + top;
     const cw = right - left, ch = bottom - top;
-    // Leave one pixel of rasterization margin for moving subpixel flames.
     const overlap = foreground && (!foreground.regions || foreground.regions.some(r =>
-        r.left < screenLeft + cw + 1 && r.right > screenLeft - 1 && r.top < screenTop + ch + 1 && r.bottom > screenTop - 1));
+        r.left < screenLeft + cw && r.right > screenLeft && r.top < screenTop + ch && r.bottom > screenTop));
     const flameOpacity = light.animation === 'fire' ? .78 + .055 * (light.flamePulse || 0) : 1;
     ctx.globalCompositeOperation = 'destination-out';
     ctx.globalAlpha = Math.min(1, light.shadow * flameOpacity);
     if (overlap) {
         const clipped = scratchCanvas(pointMaskScratch, cw, ch);
-        clipped.ctx.drawImage(mask.canvas, x - left, y - top, w, h);
+        clipped.ctx.drawImage(mask.canvas, left - x, top - y, cw, ch, 0, 0, cw, ch);
         clipped.ctx.globalCompositeOperation = 'destination-out';
         clipped.ctx.drawImage(foreground.canvas, screenLeft, screenTop, cw, ch, 0, 0, cw, ch);
         ctx.drawImage(clipped.canvas, 0, 0, cw, ch, left, top, cw, ch);
     } else {
-        ctx.drawImage(mask.canvas, x, y, w, h);
+        ctx.drawImage(mask.canvas, left - x, top - y, cw, ch, left, top, cw, ch);
     }
     ctx.globalAlpha = 1;
 }

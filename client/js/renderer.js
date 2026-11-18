@@ -534,6 +534,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                             "id": sprite.id,
                             "spriteName": entity.sprite.name,
                             ...(castsBodyShadow ? {shadowBody: entity === this.game.player ? 'player' : 'scenery'} : {}),
+                            // Breathing changes the visible frame while the standing body keeps its footprint.
+                            ...(castsBodyShadow && entity instanceof Player && anim.name?.startsWith('idle') ? {shadowSx: 0} : {}),
                             "sx": x,
                             "sy": y,
                             "sW": w,

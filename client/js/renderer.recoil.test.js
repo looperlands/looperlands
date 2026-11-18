@@ -57,6 +57,19 @@ test.each(['main', 'duckville'])('character and chest body draws honor shadow se
     expect(draws(chest)).toEqual([['body', undefined]]);
 });
 
+test('a standing hero animates while casting from one pose for the current direction', () => {
+    const player = Object.assign(new Character(), {
+        x: 20, y: 40, sprite: {name: 'hero', width: 16, height: 24, offsetX: 0, offsetY: -8},
+        isVisible: () => true, hasShadow: () => true, canHoldWeapon: false,
+        currentAnimation: {name: 'idle_left', currentFrame: {x: 16, y: 48}}
+    });
+    const host = {scale: 1, tilesize: 16, drawEntityName: jest.fn(), game: {player, shadows: {small: {width: 16, height: 16}}}};
+    const body = () => renderer.drawEntity.call(host, player)[1].drawData.find(draw => draw.shadowBody);
+    expect(body()).toMatchObject({sx: 16, sy: 48, shadowSx: 0});
+    player.currentAnimation.name = 'walk_left';
+    expect(body()).not.toHaveProperty('shadowSx');
+});
+
 test('trainer uses only its custom level/nameplate, while ordinary mob labels remain', () => {
     const actor=Object.assign(new Mob(), {id:7,name:'ogre',level:6,x:0,y:0});
     const host={scale:2,getHpIndicatorColor:()=> '#fff',game:{combatPrototype:{state:{mob:{id:7}}},
