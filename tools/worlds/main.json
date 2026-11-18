@@ -1160,6 +1160,11 @@
         "duration": 120
       },
       {
+        "type": "cloudy",
+        "intensity": 0.4,
+        "duration": 90
+      },
+      {
         "type": "rain",
         "intensity": 0.4,
         "duration": 90
