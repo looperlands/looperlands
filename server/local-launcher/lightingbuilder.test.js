@@ -12,7 +12,7 @@ async function setup(map = 'one') {
             all() {return this.children.flatMap(child => [child, ...(child.all?.() || [])]);}
         };
     }
-    const selectors = ['.lighting-save', '.lighting-reload', '#lighting-map', '.lighting-workspace', '.lighting-status', '.lighting-discard', '.lighting-discard-no', '.lighting-discard-yes', '.lighting-mode-hint', '.lighting-build', '.lighting-atmosphere', '.lighting-tools', '.lighting-view-controls', '.lighting-preview-status', '.lighting-map-host', '.world-content', '.world-list', '.lighting-count', '#lighting-search', '#lighting-filter'];
+    const selectors = ['.lighting-save', '.lighting-reload', '#lighting-map', '.lighting-workspace', '.lighting-status', '.lighting-discard', '.lighting-discard-no', '.lighting-discard-yes', '.lighting-mode-hint', '.lighting-build', '.lighting-atmosphere', '.lighting-profiles', '.lighting-tools', '.lighting-view-controls', '.lighting-preview-status', '.lighting-map-host', '.world-content', '.world-list', '.lighting-count', '#lighting-search', '#lighting-filter'];
     const nodes = Object.fromEntries(selectors.map(selector => [selector, element()]));
     nodes['#lighting-search'].value = nodes['#lighting-filter'].value = '';
     const pane = {...element(), querySelector(selector) {

@@ -18,7 +18,8 @@
         
         {
             name: "game",
-            exclude: ["jquery"]
+            exclude: ["jquery"],
+            excludeShallow: ["text!../img/common/height-proxies/catalog.json"]
         },
          
         {

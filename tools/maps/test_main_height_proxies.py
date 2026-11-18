@@ -3,15 +3,55 @@ import unittest
 
 from PIL import Image
 
-from generate_main_height_proxies import ARTWORK, ATLAS, BAKED_SHADOWS, ROOT, make_atlas, make_duckville_atlas, make_shadow_mask
+from generate_main_height_proxies import ARTWORK, ATLAS, BAKED_SHADOWS, ROOT, body_image, products, profile_atlas, read_profile, make_shadow_mask
 
 
 class HeightProxyAtlasTest(unittest.TestCase):
+    def test_outdoor_landmarks_use_registered_artwork_and_walkable_spawns(self):
+        catalog = json.loads((ATLAS.parent / 'catalog.json').read_text())
+        for map_id, spawn in [('m88n', (92, 140)), ('cobsfarm', (24, 484)), ('cobsfarmcity', (77, 410)),
+                              ('taikotown', (81, 156))]:
+            with self.subTest(map_id=map_id), Image.open(ROOT / f'client/img/1/tilesheet_{map_id}.png') as artwork:
+                world = json.loads((ROOT / f'client/maps/world_client_{map_id}.json').read_text())
+                px, py = spawn
+                self.assertNotIn(py * world['width'] + px, world['collisions'])
+                profile = read_profile(ROOT, map_id)
+                self.assertEqual(catalog[map_id].get('outdoors'), profile.get('outdoors'))
+                names = {catalog[map_id][k] for k in ('height', 'paint') if k in catalog[map_id]}
+                gids = set()
+                for name, generated in products(artwork.convert('RGBA'), profile, map_id):
+                    names.remove(name)
+                    with Image.open(ATLAS.with_name(name)) as asset:
+                        self.assertEqual(asset.size, generated.size)
+                        self.assertEqual(asset.convert('RGBA').tobytes(), generated.tobytes())
+                        if name == catalog[map_id]['height']:
+                            for row in profile['bodies']:
+                                left, top, right, bottom = row['bounds']
+                                self.assertIsNotNone(asset.crop((left, top, right, bottom)).getbbox(), row['name'])
+                                for ty in range(top // 16, (bottom + 15) // 16):
+                                    for tx in range(left // 16, (right + 15) // 16):
+                                        gids.add(1 + ty * (artwork.width // 16) + tx)
+                self.assertFalse(names)
+                near_spawn = set()
+                for y in range(max(0, py - 8), min(world['height'], py + 9)):
+                    for x in range(max(0, px - 8), min(world['width'], px + 9)):
+                        cell = world['data'][y * world['width'] + x]
+                        near_spawn.update(cell if isinstance(cell, list) else [cell])
+                self.assertTrue(gids & near_spawn, 'No profiled artwork within eight tiles of the landmark')
+
+    def test_draft_geometry_must_fit_the_encoding_and_grounded_support(self):
+        source = Image.new('RGBA', (16, 32), 'white')
+        post = {'name': 'Post', 'bounds': [0, 0, 16, 32], 'front': 12, 'slope': .5, 'depth': 4}
+        for invalid in [{'front': 161}, {'depth': -1}, {'slope': '1'}, {'slope': 1.1}, {'trunk': [0, 17]},
+                        {'raisedAbove': 33}, {'shape': 'round-crown', 'crownBottom': 24}]:
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                body_image(source, {**post, **invalid})
+
     def test_duckville_trees_match_the_placed_roots_and_real_cavern_fire(self):
         with Image.open(ROOT / 'client/img/1/tilesheet_duckville.png') as artwork, \
                 Image.open(ATLAS.with_name('duckville.png')) as atlas:
             self.assertEqual(atlas.size, (artwork.width, 7 * 16))
-            self.assertEqual(atlas.tobytes(), make_duckville_atlas(artwork).tobytes())
+            self.assertEqual(atlas.tobytes(), profile_atlas(artwork, read_profile(ROOT, 'duckville')).tobytes())
             with (ROOT / 'client/maps/world_client_duckville.json').open() as file:
                 world = json.load(file)
             self.assertEqual(world['tilesetColumns'] * 16, atlas.width)
@@ -47,7 +87,7 @@ class HeightProxyAtlasTest(unittest.TestCase):
     def test_checked_in_atlas_matches_profiles_and_outdoor_artwork(self):
         with Image.open(ARTWORK) as source, Image.open(ATLAS) as atlas:
             self.assertEqual(atlas.size, source.size)
-            self.assertEqual(atlas.tobytes(), make_atlas(source).tobytes())
+            self.assertEqual(atlas.tobytes(), profile_atlas(source, read_profile(ROOT, 'main')).tobytes())
             with (ROOT / 'client/maps/world_client_main.json').open() as file:
                 main_map = json.load(file)
             # Sample the source pixel, its actual map placement, and extrusion depth.
@@ -81,7 +121,7 @@ class HeightProxyAtlasTest(unittest.TestCase):
     def test_mask_only_removes_the_profiled_terrain_ground_shadows(self):
         with Image.open(ARTWORK) as source, Image.open(BAKED_SHADOWS) as mask:
             self.assertEqual(mask.size, source.size)
-            self.assertEqual(mask.tobytes(), make_shadow_mask(source).tobytes())
+            self.assertEqual(mask.tobytes(), make_shadow_mask(source, read_profile(ROOT, 'main')['paint']).tobytes())
             for point in [(209, 228), (164, 90), (314, 49), (44, 1293), (59, 1504)]:
                 self.assertEqual(mask.getpixel(point)[3], 255, point)
             # Keep grass, glass, noticeboard wood, boulder underside and unrelated tile shadows.

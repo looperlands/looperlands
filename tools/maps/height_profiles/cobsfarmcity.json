@@ -1,0 +1,19 @@
+{
+  "bodies": [
+    {"name": "Autumn pine", "bounds": [480, 400, 512, 432], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Snow pine", "bounds": [736, 448, 768, 480], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Snow pine without painted shadow", "bounds": [736, 416, 768, 448], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Green fir", "bounds": [672, 448, 704, 480], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Green fir without painted shadow", "bounds": [672, 416, 704, 448], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Bare winter tree", "bounds": [704, 448, 736, 480], "front": 9, "slope": 0.8, "depth": 7, "shape": "wall", "raisedAbove": 25, "trunk": [13, 19]},
+    {"name": "Bare winter tree without painted shadow", "bounds": [704, 416, 736, 448], "front": 9, "slope": 0.8, "depth": 7, "shape": "wall", "raisedAbove": 25, "trunk": [13, 19]},
+    {"name": "Snowy stable", "bounds": [1938, 177, 2014, 256], "front": 34, "slope": 0.5, "depth": 14, "shape": "gable"},
+    {"name": "Snowy green gable", "bounds": [2002, 432, 2079, 512], "front": 38, "slope": 0.48, "depth": 12, "shape": "gable"},
+    {"name": "Snowy timber gable", "bounds": [1395, 436, 1469, 512], "front": 37, "slope": 0.52, "depth": 12, "shape": "gable"},
+    {"name": "Snowy cottage", "bounds": [1433, 688, 1526, 752], "front": 32, "slope": 0.42, "depth": 12, "shape": "wall"},
+    {"name": "Town hall", "bounds": [1792, 758, 1920, 864], "front": 64, "slope": 0.4, "depth": 18, "shape": "wall"},
+    {"name": "City station", "bounds": [1816, 865, 1949, 976], "front": 69, "slope": 0.38, "depth": 18, "shape": "wall"}
+  ],
+  "paint": [[480, 428, 512, 448], [672, 475, 704, 496], [736, 475, 768, 496]],
+  "outdoors": {"cobsfarmcity": [{"x": 0, "y": 306, "width": 126, "height": 188}]}
+}

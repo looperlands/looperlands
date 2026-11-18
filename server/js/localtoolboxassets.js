@@ -20,6 +20,7 @@ function install(app, root) {
         '/local/zones-contract.js': 'shared/js/gameplayzones.js',
         '/local/fishing-contract.js': 'shared/js/fishingauthoring.js',
         '/local/lighting-contract.js': 'shared/js/mapmakerlighting.js',
+        '/local/vendor/height-shadows-worker.js': 'client/js/height-shadows-worker.js',
         '/local/vendor/lighting-renderer.js': 'client/js/renderer-webworker.js',
         '/local/item-effects.js': 'shared/js/itemeffects.js',
         '/local/interaction-templates.js': 'shared/js/interactiontemplates.js',

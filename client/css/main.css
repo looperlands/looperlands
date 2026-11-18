@@ -516,9 +516,9 @@ body.upscaled.game {background:#000;}
     color: inherit;
     font: inherit;
 }
-#shadow-preview-clock:not([hidden]) { display: flex; align-items: center; gap: 6px; }
+#shadow-preview-clock:not([hidden]) { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; }
 #shadow-preview-time { width: clamp(72px, 14vw, 160px); accent-color: #ebbb74; }
-#shadow-preview button {
+#shadow-preview select, #shadow-preview button {
     padding: 4px 7px;
     background: #392f32;
     border: 1px solid #a89177;

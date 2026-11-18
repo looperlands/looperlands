@@ -34,7 +34,7 @@ In bounded outdoor scenes, profiled buildings, trees and props cast alongside mo
 
 ![Town house, oak, boulder and noticeboard with their corresponding blue-to-magenta height proxies](town-shadow-proxies.png)
 
-Build the client with `node bin/build-client.js` and run `node bin/local-parallax-preview.js`. Open the printed launcher URL. In **Afternoon shadows**, compare the Town house and oak at 07:00 and 16:00 using **Time of day**. **Resume clock** restarts time. **Show shadow proxies** displays the visible height at each pixel, from blue at the ground to magenta higher up. In **Town · campfire at night**, walk around the flame to see the direction of the player's cast change.
+Build the client with `node bin/build-client.js` and run `node bin/local-parallax-preview.js`. Open the printed launcher URL. In **Afternoon shadows**, compare the Town house and oak at 07:00 and 16:00 using **Time of day**. **Resume clock** restarts time. Use **Weather** beside the clock to compare **Clear**, **Cloudy**, **Rain** and **Sunrays** outdoors. Under passing clouds, sunlight dims and its shadow edges soften. Cloud banks keep moving while the clock is held, and hold still with reduced motion. **Map weather** restores the scene’s authored weather. **Show shadow proxies** displays the visible height at each pixel, from blue at the ground to magenta higher up. In **Town · campfire at night**, walk around the flame to see the direction of the player's cast change.
 
 Open Inventory with **Z** or Settings with **C** to see a panel cast onto the map. Panels share the light direction sampled at the player's feet. Scrub the outdoor clock or cross a nearby fire to change the cast direction.
 
@@ -42,12 +42,25 @@ Open Inventory with **Z** or Settings with **C** to see a panel cast onto the ma
 
 ## Add height-aware scenery to another tileset
 
-1. Pick a placed object and locate all its tiles in `client/img/1/tilesheet_<tileset>.png`. Work at native resolution, with 16 × 16 pixels per tile. Include separate root or base variants used by the map. Each placement inherits its profile from the tile IDs.
-2. Make a transparent RGBA PNG with the same number of tile columns as the source tilesheet. Keep the source origin and tile coordinates. You can omit empty rows below the last profiled tile. Trace the visible surfaces as opaque pixels, keeping gaps between branches and between posts transparent. Use the generator's `body_pixel(height, depth, elevated=False, support=0)` helper to encode the height above ground and front-to-back depth in native pixels. For example, a branch at height 34 with depth 2 uses `body_pixel(34, 2, elevated=True)`. Grounded trunks use the default solid profile. [Atlas generator and worked profiles](../tools/maps/generate_main_height_proxies.py)
-3. Save the PNG under `client/img/common/height-proxies/` and add the tileset ID to `catalog.json`. For example, `"duckville": {"height": "duckville.png"}` registers Duckville's trees. Maps sharing that tileset use one entry. When artwork includes a baked ground shadow, an optional `"paint": "<tileset>-baked-shadows.png"` names a full-size mask aligned to the source tilesheet. Opaque mask pixels erase the original shadow in outdoor scenes with scenery shadows enabled. Preserve the object's own shading, translucent details and ground textures. [Tileset catalog](../client/img/common/height-proxies/catalog.json)
-4. Rebuild the client and start a fresh local playtest. Inspect the proxy, then compare morning and afternoon on the same object. Walk past a nearby torch at night or in an indoor scene to check the direction of the cast, contact at the roots and gaps under raised parts. A new light or polygon placed through Mapmaker also needs **Build this map**.
+Open **Map & world → Scenery shadows** in the Mapmaker Toolbox, or follow the **Scenery shadows** link in **Lights & shadows**. Choose a map. Each copy of an object that uses the same tiles inherits its height profile, including copies on maps that share the tileset.
 
-The main and Duckville examples regenerate with Pillow. Run `python3 tools/maps/generate_main_height_proxies.py` for the main atlas and its painted-shadow mask. Add `--map duckville` for Duckville's tree atlas. Pass `--check` to either command to verify the checked-in PNGs against the artwork. Run `node bin/check-client-assets.js client-build` after a client build to verify the catalog's image files are present.
+1. Under **Shadow bodies**, choose an existing object from the list or click its outline on the tilesheet. To create one, click **Add body**, drag tightly around the artwork, and give it a name. **Focus selection** zooms to the object.
+2. Choose a shape and adjust **Front height**, **Ground depth** and **Roof slope**. Dimensions use the original tilesheet pixels. For a tree, choose **Rounded tree crown** and set its crown bottom and trunk span around the bark. The preview shows both the height proxy and its projected shadow. Move **Sun position** to check morning and afternoon contact at the feet or roots.
+3. If the artwork already has a painted ground shadow, use **Paint removal** to mark its bounds. The baker removes translucent dark grey ink within those bounds. If a map has no outdoor gameplay scene, use **Outdoor areas** to mark its outdoor tiles on the map. These areas belong to the selected map. An authored scene takes precedence, so indoor rooms keep their own lighting.
+4. Choose **Save changes** and start a fresh **Playtest**. Turn on **Show shadow proxies** to see the profiled surfaces in place. Scrub **Time of day** and move past a local light to inspect both casts. A profile save is immediately available in a new local session. To remove an object, select **Delete body** and save.
+
+![Editing the height profile and afternoon shadow of the DreamLand cloud plaza oak](scenery-profile-editor.png)
+
+The Toolbox saves the editable source in `tools/maps/height_profiles/<tileset>.json` and bakes the corresponding images and catalog entry under `client/img/common/height-proxies/`. Commit these files together. The baker needs Python 3 with Pillow, which the local Toolbox image includes. Run `python3 tools/maps/generate_main_height_proxies.py --map <tileset> --check` to compare checked-in assets against the source artwork. [Profile sources](../tools/maps/height_profiles) · [Atlas generator](../tools/maps/generate_main_height_proxies.py)
+
+The shadow playtest launcher includes these outdoor examples.
+
+| Map | Spawn tile | Scenery to inspect |
+| --- | --- | --- |
+| DreamLand | (92, 140) | Blossom grove, cloud plaza oak and bridge lamps |
+| Cob’s Farm | (24, 484) | Barn, orchard and pines |
+| Cob’s Farm City | (77, 410) | Snowy town hall, gabled houses and winter trees |
+| Taiko Town | (81, 156) | Park trees, streetlights and signs |
 
 Moving characters use their current sprite frames. In the Forest, the parallax roots, trunk and canopy use their placed drawing positions for shadows. Maps without a registered terrain atlas can still use authored finite lights, moving-character casts and polygon blockers.
 

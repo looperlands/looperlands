@@ -158,7 +158,7 @@ function installLocalLauncher(app, options) {
                             for (const player of Object.values(world.players || {})) WorldClock.syncPlayer(player);
                         }
                     }
-                    return res.status(status).json({sessionId: data.sessionId, url: '/?sessionId=' + data.sessionId});
+                    return res.status(status).json({sessionId: data.sessionId, url: '/?sessionId=' + data.sessionId + '&previewClock=1&shadowProxies=0'});
                 }
             };
             await options.createSession({body, headers: {'x-api-key': options.apiKey}}, response);

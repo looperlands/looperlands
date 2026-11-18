@@ -28,6 +28,18 @@
         result.opacity = night + (1 - night) * clamp(daylight);
         return result;
     }
+    // A broad cloud bank crosses the line from the player to the sun. Nearby
+    // players see the same bank; pinning the day/night clock preserves its drift.
+    function sunlightCover(weather, daylight, x, y, milliseconds, reducedMotion) {
+        const density = clamp((weather.cloudy || 0) + (weather.rain || 0) * .85);
+        if (!density || daylight <= 0) return 0;
+        const seconds = reducedMotion ? 0 : milliseconds / 1000;
+        const wind = weather.wind || 0;
+        const east = (x - seconds * (11 + 13 * wind)) / 82;
+        const north = (y - seconds * 3) / 116;
+        const bank = .5 + .33 * Math.sin(east + north) + .17 * Math.sin(east * .63 - north * 1.4);
+        return clamp(daylight) * density * (.12 + .88 * smooth(bank));
+    }
     function hash(x, y, seed) {
         let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(seed, 1274126177);
         n = Math.imul(n ^ (n >>> 13), 1274126177);
@@ -100,5 +112,5 @@
         }
         ctx.restore();
     }
-    return {sample, draw};
+    return {sample, draw, sunlightCover};
 });

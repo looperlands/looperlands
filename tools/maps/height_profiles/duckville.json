@@ -1,0 +1,30 @@
+{
+  "bodies": [
+    {
+      "name": "Small bare tree",
+      "shape": "bare-tree",
+      "bounds": [
+        528,
+        32,
+        560,
+        96
+      ],
+      "trunkX": 15.5,
+      "trunkRadius": 5.5,
+      "forkY": 30
+    },
+    {
+      "name": "Tall bare tree",
+      "shape": "bare-tree",
+      "bounds": [
+        560,
+        16,
+        624,
+        96
+      ],
+      "trunkX": 32,
+      "trunkRadius": 8,
+      "forkY": 54
+    }
+  ]
+}

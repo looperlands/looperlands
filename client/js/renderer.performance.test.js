@@ -162,7 +162,7 @@ test('panel shadow updates follow the sun and nearby indoor fire at the player',
 test('the main-map atlas powers outdoor shadows and the live proxy view', async () => {
     const worker = setup(), draw = jest.fn();
     worker.setTileset({width: 320, height: 3000});
-    const atlas = {}, mask = {}, castSurface = {}, proxyView = {}, construct = jest.fn();
+    const atlas = {}, mask = {width: 320, height: 3000}, castSurface = {}, proxyView = {}, construct = jest.fn();
     const urls = ['../img/common/height-proxies/main.png', '../img/common/height-proxies/main-baked-shadows.png'];
     worker.sandbox.fetch = jest.fn(async url => ({blob: () => url === urls[1] ? mask : atlas}));
     worker.sandbox.createImageBitmap = async blob => blob;
@@ -188,6 +188,7 @@ test('the main-map atlas powers outdoor shadows and the live proxy view', async 
     data.scene.dn_cycle = 'true';
     data.scene.width = 2;
     const actor = data.renderData.find(layer => layer.type === 'entities').entityData[0];
+    actor.translateX = 16 * 3; // The player stands inside the two-tile-wide test scene.
     actor.drawData[0].shadowBody = 'player';
     actor.drawData.unshift({...actor.drawData[0], shadowBody: undefined, spriteName: 'shadow16'});
     vm.runInContext("sprites.shadow16 = {image: 'contact-shadow'}", worker.sandbox);
@@ -200,14 +201,16 @@ test('the main-map atlas powers outdoor shadows and the live proxy view', async 
     function tileSource(x) {
         const terrain = worker.canvases.background.ctx.drawImage.mock.lastCall[0];
         const tile = terrain.ctx.drawImage.mock.calls.find(call => call[1] === x * 16)[0];
-        return tile.ctx.drawImage.mock.calls[0][0];
+        return tile;
     }
     const options = data.renderData.find(layer => layer.id === 'lights').options;
     options.shadows = true;
     worker.send(data);
     const cleaned = tileSource(0), original = tileSource(3);
-    expect(cleaned.ctx.drawImage.mock.calls.map(([image]) => image)).toEqual([original, mask]);
-    expect(cleaned.ctx.globalCompositeOperation).toBe('destination-out');
+    expect(cleaned.ctx.drawImage.mock.calls.map(([image]) => image)).toEqual([original.ctx.drawImage.mock.calls[0][0], mask]);
+    expect(cleaned.ctx.drawImage.mock.calls[1].slice(1)).toEqual([0, 0, 16, 16, 0, 0, 16, 16]);
+    expect(cleaned).toMatchObject({width: 16, height: 16});
+    expect(worker.allocations.some(canvas => canvas.width === 320 && canvas.height === 3000)).toBe(false);
     const painted = actorContext.drawImage.mock.calls.map(([image]) => image);
     expect(painted).toEqual([worker.canvases.background, castSurface, 'contact-shadow', {avatar: true}]);
     expect(worker.canvases.highEntities.ctx.drawImage.mock.calls.map(([image]) => image)).toEqual([worker.canvases.high, castSurface]);
@@ -287,6 +290,24 @@ test('palette cutouts preserve ledge pixels, reuse masked tiles and keep normal 
     worker.drawScaledImage(ctx, image, 0, 0, 16, 16, 32, 0, 1);
     expect(worker.allocations).toHaveLength(warm + 1);
     expect(worker.allocations.at(-1).ctx.putImageData).not.toHaveBeenCalled();
+});
+
+test('paint masks sample native coordinates on scaled tilesheets and share original tiles below their cropped edge', () => {
+    const worker = setup(), target = worker.canvases.background.ctx;
+    const artwork = {width: 1536, height: 3200}, maskA = {width: 768, height: 32}, maskB = {...maskA};
+    const tile = (y, paint) => {
+        worker.drawScaledImage(target, artwork, 64, y, 16, 16, 4, 7, 2, null, [], paint);
+        return target.drawImage.mock.lastCall[0];
+    };
+    const normal = tile(32, null), masked = tile(32, maskA);
+    expect(masked.ctx.drawImage.mock.calls[1]).toEqual([maskA, 32, 16, 8, 8, 0, 0, 32, 32]);
+    expect(tile(32, maskA)).toBe(masked);
+    expect(tile(32, maskB)).not.toBe(masked);
+    expect(tile(32, null)).toBe(normal);
+    const below = tile(64, maskA);
+    expect(below.ctx.drawImage).toHaveBeenCalledTimes(1);
+    expect(tile(64, null)).toBe(below);
+    expect(worker.allocations.some(canvas => canvas.width === artwork.width)).toBe(false);
 });
 
 test('recessed layers sit behind terrain and cutout changes invalidate static buffers once', () => {
@@ -827,4 +848,78 @@ test('a slower tileset load cannot replace the active profile after changing map
     expect(api.fetch).toHaveBeenCalledTimes(3);
     await worker.send({type: 'setObstacles', obstacles: [], bodyMap: null});
     expect(api.self.postMessage).toHaveBeenLastCalledWith({type: 'shadowProxyAtlas', available: false, ready: false});
+});
+
+test('daytime cloud cover dims outdoor ambient and sun casts while preserving the lamp geometry', async () => {
+    const worker = setup(), api = worker.sandbox;
+    const sky = [], lamps = [], weather = {...require('./sceneenvironment').defaults.weather, type:'cloudy', intensity:1};
+    api.fetch = async () => ({blob: () => ({})});
+    api.createImageBitmap = async image => image;
+    api.self.SceneEnvironment = require('./sceneenvironment');
+    api.self.SceneWeather = {...require('./weather-worker'), draw() {}};
+    api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
+        constructor() { this.pointFrame = {}; }
+        draw(canvas, view, scene, light) { sky.push(light); }
+        prepare() {}
+        pointMask(light) { lamps.push([light.x,light.y,light.radius,light.shadow]); }
+    }};
+    vm.runInContext('worldClock = self.WorldTime', api);
+    await worker.send({type:'setObstacles',obstacles:[],bodyMap:{mapId:'main',profile:{height:'main.png'},width:1,data:[1]}});
+    worker.send({type:'setLights',lights:[{x:60,y:40,radius:5,shadow:.8}]});
+    const packet = frame(), options = packet.renderData.find(l=>l.id === 'lights').options;
+    packet.mapId = 'main'; packet.worldTime = 9 * 150000;
+    packet.scene = {...packet.scene,dn_cycle:true,weather};
+    Object.assign(options,{shadows:true,ambience:true,playerShadow:true});
+    function light() { worker.send(packet); return vm.runInContext('GLOBAL_LIGHT_INTENSITY',api); }
+    const underCloud = light(), cloudy = sky.at(-1), originalLamps = [...lamps];
+    expect(cloudy.cloudCover).toBeGreaterThan(0);
+    // Local weather replaces the authored preset until the tester restores Map weather.
+    packet.previewWeather = 'clear';
+    lamps.length=0;
+    expect(light()).toBeGreaterThan(underCloud);
+    expect(sky.at(-1).strength).toBeGreaterThan(cloudy.strength);
+    expect(lamps).toEqual(originalLamps);
+    expect(packet.scene.weather).toBe(weather);
+    packet.previewWeather = '';
+    expect(light()).toBe(underCloud);
+    options.ambience = false; light();
+    expect(sky.at(-1).cloudCover).toBeUndefined();
+    options.ambience = true; packet.worldTime = 20 * 150000; light();
+    expect(sky.at(-1).sun).toBe(false);
+    expect(sky.at(-1).cloudCover).toBeUndefined();
+    const count = sky.length;
+    packet.scene.weatherExposure='indoor'; light();
+    expect(sky).toHaveLength(count);
+    expect(vm.runInContext('frameWeather.sunCover',api)).toBeUndefined();
+});
+
+test('outdoor rectangles enable preview weather and sun only on the selected map and outside authored rooms', async () => {
+    const worker = setup(), api = worker.sandbox, sky = jest.fn();
+    api.fetch = async () => ({blob: () => ({})});
+    api.createImageBitmap = async image => image;
+    api.self.SceneEnvironment = require('./sceneenvironment');
+    api.self.SceneWeather = {...require('./weather-worker'), draw() {}};
+    api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
+        constructor() { this.pointFrame = {}; }
+        prepare() {}
+        pointMask() {}
+        draw(...args) { sky(args[2], args[3]); }
+    }};
+    const area = {x: 1, y: 1, width: 4, height: 4};
+    const bodyMap = {mapId: 'cobsfarm', width: 8, data: [1], profile: {height: 'cobsfarm.png', outdoors: {cobsfarm: [area]}}};
+    await worker.send({type: 'setObstacles', obstacles: [], bodyMap});
+    const packet = frame();
+    Object.assign(packet, {mapId: 'cobsfarm', worldTime: 9 * 150000, scene: {darkness: 0}, previewWeather: 'cloudy'});
+    packet.renderData.find(layer => layer.id === 'lights').options.shadows = true;
+    vm.runInContext('worldClock = self.WorldTime', api);
+    worker.send(packet);
+    expect(sky).toHaveBeenCalledWith(expect.objectContaining(area), expect.objectContaining({sun: true, cloudCover: expect.any(Number)}));
+    packet.scene = {...area, weatherExposure: 'indoor', darkness: .8};
+    worker.send(packet);
+    expect(vm.runInContext('frameWeather', api)).toBeUndefined();
+    packet.scene = {darkness: 0};
+    packet.player.x = (area.x + area.width) * 16;
+    worker.send(packet);
+    expect(vm.runInContext('frameWeather', api)).toBeUndefined();
+    expect(sky).toHaveBeenCalledTimes(1);
 });

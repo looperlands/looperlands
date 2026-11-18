@@ -24,6 +24,14 @@ jobs:
       run: npm ci
     - name: Run linter
       run: npm run lint
+    - name: Set up Python for shadow artwork
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install shadow artwork tools
+      run: python3 -m pip install Pillow
+    - name: Check shadow artwork
+      run: python3 -B tools/maps/test_main_height_proxies.py
     - name: Run unit tests
       run: npm run coverage -- --runInBand
     - name: Build production image
@@ -37,7 +45,7 @@ jobs:
           const fs = require("node:fs");
           const {execFileSync} = require("node:child_process");
           assert.equal(process.version, "v" + fs.readFileSync(".nvmrc", "utf8").trim());
-          execFileSync("python3", ["-c", "from lxml import etree"]);
+          execFileSync("python3", ["-c", "from lxml import etree; from PIL import Image"]);
           execFileSync("git", ["--version"]);
           const {LooperLandsPlatformClient} = require("./server/js/looperlandsplatformclient");
           assert.equal(new LooperLandsPlatformClient().localPlaytest, true);

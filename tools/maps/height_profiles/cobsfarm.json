@@ -1,0 +1,14 @@
+{
+  "bodies": [
+    {"name": "Farm pine", "bounds": [64, 224, 96, 256], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 29},
+    {"name": "Round orchard tree", "bounds": [0, 224, 32, 256], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 25},
+    {"name": "Broad orchard tree", "bounds": [32, 224, 64, 256], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 25},
+    {"name": "Offset orchard tree", "bounds": [6, 272, 38, 304], "front": 9, "slope": 0.8, "depth": 14, "shape": "round-crown", "trunk": [13, 19], "crownBottom": 25},
+    {"name": "Livestock barn", "bounds": [2016, 0, 2083, 80], "front": 32, "slope": 0.42, "depth": 13, "shape": "gable"},
+    {"name": "Chicken coop", "bounds": [2129, 0, 2189, 64], "front": 29, "slope": 0.46, "depth": 11, "shape": "wall"},
+    {"name": "Farmhouse", "bounds": [2244, 3, 2338, 76], "front": 32, "slope": 0.46, "depth": 11, "shape": "wall"},
+    {"name": "Grain silo", "bounds": [2200, 11, 2236, 79], "front": 52, "slope": 0.42, "depth": 9, "shape": "wall"}
+  ],
+  "paint": [[0, 249, 96, 272], [5, 297, 45, 319]],
+  "outdoors": {"cobsfarm": [{"x": 0, "y": 440, "width": 52, "height": 54}]}
+}

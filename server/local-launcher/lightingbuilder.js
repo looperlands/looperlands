@@ -7,7 +7,7 @@
     const clone = value => JSON.parse(JSON.stringify(value));
     const presets = [['torch', 'Torch'], ['lamp', 'Lamp'], ['area', 'Area light'], ['shadow-rectangle', 'Rectangle shadow'], ['shadow-polygon', 'Polygon shadow']];
     pane.innerHTML = `<header class="pane-heading"><h2>Lights &amp; shadows</h2><p>Choose a light, then click the map. Drag its marker to move it. <a href="#documentation/mapmaker-lighting">Read the guide</a></p></header>
-        <div class="world-toolbar"><div class="field"><label for="lighting-map">Map</label><select id="lighting-map"></select></div><button type="button" class="lighting-reload">Reload</button><button type="button" class="lighting-save primary" disabled>Save changes</button><a class="lighting-build" href="#build">Build this map</a><a class="lighting-atmosphere" href="#scenes">Ambient lighting</a></div>
+        <div class="world-toolbar"><div class="field"><label for="lighting-map">Map</label><select id="lighting-map"></select></div><button type="button" class="lighting-reload">Reload</button><button type="button" class="lighting-save primary" disabled>Save changes</button><a class="lighting-build" href="#build">Build this map</a><a class="lighting-profiles" href="#shadow-profiles">Edit scenery shadows</a><a class="lighting-atmosphere" href="#scenes">Ambient lighting</a></div>
         <p class="lighting-status" role="status" aria-live="polite">Choose a map.</p>
         <div class="asset-discard lighting-discard" hidden><p>Discard the unsaved changes to continue?</p><button type="button" class="lighting-discard-yes">Discard changes</button><button type="button" class="lighting-discard-no">Keep editing</button></div>
         <div class="lighting-workspace" hidden><div class="lighting-map-column"><div class="lighting-tools" role="group" aria-label="Map tools"></div><p class="lighting-mode-hint field-hint" role="status" aria-live="polite"></p><div class="lighting-map-host"></div><div class="lighting-view-controls"></div><p class="lighting-preview-status field-hint" role="status"></p></div><aside class="lighting-inspector"><div class="world-content"></div><details class="lighting-object-browser"><summary>Map objects <span class="lighting-count"></span></summary><label for="lighting-search">Search objects</label><input type="search" id="lighting-search"><label for="lighting-filter">Show</label><select id="lighting-filter"><option value="">Lights and shadows</option><option value="light">Light sources</option><option value="shadow">Shadow blockers</option></select><div class="world-list" aria-label="Lighting objects"></div></details></aside></div>`;
@@ -66,7 +66,11 @@
             signal: AbortSignal.timeout(45000), ...(body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {})});
         const value = await response.json();if (!response.ok) throw new Error(value.error || 'Lighting could not load. Try again.');return value;
     }
+    function linkProfiles(id) {
+        if (id) $('.lighting-profiles').href = '#shadow-profiles/?map=' + encodeURIComponent(id);
+    }
     async function load(id) {
+        linkProfiles(id);
         busy = true;controls();status('Loading lights and shadows…');
         try {
             const [result, catalog] = await Promise.all([request(null, id), fetchData('./api/catalog').then(r => r.ok ? r.json() : null).catch(() => null)]);
@@ -82,6 +86,7 @@
         finally {busy = false;controls();}
     }
     async function boot(params) {
+        linkProfiles(params.get('map'));
         if (!loaded) {
             if (booting) return booting;
             booting = request().then(catalog => {$('#lighting-map').replaceChildren(...catalog.maps.map(id => el('option', id, {value: id})));loaded = true;}).catch(error => status(error.message, true)).finally(() => {booting = null;});
