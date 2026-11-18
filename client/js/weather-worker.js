@@ -28,22 +28,97 @@
         result.opacity = night + (1 - night) * clamp(daylight);
         return result;
     }
-    // A broad cloud bank crosses the line from the player to the sun. Nearby
-    // players see the same bank; pinning the day/night clock preserves its drift.
-    function sunlightCover(weather, daylight, x, y, milliseconds, reducedMotion) {
-        const density = clamp((weather.cloudy || 0) + (weather.rain || 0) * .85);
-        if (!density || daylight <= 0) return 0;
-        const seconds = reducedMotion ? 0 : milliseconds / 1000;
-        const wind = weather.wind || 0;
-        const east = (x - seconds * (11 + 13 * wind)) / 82;
-        const north = (y - seconds * 3) / 116;
-        const bank = .5 + .33 * Math.sin(east + north) + .17 * Math.sin(east * .63 - north * 1.4);
-        return clamp(daylight) * density * (.12 + .88 * smooth(bank));
-    }
     function hash(x, y, seed) {
         let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(seed, 1274126177);
         n = Math.imul(n ^ (n >>> 13), 1274126177);
         return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+    }
+    const mix = (a, b, t) => a + (b - a) * t;
+    function noise(x, y, seed) {
+        const col = Math.floor(x), row = Math.floor(y);
+        const u = smooth(x - col), v = smooth(y - row);
+        return mix(mix(hash(col, row, seed), hash(col + 1, row, seed), u),
+            mix(hash(col, row + 1, seed), hash(col + 1, row + 1, seed), u), v);
+    }
+    function cloudBank(x, y) {
+        const large = noise(x / 125, y / 95, 51);
+        const lobes = noise(x / 55, y / 46, 19);
+        const edge = noise(x / 27, y / 31, 32);
+        return smooth((.59 * large + .32 * lobes + .09 * edge - .34) / .32);
+    }
+    const cloudStep = 12;
+    let cloudField;
+    function prepareCloudLight(viewport, weather, daylight, milliseconds, reducedMotion) {
+        const density = clamp((weather?.cloudy || 0) + (weather?.rain || 0) * .85);
+        const strength = Math.round(255 * clamp(daylight) * density);
+        if (!strength || !viewport.width || !viewport.height) return null;
+        const seconds = reducedMotion ? 0 : milliseconds / 1000;
+        const driftX = seconds * (6 + 9 * (weather.wind || 0)), driftY = seconds * 1.8;
+        // The samples travel with the clouds. Between cell crossings the exact
+        // same small bitmap slides; cameras sampling a shared world point agree.
+        const col = Math.floor((viewport.x - driftX) / cloudStep) - 1;
+        const row = Math.floor((viewport.y - driftY) / cloudStep) - 1;
+        const width = Math.ceil(viewport.width / cloudStep) + 4;
+        const height = Math.ceil(viewport.height / cloudStep) + 4;
+        let field = cloudField;
+        if (!field || width !== field.width || height !== field.height) {
+            field = cloudField = {width, height, step: cloudStep, bank: new Uint8Array(width * height),
+                values: new Uint8Array(width * height)};
+        }
+        field.x = col * cloudStep + driftX; field.y = row * cloudStep + driftY;
+        field.daylight = clamp(daylight);
+        const moved = field.col !== col || field.row !== row;
+        if (moved) {
+            for (let y = 0, i = 0; y < height; y++) for (let x = 0; x < width; x++, i++) {
+                field.bank[i] = Math.round(255 * cloudBank((col + x) * cloudStep, (row + y) * cloudStep));
+            }
+            field.col = col; field.row = row;
+        }
+        if (moved || strength !== field.strength) {
+            for (let i = 0; i < field.values.length; i++) field.values[i] = Math.round(field.bank[i] * strength / 255);
+            field.strength = strength;
+            field.paintDirty = true;
+        }
+        return field;
+    }
+    function cloudCoverAt(field, worldX, worldY) {
+        if (!field) return 0;
+        const {x, y, width, height, step, values} = field;
+        const u = Math.max(0, Math.min(width - 1, (worldX - x) / step));
+        const v = Math.max(0, Math.min(height - 1, (worldY - y) / step));
+        const col = Math.floor(u), row = Math.floor(v), next = Math.min(col + 1, width - 1);
+        const i = row * width, j = Math.min(row + 1, height - 1) * width;
+        return mix(mix(values[i + col], values[i + next], u - col),
+            mix(values[j + col], values[j + next], u - col), v - row) / 255;
+    }
+    function drawCloudLight(ctx, field, cameraX, cameraY, operation = 'source-over') {
+        if (!field) return;
+        if (!field.canvas) {
+            field.canvas = new OffscreenCanvas(field.width, field.height);
+            field.context = field.canvas.getContext('2d');
+            field.pixels = field.context.createImageData(field.width, field.height);
+        }
+        if (field.paintDirty) {
+            const pixels = field.pixels.data;
+            for (let i = 0, p = 0; i < field.bank.length; i++, p += 4) {
+                const bank = field.bank[i] / 255;
+                const shade = .48 * smooth((bank - .14) / .82);
+                const sun = .22 * (1 - smooth((bank - .02) / .57));
+                const alpha = shade + sun, warm = sun / alpha;
+                pixels[p] = mix(18, 255, warm);
+                pixels[p + 1] = mix(31, 216, warm);
+                pixels[p + 2] = mix(55, 143, warm);
+                pixels[p + 3] = alpha * field.strength;
+            }
+            field.context.putImageData(field.pixels, 0, 0); field.paintDirty = false;
+        }
+        ctx.save();
+        ctx.globalCompositeOperation = operation;
+        ctx.imageSmoothingEnabled = true;
+        // The weather grid's nodes coincide with texel centers.
+        ctx.drawImage(field.canvas, field.x - cameraX - field.step / 2, field.y - cameraY - field.step / 2,
+            field.width * field.step, field.height * field.step);
+        ctx.restore();
     }
     function draw(ctx, weather, view, milliseconds) {
         if (!weather || !view || view.enabled === false) return;
@@ -55,7 +130,10 @@
             const b = view.bounds;
             ctx.beginPath(); ctx.rect((b.x - view.cameraX) * scale, (b.y - view.cameraY) * scale, b.w * scale, b.h * scale); ctx.clip();
         }
-        if (weather.cloudy > .001) {
+        // As direct daylight takes over, the shadow of the bank replaces the
+        // old foreground haze. Fade through dawn rather than popping it off.
+        const haze = weather.cloudLight ? 1 - smooth(weather.cloudLight.daylight / .4) : 1;
+        if (weather.cloudy * haze > .001) {
             clouds ||= createParallax();
             // Use a shared world origin so crossing outdoor scene boundaries cannot
             // reposition the cloud field. The enclosing weather pass clips the scene.
@@ -64,7 +142,7 @@
                 {width:512,height:384,factorX:.82,factorY:.88,opacity:.12,driftX:.55,driftY:.12},
                 {width:384,height:320,factorX:1.28,factorY:1.2,opacity:.38,driftX:1.1,driftY:.22,offsetX:96,offsetY:64}
             ].map(layer=>({...layer,image:'/img/parallax/clouds.png',plane:'foreground',nightOpacity:1,
-                opacity:layer.opacity*weather.cloudy,driftX:layer.driftX+wind*2}));
+                opacity:layer.opacity*weather.cloudy*haze,driftX:layer.driftX+wind*2}));
             clouds.foreground(ctx,{scenes:[{x:0,y:0,w:65536,h:65536,layers}]},view);
         }
         // Long, soft shafts have a stable world origin and a very slow sway.
@@ -112,5 +190,5 @@
         }
         ctx.restore();
     }
-    return {sample, draw, sunlightCover};
+    return {sample, draw, prepareCloudLight, cloudCoverAt, drawCloudLight};
 });

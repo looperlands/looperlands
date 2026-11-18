@@ -354,7 +354,7 @@ let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
 let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
 let framePending = false, nextFrameTime;
-let frameWeather, frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
+let frameWeather, frameWeatherScene, frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
     if (framePending) return;
@@ -544,19 +544,28 @@ onmessage = (e) => {
         const animationClock = (e.data.serverTime ?? 0) + frameTime;
         const clock = e.data.worldTime ?? animationClock;
         const atmosphere = authoredLightAt(scene, clock);
-        const weatherScene = previewWeatherScene(shadowScene || scene, e.data.previewWeather);
-        frameWeather = sampleSceneWeather(weatherScene, view, clock, e.data.mapId, lightOptions);
-        if (frameWeather && (frameWeather.cloudy || frameWeather.rain)) {
-            if (!self.SceneEnvironment) importScripts('sceneenvironment.js');
-            if (self.SceneEnvironment.outdoors(shadowScene || scene)) {
-                const daylight = sceneDaylight(weatherScene, clock, e.data.mapId);
-                frameWeather.sunCover = self.SceneWeather.sunlightCover(frameWeather, daylight, e.data.player.x + 8,
-                    e.data.player.y + 16, animationClock, view.reducedMotion);
+        frameWeatherScene = previewWeatherScene(shadowScene || scene, e.data.previewWeather);
+        frameWeather = sampleSceneWeather(frameWeatherScene, view, clock, e.data.mapId, lightOptions);
+        const cloudy = frameWeather && (frameWeather.cloudy || frameWeather.rain);
+        if (cloudy && !self.SceneEnvironment) importScripts('sceneenvironment.js');
+        const outdoorClouds = cloudy && boundedScene(frameWeatherScene) && self.SceneEnvironment.outdoors(frameWeatherScene);
+        frameSky = null;
+        if (inspect || skyOptions || outdoorClouds) {
+            if (!self.HeightShadows) importScripts('height-shadows-worker.js');
+            const skyScene = shadowScene || scene, mapId = e.data.mapId;
+            const skyAtmosphere = skyScene === scene ? atmosphere : authoredLightAt(skyScene, clock);
+            const daylight = skyAtmosphere?.daylight ?? cycleDaylight(mapId, clock);
+            const legacyCycle = !skyAtmosphere && mapId !== 'main';
+            const cycle = legacyCycle ? {dawn: 0, dusk: 12, duskDuration: 0} : skyScene.authoringAtmosphere?.dayNight;
+            frameSky = self.HeightShadows.skyLight(clock, cycle, daylight);
+            if (outdoorClouds && frameSky.sun && daylight > 0) {
+                const viewport = {x: -Math.round(-view.cameraX), y: -Math.round(-view.cameraY),
+                    width: canvases.background.width, height: canvases.background.height};
+                frameWeather.cloudLight = self.SceneWeather.prepareCloudLight(viewport, frameWeather, daylight, animationClock, view.reducedMotion);
+                frameSky.cloudField = frameWeather.cloudLight;
             }
         }
-        frameSky = null;
-        const shadowSurface = (inspect || skyOptions) && renderSkyShadows(view, shadowScene, clock,
-            shadowScene === scene ? atmosphere : authoredLightAt(shadowScene, clock), profileOptions);
+        const shadowSurface = (inspect || skyOptions) && renderSkyShadows(view, shadowScene, frameSky, profileOptions);
         framePointShadows = !inspect && view && lightOptions && (lightOptions.shadows !== false || lightOptions.playerShadow !== false)
             ? {view, scene, mapId: e.data.mapId, options: lightOptions, pass: skyOptions ? heightShadows : null} : null;
         setSkyTerrain(bakedShadowMask && skyOptions && skyOptions.shadows !== false ? shadowScene : null);
@@ -613,9 +622,13 @@ onmessage = (e) => {
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'source-over';
         composingWorld = false;
-        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY});
+        const foregroundView = {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY};
+        if (frameWeather?.cloudLight) {
+            foregroundView.shadePlacedForeground = ctx => drawFrameClouds(ctx, view.cameraX, view.cameraY, scale, 'source-atop');
+        }
+        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, foregroundView);
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, clock, scene);
-        if (frameWeather) drawSceneWeather(combinedCtx, weatherScene, view, clock, animationClock, frameWeather);
+        if (frameWeather) drawSceneWeather(combinedCtx, frameWeatherScene, view, clock, animationClock, frameWeather);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
         if (e.data.combatFeedback?.hitFeel?.length) {
             if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');
@@ -1001,19 +1014,10 @@ function authoredLightAt(scene, clock) {
     return worldClock.atmosphereLight(scene.authoringAtmosphere, clock);
 }
 
-function renderSkyShadows(view, scene, clock, atmosphere, options) {
+function renderSkyShadows(view, scene, sky, options) {
     const inspect = options.inspectShadowProxies === true;
     const shadows = options.shadows !== false, playerShadow = options.playerShadow !== false;
     if (!inspect && !shadows && !playerShadow) return;
-    const legacyCycle = !atmosphere && bodyMap.mapId !== 'main';
-    const daylight = atmosphere?.daylight ?? cycleDaylight(bodyMap.mapId, clock);
-    const cycle = legacyCycle ? {dawn: 0, dusk: 12, duskDuration: 0} : scene.authoringAtmosphere?.dayNight;
-    const sky = self.HeightShadows.skyLight(clock, cycle, daylight);
-    if (sky.sun && frameWeather?.sunCover) {
-        sky.cloudCover = frameWeather.sunCover;
-        sky.strength *= 1 - .68 * sky.cloudCover;
-    }
-    frameSky = sky;
     const canvas = canvases.background;
     const scenery = frameShadowBodies(view, canvas);
     return heightShadows.draw(canvas, view, scene, sky, view.entityData, sprites, {shadows, playerShadow}, scenery, inspect);
@@ -1087,6 +1091,15 @@ function preparePointShadows(state) {
     return state.pass;
 }
 
+function drawFrameClouds(ctx, cameraX, cameraY, scale, operation) {
+    const x = -Math.round(-cameraX), y = -Math.round(-cameraY);
+    ctx.save();
+    if (scale !== 1) ctx.scale(scale, scale);
+    clipToScene(ctx, frameWeatherScene, x, y);
+    self.SceneWeather.drawCloudLight(ctx, frameWeather.cloudLight, x, y, operation);
+    ctx.restore();
+}
+
 function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime,
     atmosphereLight = authoredLightAt(scene, worldTime ?? serverTime + performance.now())) {
 
@@ -1111,7 +1124,9 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         state = self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now());
     }
     if (state && options?.ambience !== false) {
-        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - state.darkness - .17 * (state.sunCover || 0));
+        // Night haze gives way to the spatial daylight pass through dawn and dusk.
+        const haze = 1 - (state.cloudLight?.daylight || 0);
+        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - state.darkness * haze);
     }
     // Clear the light canvas
     let canvas = canvases['lighting'];
@@ -1134,13 +1149,17 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     ctx.fillStyle = `rgba(${rgb.join(',')}, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Local emitters add their light after the patches of sunlight and cloud shade.
+    if (state?.cloudLight) drawFrameClouds(ctx, cameraX, cameraY, 1, 'source-over');
+
     const time = performance.now();
     // Panels share one screen-space direction sampled at the player's feet.
     // Reuse the visible emitters and the sky direction that this frame already drew.
     const samplePanels = composingWorld && time >= nextPanelSample;
     let panelX = 3, panelY = 6, brightest = .02;
     if (samplePanels && frameSky?.strength > .02) {
-        brightest = frameSky.strength * 3;
+        const cover = frameSky.cloudField ? self.SceneWeather.cloudCoverAt(frameSky.cloudField, playerPosition.x + 8, playerPosition.y + tilesize) : 0;
+        brightest = 3 * (cover ? self.HeightShadows.coveredSunStrength(frameSky.strength, cover) : frameSky.strength);
         panelX = -frameSky.x * 7;
         panelY = -frameSky.y * 12;
     }

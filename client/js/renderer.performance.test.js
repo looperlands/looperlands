@@ -850,13 +850,14 @@ test('a slower tileset load cannot replace the active profile after changing map
     expect(api.self.postMessage).toHaveBeenLastCalledWith({type: 'shadowProxyAtlas', available: false, ready: false});
 });
 
-test('daytime cloud cover dims outdoor ambient and sun casts while preserving the lamp geometry', async () => {
+test('terrain lighting and projected sun shadows use the same outdoor cloud field before local lights', async () => {
     const worker = setup(), api = worker.sandbox;
     const sky = [], lamps = [], weather = {...require('./sceneenvironment').defaults.weather, type:'cloudy', intensity:1};
     api.fetch = async () => ({blob: () => ({})});
     api.createImageBitmap = async image => image;
     api.self.SceneEnvironment = require('./sceneenvironment');
-    api.self.SceneWeather = {...require('./weather-worker'), draw() {}};
+    const drawCloudLight = jest.fn();
+    api.self.SceneWeather = {...require('./weather-worker'), draw() {}, drawCloudLight};
     api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
         constructor() { this.pointFrame = {}; }
         draw(canvas, view, scene, light) { sky.push(light); }
@@ -870,27 +871,39 @@ test('daytime cloud cover dims outdoor ambient and sun casts while preserving th
     packet.mapId = 'main'; packet.worldTime = 9 * 150000;
     packet.scene = {...packet.scene,dn_cycle:true,weather};
     Object.assign(options,{shadows:true,ambience:true,playerShadow:true});
-    function light() { worker.send(packet); return vm.runInContext('GLOBAL_LIGHT_INTENSITY',api); }
-    const underCloud = light(), cloudy = sky.at(-1), originalLamps = [...lamps];
-    expect(cloudy.cloudCover).toBeGreaterThan(0);
-    // Local weather replaces the authored preset until the tester restores Map weather.
+    const renderFrame = () => worker.send(packet);
+    renderFrame();
+    const cloudy = sky.at(-1), originalLamps = [...lamps];
+    expect(drawCloudLight).toHaveBeenCalledWith(worker.canvases.lighting.ctx, cloudy.cloudField, expect.any(Number), expect.any(Number), 'source-over');
+    const min = Math.min(...cloudy.cloudField.values), max = Math.max(...cloudy.cloudField.values);
+    expect(max - min).toBeGreaterThan(100);
+    // The base sun strength stays available to receivers in gaps between banks.
     packet.previewWeather = 'clear';
-    lamps.length=0;
-    expect(light()).toBeGreaterThan(underCloud);
-    expect(sky.at(-1).strength).toBeGreaterThan(cloudy.strength);
+    lamps.length = 0;
+    renderFrame();
+    expect(sky.at(-1).strength).toBe(cloudy.strength);
+    expect(sky.at(-1).cloudField).toBeUndefined();
     expect(lamps).toEqual(originalLamps);
+    expect(drawCloudLight).toHaveBeenCalledTimes(1);
     expect(packet.scene.weather).toBe(weather);
     packet.previewWeather = '';
-    expect(light()).toBe(underCloud);
-    options.ambience = false; light();
-    expect(sky.at(-1).cloudCover).toBeUndefined();
-    options.ambience = true; packet.worldTime = 20 * 150000; light();
+    renderFrame();
+    expect(drawCloudLight).toHaveBeenCalledTimes(2);
+    options.ambience = false; renderFrame();
+    expect(sky.at(-1).cloudField).toBeUndefined();
+    options.ambience = true; packet.worldTime = 20 * 150000; renderFrame();
     expect(sky.at(-1).sun).toBe(false);
-    expect(sky.at(-1).cloudCover).toBeUndefined();
+    expect(sky.at(-1).cloudField).toBeUndefined();
     const count = sky.length;
-    packet.scene.weatherExposure='indoor'; light();
+    packet.scene.weatherExposure = 'indoor'; packet.worldTime = 9 * 150000; renderFrame();
     expect(sky).toHaveLength(count);
-    expect(vm.runInContext('frameWeather.sunCover',api)).toBeUndefined();
+    expect(drawCloudLight).toHaveBeenCalledTimes(2);
+    // Clouds also shade an outdoor map that has no registered scenery height atlas.
+    await worker.send({type:'setObstacles',obstacles:[],bodyMap:null});
+    packet.scene.weatherExposure = 'outdoor';
+    renderFrame();
+    expect(drawCloudLight).toHaveBeenCalledTimes(3);
+    expect(sky).toHaveLength(count);
 });
 
 test('outdoor rectangles enable preview weather and sun only on the selected map and outside authored rooms', async () => {
@@ -898,7 +911,7 @@ test('outdoor rectangles enable preview weather and sun only on the selected map
     api.fetch = async () => ({blob: () => ({})});
     api.createImageBitmap = async image => image;
     api.self.SceneEnvironment = require('./sceneenvironment');
-    api.self.SceneWeather = {...require('./weather-worker'), draw() {}};
+    api.self.SceneWeather = {...require('./weather-worker'), draw() {}, drawCloudLight: jest.fn()};
     api.self.HeightShadows = {...require('./height-shadows-worker'), Pass: class {
         constructor() { this.pointFrame = {}; }
         prepare() {}
@@ -913,7 +926,7 @@ test('outdoor rectangles enable preview weather and sun only on the selected map
     packet.renderData.find(layer => layer.id === 'lights').options.shadows = true;
     vm.runInContext('worldClock = self.WorldTime', api);
     worker.send(packet);
-    expect(sky).toHaveBeenCalledWith(expect.objectContaining(area), expect.objectContaining({sun: true, cloudCover: expect.any(Number)}));
+    expect(sky).toHaveBeenCalledWith(expect.objectContaining(area), expect.objectContaining({sun: true, cloudField: expect.objectContaining({values: expect.any(Uint8Array)})}));
     packet.scene = {...area, weatherExposure: 'indoor', darkness: .8};
     worker.send(packet);
     expect(vm.runInContext('frameWeather', api)).toBeUndefined();

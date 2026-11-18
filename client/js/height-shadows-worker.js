@@ -39,6 +39,10 @@
         return {x: Math.cos(angle) * reach, y: -maxNorthReach + .28 * elevation, strength, sun};
     }
 
+    function coveredSunStrength(strength, cover) {
+        return strength * (1 - .68 * cover);
+    }
+
     function bodyHeight(rise, front, slope) {
         return Math.min(maxHeight, Math.max(0, Math.round(Math.min(rise, front) + Math.max(0, rise - front) * slope)));
     }
@@ -330,7 +334,8 @@
     function shade(field, left, top, mask, light, buffers = shadowBuffers(field, mask)) {
         const {face, ground, width, height} = field;
         const {peaks, blockerHeights, coverage} = buffers;
-        const cloud = light.cloudCover || 0, border = cloud > 0 ? cloudFeather : feather;
+        const clouds = light.cloudField;
+        const border = clouds ? cloudFeather : feather;
         const raised = projectRaised(field, light, buffers, left, top, mask, border);
         const sampleWidth = mask.width + 2 * border, sampleHeight = mask.height + 2 * border;
         const horizontal = Math.abs(light.x) >= Math.abs(light.y);
@@ -447,10 +452,42 @@
                 coverage[i] = 255 * light.strength * (1 - .28 * distance) * Math.min(1, clearance / (4 + 8 * distance));
             }
         }
-        resolveCoverage(field, x, y, mask, coverage, border, cloud);
+        let cover;
+        if (clouds) {
+            cover = buffers.clouds ??= new Uint8Array(mask.width * (mask.height + 2 * cloudFeather));
+            sampleCloudRows(clouds, left, top - border, mask.width, mask.height + 2 * border, cover);
+        }
+        resolveCoverage(field, x, y, mask, coverage, border, cover);
     }
 
-    function resolveCoverage(field, x, y, mask, coverage, border, cloud) {
+    // Expand the coarse weather field once for both tent passes. Across each cell the
+    // bilinear sample is a linear ramp. Integer world coordinates keep crops identical.
+    function sampleCloudRows(grid, left, top, width, height, output) {
+        const {step, values} = grid;
+        const inverseArea = 1 / (step * step);
+        const start = left - grid.x;
+        const firstCell = Math.floor(start / step), firstOffset = start - firstCell * step;
+        for (let row = 0, target = 0; row < height; row++) {
+            const fy = Math.max(0, Math.min((grid.height - 1) * step, top + row - grid.y));
+            const iy = Math.floor(fy / step), offsetY = fy - iy * step;
+            const upper = iy * grid.width, lower = Math.min(iy + 1, grid.height - 1) * grid.width;
+            let col = 0, cell = firstCell, offset = firstOffset;
+            while (col < width) {
+                const ix = Math.max(0, Math.min(cell, grid.width - 1));
+                const next = Math.max(0, Math.min(cell + 1, grid.width - 1));
+                const a = values[upper + ix] * (step - offsetY) + values[lower + ix] * offsetY;
+                const b = values[upper + next] * (step - offsetY) + values[lower + next] * offsetY;
+                const delta = b - a;
+                let sum = a * step + delta * offset;
+                const end = Math.min(width, col + Math.ceil(step - offset));
+                for (; col < end; col++, target++, sum += delta) output[target] = Math.round(sum * inverseArea);
+                cell++;
+                offset = start + col - cell * step;
+            }
+        }
+    }
+
+    function resolveCoverage(field, x, y, mask, coverage, border, cover) {
         const {width, face} = field;
         // The halo is traced in world coordinates, so moving the camera cannot
         // change an edge. Under cloud, blend the native tent with a wider one
@@ -460,6 +497,7 @@
             const line = row * stride;
             for (let col = 0; col < mask.width; col++) {
                 const i = line + col, center = i + border;
+                const cloud = cover ? cover[row * mask.width + col] / 255 : 0;
                 const world = (y + row) * width + x + col + border;
                 let total = 16 * coverage[center];
                 if (!face[world] && !face[world - 2] && !face[world + 2]) {
@@ -478,6 +516,7 @@
         for (let row = 0, pixel = 3; row < mask.height; row++) {
             for (let col = 0; col < mask.width; col++, pixel += 4) {
                 const center = (row + border) * stride + col;
+                const cloud = cover ? cover[(row + border) * mask.width + col] / 255 : 0;
                 const world = (y + row + border) * width + x + col + border;
                 let total = 16 * coverage[center];
                 if (!face[world] && !face[world - 2 * width] && !face[world + 2 * width]) {
@@ -491,7 +530,7 @@
                         total += cloud * (broad - sharp);
                     }
                 }
-                mask.data[pixel] = total / 16;
+                mask.data[pixel] = cloud ? coveredSunStrength(total / 16, cloud) : total / 16;
             }
         }
     }
@@ -707,5 +746,5 @@
             return frame.heldField;
         }
     }
-    return {Pass, skyLight, casterClip, casterDraw, bodyHeight, makeStamp, makeActorStamp, readProxyTile, place, shade};
+    return {Pass, skyLight, coveredSunStrength, casterClip, casterDraw, bodyHeight, makeStamp, makeActorStamp, readProxyTile, place, shade};
 });

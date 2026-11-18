@@ -76,21 +76,88 @@ test('cloudy renders both Beach layers with wind, clipping and reduced-motion pr
         expect(state.scenes[0].layers[0].driftX).toBeCloseTo(1.35);
         expect(state.scenes[0].layers[1].driftX).toBeCloseTo(1.9);
         foreground.mockClear();weather.draw(ctx,weather.sample(E.defaults.weather,1000),view,1000);
+        const passing = {...weather.sample({...E.defaults.weather,type:'cloudy',intensity:.5},1000),
+            cloudLight:{daylight:1}};
+        weather.draw(ctx,passing,view,1000);
         weather.draw(ctx,{cloudy:1},{...view,enabled:false},1000);
         expect(foreground).not.toHaveBeenCalled();
+        weather.draw(ctx,{...passing,cloudLight:{daylight:.2}},view,1000);
+        expect(foreground.mock.calls[0][1].scenes[0].layers[1].opacity).toBeCloseTo(.095);
     });
     jest.dontMock('./parallax-renderer-worker');
 });
 
-test('cloud banks cross the sunlight smoothly on a shared clock and freeze with reduced motion', () => {
-    const clouds = Weather.sample({...E.defaults.weather, type:'cloudy', intensity:1}, 0);
-    const covered = t => Weather.sunlightCover(clouds, 1, 600, 350, t, false);
-    const samples = Array.from({length: 121}, (_, i) => covered(i * 500));
-    expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(.55);
-    expect(Math.abs(covered(5000) - covered(5017))).toBeLessThan(.003);
-    expect(Math.abs(covered(5000) - Weather.sunlightCover(clouds, 1, 601, 350, 5000, false))).toBeLessThan(.01);
-    expect(Weather.sunlightCover(clouds, 0, 600, 350, 5000, false)).toBe(0);
-    expect(Weather.sunlightCover({cloudy:0, rain:0}, 1, 600, 350, 5000, false)).toBe(0);
-    expect(Weather.sunlightCover(clouds, 1, 600, 350, 0, true)).toBe(Weather.sunlightCover(clouds, 1, 600, 350, 8000, true));
-    expect(Weather.sunlightCover({...clouds, cloudy:0, rain:.5}, 1, 600, 350, 0, false)).toBeGreaterThan(0);
+const forest = {x:432, y:2544, width:480, height:224};
+const brokenClouds = {cloudy:.85, rain:0, wind:.4};
+
+test('a daytime viewport contains broad sunlit gaps, shaded regions and gradated cloud edges', () => {
+    const f = Weather.prepareCloudLight(forest, brokenClouds, 1, 10000, false);
+    expect(f.x).toBeLessThanOrEqual(forest.x - 12);
+    expect(f.y).toBeLessThanOrEqual(forest.y - 12);
+    expect(f.x + (f.width - 1) * f.step).toBeGreaterThanOrEqual(forest.x + forest.width + 12);
+    expect(f.y + (f.height - 1) * f.step).toBeGreaterThanOrEqual(forest.y + forest.height + 12);
+    const samples = [];
+    for (let y = 0; y < forest.height; y += 8) for (let x = 0; x < forest.width; x += 8) {
+        samples.push(Weather.cloudCoverAt(f, forest.x + x, forest.y + y));
+    }
+    for (const region of [v => v < .12, v => v > .6, v => v >= .12 && v <= .6]) {
+        expect(samples.filter(region).length).toBeGreaterThan(samples.length * .08);
+    }
+    const row = 8, col = 16, i = row * f.width + col;
+    const expected = (f.values[i] + f.values[i + 1] + f.values[i + f.width] + f.values[i + f.width + 1]) / (4 * 255);
+    expect(Weather.cloudCoverAt(f, f.x + (col + .5) * f.step, f.y + (row + .5) * f.step)).toBeCloseTo(expected, 6);
+});
+
+test('clouds follow world coordinates and wind while the camera moves, including at a server epoch', () => {
+    const time = 1794960000000, stepTime = 1600;
+    const sampleAt = (view, t, footX, footY) => Weather.cloudCoverAt(
+        Weather.prepareCloudLight(view, brokenClouds, 1, t, false), footX, footY);
+    const x = forest.x + 132, y = forest.y + 94;
+    const a = sampleAt(forest, time, x, y);
+    const panned = {...forest, x:forest.x + 47.25, y:forest.y - 19.75};
+    expect(sampleAt(panned, time, x, y)).toBeCloseTo(a, 6);
+    const dx = stepTime / 1000 * (6 + 9 * brokenClouds.wind), dy = stepTime / 1000 * 1.8;
+    expect(sampleAt(panned, time + stepTime, x + dx, y + dy)).toBeCloseTo(a, 5);
+    const frozen = Weather.prepareCloudLight(forest, brokenClouds, 1, time, true);
+    const still = Array.from(frozen.values);
+    const later = Weather.prepareCloudLight(forest, brokenClouds, 1, time + 90000, true);
+    expect(Array.from(later.values)).toEqual(still);
+    expect(Weather.prepareCloudLight(forest, brokenClouds, 0, time, false)).toBeNull();
+    expect(Weather.prepareCloudLight(forest, {cloudy:0}, 1, time, false)).toBeNull();
+    const rain = Weather.prepareCloudLight(forest, {rain:.6}, .5, time, true);
+    expect(Math.max(...rain.values)).toBeGreaterThan(55);
+    expect(Math.max(...rain.values)).toBeLessThan(67);
+});
+
+test('cloud motion reuses a small color raster with cool shade and sunlit gaps', () => {
+    const put = jest.fn(), mockCanvas = jest.fn((w,h) => ({width:w, height:h, getContext:()=>({
+        createImageData:()=>({data:new Uint8ClampedArray(w*h*4)}), putImageData:put
+    })}));
+    const oldCanvas = global.OffscreenCanvas;global.OffscreenCanvas = mockCanvas;
+    try {
+        const viewport = {x:430,y:2500,width:456,height:216};
+        const f = Weather.prepareCloudLight(viewport, brokenClouds, 1, 25, false);
+        const destination = {...context(), drawImage:jest.fn()};
+        Weather.drawCloudLight(destination, f, viewport.x, viewport.y);
+        expect(destination.globalCompositeOperation).toBe('source-over');
+        expect(mockCanvas).toHaveBeenCalledTimes(1);
+        expect(f.width*f.height).toBeLessThan(viewport.width*viewport.height/75);
+        const pixels = put.mock.calls[0][0].data;
+        let sun = 0, shade = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+            if (f.values[i / 4] < 12 && pixels[i] > 225 && pixels[i+2] < 155 && pixels[i+3] > 15) sun++;
+            if (f.values[i / 4] > 190 && pixels[i] < 25 && pixels[i+2] > 45 && pixels[i+3] > 70) shade++;
+        }
+        expect(Math.min(sun, shade)).toBeGreaterThan(10);
+        const firstX = destination.drawImage.mock.calls[0][1];
+        const later = Weather.prepareCloudLight(viewport, brokenClouds, 1, 40, false);
+        Weather.drawCloudLight(destination, later, viewport.x, viewport.y, 'source-atop');
+        expect(destination.globalCompositeOperation).toBe('source-atop');
+        expect(later.values).toBe(f.values);
+        expect(put).toHaveBeenCalledTimes(1);
+        expect(destination.drawImage.mock.calls[1][1]).toBeGreaterThan(firstX);
+        expect(destination.imageSmoothingEnabled).toBe(true);
+    } finally {
+        if (oldCanvas) global.OffscreenCanvas = oldCanvas; else delete global.OffscreenCanvas;
+    }
 });

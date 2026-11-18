@@ -15,6 +15,7 @@
     const rasters = new Map(), imageIds = new WeakMap();
     const maxRasterBytes = 16 * 1024 * 1024;
     let rasterBytes = 0, nextImageId = 0;
+    let foregroundGroup;
     const createCanvas = options.createCanvas || ((width, height) => new OffscreenCanvas(width, height));
     const now = options.now || (() => performance.now());
     const loadImage = options.loadImage || (async source => {
@@ -144,10 +145,6 @@
     }
 
     function drawLayer(ctx, layer, scene, view, clip, time, brightness) {
-        if (layer.placed) {
-            for (const sprite of placedSprites(layer, scene, view, clip, time)) drawSprite(ctx, sprite, clip, view.scale, view.scale, brightness);
-            return;
-        }
         const image = imageFor(layer.image);
         if (!image) return;
         const scale = view.scale;
@@ -247,7 +244,7 @@
 
     function drawSprite(ctx, sprite, clip, scale, rasterScale = scale, brightness = 1) {
         ctx.save();
-        applyClip(ctx, clip, scale);
+        if (clip) applyClip(ctx, clip, scale);
         ctx.globalAlpha *= sprite.opacity;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'low';
@@ -350,11 +347,26 @@
         return result;
     }
 
+    function startForegroundGroup(canvas) {
+        if (!foregroundGroup) foregroundGroup = createCanvas(canvas.width, canvas.height);
+        if (foregroundGroup.width !== canvas.width) foregroundGroup.width = canvas.width;
+        if (foregroundGroup.height !== canvas.height) foregroundGroup.height = canvas.height;
+        const group = foregroundGroup.getContext('2d');
+        group.clearRect(0, 0, canvas.width, canvas.height);
+        return group;
+    }
+
+    function compositeForegroundGroup(ctx, group, shade) {
+        shade(group);
+        ctx.drawImage(foregroundGroup, 0, 0);
+    }
+
     function draw(plane, ctx, state, view) {
         if (!state || !view || ![view.cameraX, view.cameraY, view.scale].every(Number.isFinite) || view.scale <= 0) return;
         const time = view.parallaxTime ?? now();
         const viewportWidth = ctx.canvas.width / view.scale, viewportHeight = ctx.canvas.height / view.scale;
         view = {...view, viewportWidth, viewportHeight};
+        const shade = plane === 'foreground' && view.shadePlacedForeground;
         for (const scene of (Array.isArray(state.scenes) ? state.scenes : []).slice(0, 100)) {
             const clip = sceneClip(scene, view, viewportWidth, viewportHeight);
             if (!clip) continue;
@@ -364,11 +376,22 @@
                 ctx.fillStyle = scene.backgroundColor;
                 ctx.fillRect(clip.left * view.scale, clip.top * view.scale, (clip.right - clip.left) * view.scale, (clip.bottom - clip.top) * view.scale);
             }
+            let group;
             for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
                 if (!layer || (layer.plane || 'foreground') !== plane) continue;
                 // Do not show neighboring outdoor layers while the viewer is in an interior.
                 if (!visibleLayer(layer, scene, view)) continue;
-                ctx.save();
+                const sprites = layer.placed && placedSprites(layer, scene, view, clip, time);
+                if (sprites && !sprites.length) continue;
+                // Only combine adjacent placed art. A passing mist or bird keeps its position
+                // in the layer order. Display resolution preserves fractional crown sway.
+                if (group && !sprites) {
+                    compositeForegroundGroup(ctx, group, shade);
+                    group = null;
+                }
+                if (shade && sprites && !group) group = startForegroundGroup(ctx.canvas);
+                const target = group || ctx;
+                target.save();
                 // Overhead art is composed after world lighting. Dim it continuously
                 // with ambient light, while luminous effects can opt into brighter nights.
                 let layerBrightness = 1;
@@ -376,12 +399,16 @@
                     const light = finite(view.lightIntensity, 1, 0, 1);
                     const opacity = finite(layer.nightOpacity, layer.placed ? 1 : .45, 0, 1);
                     const brightness = finite(layer.nightBrightness, layer.placed ? .35 : .55, 0, 1);
-                    ctx.globalAlpha *= opacity + (1 - opacity) * light;
+                    target.globalAlpha *= opacity + (1 - opacity) * light;
                     layerBrightness = brightness + (1 - brightness) * light;
                 }
-                drawLayer(ctx, layer, scene, view, clip, time, layerBrightness);
-                ctx.restore();
+                if (sprites) {
+                    // The enclosing scene clip is applied to the direct draw or the finished group.
+                    for (const sprite of sprites) drawSprite(target, sprite, null, view.scale, view.scale, layerBrightness);
+                } else drawLayer(target, layer, scene, view, clip, time, layerBrightness);
+                target.restore();
             }
+            if (group) compositeForegroundGroup(ctx, group, shade);
             ctx.restore();
         }
     }
