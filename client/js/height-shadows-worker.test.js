@@ -292,7 +292,7 @@ test('a moving canopy casts away from its roots and leaves the cached terrain cl
         return (x, y) => mask.data[(y * canvas.width + x) * 4 + 3];
     }
     // Exercise the production surface cache across a fixed, moving and removed layer.
-    const buffers = {peaks: new Float32Array(96 * 56), blockerHeights: new Uint8Array(96 * 56),
+    const buffers = {horizon: new Uint32Array(96 * 56),
         coverage: new Uint8ClampedArray(100 * 60)};
     pass.shadowBuffers = buffers;
     expect(draw([tree])(23, 43)).toBeGreaterThan(40);
@@ -374,4 +374,27 @@ test('one cloud bank softens and dims the covered end of a sunny wall shadow', (
         const from = (58 + row - top) * width + 91 - left;
         expect(crop.slice(row * 56, (row + 1) * 56)).toEqual(mixed.slice(from, from + 56));
     }
+});
+
+test('a moving caster clears its old feathered edge across filter tiles and cropped viewports', () => {
+    const scene = field(113, 89);
+    const surface = (width, height) => ({width, height, data: new Uint8ClampedArray(width * height * 4)});
+    const original = surface(79, 51), crop = surface(37, 29);
+    const cloudField = {x: -16, y: -16, step: 16, width: 12, height: 10, values: new Uint8Array(120).fill(221)};
+    const light = {x: -.83, y: -.32, strength: .8, cloudField};
+    scene.ground[34 * scene.width + 22] = 20;
+    shade(scene, 7, 15, original, light);
+    expect(original.data.some(Boolean)).toBe(true);
+    scene.ground.fill(0);
+    scene.ground[48 * scene.width + 52] = 31;
+    shade(scene, 7, 15, original, light);
+    shade(scene, 34, 29, crop, light);
+    for (let row = 0; row < crop.height; row++) {
+        const from = ((29 - 15 + row) * original.width + 34 - 7) * 4;
+        expect(crop.data.slice(row * crop.width * 4, (row + 1) * crop.width * 4))
+            .toEqual(original.data.slice(from, from + crop.width * 4));
+    }
+    scene.ground.fill(0);
+    shade(scene, 7, 15, original, light);
+    expect(original.data.some(Boolean)).toBe(false);
 });
