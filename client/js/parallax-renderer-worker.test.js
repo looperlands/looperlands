@@ -1,20 +1,25 @@
 const createParallax = require('./parallax-renderer-worker');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const source = '/img/parallax/clouds.png';
+function mockContext(canvas) {
+    const ctx = {canvas, globalAlpha: 1, filter: 'none'};
+    for (const method of ['beginPath', 'rect', 'clip', 'drawImage', 'translate', 'rotate', 'scale', 'fillRect', 'clearRect']) ctx[method] = jest.fn();
+    const stack = [];
+    ctx.save = jest.fn(() => stack.push({globalAlpha:ctx.globalAlpha, filter:ctx.filter}));
+    ctx.restore = jest.fn(() => Object.assign(ctx, stack.pop()));
+    return ctx;
+}
 function setup(options = {}) {
     let time = 0;
     const image = {close: jest.fn()}, loadImage = jest.fn().mockResolvedValue(image);
     const canvases = [];
     const createCanvas = (width, height) => {
-        const ctx = {drawImage: jest.fn(), fillRect: jest.fn()}, canvas = {width, height, getContext: () => ctx};
+        const canvas = {width, height}, ctx = mockContext(canvas);
+        canvas.getContext = () => ctx;
         canvases.push(canvas); return canvas;
     };
     const renderer = createParallax({loadImage, createCanvas, now: () => time, fadeDuration: 0, ...options});
-    const ctx = {canvas: {width: 320, height: 240}, globalAlpha: 1, filter: 'none'};
-    for (const name of ['save', 'restore', 'beginPath', 'rect', 'clip', 'drawImage', 'translate', 'rotate', 'scale', 'fillRect']) ctx[name] = jest.fn();
-    const stack=[];
-    ctx.save=jest.fn(()=>stack.push({globalAlpha:ctx.globalAlpha,filter:ctx.filter}));
-    ctx.restore=jest.fn(()=>Object.assign(ctx,stack.pop()));
+    const ctx = mockContext({width: 320, height: 240});
     const view = {cameraX: 100, cameraY: 200, scale: 1};
     const layer = {image: source, width: 400, height: 400, factorX: 0.5, factorY: 1.5};
     const state = {scenes: [{x: 0, y: 0, w: 100, h: 100, layers: [layer]}]};
@@ -118,6 +123,42 @@ test('fractional camera motion moves opaque canopy and roots continuously on bot
         expect(after[2] - before[2]).toBeCloseTo(-0.2 * 1.13, 8);
         expect(s.ctx.globalAlpha).toBe(1);
     }
+});
+
+test('cloud light shades adjacent overhead crowns once and keeps distant effects in their original order', async () => {
+    const s = setup(), scene = s.state.scenes[0];
+    const crown = {...s.layer, placed:true, factorX:1, factorY:1, swayX:.75, width:52, height:40};
+    const sky = {...s.layer, width:68, repeatX:false, repeatY:false};
+    scene.placements = [{x:245, y:300}];
+    scene.layers = [crown, {...crown, width:53}, sky, {...crown, width:64}];
+    s.view.scale = 2;
+    Object.assign(s.ctx.canvas, {width:640, height:480});
+    await ready(s);
+    s.time(360);
+    const view = {...s.view, cameraX:100.25};
+    s.renderer.foreground(s.ctx, s.state, view);
+    const baseline = s.ctx.drawImage.mock.calls.slice();
+    expect(baseline).toHaveLength(4);
+    expect(Number.isInteger(baseline[0][1])).toBe(false);
+    const batches = [];
+    const shadePlacedForeground = jest.fn(group => {
+        batches.push(group.drawImage.mock.calls.slice());
+        group.drawImage.mockClear();
+    });
+    s.ctx.drawImage.mockClear();
+    s.renderer.foreground(s.ctx, s.state, {...view, shadePlacedForeground});
+    expect(batches).toEqual([baseline.slice(0,2),baseline.slice(3)]);
+    const [group] = shadePlacedForeground.mock.calls[0];
+    expect(group.canvas).toMatchObject({width:640, height:480});
+    expect(group.clearRect).toHaveBeenCalledTimes(2);
+    expect(s.ctx.drawImage.mock.calls).toEqual([[group.canvas,0,0],baseline[2],[group.canvas,0,0]]);
+    const count = s.canvases.length;
+    s.renderer.foreground(s.ctx, s.state, {...view, shadePlacedForeground});
+    expect(s.canvases).toHaveLength(count);
+    scene.placements[0].x = 9999;
+    shadePlacedForeground.mockClear();
+    s.renderer.foreground(s.ctx, s.state, {...view, shadePlacedForeground});
+    expect(shadePlacedForeground).not.toHaveBeenCalled();
 });
 
 test('fractional repeated images meet at identical edges at non-integer zoom', async () => {

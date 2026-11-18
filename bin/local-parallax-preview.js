@@ -48,7 +48,7 @@ const destinations = {
     'duckville-cave': {label: 'Duckville cave · firelit tree', mapId: 'duckville', x: 112, y: 428},
     birds: {label: 'Main · bird shadows', x: 42, y: 216},
     town: {label: 'Town · garden breeze', x: 42, y: 216},
-    'town-clouds': {label: 'Town · passing clouds', x: 42, y: 216, timeOfDay: '09:00', weather: 'cloudy', shadowProxies: true},
+    'town-clouds': {label: 'Town · passing clouds', x: 40, y: 212, timeOfDay: '09:00', weather: 'cloudy', shadowProxies: true},
     campfire: {label: 'Town · campfire at night', x: 77, y: 224, timeOfDay: '22:00'},
     windows: {label: 'Town · window light at night', x: 49, y: 206, timeOfDay: '22:00'},
     torch: {label: 'Megamag · cave wall torch', x: 151, y: 164},

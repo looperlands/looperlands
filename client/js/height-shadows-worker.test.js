@@ -339,20 +339,39 @@ test('an actor-only pass retains tile-owned authored blockers while the main atl
     expect(ready.ownsPointBlocker(owner, [])).toBe(true);
 });
 
-test('diffuse sunlight broadens the edge of the same cast while following its world coordinates', () => {
-    const scene = field(240, 120);
-    for (let row = 45; row < 76; row++) scene.ground.fill(48, row * 240 + 125, row * 240 + 135);
-    function sample(cloudCover, left, top, width, height) {
+test('one cloud bank softens and dims the covered end of a sunny wall shadow', () => {
+    const scene = field(300, 140);
+    for (let row = 45; row < 105; row++) scene.ground.fill(48, row * 300 + 16, row * 300 + 280);
+    scene.face[72 * 300 + 112] = 12; // A raised receiving face in the partial shadow.
+    const grid = {x:24.375, y:18.625, step:32, width:7, height:4, values:new Uint8Array(28)};
+    // Four rows of a cloud front moving diagonally across the wall.
+    for (let row = 0; row < grid.height; row++) {
+        grid.values.set([0, 0, row * 16, 128 + row * 24, 255, 255, 255], row * grid.width);
+    }
+    function sample(cloudField, left, top, width, height) {
         const result = {width, height, data:new Uint8ClampedArray(width * height * 4)};
-        shade(scene, left, top, result, {x:1, y:0, strength:.4, cloudCover});
+        shade(scene, left, top, result, {x:1, y:0, strength:.4, cloudField});
         return result.data.filter((_, i)=>i % 4 === 3);
     }
-    const clear = sample(0, 92, 38, 10, 32), cloudy = sample(1, 92, 38, 10, 32);
-    const column = pixels => Array.from({length:32}, (_, i) => pixels[i*10+5]);
-    const a = column(clear), b = column(cloudy);
-    expect(b[3]).toBeGreaterThan(0);
-    expect(a[3]).toBe(0);
-    expect(b.filter(v=>v>0 && v < b[24])).toHaveLength(12);
-    expect(b[24]).toBe(a[24]); // Full umbra: only the light's strength changes the plateau.
-    expect(sample(1, 94, 40, 4, 1)).toEqual(cloudy.slice(22,26));
+    const width = 175, left = 32, top = 36;
+    const mixed = sample(grid, left, top, width, 64);
+    const clear = sample(null, left, top, width, 64);
+    const alpha = (pixels, x, y) => pixels[(y - top) * width + x - left];
+    for (let y = top; y < top + 64; y++) expect(alpha(mixed, 40, y)).toBe(alpha(clear, 40, y));
+    expect(alpha(mixed, 180, 72)).toBeCloseTo(alpha(clear, 180, 72) * .32, 0);
+    expect(alpha(clear, 180, 41)).toBe(0);
+    expect(alpha(mixed, 180, 41)).toBeGreaterThan(0);
+    const between = [88, 104, 120, 136, 152].map(x => alpha(mixed, x, 72));
+    expect(between).toEqual([...between].sort((a,b) => b - a));
+    expect(new Set(between).size).toBe(5);
+    const {cloudCoverAt} = require('./weather-worker');
+    for (const y of [56, 72, 87]) for (let x = 56; x < 156; x++) {
+        const cover = Math.round(cloudCoverAt(grid, x, y) * 255) / 255;
+        expect(alpha(mixed, x, y)).toBe(Math.round(alpha(clear, x, y) * (1 - .68 * cover)));
+    }
+    const crop = sample(grid, 91, 58, 56, 9);
+    for (let row = 0; row < 9; row++) {
+        const from = (58 + row - top) * width + 91 - left;
+        expect(crop.slice(row * 56, (row + 1) * 56)).toEqual(mixed.slice(from, from + 56));
+    }
 });
