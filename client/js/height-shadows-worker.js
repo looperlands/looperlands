@@ -10,6 +10,7 @@
     const marginX = Math.ceil(maxHeight * maxReach) + 2;
     const marginY = Math.ceil(maxHeight * maxNorthReach) + 2;
     const cacheStep = 48;
+    const coverageTile = 16; // A filter reaches at most one neighbouring tile in each axis.
     const feather = 2, cloudFeather = 6; // native pixels on either side of a silhouette
     // These sprites are drawn from above, with tails lying on the ground.
     const lowAnimals = new Set(['rat', 'snake'].flatMap(name => [name, name + '_silhouette']));
@@ -50,12 +51,13 @@
     // Screen y + height is the ground coordinate beneath the receiver. Extrude
     // backwards by its physical depth to build the surface that casts shadows.
     function project(face, width, depths, raised, supports) {
-        let groundTop = Infinity, groundBottom = -Infinity;
+        let groundTop = Infinity, groundBottom = -Infinity, peakHeight = 0;
         // Adjacent raised pixels at the same elevation/depth form a horizontal
         // strip. Keep the strips separate from solids that extend to the ground.
         const elevated = raised ? {levels: [], top: Infinity, bottom: -Infinity, minZ: maxHeight} : null;
         for (let i = 0; i < face.length; i++) {
             if (!face[i]) continue;
+            peakHeight = Math.max(peakHeight, face[i], supports?.[i] || 0);
             const end = Math.floor(i / width) + face[i];
             const depth = typeof depths === 'number' ? depths : depths[i];
             if (raised?.[i]) {
@@ -73,7 +75,7 @@
             groundTop = Math.min(groundTop, end - depth);
             groundBottom = Math.max(groundBottom, end);
         }
-        if (!Number.isFinite(groundTop)) return {width, face, elevated, ground: new Uint8Array(0), groundTop: 0};
+        if (!Number.isFinite(groundTop)) return {width, face, peakHeight, elevated, ground: new Uint8Array(0), groundTop: 0};
         const ground = new Uint8Array(width * (groundBottom - groundTop + 1));
         for (let i = 0; i < face.length; i++) {
             const z = face[i];
@@ -85,7 +87,7 @@
                 if (ground[p] < peak) ground[p] = peak;
             }
         }
-        return {width, face, elevated, ground, groundTop};
+        return {width, face, peakHeight, elevated, ground, groundTop};
     }
 
     function makeStamp(rgba, width, height, body) {
@@ -209,8 +211,12 @@
 
     function place(field, stamp, worldX, worldY, flip = false, casts = true, receives = true) {
         const x = Math.round(worldX) - field.x, y = Math.round(worldY) - field.y;
-        if (receives) blit(field.face, field.width, field.height, stamp.face, stamp.width, x, y, flip);
+        if (receives) {
+            blit(field.face, field.width, field.height, stamp.face, stamp.width, x, y, flip);
+            if (field.receiverHeight !== undefined) field.receiverHeight = Math.max(field.receiverHeight, stamp.peakHeight);
+        }
         if (!casts) return;
+        if (field.casterHeight !== undefined) field.casterHeight = Math.max(field.casterHeight, stamp.peakHeight);
         blit(field.ground, field.width, field.height, stamp.ground, stamp.width, x, y + stamp.groundTop, flip);
         if (stamp.elevated?.levels.length) {
             field.raised ??= [];
@@ -219,7 +225,7 @@
     }
 
     function shadowBuffers(field, mask) {
-        return {peaks: new Float32Array(field.ground.length), blockerHeights: new Uint8Array(field.ground.length),
+        return {horizon: new Uint32Array(field.ground.length),
             coverage: new Uint8ClampedArray((mask.width + 2 * cloudFeather) * (mask.height + 2 * cloudFeather))};
     }
 
@@ -255,11 +261,7 @@
         const viewX = Math.max(0, left - field.x - border), viewY = Math.max(0, top - field.y - border);
         const endX = Math.min(field.width, left - field.x + mask.width + border);
         const endY = Math.min(field.height, top - field.y + mask.height + border);
-        let receiverHeight = 0;
-        for (let y = viewY; y < endY; y++) {
-            const end = y * field.width + endX;
-            for (let i = y * field.width + viewX; i < end; i++) if (field.face[i] > receiverHeight) receiverHeight = field.face[i];
-        }
+        const receiverHeight = field.receiverHeight ?? maxHeight;
         const x0 = Math.max(0, viewX + Math.min(0, cache.dx[receiverHeight]));
         const x1 = Math.min(field.width, endX + Math.max(0, cache.dx[receiverHeight]));
         const projectedY = receiverHeight + cache.dy[receiverHeight];
@@ -328,109 +330,49 @@
         return Object.assign(raster, {x, y, width, height, pixels, lightX: cache.lightX, lightY: cache.lightY});
     }
 
-    // The tallest obstruction along a digital ray can sit between two point
-    // samples. Cache its apparent height to the sunward edge of each block,
-    // so five probes include every native pixel across the full shadow reach.
+    // Each cell inherits the highest obstruction visible from its sunward neighbour.
+    // Store the blocker's integer height and distance along the ray together. Reading
+    // either a ground or a raised receiver then needs only its footprint lookup.
     function shade(field, left, top, mask, light, buffers = shadowBuffers(field, mask)) {
         const {face, ground, width, height} = field;
-        const {peaks, blockerHeights, coverage} = buffers;
+        const {horizon, coverage} = buffers;
         const clouds = light.cloudField;
         const border = clouds ? cloudFeather : feather;
         const raised = projectRaised(field, light, buffers, left, top, mask, border);
         const sampleWidth = mask.width + 2 * border, sampleHeight = mask.height + 2 * border;
+        const tileCols = Math.ceil(sampleWidth / coverageTile) + 1;
+        const tileCount = tileCols * (Math.ceil(sampleHeight / coverageTile) + 1);
+        if (!(buffers.occupied?.length >= tileCount)) buffers.occupied = new Uint8Array(tileCount);
+        const occupied = buffers.occupied;
+        occupied.fill(0);
         const horizontal = Math.abs(light.x) >= Math.abs(light.y);
         const reach = Math.abs(horizontal ? light.x : light.y);
         const sign = Math.sign(horizontal ? light.x : light.y) || 1;
-        const majorStride = horizontal ? 1 : width;
-        const minorStride = horizontal ? width : 1;
-        const majorSize = horizontal ? width : height;
-        const majorOrigin = horizontal ? field.x : field.y;
-        const block = Math.max(1, Math.ceil(maxHeight * reach / 4));
         const slope = reach ? (horizontal ? light.y : light.x) / reach : 0;
         const risePerPixel = reach ? 1 / reach : maxHeight;
-        const minorOffsets = new Int32Array(majorSize);
-        const nextBlock = new Int32Array(majorSize);
-        for (let i = 0; i < majorSize; i++) {
-            // Both the ray and its block boundaries are anchored to the world.
-            const q = sign * (i + majorOrigin);
-            minorOffsets[i] = Math.round(q * slope);
-            nextBlock[i] = i + sign * (block - ((q % block + block) % block));
-        }
         const x = left - field.x - border, y = top - field.y - border;
-        const farX = Math.round(maxHeight * light.x), farY = Math.round(maxHeight * light.y);
+        const castHeight = field.casterHeight ?? maxHeight;
+        const farX = Math.round(castHeight * light.x), farY = Math.round(castHeight * light.y);
         const x0 = Math.max(0, x + Math.min(0, farX) - 1);
         const x1 = Math.min(width - 1, x + sampleWidth + Math.max(0, farX) + 1);
         const y0 = Math.max(0, y + Math.min(0, farY) - 1);
-        const y1 = Math.min(height - 1, y + sampleHeight + maxHeight + Math.max(0, farY) + 1);
-        const majorMin = horizontal ? x0 : y0, majorMax = horizontal ? x1 : y1;
-        const minorMin = horizontal ? y0 : x0, minorMax = horizontal ? y1 : x1;
-        const start = sign > 0 ? majorMax : majorMin, end = sign > 0 ? majorMin : majorMax;
-        for (let i = start; sign * (i - end) >= 0; i -= sign) {
-            const minorStep = minorOffsets[i + sign] - minorOffsets[i];
-            const step = sign * majorStride + minorStep * minorStride;
-            const reset = nextBlock[i] === i + sign || i === start;
-            let index = i * majorStride + minorMin * minorStride;
-            for (let j = minorMin; j <= minorMax; j++, index += minorStride) {
-                const beyond = !reset && j + minorStep >= minorMin && j + minorStep <= minorMax;
-                const incoming = beyond ? peaks[index + step] - risePerPixel : 0;
-                if (incoming > ground[index]) {
-                    peaks[index] = incoming;
-                    blockerHeights[index] = blockerHeights[index + step];
-                } else {
-                    peaks[index] = ground[index];
-                    blockerHeights[index] = ground[index];
-                }
-            }
-        }
-        // Adjacent receivers share their last four probes. Resolve those block
-        // starts once, in the opposite order so every source is still local.
-        for (let i = end; sign * (start - i) >= 0; i += sign) {
-            if (nextBlock[i] !== i + sign * block) continue;
-            for (let j = minorMin; j <= minorMax; j++) {
-                const index = i * majorStride + j * minorStride;
-                let peak = peaks[index];
-                for (let tap = 1; tap < 4; tap++) {
-                    const k = i + tap * sign * block;
-                    if (k < majorMin || k > majorMax) break;
-                    const across = j + minorOffsets[k] - minorOffsets[i];
-                    if (across < minorMin || across > minorMax) break;
-                    const probe = k * majorStride + across * minorStride;
-                    const candidate = peaks[probe] - tap * block * risePerPixel;
-                    if (candidate > peak) {
-                        peak = candidate;
-                        blockerHeights[index] = blockerHeights[probe];
-                    }
-                }
-                peaks[index] = peak;
-            }
-        }
+        const y1 = Math.min(height - 1, y + sampleHeight + (field.receiverHeight ?? maxHeight) + Math.max(0, farY) + 1);
+        traceHorizon(field, horizon, x0, x1, y0, y1, horizontal, sign, slope, risePerPixel);
         for (let row = 0, i = 0; row < sampleHeight; row++) {
             for (let col = 0; col < sampleWidth; col++, i++) {
                 const fx = x + col, fy = y + row;
                 if (fx < 0 || fy < 0 || fx >= width || fy >= height) {coverage[i] = 0; continue;}
                 // Sloped surfaces can project several artwork rows into one ground
                 // cell. Sample the visible (front) edge of an elevated receiver.
-                const z = face[fy * width + fx], footY = fy + z + (z > 0 ? 1 : 0);
-                const first = horizontal ? fx : footY, minor = horizontal ? footY : fx;
-                let clearance = 0, rayDistance = 0;
-                if (minor >= minorMin && minor <= minorMax && first >= majorMin && first <= majorMax) {
-                    const origin = first * majorStride + minor * minorStride;
-                    clearance = peaks[origin] - z;
-                    rayDistance = blockerHeights[origin] - peaks[origin];
-                    const next = nextBlock[first];
-                    if (next >= majorMin && next <= majorMax) {
-                        const across = minor + minorOffsets[next] - minorOffsets[first];
-                        if (across >= minorMin && across <= minorMax) {
-                            const heightAtNext = z + Math.abs(next - first) * risePerPixel;
-                            const probe = next * majorStride + across * minorStride;
-                            const candidate = peaks[probe] - heightAtNext;
-                            if (candidate > clearance) {
-                                clearance = candidate;
-                                rayDistance = blockerHeights[probe] - z - clearance;
-                            }
-                        }
-                    }
+                const receiver = fy * width + fx, z = face[receiver];
+                if (!z && !horizon[receiver] && !(raised && raised.heights[fx * height + fy])) {
+                    coverage[i] = 0;
+                    continue;
                 }
+                const footY = fy + z + (z > 0 ? 1 : 0);
+                const hit = footY <= y1 ? horizon[footY * width + fx] : 0;
+                let rayDistance = (hit & 0xffff) * risePerPixel;
+                let clearance = (hit >>> 16) - rayDistance - z;
                 // Several steep roof rows may round onto the same footprint pixel.
                 // Bound the correction so a taller wall still shades its lower face.
                 if (z) {
@@ -450,6 +392,7 @@
                 // Preserve contact contrast and fade the far end of a long shadow.
                 const distance = Math.min(1, rayDistance / 90);
                 coverage[i] = 255 * light.strength * (1 - .28 * distance) * Math.min(1, clearance / (4 + 8 * distance));
+                if (coverage[i]) occupied[Math.floor(row / coverageTile) * tileCols + Math.floor(col / coverageTile)] = 1;
             }
         }
         let cover;
@@ -457,7 +400,32 @@
             cover = buffers.clouds ??= new Uint8Array(mask.width * (mask.height + 2 * cloudFeather));
             sampleCloudRows(clouds, left, top - border, mask.width, mask.height + 2 * border, cover);
         }
-        resolveCoverage(field, x, y, mask, coverage, border, cover);
+        resolveCoverage(field, x, y, mask, coverage, border, cover, occupied, tileCols);
+    }
+
+    function traceHorizon(field, horizon, x0, x1, y0, y1, horizontal, sign, slope, rise) {
+        const {ground, width} = field;
+        const majorMin = horizontal ? x0 : y0, majorMax = horizontal ? x1 : y1;
+        const minorMin = horizontal ? y0 : x0, minorMax = horizontal ? y1 : x1;
+        const majorStride = horizontal ? 1 : width, minorStride = horizontal ? width : 1;
+        const start = sign > 0 ? majorMax : majorMin, end = sign > 0 ? majorMin : majorMax;
+        const origin = horizontal ? field.x : field.y;
+        let offset = Math.round((start + origin) * sign * slope);
+        for (let major = start; sign * (major - end) >= 0; major -= sign) {
+            const next = Math.round((major + origin) * sign * slope);
+            const cross = offset - next;
+            const step = sign * majorStride + cross * minorStride;
+            let i = major * majorStride + minorMin * minorStride;
+            for (let minor = minorMin; minor <= minorMax; minor++, i += minorStride) {
+                const upstream = major !== start && minor + cross >= minorMin && minor + cross <= minorMax ? horizon[i + step] : 0;
+                const z = ground[i];
+                // High 16 bits hold the source height; low 16 bits count native ray steps.
+                const distance = (upstream & 0xffff) + 1;
+                const upstreamHeight = (upstream >>> 16) - distance * rise;
+                horizon[i] = upstreamHeight > z ? upstream + 1 : z << 16;
+            }
+            offset = next;
+        }
     }
 
     // Expand the coarse weather field once for both tent passes. Across each cell the
@@ -487,7 +455,7 @@
         }
     }
 
-    function resolveCoverage(field, x, y, mask, coverage, border, cover) {
+    function resolveCoverage(field, x, y, mask, coverage, border, cover, occupied, tileCols) {
         const {width, face} = field;
         // The halo is traced in world coordinates, so moving the camera cannot
         // change an edge. Under cloud, blend the native tent with a wider one
@@ -495,42 +463,60 @@
         const stride = mask.width + 2 * border;
         for (let row = 0; row < mask.height + 2 * border; row++) {
             const line = row * stride;
-            for (let col = 0; col < mask.width; col++) {
-                const i = line + col, center = i + border;
-                const cloud = cover ? cover[row * mask.width + col] / 255 : 0;
-                const world = (y + row) * width + x + col + border;
-                let total = 16 * coverage[center];
-                if (!face[world] && !face[world - 2] && !face[world + 2]) {
-                    const sharp = coverage[center - 2] + 4 * coverage[center - 1] + 6 * coverage[center]
-                        + 4 * coverage[center + 1] + coverage[center + 2];
-                    total = sharp;
-                    if (cloud && !face[world - 3] && !face[world + 3] && !face[world - 6] && !face[world + 6]) {
-                        const broad = coverage[center - 6] + 4 * coverage[center - 3] + 6 * coverage[center]
-                            + 4 * coverage[center + 3] + coverage[center + 6];
-                        total += cloud * (broad - sharp);
-                    }
+            const tileRow = Math.floor(row / coverageTile) * tileCols;
+            for (let start = 0; start < mask.width; start += coverageTile) {
+                const end = Math.min(mask.width, start + coverageTile);
+                const tile = tileRow + start / coverageTile;
+                if (!occupied[tile] && !occupied[tile + 1]) {
+                    coverage.fill(0, line + start, line + end);
+                    continue;
                 }
-                coverage[i] = total / 16;
+                for (let col = start; col < end; col++) {
+                    const i = line + col, center = i + border;
+                    const cloud = cover ? cover[row * mask.width + col] / 255 : 0;
+                    const world = (y + row) * width + x + col + border;
+                    let total = 16 * coverage[center];
+                    if (!face[world] && !face[world - 2] && !face[world + 2]) {
+                        const sharp = coverage[center - 2] + 4 * coverage[center - 1] + 6 * coverage[center]
+                            + 4 * coverage[center + 1] + coverage[center + 2];
+                        total = sharp;
+                        if (cloud && !face[world - 3] && !face[world + 3] && !face[world - 6] && !face[world + 6]) {
+                            const broad = coverage[center - 6] + 4 * coverage[center - 3] + 6 * coverage[center]
+                                + 4 * coverage[center + 3] + coverage[center + 6];
+                            total += cloud * (broad - sharp);
+                        }
+                    }
+                    coverage[i] = total / 16;
+                }
             }
         }
         for (let row = 0, pixel = 3; row < mask.height; row++) {
-            for (let col = 0; col < mask.width; col++, pixel += 4) {
-                const center = (row + border) * stride + col;
-                const cloud = cover ? cover[(row + border) * mask.width + col] / 255 : 0;
-                const world = (y + row + border) * width + x + col + border;
-                let total = 16 * coverage[center];
-                if (!face[world] && !face[world - 2 * width] && !face[world + 2 * width]) {
-                    const sharp = coverage[center - 2 * stride] + 4 * coverage[center - stride] + 6 * coverage[center]
-                        + 4 * coverage[center + stride] + coverage[center + 2 * stride];
-                    total = sharp;
-                    if (cloud && !face[world - 3 * width] && !face[world + 3 * width] &&
-                        !face[world - 6 * width] && !face[world + 6 * width]) {
-                        const broad = coverage[center - 6 * stride] + 4 * coverage[center - 3 * stride] + 6 * coverage[center]
-                            + 4 * coverage[center + 3 * stride] + coverage[center + 6 * stride];
-                        total += cloud * (broad - sharp);
-                    }
+            const tileRow = Math.floor(row / coverageTile) * tileCols;
+            for (let start = 0; start < mask.width; start += coverageTile) {
+                const end = Math.min(mask.width, start + coverageTile);
+                const tile = tileRow + start / coverageTile;
+                if (!occupied[tile] && !occupied[tile + 1] && !occupied[tile + tileCols] && !occupied[tile + tileCols + 1]) {
+                    for (let col = start; col < end; col++, pixel += 4) mask.data[pixel] = 0;
+                    continue;
                 }
-                mask.data[pixel] = cloud ? coveredSunStrength(total / 16, cloud) : total / 16;
+                for (let col = start; col < end; col++, pixel += 4) {
+                    const center = (row + border) * stride + col;
+                    const cloud = cover ? cover[(row + border) * mask.width + col] / 255 : 0;
+                    const world = (y + row + border) * width + x + col + border;
+                    let total = 16 * coverage[center];
+                    if (!face[world] && !face[world - 2 * width] && !face[world + 2 * width]) {
+                        const sharp = coverage[center - 2 * stride] + 4 * coverage[center - stride] + 6 * coverage[center]
+                            + 4 * coverage[center + stride] + coverage[center + 2 * stride];
+                        total = sharp;
+                        if (cloud && !face[world - 3 * width] && !face[world + 3 * width] &&
+                            !face[world - 6 * width] && !face[world + 6 * width]) {
+                            const broad = coverage[center - 6 * stride] + 4 * coverage[center - 3 * stride] + 6 * coverage[center]
+                                + 4 * coverage[center + 3 * stride] + coverage[center + 6 * stride];
+                            total += cloud * (broad - sharp);
+                        }
+                    }
+                    mask.data[pixel] = cloud ? coveredSunStrength(total / 16, cloud) : total / 16;
+                }
             }
         }
     }
@@ -610,7 +596,7 @@
             const cached = this.staticField;
             if (cached && cached.x === x && cached.y === y && cached.width === stride && cached.height === rows && cached.sceneId === scene.id) return cached;
             const length = stride * rows;
-            const field = {x, y, width: stride, height: rows, sceneId: scene.id,
+            const field = {x, y, width: stride, height: rows, sceneId: scene.id, casterHeight: 0, receiverHeight: 0,
                 face: new Uint8Array(length), ground: new Uint8Array(length)};
             if (!this.map) { this.staticField = field; return field; }
             // Include artwork just above the field whose elevated surface projects into it.
