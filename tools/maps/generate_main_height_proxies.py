@@ -2,6 +2,8 @@
 """Bake inspectable body-height atlases from the native map artwork. Requires Pillow."""
 
 import argparse
+import json
+import re
 import math
 from pathlib import Path
 from typing import NamedTuple
@@ -22,71 +24,19 @@ class Body(NamedTuple):
     slope: float
     depth: int
     shape: str = 'wall'
+    raised_above: int = 0
+    trunk: tuple = ()
+    crown_bottom: int = 0
+    foliage_colors: tuple = ()
 
 
-# The last row is the ground contact. Rows above the vertical front ascend at
-# the roof/crown slope. Bounds follow each complete object across tile seams.
-BODIES = [
-    Body((61, 32, 163, 153), 57, .43, 18, 'slate-house'),       # slate-roof timber house
-    Body((53, 162, 155, 305), 65, 0, 20, 'gable'),      # red gable
-    Body((189, 1162, 291, 1305), 70, 0, 20, 'gable'),   # blue gable
-    Body((193, 1953, 315, 2089), 66, .44, 20),   # blacksmith
-    Body((0, 1996, 80, 2112), 50, .52, 16, 'glass'),      # potion shop
-    Body((194, 163, 254, 239), 0, 0, 36, 'crown'),     # oak
-    Body((265, 492, 311, 561), 26, .74, 7),      # bare tree
-    Body((209, 637, 255, 706), 26, .74, 7),      # dead tree
-    Body((277, 1330, 310, 1395), 24, .75, 7),    # graveyard tree
-    Body((272, 0, 320, 52), 15, .38, 8, 'rock'),        # boulder
-    Body((256, 592, 304, 644), 15, .4, 7, 'rock'),       # mirrored boulder
-    Body((256, 192, 288, 224), 7, .38, 4, 'rock'), # grass-backed stones
-    Body((288, 192, 320, 224), 7, .38, 4, 'rock'),
-    Body((272, 64, 288, 80), 4, .4, 2, 'rock'),          # loose stone
-    Body((0, 113, 31, 162), 14, .46, 7),         # canvas tent
-    Body((0, 236, 34, 292), 25, .55, 8),         # covered well
-    Body((2, 310, 46, 373), 36, .5, 8),          # timber hut
-    Body((2, 486, 46, 549), 36, .5, 8),          # damaged hut
-    Body((258, 1472, 302, 1535), 36, .5, 8),     # open hut
-    Body((178, 259, 202, 303), 19, .7, 4),       # cactus
-    Body((3, 2883, 61, 2937), 54, 1, 3, 'board'),   # event board
-    Body((0, 55, 16, 79), 10, .55, 2),           # headstones
-    Body((0, 85, 16, 111), 8, .55, 2),
-    Body((254, 576, 307, 591), 8, .6, 2),        # fence
-    Body((64, 0, 80, 32), 9, .65, 2),            # palisade stake
-    Body((4, 2404, 98, 2477), 34, .5, 12),       # cottage
-    Body((3, 2486, 94, 2590), 42, .55, 10),      # windmill
-    Body((1, 1464, 45, 1535), 36, .65, 7),       # palm
-    Body((9, 1252, 40, 1317), 56, .38, 7),       # fluted stone column
-    Body((149, 2084, 173, 2111), 21, .42, 5),    # smith's barrel
-    Body((146, 2056, 175, 2075), 13, .40, 4),    # smith's anvil
-    Body((268, 656, 309, 709), 37, .38, 8),      # Town pipe and rim
-    Body((0, 569, 64, 623), 42, 0, 0, 'column'),  # four sandstone pillar variants
-    Body((0, 626, 60, 699), 18, .44, 10),        # raised fossil rib cage
-    Body((4, 392, 31, 415), 15, .42, 6),         # beach parasol and pole
-]
-
-
-# These rectangles include the displaced paint, including tiles containing only
-# the shadow. They are in atlas coordinates so the source art remains unchanged.
-SHADOW_PAINT = [
-    (60, 32, 170, 155), (52, 162, 162, 307), (188, 1162, 297, 1307),  # houses
-    (194, 205, 254, 245),                                               # oak
-    (265, 525, 312, 561), (209, 670, 255, 706), (272, 1359, 318, 1395), # bare trees
-    (272, 35, 320, 56), (256, 632, 304, 646), (272, 64, 292, 80),      # stones
-    (0, 119, 38, 164), (0, 255, 38, 295),                              # tent and well
-    (2, 325, 51, 375), (2, 501, 51, 551), (258, 1488, 307, 1537),      # huts
-    (176, 270, 208, 305), (0, 62, 24, 81), (0, 87, 24, 113),           # cactus and graves
-    (64, 29, 80, 32), (0, 1488, 72, 1536), (9, 1278, 70, 1319),         # stakes, palm and column
-    (270, 675, 320, 711), (0, 663, 60, 701),                            # pipe and ribs
-    (0, 617, 64, 624), (64, 544, 80, 624),                              # pillar feet and separate cast tiles
-    (0, 407, 32, 417),                                                  # parasol
-]
-
-
-def make_shadow_mask(source):
+def make_shadow_mask(source, regions, full_height=True):
     # Only transparent neutral shadow ink is removed. Preserve opaque grass,
     # colored glass, wood, and the shading painted onto solid surfaces.
-    mask = Image.new('RGBA', source.size)
-    for left, top, right, bottom in SHADOW_PAINT:
+    bottom = max((region[3] for region in regions), default=16)
+    height = source.height if full_height else min(source.height, math.ceil(bottom / 16) * 16)
+    mask = Image.new('RGBA', (source.width, height))
+    for left, top, right, bottom in regions:
         for y in range(top, bottom):
             for x in range(left, right):
                 red, green, blue, alpha = source.getpixel((x, y))
@@ -178,70 +128,84 @@ def slate_house_surface(x, y, body):
 def body_pixel(height, depth, elevated=False, support=0):
     # Red below its display value marks raised material. Extra red extends
     # solid support above the visible face while preserving its ground site.
+    height = min(160, max(0, height))
     red = min(255, 3 * height) - int(elevated) + max(0, support - height)
-    return red, height, 255 - depth, 255
+    return max(0, min(255, red)), height, 255 - max(0, min(255, depth)), 255
 
 
-def make_atlas(source):
-    atlas = Image.new('RGBA', source.size)
-    for body in BODIES:
-        art = source.crop(body.bounds)
-        left, top, _, _ = body.bounds
-        mask = body_silhouette(art, body.shape)
-        leaves = oak_canopy(art) if body.shape == 'crown' else None
-        if leaves is not None:
-            canopy = leaves.getbbox()
-            ground_radius_ratio = body.depth / (canopy[3] - canopy[1])
-        for x in range(art.width):
-            extent = mask.crop((x, 0, x + 1, art.height)).getbbox()
-            if not extent:
+def draw_body(atlas, source, body):
+    art = source.crop(body.bounds)
+    left, top, _, _ = body.bounds
+    mask = body_silhouette(art, body.shape)
+    leaves = None
+    if body.shape == 'crown':
+        leaves = oak_canopy(art)
+    elif body.shape == 'round-crown':
+        leaves = Image.new('L', art.size)
+        palette = set(body.foliage_colors)
+        for y in range(body.crown_bottom):
+            for x in range(art.width):
+                r, g, b, alpha = art.getpixel((x, y))
+                if alpha >= 176 and (not palette or (r, g, b) in palette):
+                    leaves.putpixel((x, y), 255)
+    if leaves is not None:
+        canopy = leaves.getbbox()
+        if not canopy:
+            raise ValueError('The selected crown contains no foliage pixels')
+        ground_radius_ratio = min(.95, body.depth / (canopy[3] - canopy[1]))
+    for x in range(art.width):
+        extent = mask.crop((x, 0, x + 1, art.height)).getbbox()
+        if not extent:
+            continue
+        base = art.height - 1
+        front, depth = body.front, body.depth
+        if body.shape == 'rock':
+            base = extent[3] - 1
+            span = (extent[3] - extent[1]) / art.height
+            front *= span
+            depth = max(1, round(depth * span))
+        elif body.shape == 'column':
+            # The cap and foot are matching ellipses, 42 native pixels apart.
+            # Their painted contour gives each variant its own near and far edge.
+            base = extent[3] - 1
+            depth = base - (extent[1] + front)
+        elif body.shape == 'gable':
+            # The ridge runs front to back. The front gable rises from
+            # both eaves to the ridge; the roof behind it has the same height.
+            front += .9 * min(x, art.width - 1 - x)
+        crown = leaves.crop((x, 0, x + 1, art.height)).getbbox() if leaves is not None else None
+        for y in range(extent[1], extent[3]):
+            if not mask.getpixel((x, y)):
                 continue
-            base = art.height - 1
-            front, depth = body.front, body.depth
-            if body.shape == 'rock':
-                base = extent[3] - 1
-                span = (extent[3] - extent[1]) / art.height
-                front *= span
-                depth = max(1, round(depth * span))
-            elif body.shape == 'column':
-                # The cap and foot are matching ellipses, 42 native pixels apart.
-                # Their painted contour gives each variant its own near and far edge.
-                base = extent[3] - 1
-                depth = base - (extent[1] + front)
-            elif body.shape == 'gable':
-                # The ridge runs front to back. The front gable rises from
-                # both eaves to the ridge; the roof behind it has the same height.
-                front += .9 * min(x, art.width - 1 - x)
-            crown = leaves.crop((x, 0, x + 1, art.height)).getbbox() if leaves is not None else None
-            for y in range(extent[1], extent[3]):
-                if not mask.getpixel((x, y)):
-                    continue
-                rise = base - y
-                z = min(rise, front) + max(0, rise - front) * body.slope
-                thickness = depth
-                # The event board's cap, panel and crossbar end above its two legs.
-                elevated = body.shape == 'board' and y < 46
-                support = 0
-                if body.shape == 'column':
-                    thickness = min(depth, y - extent[1])
-                elif body.shape == 'slate-house':
-                    z, thickness = slate_house_surface(x, y, body)
-                elif body.shape == 'crown':
-                    thickness = 3
-                    z = rise
-                    if crown and leaves.getpixel((x, y)):
-                        elevated = True
-                        z, thickness = oak_leaf_surface(y, crown, ground_radius_ratio, base - thickness / 2)
-                    elif y == 63:
-                        # The roots are visible at this scanline. Extend their central
-                        # woody core up into the leaves behind the illustrated surface.
-                        distance = (x - 29.5) / 6
-                        if abs(distance) < 1:
-                            support = round(20 + 27 * math.sqrt(1 - distance * distance))
-                z = math.floor(z + .5)
-                if z > 0:
-                    atlas.putpixel((left + x, top + y), body_pixel(z, thickness, elevated, support))
-    return atlas
+            rise = base - y
+            z = min(rise, front) + max(0, rise - front) * body.slope
+            thickness = depth
+            # The event board's cap, panel and crossbar end above its two legs.
+            elevated = ((body.shape == 'board' and y < 46) or
+                        (y < body.raised_above and not (body.trunk and body.trunk[0] <= x < body.trunk[1])))
+            support = 0
+            if body.shape == 'column':
+                thickness = min(depth, y - extent[1])
+            elif body.shape == 'slate-house':
+                z, thickness = slate_house_surface(x, y, body)
+            elif body.shape in ('crown', 'round-crown'):
+                thickness = 3
+                z = rise
+                if crown and leaves.getpixel((x, y)):
+                    elevated = True
+                    z, thickness = oak_leaf_surface(y, crown, ground_radius_ratio, base - thickness / 2)
+                elif body.shape == 'round-crown' and body.trunk[0] <= x < body.trunk[1]:
+                    support = min(160, base - body.crown_bottom // 2)
+                elif body.shape == 'crown' and y == 63:
+                    # The roots are visible at this scanline. Extend their central
+                    # woody core up into the leaves behind the illustrated surface.
+                    distance = (x - 29.5) / 6
+                    if abs(distance) < 1:
+                        support = round(20 + 27 * math.sqrt(1 - distance * distance))
+            z = math.floor(z + .5)
+            if z > 0:
+                atlas.putpixel((left + x, top + y), body_pixel(z, thickness, elevated, support))
+
 
 
 class BareTree(NamedTuple):
@@ -253,72 +217,166 @@ class BareTree(NamedTuple):
     fork_y: int
 
 
-DUCKVILLE_TREES = (
-    BareTree((528, 32, 560, 96), 15.5, 5.5, 30),
-    BareTree((560, 16, 624, 96), 32, 8, 54),
-)
+def draw_bare_tree(atlas, source, tree):
+    left, top, right, bottom = tree.bounds
+    art = source.crop(tree.bounds).getchannel('A')
+    root_top = art.height - 16
+    # Set the trunk's front and back around the middle of the painted roots.
+    ground_y = art.getbbox()[3] - 1 - round(tree.trunk_radius * .65)
+    for x in range(art.width):
+        distance = abs(x - tree.trunk_x) / tree.trunk_radius
+        half_depth = tree.trunk_radius * .65 * math.sqrt(max(0, 1 - distance * distance))
+        for y in range(root_top):
+            if not art.getpixel((x, y)):
+                continue
+            # The shaft is solid at its base and narrows toward the first
+            # fork. Outstretched limbs occupy only their illustrated height.
+            taper = min(1, .25 + .75 * y / tree.fork_y)
+            elevated = distance >= taper
+            z = round(ground_y + half_depth) - y
+            depth = 2 if elevated else max(2, round(2 * half_depth * taper))
+            atlas.putpixel((left + x, top + y), body_pixel(z, depth, elevated))
+        for row_top in (bottom - 16, bottom):
+            roots = source.crop((left + x, row_top, left + x + 1, row_top + 16)).getchannel('A')
+            contact = roots.getbbox()
+            if not contact:
+                continue
+            foot = contact[3] - 1
+            # Blend the root fan from the shaft's front at the seam to the
+            # per-column painted toe. Both root variants share the same shaft.
+            for y in range(foot):
+                if roots.getpixel((0, y)):
+                    seam = ground_y + half_depth - root_top
+                    z = max(1, round(seam * (foot - y) / foot))
+                    depth = min(z, max(1, round(2 * half_depth)))
+                    atlas.putpixel((left + x, row_top + y), body_pixel(z, depth))
 
 
-def make_duckville_atlas(source):
-    height = max(tree.bounds[3] + 16 for tree in DUCKVILLE_TREES)
+PROFILE_DIR = Path('tools/maps/height_profiles')
+SHAPES = {'wall', 'gable', 'rock', 'column', 'board', 'glass', 'crown', 'round-crown', 'slate-house', 'bare-tree'}
+
+
+def read_profile(root, tileset):
+    return json.loads((root / PROFILE_DIR / (tileset + '.json')).read_text())
+
+
+def inside_rect(bounds, size):
+    return (isinstance(bounds, (tuple, list)) and len(bounds) == 4 and all(type(n) is int for n in bounds)
+            and 0 <= bounds[0] < bounds[2] <= size[0] and 0 <= bounds[1] < bounds[3] <= size[1])
+
+
+def numeric_field(row, key, minimum, maximum, whole=False, default=None):
+    value = row.get(key, default)
+    types = (int,) if whole else (int, float)
+    if type(value) not in types or not minimum <= value <= maximum:
+        raise ValueError(f'{key} must be {"a whole number" if whole else "a number"} between {minimum} and {maximum}')
+    return value
+
+
+def body_image(source, row):
+    name = row.get('name')
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError('Give the shadow body a name')
+    shape = row.get('shape', 'wall')
+    bounds = row['bounds']
+    if shape not in SHAPES or not inside_rect(bounds, source.size):
+        raise ValueError('Choose a supported shape and bounds inside the native tilesheet')
+    l, t, r, b = bounds
+    width, height = r - l, b - t
+    bottom = b + (16 if shape == 'bare-tree' else 0)
+    if bottom > source.height:
+        raise ValueError('The alternate root row must fit on the tilesheet')
+    art = source.crop((l, t, r, bottom))
+    stamp = Image.new('RGBA', art.size)
+    local = (0, 0, width, height)
+    if shape == 'bare-tree':
+        tree = BareTree(local, numeric_field(row, 'trunkX', 0, width - .5),
+                        numeric_field(row, 'trunkRadius', .5, width), numeric_field(row, 'forkY', 1, height, whole=True))
+        if height <= 16 or not art.crop(local).getbbox():
+            raise ValueError('Choose a visible bare tree with a trunk, fork and root row')
+        draw_bare_tree(stamp, art, tree)
+    else:
+        trunk = row.get('trunk', [])
+        crown_bottom = numeric_field(row, 'crownBottom', 0, height, whole=True, default=0)
+        if shape == 'round-crown' and not (0 < crown_bottom <= height and trunk):
+            raise ValueError('Choose a crown bottom and trunk span for a round crown')
+        if trunk and not (isinstance(trunk, list) and len(trunk) == 2 and all(type(x) is int for x in trunk)
+                          and 0 <= trunk[0] < trunk[1] <= width):
+            raise ValueError('Keep the trunk span inside the selected artwork')
+        colors = []
+        for color in row.get('foliageColors', []):
+            if not isinstance(color, str) or not re.fullmatch('#[0-9a-fA-F]{6}', color):
+                raise ValueError('Use six-digit hex foliage colors')
+            colors.append(tuple(bytes.fromhex(color[1:])))
+        body = Body(local, numeric_field(row, 'front', 0, 160, whole=True), numeric_field(row, 'slope', 0, 1),
+                    numeric_field(row, 'depth', 0, 255, whole=True), shape,
+                    numeric_field(row, 'raisedAbove', 0, height, whole=True, default=0), trunk, crown_bottom, colors)
+        draw_body(stamp, art, body)
+    return stamp
+
+
+def profile_atlas(source, profile):
+    rows = profile['bodies']
+    bottom = max((r['bounds'][3] + (16 if r.get('shape') == 'bare-tree' else 0) for r in rows), default=16)
+    height = source.height if profile.get('fullHeight') else min(source.height, math.ceil(bottom / 16) * 16)
     atlas = Image.new('RGBA', (source.width, height))
-    for tree in DUCKVILLE_TREES:
-        left, top, right, bottom = tree.bounds
-        art = source.crop(tree.bounds).getchannel('A')
-        root_top = art.height - 16
-        # Set the trunk's front and back around the middle of the painted roots.
-        ground_y = art.getbbox()[3] - 1 - round(tree.trunk_radius * .65)
-        for x in range(art.width):
-            distance = abs(x - tree.trunk_x) / tree.trunk_radius
-            half_depth = tree.trunk_radius * .65 * math.sqrt(max(0, 1 - distance * distance))
-            for y in range(root_top):
-                if not art.getpixel((x, y)):
-                    continue
-                # The shaft is solid at its base and narrows toward the first
-                # fork. Outstretched limbs occupy only their illustrated height.
-                taper = min(1, .25 + .75 * y / tree.fork_y)
-                elevated = distance >= taper
-                z = round(ground_y + half_depth) - y
-                depth = 2 if elevated else max(2, round(2 * half_depth * taper))
-                atlas.putpixel((left + x, top + y), body_pixel(z, depth, elevated))
-            for row_top in (bottom - 16, bottom):
-                roots = source.crop((left + x, row_top, left + x + 1, row_top + 16)).getchannel('A')
-                contact = roots.getbbox()
-                if not contact:
-                    continue
-                foot = contact[3] - 1
-                # Blend the root fan from the shaft's front at the seam to the
-                # per-column painted toe. Both root variants share the same shaft.
-                for y in range(foot):
-                    if roots.getpixel((0, y)):
-                        seam = ground_y + half_depth - root_top
-                        z = max(1, round(seam * (foot - y) / foot))
-                        depth = min(z, max(1, round(2 * half_depth)))
-                        atlas.putpixel((left + x, row_top + y), body_pixel(z, depth))
+    for row in rows:
+        try:
+            stamp = body_image(source, row)
+        except (ValueError, KeyError, TypeError, IndexError) as error:
+            raise ValueError(f"{row.get('name', 'Scenery')}: {error}") from error
+        atlas.paste(stamp, tuple(row['bounds'][:2]), stamp)
     return atlas
 
 
-def generate(map_id):
-    artwork = ROOT / f'client/img/1/tilesheet_{map_id}.png'
-    with Image.open(artwork) as image:
-        source = image.convert('RGBA')
-    if map_id == 'duckville':
-        yield ATLAS.with_name('duckville.png'), make_duckville_atlas(source)
-    else:
-        yield ATLAS, make_atlas(source)
-        yield BAKED_SHADOWS, make_shadow_mask(source)
+def products(source, profile, tileset):
+    yield tileset + '.png', profile_atlas(source, profile)
+    if profile.get('paint'):
+        if not all(inside_rect(rect, source.size) for rect in profile['paint']):
+            raise ValueError('Keep painted shadow rectangles inside the tilesheet')
+        yield tileset + '-baked-shadows.png', make_shadow_mask(source, profile['paint'], profile.get('fullHeight', False))
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--map', choices=['main', 'duckville'], default='main', help='map tilesheet to profile')
+    parser.add_argument('--map', default='main', help='native tileset ID')
+    parser.add_argument('--root', type=Path, default=ROOT)
+    parser.add_argument('--profile-file', type=Path, help='bake a staged authoring document')
+    parser.add_argument('--output-dir', type=Path)
+    parser.add_argument('--preview-body', type=Path, help='preview one draft body without changing the atlas')
+    parser.add_argument('--output', type=Path, help='PNG for a single draft preview')
     parser.add_argument('--check', action='store_true', help='verify checked-in PNGs against the artwork')
     args = parser.parse_args()
-    for target, generated in generate(args.map):
+    if not re.fullmatch('[A-Za-z0-9_-]+', args.map):
+        parser.error('Invalid tileset ID')
+    with Image.open(args.root / f'client/img/1/tilesheet_{args.map}.png') as image:
+        source = image.convert('RGBA')
+    if args.preview_body:
+        if not args.output:
+            parser.error('--preview-body requires --output')
+        body_image(source, json.loads(args.preview_body.read_text())).save(args.output)
+        return
+    profile = json.loads(args.profile_file.read_text()) if args.profile_file else read_profile(args.root, args.map)
+    directory = args.output_dir or args.root / 'client/img/common/height-proxies'
+    registration = {'height': args.map + '.png'}
+    if profile.get('paint'):
+        registration['paint'] = args.map + '-baked-shadows.png'
+    if profile.get('outdoors'):
+        registration['outdoors'] = profile['outdoors']
+    for name, generated in products(source, profile, args.map):
+        target = directory / name
         if args.check:
             with Image.open(target) as current:
                 if current.size != generated.size or current.convert('RGBA').tobytes() != generated.tobytes():
-                    raise SystemExit(f'{target.name} differs from the source artwork and profiles')
+                    raise ValueError(f'{name} differs from the source artwork and profiles')
         else:
-            target.parent.mkdir(parents=True, exist_ok=True)
+            directory.mkdir(exist_ok=True, parents=True)
             generated.save(target, optimize=True)
+    print(json.dumps(registration))
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (ValueError, OSError, KeyError, TypeError, IndexError) as error:
+        raise SystemExit(str(error)) from error

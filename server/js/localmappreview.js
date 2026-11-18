@@ -3,7 +3,8 @@ const path = require('path');
 const SIZE = 13;
 const cache = new Map();
 function fail(message, status = 400) {throw Object.assign(new Error(message), {status});}
-function tileset(mapId) {return '/img/1/tilesheet_' + (['oadungeon', 'oaoverworld'].includes(mapId) ? 'oa' : mapId) + '.png';}
+function tilesetId(mapId) {return ['oadungeon', 'oaoverworld'].includes(mapId) ? 'oa' : mapId;}
+function tileset(mapId) {return '/img/1/tilesheet_' + tilesetId(mapId) + '.png';}
 function crop(map, x, y) {
     const tiles = [];
     for (let row = 0; row < SIZE; row++) for (let col = 0; col < SIZE; col++) {
@@ -44,4 +45,4 @@ function install(app, toolbox) {
         } catch (error) {res.status(error.status || 500).json({error: error.message});}
     });
 }
-module.exports = {crop, readPreview, install};
+module.exports = {crop, readPreview, tilesetId, install};

@@ -12,7 +12,8 @@ let sprites = {};
 let lightEmittingTiles = {};
 let lights = [];
 let obstacles = [];
-let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask, skyTileset;
+let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask;
+let outdoorShadowAreas = [];
 let framePointShadows, actorPointShadows;
 
 let hasLoadedFont = false;
@@ -120,8 +121,9 @@ async function loadImg(src) {
 
 async function setBodyMap(map) {
     bodyMap = map;
+    outdoorShadowAreas = [];
     heightShadows = null;
-    bakedShadowMask = skyTileset = null;
+    bakedShadowMask = null;
     if (!map) {
         self.postMessage({type: 'shadowProxyAtlas', available: false, ready: false});
         return;
@@ -144,6 +146,10 @@ async function setBodyMap(map) {
     }
     if (!self.HeightShadows) importScripts('height-shadows-worker.js');
     if (!self.SceneEnvironment) importScripts('sceneenvironment.js');
+    const areas = map.profile.outdoors?.[map.mapId] || [];
+    outdoorShadowAreas = areas.map((area, index) => ({...area, id: 'shadow-area-' + index,
+        weatherExposure: 'outdoor', authoringAtmosphere: {cycle: true, dayDarkness: 0, nightDarkness: 0,
+            dayNight: self.SceneEnvironment.defaults.dayNight}}));
     bakedShadowMask = mask;
     heightShadows = new self.HeightShadows.Pass(map, atlas);
     self.postMessage({type: 'shadowProxyAtlas', ready: true});
@@ -230,9 +236,17 @@ function clearImageCache() {
     cacheBytes = 0;
 }
 
-function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null, cutoutColors = []) {
+function imageId(image) {
     if (!imageIds.has(image)) imageIds.set(image, ++nextImageId);
-    const cacheKey = imageIds.get(image) + ':' + getCacheKey(x, y, w, h, scale, colorShift) + ':' + cutoutColors.join(';');
+    return imageIds.get(image);
+}
+
+function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null, cutoutColors = [], paint = null) {
+    // Paint masks use the native artwork's full width and can end above the tilesheet's last row.
+    const ratio = paint ? paint.width / image.width : 0;
+    const masked = paint && y * ratio < paint.height;
+    const cacheKey = imageId(image) + ':' + getCacheKey(x, y, w, h, scale, colorShift) + ':' + cutoutColors.join(';') +
+        (masked ? ':paint:' + imageId(paint) : '');
 
     let dxs = dx * scale;
     let dys = dy * scale;
@@ -254,6 +268,11 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = nul
         // Clear offscreen canvas then draw the scaled image
         offCtx.clearRect(0, 0, dw, dh);
         offCtx.drawImage(image, x, y, w, h, 0, 0, dw, dh);
+        if (masked) {
+            offCtx.globalCompositeOperation = 'destination-out';
+            offCtx.drawImage(paint, x * ratio, y * ratio, w * ratio, h * ratio, 0, 0, dw, dh);
+            offCtx.globalCompositeOperation = 'source-over';
+        }
 
         // Apply color transition if applicable
         if (colorShift || cutoutColors.length) {
@@ -308,27 +327,22 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
         const scene = frameSkyTerrain;
         const x = destX / tilesize, y = destY / tilesize;
         const inSkyScene = scene && x >= scene.x && x < scene.x + scene.width && y >= scene.y && y < scene.y + scene.height;
-        drawScaledImage(ctx, inSkyScene ? skyTileset : tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift, colors);
+        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift, colors,
+            inSkyScene ? framePaint : null);
     }
 }
 
 const terrainCache = new Map();
-let frameSkyTerrain = null;
+let frameSkyTerrain = null, framePaint = null;
 
 function setSkyTerrain(scene) {
-    if (frameSkyTerrain?.x !== scene?.x || frameSkyTerrain?.y !== scene?.y ||
+    const paint = scene ? bakedShadowMask : null;
+    if (framePaint !== paint || frameSkyTerrain?.x !== scene?.x || frameSkyTerrain?.y !== scene?.y ||
         frameSkyTerrain?.width !== scene?.width || frameSkyTerrain?.height !== scene?.height) {
         terrainCache.clear();
     }
     frameSkyTerrain = scene;
-    if (scene && !skyTileset) {
-        skyTileset = new OffscreenCanvas(tileset.width, tileset.height);
-        const ctx = skyTileset.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(tileset, 0, 0);
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.drawImage(bakedShadowMask, 0, 0, skyTileset.width, skyTileset.height);
-    }
+    framePaint = paint;
 }
 
 function boundedScene(scene) {
@@ -340,7 +354,7 @@ let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
 let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
 let framePending = false, nextFrameTime;
-let frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
+let frameWeather, frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
     if (framePending) return;
@@ -485,7 +499,6 @@ onmessage = (e) => {
         const {requestId, src} = e.data;
         const previousTileset = tileset;
         tileset = undefined;
-        skyTileset = null;
         clearImageCache();
         terrainCache.clear();
         previousTileset?.close?.();
@@ -521,17 +534,32 @@ onmessage = (e) => {
         frameExtensions = e.data.extensions;
         const scene = e.data.scene;
         const lightOptions = e.data.renderData.find(layer => layer?.id === 'lights')?.options;
-        const profileOptions = heightShadows && view && e.data.mapId === bodyMap?.mapId && boundedScene(scene) ? lightOptions : null;
-        const skyOptions = profileOptions && self.SceneEnvironment.outdoors(scene) ? profileOptions : null;
+        // Legacy maps can pack an outdoor town and its interiors onto the same sheet
+        // without defining gameplay scenes. Limit only the shadow pass to their authored areas.
+        const shadowScene = boundedScene(scene) ? scene : e.data.mapId === bodyMap?.mapId && outdoorShadowAreas.find(area =>
+            insideScene(area, e.data.player.x, e.data.player.y));
+        const profileOptions = heightShadows && view && e.data.mapId === bodyMap?.mapId && shadowScene ? lightOptions : null;
+        const skyOptions = profileOptions && self.SceneEnvironment.outdoors(shadowScene) ? profileOptions : null;
         const inspect = profileOptions?.inspectShadowProxies === true;
         const animationClock = (e.data.serverTime ?? 0) + frameTime;
         const clock = e.data.worldTime ?? animationClock;
         const atmosphere = authoredLightAt(scene, clock);
+        const weatherScene = previewWeatherScene(shadowScene || scene, e.data.previewWeather);
+        frameWeather = sampleSceneWeather(weatherScene, view, clock, e.data.mapId, lightOptions);
+        if (frameWeather && (frameWeather.cloudy || frameWeather.rain)) {
+            if (!self.SceneEnvironment) importScripts('sceneenvironment.js');
+            if (self.SceneEnvironment.outdoors(shadowScene || scene)) {
+                const daylight = sceneDaylight(weatherScene, clock, e.data.mapId);
+                frameWeather.sunCover = self.SceneWeather.sunlightCover(frameWeather, daylight, e.data.player.x + 8,
+                    e.data.player.y + 16, animationClock, view.reducedMotion);
+            }
+        }
         frameSky = null;
-        const shadowSurface = (inspect || skyOptions) && renderSkyShadows(view, scene, clock, atmosphere, profileOptions);
+        const shadowSurface = (inspect || skyOptions) && renderSkyShadows(view, shadowScene, clock,
+            shadowScene === scene ? atmosphere : authoredLightAt(shadowScene, clock), profileOptions);
         framePointShadows = !inspect && view && lightOptions && (lightOptions.shadows !== false || lightOptions.playerShadow !== false)
             ? {view, scene, mapId: e.data.mapId, options: lightOptions, pass: skyOptions ? heightShadows : null} : null;
-        setSkyTerrain(bakedShadowMask && skyOptions && skyOptions.shadows !== false ? scene : null);
+        setSkyTerrain(bakedShadowMask && skyOptions && skyOptions.shadows !== false ? shadowScene : null);
         const tileAppearance = rendererExtensions?.tileAppearance?.(frameExtensions) || [];
         const appearanceKey = JSON.stringify(tileAppearance);
         if (appearanceKey !== frameTileAppearanceKey) {
@@ -555,7 +583,7 @@ onmessage = (e) => {
             } else if (renderData.type === "text") {
                 drawText(renderData);
             } else if (renderData.type === "entities") {
-                drawEntities(view, skyOptions, inspect ? null : shadowSurface, scene);
+                drawEntities(view, skyOptions, inspect ? null : shadowSurface, shadowScene);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, scene, renderData.options, e.data.mapId, clock, renderData.revision, atmosphere);
             }
@@ -587,7 +615,7 @@ onmessage = (e) => {
         composingWorld = false;
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY});
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, clock, scene);
-        drawSceneWeather(combinedCtx, scene, view, clock, animationClock);
+        if (frameWeather) drawSceneWeather(combinedCtx, weatherScene, view, clock, animationClock, frameWeather);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
         if (e.data.combatFeedback?.hitFeel?.length) {
             if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');
@@ -802,7 +830,8 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
     for (const entity of drawEntitiesData.entityData) {
         const contact = entity.drawData.find(part => part.spriteName === 'shadow16');
         if (!contact) continue;
-        if (skyOptions) {
+        if (skyOptions && insideScene(scene, entity.translateX / scale + (entity.scaleX === -1 ? -8 : 8),
+            entity.depthY ?? entity.translateY / scale + tilesize)) {
             const caster = self.HeightShadows.casterDraw(entity, sprites, scale);
             if (caster && (caster.shadowBody === 'player' ? skyOptions.playerShadow : skyOptions.shadows) !== false) continue;
         } else if (hasLocalCast(entity, drawEntitiesData, framePointShadows)) continue;
@@ -980,6 +1009,10 @@ function renderSkyShadows(view, scene, clock, atmosphere, options) {
     const daylight = atmosphere?.daylight ?? cycleDaylight(bodyMap.mapId, clock);
     const cycle = legacyCycle ? {dawn: 0, dusk: 12, duskDuration: 0} : scene.authoringAtmosphere?.dayNight;
     const sky = self.HeightShadows.skyLight(clock, cycle, daylight);
+    if (sky.sun && frameWeather?.sunCover) {
+        sky.cloudCover = frameWeather.sunCover;
+        sky.strength *= 1 - .68 * sky.cloudCover;
+    }
     frameSky = sky;
     const canvas = canvases.background;
     const scenery = frameShadowBodies(view, canvas);
@@ -1006,8 +1039,12 @@ function playerLantern() {
 }
 
 function lightInScene(light, scene) {
-    return !boundedScene(scene) || (light.x >= scene.x * tilesize && light.x < (scene.x + scene.width) * tilesize &&
-        light.y >= scene.y * tilesize && light.y < (scene.y + scene.height) * tilesize);
+    return !boundedScene(scene) || insideScene(scene, light.x, light.y);
+}
+
+function insideScene(scene, x, y) {
+    return x >= scene.x * tilesize && x < (scene.x + scene.width) * tilesize &&
+        y >= scene.y * tilesize && y < (scene.y + scene.height) * tilesize;
 }
 
 function pointContribution(light, x, y) {
@@ -1068,9 +1105,13 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
     }
     const weather = scene.weather !== undefined ? scene.weather : scene.authoringAtmosphere?.weather;
-    if (weather && options?.ambience !== false) {
+    let state = composingWorld ? frameWeather : null;
+    if (!composingWorld && weather && options?.ambience !== false) {
         if (!self.SceneWeather) importScripts('weather-worker.js');
-        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now()).darkness);
+        state = self.SceneWeather.sample(weather, worldTime ?? serverTime + performance.now());
+    }
+    if (state && options?.ambience !== false) {
+        GLOBAL_LIGHT_INTENSITY = Math.max(0, GLOBAL_LIGHT_INTENSITY - state.darkness - .17 * (state.sunCover || 0));
     }
     // Clear the light canvas
     let canvas = canvases['lighting'];
@@ -1540,18 +1581,31 @@ function ambienceParticlePositions(config, view, elapsed, width, height) {
         {x: view.cameraX, y: view.cameraY, scale: view.scale}, width, height, config.design);
 }
 
-function sceneDaylight(scene, time) {
+function sceneDaylight(scene, time, mapId = 'main') {
     if (scene?.authoringAtmosphere) {
         if (!worldClock) {importScripts('worldtime-worker.js'); worldClock = self.WorldTime;}
         const config = scene.authoringAtmosphere;
         return config.cycle ? worldClock.atmosphereLight(config, time).daylight : 1 - config.dayDarkness;
     }
-    return cycleDaylight('main', time);
+    return cycleDaylight(mapId, time);
 }
-function drawSceneWeather(context, scene, view, time, animationClock) {
+function previewWeatherScene(scene, preset) {
+    if (!preset || !boundedScene(scene)) return scene;
+    if (!self.SceneEnvironment) importScripts('sceneenvironment.js');
+    if (!self.SceneEnvironment.types.includes(preset) || !self.SceneEnvironment.outdoors(scene)) return scene;
+    const authored = scene.weather || scene.authoringAtmosphere?.weather || self.SceneEnvironment.defaults.weather;
+    return {...scene, weather: {...authored, mode: 'fixed', type: preset, intensity: .85}};
+}
+
+function sampleSceneWeather(scene, view, time, mapId, options) {
     const config = scene?.weather !== undefined ? scene.weather : scene?.authoringAtmosphere?.weather;
-    if (!config || !view || view.ambienceEnabled === false) return;
+    if (!config || !view || view.ambienceEnabled === false || options?.ambience === false) return;
     if (!self.SceneWeather) importScripts('weather-worker.js');
-    self.SceneWeather.draw(context, self.SceneWeather.sample(config, time, sceneDaylight(scene, time)), {...view,
+    return self.SceneWeather.sample(config, time, sceneDaylight(scene, time, mapId));
+}
+
+function drawSceneWeather(context, scene, view, time, animationClock, state = sampleSceneWeather(scene, view, time)) {
+    if (!state) return;
+    self.SceneWeather.draw(context, state, {...view,
         bounds: {x: scene.x * 16, y: scene.y * 16, w: scene.width * 16, h: scene.height * 16}}, animationClock);
 }

@@ -1,4 +1,54 @@
 {
-    "main": {"height": "main.png", "paint": "main-baked-shadows.png"},
-    "duckville": {"height": "duckville.png"}
+  "main": {
+    "height": "main.png",
+    "paint": "main-baked-shadows.png"
+  },
+  "duckville": {
+    "height": "duckville.png"
+  },
+  "m88n": {
+    "height": "m88n.png"
+  },
+  "cobsfarm": {
+    "height": "cobsfarm.png",
+    "paint": "cobsfarm-baked-shadows.png",
+    "outdoors": {
+      "cobsfarm": [
+        {
+          "x": 0,
+          "y": 440,
+          "width": 52,
+          "height": 54
+        }
+      ]
+    }
+  },
+  "cobsfarmcity": {
+    "height": "cobsfarmcity.png",
+    "paint": "cobsfarmcity-baked-shadows.png",
+    "outdoors": {
+      "cobsfarmcity": [
+        {
+          "x": 0,
+          "y": 306,
+          "width": 126,
+          "height": 188
+        }
+      ]
+    }
+  },
+  "taikotown": {
+    "height": "taikotown.png",
+    "paint": "taikotown-baked-shadows.png",
+    "outdoors": {
+      "taikotown": [
+        {
+          "x": 0,
+          "y": 125,
+          "width": 172,
+          "height": 212
+        }
+      ]
+    }
+  }
 }

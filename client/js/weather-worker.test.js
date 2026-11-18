@@ -81,3 +81,16 @@ test('cloudy renders both Beach layers with wind, clipping and reduced-motion pr
     });
     jest.dontMock('./parallax-renderer-worker');
 });
+
+test('cloud banks cross the sunlight smoothly on a shared clock and freeze with reduced motion', () => {
+    const clouds = Weather.sample({...E.defaults.weather, type:'cloudy', intensity:1}, 0);
+    const covered = t => Weather.sunlightCover(clouds, 1, 600, 350, t, false);
+    const samples = Array.from({length: 121}, (_, i) => covered(i * 500));
+    expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(.55);
+    expect(Math.abs(covered(5000) - covered(5017))).toBeLessThan(.003);
+    expect(Math.abs(covered(5000) - Weather.sunlightCover(clouds, 1, 601, 350, 5000, false))).toBeLessThan(.01);
+    expect(Weather.sunlightCover(clouds, 0, 600, 350, 5000, false)).toBe(0);
+    expect(Weather.sunlightCover({cloudy:0, rain:0}, 1, 600, 350, 5000, false)).toBe(0);
+    expect(Weather.sunlightCover(clouds, 1, 600, 350, 0, true)).toBe(Weather.sunlightCover(clouds, 1, 600, 350, 8000, true));
+    expect(Weather.sunlightCover({...clouds, cloudy:0, rain:.5}, 1, 600, 350, 0, false)).toBeGreaterThan(0);
+});

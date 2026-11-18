@@ -10,7 +10,7 @@
     const marginX = Math.ceil(maxHeight * maxReach) + 2;
     const marginY = Math.ceil(maxHeight * maxNorthReach) + 2;
     const cacheStep = 48;
-    const feather = 2; // native pixels of coverage on either side of a silhouette
+    const feather = 2, cloudFeather = 6; // native pixels on either side of a silhouette
     // These sprites are drawn from above, with tails lying on the ground.
     const lowAnimals = new Set(['rat', 'snake'].flatMap(name => [name, name + '_silhouette']));
     function casterClip(width, height) {
@@ -36,7 +36,7 @@
         const angle = phase * Math.PI, elevation = Math.sin(angle);
         const reach = .4 + (maxReach - .4) * (1 - elevation);
         const strength = sun ? .33 * daylight : .15 * (1 - daylight) * Math.min(1, elevation * 5);
-        return {x: Math.cos(angle) * reach, y: -maxNorthReach + .28 * elevation, strength};
+        return {x: Math.cos(angle) * reach, y: -maxNorthReach + .28 * elevation, strength, sun};
     }
 
     function bodyHeight(rise, front, slope) {
@@ -216,13 +216,13 @@
 
     function shadowBuffers(field, mask) {
         return {peaks: new Float32Array(field.ground.length), blockerHeights: new Uint8Array(field.ground.length),
-            coverage: new Uint8ClampedArray((mask.width + 2 * feather) * (mask.height + 2 * feather))};
+            coverage: new Uint8ClampedArray((mask.width + 2 * cloudFeather) * (mask.height + 2 * cloudFeather))};
     }
 
     // Project both caster and receiver along the light onto z=0. They share a
     // ray exactly when the projected cells overlap; the higher surface blocks
     // the lower one. No material is assumed between a raised strip and earth.
-    function projectRaised(field, light, buffers, left, top, mask) {
+    function projectRaised(field, light, buffers, left, top, mask, border) {
         if (!field.raised?.length) return;
         const cache = buffers.raised ??= {heights: new Uint8Array(field.ground.length), rasters: new WeakMap(),
             dx: new Int16Array(maxHeight + 1), dy: new Int16Array(maxHeight + 1)};
@@ -248,9 +248,9 @@
         // Only rays passing through visible receivers can contribute. Forest
         // crowns sit above the drawing layer, so the visible ground and roots
         // usually restrict the work to the viewport even at a low sun angle.
-        const viewX = Math.max(0, left - field.x - feather), viewY = Math.max(0, top - field.y - feather);
-        const endX = Math.min(field.width, left - field.x + mask.width + feather);
-        const endY = Math.min(field.height, top - field.y + mask.height + feather);
+        const viewX = Math.max(0, left - field.x - border), viewY = Math.max(0, top - field.y - border);
+        const endX = Math.min(field.width, left - field.x + mask.width + border);
+        const endY = Math.min(field.height, top - field.y + mask.height + border);
         let receiverHeight = 0;
         for (let y = viewY; y < endY; y++) {
             const end = y * field.width + endX;
@@ -330,8 +330,9 @@
     function shade(field, left, top, mask, light, buffers = shadowBuffers(field, mask)) {
         const {face, ground, width, height} = field;
         const {peaks, blockerHeights, coverage} = buffers;
-        const raised = projectRaised(field, light, buffers, left, top, mask);
-        const sampleWidth = mask.width + 2 * feather, sampleHeight = mask.height + 2 * feather;
+        const cloud = light.cloudCover || 0, border = cloud > 0 ? cloudFeather : feather;
+        const raised = projectRaised(field, light, buffers, left, top, mask, border);
+        const sampleWidth = mask.width + 2 * border, sampleHeight = mask.height + 2 * border;
         const horizontal = Math.abs(light.x) >= Math.abs(light.y);
         const reach = Math.abs(horizontal ? light.x : light.y);
         const sign = Math.sign(horizontal ? light.x : light.y) || 1;
@@ -350,7 +351,7 @@
             minorOffsets[i] = Math.round(q * slope);
             nextBlock[i] = i + sign * (block - ((q % block + block) % block));
         }
-        const x = left - field.x - feather, y = top - field.y - feather;
+        const x = left - field.x - border, y = top - field.y - border;
         const farX = Math.round(maxHeight * light.x), farY = Math.round(maxHeight * light.y);
         const x0 = Math.max(0, x + Math.min(0, farX) - 1);
         const x1 = Math.min(width - 1, x + sampleWidth + Math.max(0, farX) + 1);
@@ -446,34 +447,51 @@
                 coverage[i] = 255 * light.strength * (1 - .28 * distance) * Math.min(1, clearance / (4 + 8 * distance));
             }
         }
-        resolveCoverage(field, x, y, mask, coverage);
+        resolveCoverage(field, x, y, mask, coverage, border, cloud);
     }
 
-    function resolveCoverage(field, x, y, mask, coverage) {
+    function resolveCoverage(field, x, y, mask, coverage, border, cloud) {
         const {width, face} = field;
-        // A separable tent feathers the mask at native resolution. The two-pixel
-        // border is traced in world coordinates so panning never changes its edges.
-        // Keep elevated surfaces sharp against neighboring ground shadows.
-        const stride = mask.width + 2 * feather;
-        for (let row = 0; row < mask.height + 2 * feather; row++) {
+        // The halo is traced in world coordinates, so moving the camera cannot
+        // change an edge. Under cloud, blend the native tent with a wider one
+        // from the same coverage samples. Elevated receivers keep their own edge.
+        const stride = mask.width + 2 * border;
+        for (let row = 0; row < mask.height + 2 * border; row++) {
             const line = row * stride;
             for (let col = 0; col < mask.width; col++) {
-                const i = line + col, center = i + feather;
-                const world = (y + row) * width + x + col + feather;
-                if (!face[world] && !face[world - feather] && !face[world + feather]) {
-                    coverage[i] = (coverage[i] + 4 * coverage[i + 1] + 6 * coverage[center]
-                        + 4 * coverage[i + 3] + coverage[i + 4]) / 16;
-                } else coverage[i] = coverage[center];
+                const i = line + col, center = i + border;
+                const world = (y + row) * width + x + col + border;
+                let total = 16 * coverage[center];
+                if (!face[world] && !face[world - 2] && !face[world + 2]) {
+                    const sharp = coverage[center - 2] + 4 * coverage[center - 1] + 6 * coverage[center]
+                        + 4 * coverage[center + 1] + coverage[center + 2];
+                    total = sharp;
+                    if (cloud && !face[world - 3] && !face[world + 3] && !face[world - 6] && !face[world + 6]) {
+                        const broad = coverage[center - 6] + 4 * coverage[center - 3] + 6 * coverage[center]
+                            + 4 * coverage[center + 3] + coverage[center + 6];
+                        total += cloud * (broad - sharp);
+                    }
+                }
+                coverage[i] = total / 16;
             }
         }
         for (let row = 0, pixel = 3; row < mask.height; row++) {
             for (let col = 0; col < mask.width; col++, pixel += 4) {
-                const i = row * stride + col, center = i + feather * stride;
-                const world = (y + row + feather) * width + x + col + feather;
-                if (!face[world] && !face[world - feather * width] && !face[world + feather * width]) {
-                    mask.data[pixel] = (coverage[i] + 4 * coverage[i + stride] + 6 * coverage[center]
-                        + 4 * coverage[center + stride] + coverage[center + 2 * stride]) / 16;
-                } else mask.data[pixel] = coverage[center];
+                const center = (row + border) * stride + col;
+                const world = (y + row + border) * width + x + col + border;
+                let total = 16 * coverage[center];
+                if (!face[world] && !face[world - 2 * width] && !face[world + 2 * width]) {
+                    const sharp = coverage[center - 2 * stride] + 4 * coverage[center - stride] + 6 * coverage[center]
+                        + 4 * coverage[center + stride] + coverage[center + 2 * stride];
+                    total = sharp;
+                    if (cloud && !face[world - 3 * width] && !face[world + 3 * width] &&
+                        !face[world - 6 * width] && !face[world + 6 * width]) {
+                        const broad = coverage[center - 6 * stride] + 4 * coverage[center - 3 * stride] + 6 * coverage[center]
+                            + 4 * coverage[center + 3 * stride] + coverage[center + 6 * stride];
+                        total += cloud * (broad - sharp);
+                    }
+                }
+                mask.data[pixel] = total / 16;
             }
         }
     }

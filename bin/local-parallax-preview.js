@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The real game, with main/DreamLand/Duckville maps and isolated local progress. No Platform account needed.
+// The real game, with outdoor shadow and parallax viewpoints and isolated local progress. No Platform account needed.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -23,7 +23,7 @@ const WS = require('../server/js/ws');
 const World = require('../server/js/worldserver');
 const server = new WS.socketIOServer();
 server.worldsMap = {};
-for (const mapId of ['main', 'm88n', 'duckville']) {
+for (const mapId of ['main', 'm88n', 'duckville', 'cobsfarm', 'cobsfarmcity', 'taikotown']) {
     const world = new World('world_' + mapId, 20, server);
     new (require('../server/js/combatcontroller'))(world);
     server.worldsMap[mapId] = world;
@@ -39,11 +39,16 @@ server.onConnect(connection => {
 server.onRequestStatus(() => JSON.stringify(Object.values(server.worldsMap).map(world => world.playerCount)));
 server.onError(error => console.error(error));
 const destinations = {
+    'dreamland-grove': {label: 'DreamLand · blossom grove', mapId: 'm88n', x: 92, y: 140, timeOfDay: '16:00', shadowProxies: true},
+    'cobsfarm': {label: 'Cob’s Farm · barn and orchard', mapId: 'cobsfarm', x: 24, y: 484, timeOfDay: '16:00', shadowProxies: true},
+    'cobsfarmcity': {label: 'Cob’s Farm City · snowy town hall', mapId: 'cobsfarmcity', x: 77, y: 410, timeOfDay: '16:00', shadowProxies: true},
+    'taiko-park': {label: 'Taiko Town · park and streetlights', mapId: 'taikotown', x: 81, y: 156, timeOfDay: '16:00', shadowProxies: true},
     duckville: {label: 'Duckville · dragon shadow', mapId: 'duckville', x: 58, y: 444},
     'duckville-trees': {label: 'Duckville · tree shadows', mapId: 'duckville', x: 67, y: 437, timeOfDay: '16:00'},
     'duckville-cave': {label: 'Duckville cave · firelit tree', mapId: 'duckville', x: 112, y: 428},
     birds: {label: 'Main · bird shadows', x: 42, y: 216},
     town: {label: 'Town · garden breeze', x: 42, y: 216},
+    'town-clouds': {label: 'Town · passing clouds', x: 42, y: 216, timeOfDay: '09:00', weather: 'cloudy', shadowProxies: true},
     campfire: {label: 'Town · campfire at night', x: 77, y: 224, timeOfDay: '22:00'},
     windows: {label: 'Town · window light at night', x: 49, y: 206, timeOfDay: '22:00'},
     torch: {label: 'Megamag · cave wall torch', x: 151, y: 164},
@@ -86,9 +91,10 @@ server.app.get('/parallax/play/:scene', async (req, res) => {
         if (!response.ok) throw new Error(session.error || 'Could not start preview');
         const gameUrl = new URL(session.url, process.env.APP_URL);
         gameUrl.searchParams.set('previewClock', '1');
-        if (['0', '1'].includes(req.query.shadowProxies)) {
-            gameUrl.searchParams.set('shadowProxies', req.query.shadowProxies);
-        }
+        const weather = req.query.weather ?? destination.weather;
+        if (['clear', 'cloudy', 'rain', 'sunrays'].includes(weather)) gameUrl.searchParams.set('weather', weather);
+        const proxyView = req.query.shadowProxies ?? (destination.shadowProxies ? '0' : undefined);
+        if (['0', '1'].includes(proxyView)) gameUrl.searchParams.set('shadowProxies', proxyView);
         res.redirect(gameUrl.pathname + gameUrl.search);
     } catch (error) {res.status(500).send(error.message);}
 });
@@ -97,7 +103,7 @@ server.app.get('/parallax/', (req, res) => res.type('html').send(`<!doctype html
 <title>LooperLands · Parallax preview</title>
 <style>
 body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-serif}main{max-width:780px;margin:10vh auto;padding:24px}h1{font-size:40px;line-height:1.1;letter-spacing:-1px}p{color:#acb9ad}nav{display:flex;gap:16px;flex-wrap:wrap;margin:32px 0}a{color:#e7e6d5}nav a{border:1px solid #57765b;background:#23392b;padding:22px;border-radius:6px;text-decoration:none}nav a:hover{background:#38543e}.label{color:#b6d487;font-size:13px;letter-spacing:2px;text-transform:uppercase}small{color:#acb9ad}
-</style><main><div class="label">Main, Duckville &amp; DreamLand / local preview</div><h1>A little more depth.</h1>
+</style><main><div class="label">LooperLands / local preview</div><h1>A little more depth.</h1>
 <p>A breeze through town, sand across the desert, smoke above lava, and a deep sky beneath DreamLand. Explore the viewpoints, each with its own gentle movement and depth.</p>
 <h2>Outdoor shadow playtest</h2>
 <p><a href="/parallax/play/town?time=16:00&amp;shadowProxies=1">Inspect shadow proxies</a> ·
@@ -106,7 +112,7 @@ body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-seri
 <a href="/parallax/play/town?time=20:00&amp;shadowProxies=0">Moonlight</a> ·
 <a href="/parallax/play/forest?time=07:00&amp;shadowProxies=0">Forest tree shadows</a> ·
 <a href="/img/common/height-proxies/main.png">Open the Town proxy atlas</a></p>
-<p>Drag <strong>Time of day</strong> to compare the shadows from the same spot. The slider holds the selected minute until you choose <strong>Resume clock</strong>. In the proxy view, blue marks low surfaces and magenta marks high ones.</p>
+<p>Drag <strong>Time of day</strong> to compare the shadows from the same spot. The slider holds the selected minute until you choose <strong>Resume clock</strong>. Use <strong>Weather</strong> beside the slider to watch passing clouds soften the same tree’s shadow. In the proxy view, blue marks low surfaces and magenta marks high ones.</p>
 <nav>${Object.entries(destinations).map(([id, destination]) => `<a href="/parallax/play/${id}">${destination.label}</a>`).join('')}</nav>
 <p>Move with WASD or the arrow keys. Walk in both directions to compare the terrain and overhead layers, or stand still to watch the weather drift. Settings → Reduced motion anchors the layers to the map and pauses the drift.</p>
 <p><a href="/parallax/play/forest?time=12:55">Forest rain</a> · <a href="/parallax/play/forest?time=18:00">Forest dusk</a> · <a href="/parallax/play/forest?time=20:55">Forest night rain</a></p>

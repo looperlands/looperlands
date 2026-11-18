@@ -1,0 +1,50 @@
+{
+  "bodies": [
+    {
+      "name": "DreamLand cloud plaza oak",
+      "bounds": [240, 1030, 320, 1118],
+      "shape": "round-crown", "front": 0, "slope": 0, "depth": 44,
+      "crownBottom": 59, "trunk": [34, 47],
+      "foliageColors": ["#32524f", "#33b642", "#6cdb00", "#2a8160", "#279453", "#392523"]
+    },
+    {
+      "name": "DreamLand pink blossom tree",
+      "bounds": [1313, 1075, 1359, 1133],
+      "shape": "round-crown", "front": 0, "slope": 0, "depth": 27,
+      "crownBottom": 49, "trunk": [18, 27],
+      "foliageColors": ["#354048", "#782c4d", "#d57bab", "#c258a2", "#b43a83", "#e698ba", "#efb3c9"]
+    },
+    {
+      "name": "DreamLand blue blossom tree",
+      "bounds": [1313, 1139, 1359, 1197],
+      "shape": "round-crown", "front": 0, "slope": 0, "depth": 27,
+      "crownBottom": 49, "trunk": [18, 27],
+      "foliageColors": ["#354048", "#003471", "#0054a6", "#0072bc", "#00aeef"]
+    },
+    {
+      "name": "DreamLand violet blossom tree",
+      "bounds": [1313, 1203, 1359, 1261],
+      "shape": "round-crown", "front": 0, "slope": 0, "depth": 27,
+      "crownBottom": 49, "trunk": [18, 27],
+      "foliageColors": ["#354048", "#32004b", "#662d91", "#92278f", "#b81eb5"]
+    },
+    {
+      "name": "DreamLand blue garden sapling",
+      "bounds": [1436, 1161, 1456, 1197],
+      "shape": "round-crown", "front": 0, "slope": 0, "depth": 11,
+      "crownBottom": 23, "trunk": [8, 13],
+      "foliageColors": ["#354048", "#003471", "#0054a6", "#0072bc", "#00aeef"]
+    },
+    {
+      "name": "DreamLand bridge lamp",
+      "bounds": [355, 1669, 364, 1705],
+      "front": 33, "slope": 0.5, "depth": 3,
+      "raisedAbove": 13, "trunk": [3, 6]
+    },
+    {
+      "name": "DreamLand plaza flower box",
+      "bounds": [451, 1734, 476, 1749],
+      "front": 4, "slope": 0.52, "depth": 5
+    }
+  ]
+}

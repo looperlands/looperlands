@@ -1,0 +1,25 @@
+{
+  "bodies": [
+    {"name": "Planter tree","bounds": [96,460,147,527],"shape": "round-crown","front": 14,"slope": 0.6,"depth": 25,"crownBottom": 46,"trunk": [20,31],"foliageColors": ["#5ac54f","#1e6f50","#134c4c","#090909","#99e65f","#0a1f26"]},
+    {"name": "Park tree","bounds": [46,605,97,668],"shape": "round-crown","front": 14,"slope": 0.6,"depth": 25,"crownBottom": 46,"trunk": [20,31],"foliageColors": ["#5ac54f","#1e6f50","#134c4c","#090909","#99e65f","#0a1f26"]},
+    {"name": "Residential streetlamp","bounds": [31,701,71,788],"front": 86,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 26,"trunk": [4,9]},
+    {"name": "City streetlamp","bounds": [30,816,70,903],"front": 86,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 26,"trunk": [4,9]},
+    {"name": "Boulevard streetlamp","bounds": [30,1158,70,1245],"front": 86,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 26,"trunk": [4,9]},
+    {"name": "West-facing streetlamp","bounds": [3065,1453,3105,1540],"front": 86,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 26,"trunk": [31,36]},
+    {"name": "Stop sign","bounds": [133,737,159,788],"front": 50,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 27,"trunk": [11,15]},
+    {"name": "Speed limit sign","bounds": [270,743,296,794],"front": 50,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 25,"trunk": [11,15]},
+    {"name": "Second stop sign","bounds": [206,744,232,795],"front": 50,"slope": 1,"depth": 3,"shape": "wall","raisedAbove": 27,"trunk": [11,15]}
+  ],
+  "paint": [
+    [90,514,153,532],
+    [40,655,103,673],
+    [28,779,79,793],
+    [27,894,78,908],
+    [27,1236,78,1250],
+    [3062,1531,3113,1545],
+    [130,779,167,793],
+    [267,785,304,799],
+    [203,786,240,800]
+  ],
+  "outdoors": {"taikotown": [{"x": 0, "y": 125, "width": 172, "height": 212}]}
+}

@@ -222,6 +222,9 @@ function applyAtmosphere(map,entries,weather) {
 }
 
 function installRuntime(app,root,getWorlds=()=>({})) {
+    // Scenery profiles can be changed and inspected on the next local playtest load.
+    app.use('/img/common/height-proxies', require('express').static(path.join(root, 'client/img/common/height-proxies'),
+        {setHeaders: res => res.setHeader('Cache-Control', 'no-store')}));
     app.use('/img/parallax',require('express').static(path.join(root,'client/img/parallax')));
     // Authoring uploads must be playable immediately, before the next client build.
     app.use('/audio/ambient', require('express').static(path.join(root, 'client/audio/ambient')));

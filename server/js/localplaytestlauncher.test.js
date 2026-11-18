@@ -108,7 +108,7 @@ test('selected settings create a fresh session using the server-held API key and
     const response = await post({...validSettings, x: 4, y: 5, xp: 999, f2p: true}, {Origin: baseUrl});
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({sessionId,
-        url: expect.stringMatching(/\/\?sessionId=c{40}$/)});
+        url: '/?sessionId=' + sessionId + '&previewClock=1&shadowProxies=0'});
     expect(createSession).toHaveBeenCalledTimes(1);
     const [request] = createSession.mock.calls[0];
     expect(request.headers['x-api-key']).toBe(apiKey);

@@ -5,7 +5,7 @@
   "atmosphere": [
     {
       "sceneId": "1943",
-      "cycle": false,
+      "cycle": true,
       "dayDarkness": 0.0,
       "nightDarkness": 0.0,
       "color": "#142438",

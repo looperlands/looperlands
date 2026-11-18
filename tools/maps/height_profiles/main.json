@@ -1,0 +1,595 @@
+{
+  "fullHeight": true,
+  "bodies": [
+    {
+      "name": "Slate-roof timber house",
+      "bounds": [
+        61,
+        32,
+        163,
+        153
+      ],
+      "front": 57,
+      "slope": 0.43,
+      "depth": 18,
+      "shape": "slate-house"
+    },
+    {
+      "name": "Red gable",
+      "bounds": [
+        53,
+        162,
+        155,
+        305
+      ],
+      "front": 65,
+      "slope": 0,
+      "depth": 20,
+      "shape": "gable"
+    },
+    {
+      "name": "Blue gable",
+      "bounds": [
+        189,
+        1162,
+        291,
+        1305
+      ],
+      "front": 70,
+      "slope": 0,
+      "depth": 20,
+      "shape": "gable"
+    },
+    {
+      "name": "Blacksmith",
+      "bounds": [
+        193,
+        1953,
+        315,
+        2089
+      ],
+      "front": 66,
+      "slope": 0.44,
+      "depth": 20
+    },
+    {
+      "name": "Potion shop",
+      "bounds": [
+        0,
+        1996,
+        80,
+        2112
+      ],
+      "front": 50,
+      "slope": 0.52,
+      "depth": 16,
+      "shape": "glass"
+    },
+    {
+      "name": "Oak",
+      "bounds": [
+        194,
+        163,
+        254,
+        239
+      ],
+      "front": 0,
+      "slope": 0,
+      "depth": 36,
+      "shape": "crown"
+    },
+    {
+      "name": "Bare tree",
+      "bounds": [
+        265,
+        492,
+        311,
+        561
+      ],
+      "front": 26,
+      "slope": 0.74,
+      "depth": 7
+    },
+    {
+      "name": "Dead tree",
+      "bounds": [
+        209,
+        637,
+        255,
+        706
+      ],
+      "front": 26,
+      "slope": 0.74,
+      "depth": 7
+    },
+    {
+      "name": "Graveyard tree",
+      "bounds": [
+        277,
+        1330,
+        310,
+        1395
+      ],
+      "front": 24,
+      "slope": 0.75,
+      "depth": 7
+    },
+    {
+      "name": "Boulder",
+      "bounds": [
+        272,
+        0,
+        320,
+        52
+      ],
+      "front": 15,
+      "slope": 0.38,
+      "depth": 8,
+      "shape": "rock"
+    },
+    {
+      "name": "Mirrored boulder",
+      "bounds": [
+        256,
+        592,
+        304,
+        644
+      ],
+      "front": 15,
+      "slope": 0.4,
+      "depth": 7,
+      "shape": "rock"
+    },
+    {
+      "name": "Grass-backed stone",
+      "bounds": [
+        256,
+        192,
+        288,
+        224
+      ],
+      "front": 7,
+      "slope": 0.38,
+      "depth": 4,
+      "shape": "rock"
+    },
+    {
+      "name": "Grass-backed stone (right)",
+      "bounds": [
+        288,
+        192,
+        320,
+        224
+      ],
+      "front": 7,
+      "slope": 0.38,
+      "depth": 4,
+      "shape": "rock"
+    },
+    {
+      "name": "Loose stone",
+      "bounds": [
+        272,
+        64,
+        288,
+        80
+      ],
+      "front": 4,
+      "slope": 0.4,
+      "depth": 2,
+      "shape": "rock"
+    },
+    {
+      "name": "Canvas tent",
+      "bounds": [
+        0,
+        113,
+        31,
+        162
+      ],
+      "front": 14,
+      "slope": 0.46,
+      "depth": 7
+    },
+    {
+      "name": "Covered well",
+      "bounds": [
+        0,
+        236,
+        34,
+        292
+      ],
+      "front": 25,
+      "slope": 0.55,
+      "depth": 8
+    },
+    {
+      "name": "Hut",
+      "bounds": [
+        2,
+        310,
+        46,
+        373
+      ],
+      "front": 36,
+      "slope": 0.5,
+      "depth": 8
+    },
+    {
+      "name": "Damaged hut",
+      "bounds": [
+        2,
+        486,
+        46,
+        549
+      ],
+      "front": 36,
+      "slope": 0.5,
+      "depth": 8
+    },
+    {
+      "name": "Open hut",
+      "bounds": [
+        258,
+        1472,
+        302,
+        1535
+      ],
+      "front": 36,
+      "slope": 0.5,
+      "depth": 8
+    },
+    {
+      "name": "Cactus",
+      "bounds": [
+        178,
+        259,
+        202,
+        303
+      ],
+      "front": 19,
+      "slope": 0.7,
+      "depth": 4
+    },
+    {
+      "name": "Event board",
+      "bounds": [
+        3,
+        2883,
+        61,
+        2937
+      ],
+      "front": 54,
+      "slope": 1,
+      "depth": 3,
+      "shape": "board"
+    },
+    {
+      "name": "Headstone",
+      "bounds": [
+        0,
+        55,
+        16,
+        79
+      ],
+      "front": 10,
+      "slope": 0.55,
+      "depth": 2
+    },
+    {
+      "name": "Low headstone",
+      "bounds": [
+        0,
+        85,
+        16,
+        111
+      ],
+      "front": 8,
+      "slope": 0.55,
+      "depth": 2
+    },
+    {
+      "name": "Fence",
+      "bounds": [
+        254,
+        576,
+        307,
+        591
+      ],
+      "front": 8,
+      "slope": 0.6,
+      "depth": 2
+    },
+    {
+      "name": "Palisade stake",
+      "bounds": [
+        64,
+        0,
+        80,
+        32
+      ],
+      "front": 9,
+      "slope": 0.65,
+      "depth": 2
+    },
+    {
+      "name": "Cottage",
+      "bounds": [
+        4,
+        2404,
+        98,
+        2477
+      ],
+      "front": 34,
+      "slope": 0.5,
+      "depth": 12
+    },
+    {
+      "name": "Windmill",
+      "bounds": [
+        3,
+        2486,
+        94,
+        2590
+      ],
+      "front": 42,
+      "slope": 0.55,
+      "depth": 10
+    },
+    {
+      "name": "Palm",
+      "bounds": [
+        1,
+        1464,
+        45,
+        1535
+      ],
+      "front": 36,
+      "slope": 0.65,
+      "depth": 7
+    },
+    {
+      "name": "Fluted stone column",
+      "bounds": [
+        9,
+        1252,
+        40,
+        1317
+      ],
+      "front": 56,
+      "slope": 0.38,
+      "depth": 7
+    },
+    {
+      "name": "Smith's barrel",
+      "bounds": [
+        149,
+        2084,
+        173,
+        2111
+      ],
+      "front": 21,
+      "slope": 0.42,
+      "depth": 5
+    },
+    {
+      "name": "Smith's anvil",
+      "bounds": [
+        146,
+        2056,
+        175,
+        2075
+      ],
+      "front": 13,
+      "slope": 0.4,
+      "depth": 4
+    },
+    {
+      "name": "Town pipe and rim",
+      "bounds": [
+        268,
+        656,
+        309,
+        709
+      ],
+      "front": 37,
+      "slope": 0.38,
+      "depth": 8
+    },
+    {
+      "name": "Four sandstone pillar variants",
+      "bounds": [
+        0,
+        569,
+        64,
+        623
+      ],
+      "front": 42,
+      "slope": 0,
+      "depth": 0,
+      "shape": "column"
+    },
+    {
+      "name": "Raised fossil rib cage",
+      "bounds": [
+        0,
+        626,
+        60,
+        699
+      ],
+      "front": 18,
+      "slope": 0.44,
+      "depth": 10
+    },
+    {
+      "name": "Beach parasol and pole",
+      "bounds": [
+        4,
+        392,
+        31,
+        415
+      ],
+      "front": 15,
+      "slope": 0.42,
+      "depth": 6
+    }
+  ],
+  "paint": [
+    [
+      60,
+      32,
+      170,
+      155
+    ],
+    [
+      52,
+      162,
+      162,
+      307
+    ],
+    [
+      188,
+      1162,
+      297,
+      1307
+    ],
+    [
+      194,
+      205,
+      254,
+      245
+    ],
+    [
+      265,
+      525,
+      312,
+      561
+    ],
+    [
+      209,
+      670,
+      255,
+      706
+    ],
+    [
+      272,
+      1359,
+      318,
+      1395
+    ],
+    [
+      272,
+      35,
+      320,
+      56
+    ],
+    [
+      256,
+      632,
+      304,
+      646
+    ],
+    [
+      272,
+      64,
+      292,
+      80
+    ],
+    [
+      0,
+      119,
+      38,
+      164
+    ],
+    [
+      0,
+      255,
+      38,
+      295
+    ],
+    [
+      2,
+      325,
+      51,
+      375
+    ],
+    [
+      2,
+      501,
+      51,
+      551
+    ],
+    [
+      258,
+      1488,
+      307,
+      1537
+    ],
+    [
+      176,
+      270,
+      208,
+      305
+    ],
+    [
+      0,
+      62,
+      24,
+      81
+    ],
+    [
+      0,
+      87,
+      24,
+      113
+    ],
+    [
+      64,
+      29,
+      80,
+      32
+    ],
+    [
+      0,
+      1488,
+      72,
+      1536
+    ],
+    [
+      9,
+      1278,
+      70,
+      1319
+    ],
+    [
+      270,
+      675,
+      320,
+      711
+    ],
+    [
+      0,
+      663,
+      60,
+      701
+    ],
+    [
+      0,
+      617,
+      64,
+      624
+    ],
+    [
+      64,
+      544,
+      80,
+      624
+    ],
+    [
+      0,
+      407,
+      32,
+      417
+    ]
+  ]
+}

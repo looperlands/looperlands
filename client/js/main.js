@@ -291,6 +291,11 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
                 const clock = document.getElementById('shadow-preview-clock');
                 const slider = document.getElementById('shadow-preview-time');
                 const resume = document.getElementById('shadow-preview-live');
+                const weather = document.getElementById('shadow-preview-weather');
+                const preset = preview.get('weather');
+                if (preset && Array.from(weather.options).some(option => option.value === preset)) weather.value = preset;
+                game.localPreviewWeather = weather.value;
+                weather.onchange = () => {game.localPreviewWeather = weather.value;};
                 controls.classList.add('active');
                 for (const type of ['click', 'mousemove', 'touchstart', 'keydown']) {
                     controls.addEventListener(type, event => event.stopPropagation());

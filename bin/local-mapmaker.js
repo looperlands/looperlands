@@ -128,6 +128,7 @@ class MapmakerToolbox {
         if (this.zoneSaveCount) throw Object.assign(new Error('Wait for the checkpoint or zone save to finish before building.'), {status:409});
         if (this.fishingSaveCount) throw Object.assign(new Error('Wait for the fishing save to finish before building.'), {status: 409});
         if (this.encounterSaveCount) throw Object.assign(new Error('Wait for the chest or encounter save to finish before building.'), {status: 409});
+        if (this.shadowSave) throw Object.assign(new Error('Wait for the shadow profile save to finish before building.'), {status: 409});
         validateMap(this.root, mapId);
         this.job = {id: require('crypto').randomUUID(), status: 'running', step: 'Stop game', logs: []};
         this.buildAbort = new AbortController();
@@ -275,6 +276,7 @@ class MapmakerToolbox {
         this.closed = true;
         this.buildAbort?.abort();
         if (this.buildPromise) await this.buildPromise;
+        if (this.shadowSave) await this.shadowSave.catch(() => {});
         await this.stopGame();
     }
 }
@@ -305,6 +307,7 @@ function createToolboxApp(toolbox) {
     require('../server/js/localdoorbuilder').install(app, toolbox);
     require('../server/js/localnpcbuilder').install(app, toolbox);
     require('../server/js/localmapanalysis').install(app, toolbox);
+    require('../server/js/localshadowprofiles').install(app, toolbox);
     require('../server/js/localentitybuilder').install(app, toolbox);
     require('../server/js/locallightingbuilder').install(app, toolbox);
     require('../server/js/localencounterbuilder').install(app, toolbox);

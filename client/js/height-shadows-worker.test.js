@@ -338,3 +338,21 @@ test('an actor-only pass retains tile-owned authored blockers while the main atl
     const ready = Object.assign(Object.create(Pass.prototype), {map: {width: 1, data: [4]}, tile: () => ({})});
     expect(ready.ownsPointBlocker(owner, [])).toBe(true);
 });
+
+test('diffuse sunlight broadens the edge of the same cast while following its world coordinates', () => {
+    const scene = field(240, 120);
+    for (let row = 45; row < 76; row++) scene.ground.fill(48, row * 240 + 125, row * 240 + 135);
+    function sample(cloudCover, left, top, width, height) {
+        const result = {width, height, data:new Uint8ClampedArray(width * height * 4)};
+        shade(scene, left, top, result, {x:1, y:0, strength:.4, cloudCover});
+        return result.data.filter((_, i)=>i % 4 === 3);
+    }
+    const clear = sample(0, 92, 38, 10, 32), cloudy = sample(1, 92, 38, 10, 32);
+    const column = pixels => Array.from({length:32}, (_, i) => pixels[i*10+5]);
+    const a = column(clear), b = column(cloudy);
+    expect(b[3]).toBeGreaterThan(0);
+    expect(a[3]).toBe(0);
+    expect(b.filter(v=>v>0 && v < b[24])).toHaveLength(12);
+    expect(b[24]).toBe(a[24]); // Full umbra: only the light's strength changes the plateau.
+    expect(sample(1, 94, 40, 4, 1)).toEqual(cloudy.slice(22,26));
+});

@@ -92,7 +92,8 @@ test('map scenery uses the registered tilesheet profile and its optional paint m
     const {MapAssets} = fixture();
     expect(MapAssets.shadowProfile('main')).toEqual({height: 'main.png', paint: 'main-baked-shadows.png'});
     expect(MapAssets.shadowProfile('duckville')).toEqual({height: 'duckville.png'});
-    expect(MapAssets.shadowProfile('m88n')).toBeNull();
+    expect(MapAssets.shadowProfile('m88n')).toEqual({height: 'm88n.png'});
+    expect(MapAssets.shadowProfile('unprofiled')).toBeNull();
     const shared = fixture({}, {}, {oa: {height: 'oa.png'}});
     expect(shared.MapAssets.shadowProfile('oadungeon')).toBe(shared.MapAssets.shadowProfile('oaoverworld'));
     expect(shared.MapAssets.shadowProfile('toString')).toBeNull();
