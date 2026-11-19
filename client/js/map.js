@@ -288,6 +288,13 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
                 area.player_message = trigger.player_message;
                 area.minigame = trigger.minigame;
                 area.offset = trigger.offset; // used to control location of minigame prompt
+                if (typeof trigger.promptAnchor === 'string') {
+                    const coordinates = trigger.promptAnchor.split(',').map(value => value.trim() ? Number(value) : NaN);
+                    if (coordinates.length === 2 && coordinates.every(Number.isFinite)) {
+                        const [x, y] = coordinates;
+                        area.promptAnchor = {x, y};
+                    }
+                }
                 triggers[self.GridPositionToTileIndex(trigger.x, trigger.y)] = area;
             });
             return triggers;

@@ -7226,6 +7226,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     this.worldFx?.render?.(this.renderer, this.currentTime);
                     this.pixelFx?.render(this.renderer);
                     this.pickupFeedback?.render(this.renderer, this.currentTime);
+                    const trigger = this.player?.triggerArea;
+                    if (trigger?.promptAnchor && trigger.id === this.lastMinigameTrigger) {
+                        const prompt = $("#minigameprompt");
+                        if (prompt.hasClass('active')) this.positionMinigamePrompt(prompt, trigger.promptAnchor);
+                    }
                     this.renderer.renderFrame();
                     if (!this.growthWorldReported) {
                         this.growthWorldReported = true;
@@ -10041,6 +10046,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
+            positionMinigamePrompt(prompt, anchor) {
+                const {canvas, tilesize} = this.renderer;
+                const position = this.renderer.getCanvasPosition(anchor.x * tilesize, anchor.y * tilesize);
+                // The canvas and prompt share the same positioned game container.
+                prompt.css({left: canvas.offsetLeft + position.x, top: canvas.offsetTop + position.y});
+            },
+
             handleTrigger(trigger, entity) {
                 const self = this;
                 if (entity instanceof Npc && entity.behaviorControlled) return;
@@ -10057,23 +10069,30 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     }
 
                     if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded) {
-                        if ($("#minigameprompt").hasClass(`active`)) {
-                            $("#minigameprompt").removeAttr('style').off();
-                        } // if walking from one trigger to the next, clear data.
-                        let containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
-                        let [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
+                        const prompt = $("#minigameprompt").removeAttr('style').off();
+                        if (trigger.promptAnchor) {
+                            this.positionMinigamePrompt(prompt, trigger.promptAnchor);
+                            prompt.css('translate', '-50% calc(-100% - 4px)');
+                        } else {
+                            const containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
+                            const [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
 
-                        const toPercent = (value, offset, dimension) => {
-                            if (value.includes("px")) {
-                                value = `${(parseFloat(value) / dimension) * 100}%`;
-                            }
-                            return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
-                        };
+                            const toPercent = (value, offset, dimension) => {
+                                if (value.includes("px")) {
+                                    value = `${(parseFloat(value) / dimension) * 100}%`;
+                                }
+                                return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
+                            };
+                            prompt.css({
+                                left: toPercent(prompt.css('left'), offsetX, $("#container").width()),
+                                top: toPercent(prompt.css('top'), offsetY, $("#container").height())
+                            });
+                        }
 
                         self.lastMinigameTrigger = trigger.id;
                         const rearm = () => {
                             if (entity.triggerArea?.id === trigger.id && !entity.isDead && !self.disconnected) {
-                                $("#minigameprompt").addClass('active').off('click').one('click', launch);
+                                prompt.addClass('active').off('click').one('click', launch);
                             }
                         };
                         const launch = () => loadMinigame(trigger.minigame, self, {onClose: rearm}).then(() => {
@@ -10083,11 +10102,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             self.showNotification(error.message || 'The arcade could not load. Please try again.');
                             rearm();
                         });
-                        $("#minigameprompt").css({
-                            'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
-                            'top': toPercent($("#minigameprompt").css('top'), offsetY, $("#container").height())
-                        }).attr('title', trigger.minigame === 'spaceowls' ? 'Play Space Owls' : 'Play minigame')
-                            .addClass('active').off('click').one('click', launch);
+                        prompt.attr('title', trigger.minigame === 'spaceowls' ? 'Play Space Owls' : 'Play minigame')
+                            .addClass('active').one('click', launch);
                     }
 
                     entity.onLeave(trigger, function () {

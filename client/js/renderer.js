@@ -97,11 +97,19 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 return this.canvas.height;
             },
 
+            getCanvasPosition: function(x, y) {
+                return {
+                    x: (x - this.camera.x) * this.scale,
+                    y: (y - this.camera.y) * this.scale
+                };
+            },
+
             getScreenPosition: function(x, y) {
                 const bounds = this.canvas.getBoundingClientRect();
+                const position = this.getCanvasPosition(x, y);
                 return {
-                    x: bounds.left + (x - this.camera.x) * this.scale * bounds.width / this.canvas.width,
-                    y: bounds.top + (y - this.camera.y) * this.scale * bounds.height / this.canvas.height
+                    x: bounds.left + position.x * bounds.width / this.canvas.width,
+                    y: bounds.top + position.y * bounds.height / this.canvas.height
                 };
             },
     
