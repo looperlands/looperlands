@@ -2133134,11 +2133134,11 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="1506"/>
+   <tile gid="1507"/>
+   <tile gid="1508"/>
+   <tile gid="1509"/>
+   <tile gid="1510"/>
    <tile/>
    <tile gid="15418"/>
    <tile/>
@@ -2133306,11 +2133306,11 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile gid="10273"/>
-   <tile gid="10274"/>
-   <tile gid="10275"/>
-   <tile/>
+   <tile gid="1644"/>
+   <tile gid="1645"/>
+   <tile gid="1646"/>
+   <tile gid="1647"/>
+   <tile gid="1648"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2219311,9 +2219311,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="10549"/>
-   <tile gid="10550"/>
-   <tile gid="10551"/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2219828,7 +2219828,7 @@
    <tile/>
    <tile gid="10431"/>
    <tile gid="10432"/>
-   <tile gid="8900"/>
+   <tile gid="8899"/>
    <tile gid="10431"/>
    <tile gid="10432"/>
    <tile gid="9868"/>
@@ -2220000,7 +2220000,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="9038"/>
+   <tile gid="9037"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7257795,11 +7257795,10 @@
   </object>
   <object id="2060" name="Lunaria" x="1504" y="3664" width="16" height="16">
    <properties>
-    <property name="nft" value="0x20ee893b24b0a2e1efc26ef86509b9f944d17ed275ea63749a5c1cfa342a6686"/>
-    <property name="nft_message" value="This property is available to lease and comes with a business license..."/>
-    <property name="o" value="d"/>
-    <property name="x" value="148"/>
-    <property name="y" value="15"/>
+    <property name="map" value="duckville"/>
+    <property name="o" value="u"/>
+    <property name="x" value="105"/>
+    <property name="y" value="143"/>
    </properties>
   </object>
   <object id="2061" name="Lunaria" x="1600" y="3680" width="16" height="16">
