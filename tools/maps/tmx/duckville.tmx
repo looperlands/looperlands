@@ -3084902,6 +3084902,7 @@
   <object id="1190" name="Space Owls arcade" x="1584" y="2208" width="16" height="16">
    <properties>
     <property name="minigame" value="spaceowls"/>
+    <property name="promptAnchor" value="99.5,137"/>
    </properties>
   </object>
  </objectgroup>

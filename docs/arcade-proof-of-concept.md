@@ -27,6 +27,8 @@ Choose Explorer, Ranger, or Knight, then click the cabinet or **Enter the arcade
 
 Add a Tiled trigger with custom property `minigame = spaceowls`. The existing LL map-trigger path calls `loadMinigame('spaceowls', game)` and the adapter takes the current `game.player` armor sprite. The cabinet from the supplied screenshot is placed in `m88n2` / Lunaria: trigger 2071 covers the walkable tiles x=91, y=30–31 in front of the cabinet. The Tiled source and client JSON/JS and server JSON exports include this trigger. Only the trigger arrays changed in the generated map exports. The standalone backdrop remains the supplied screenshot; the in-game preview uses the real map. No production deployment is part of this change.
 
+For cabinet-relative placement, add a Tiled String property `promptAnchor` to the same trigger. Enter the top center of the cabinet as `x,y` in map tile coordinates. Fractional values can center the prompt within a tile. In Duckville's Nexus Arcade, the trigger is on the walkable tile `99,138`, and `promptAnchor = 99.5,137` points above the cabinet. Export both the client and server maps after editing the trigger.
+
 The new runtime files must accompany the client: `js/arcade.js`, `css/arcade.css`, and `apps/spaceowls/`. Existing JackAce and LuckyFUNKZ loading paths are unchanged.
 
 ## Scope and limits
