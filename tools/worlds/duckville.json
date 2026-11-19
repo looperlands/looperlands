@@ -228,6 +228,18 @@
           "count": 7
         }
       ]
+    },
+    {
+      "sceneId": "1184",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.5,
+      "nightDarkness": 0.5,
+      "color": "#000000",
+      "particles": [],
+      "parallax": {
+        "layers": []
+      }
     }
   ],
   "sequences": [],
@@ -446,7 +458,7 @@
     },
     {
       "id": "1002",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 70,
       "y": 221,
       "w": 10,
@@ -454,7 +466,7 @@
     },
     {
       "id": "1003",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home Crono!",
       "x": 80,
       "y": 221,
       "w": 10,
@@ -571,249 +583,265 @@
       "y": 419,
       "w": 6,
       "h": 42
+    },
+    {
+      "id": "1184",
+      "name": "Nexus Arcade",
+      "x": 90,
+      "y": 133,
+      "w": 35,
+      "h": 14
     }
   ],
   "weather": null,
   "sceneBaseline": [
     {
-      "id": 740,
       "name": "Duckville",
+      "id": 740,
       "x": 18,
       "y": 411,
       "w": 85,
       "h": 70
     },
     {
-      "id": 741,
       "name": "Nexus Merch Shop",
+      "id": 741,
       "x": 85,
       "y": 484,
       "w": 18,
       "h": 16
     },
     {
-      "id": 742,
       "name": "Santa's Island",
+      "id": 742,
       "x": 90,
       "y": 0,
       "w": 82,
       "h": 79
     },
     {
-      "id": 743,
       "name": "Butterfly Grove Garden",
+      "id": 743,
       "x": 0,
       "y": 37,
       "w": 89,
       "h": 165
     },
     {
-      "id": 744,
       "name": "The Greenhouse",
+      "id": 744,
       "x": 41,
       "y": 221,
       "w": 29,
       "h": 29
     },
     {
-      "id": 748,
       "name": "Laser Tag",
+      "id": 748,
       "x": 90,
       "y": 80,
       "w": 82,
       "h": 53
     },
     {
-      "id": 788,
       "name": "Laser Tag",
+      "id": 788,
       "x": 148,
       "y": 133,
       "w": 24,
       "h": 15
     },
     {
-      "id": 795,
       "name": "The Deep Blue",
+      "id": 795,
       "x": 0,
       "y": 0,
       "w": 67,
       "h": 37
     },
     {
-      "id": 876,
       "name": "Zombie Town",
+      "id": 876,
       "x": 89,
       "y": 152,
       "w": 83,
       "h": 50
     },
     {
-      "id": 915,
       "name": "Welcome Home Nex!",
+      "id": 915,
       "x": 0,
       "y": 481,
       "w": 33,
       "h": 19
     },
     {
-      "id": 916,
       "name": "Welcome Home Zombie!",
+      "id": 916,
       "x": 33,
       "y": 481,
       "w": 17,
       "h": 13
     },
     {
-      "id": 917,
       "name": "Downstairs",
+      "id": 917,
       "x": 50,
       "y": 481,
       "w": 17,
       "h": 13
     },
     {
-      "id": 970,
       "name": "The Tree Tops",
+      "id": 970,
       "x": 0,
       "y": 202,
       "w": 89,
       "h": 19
     },
     {
-      "id": 978,
       "name": "The Tree House",
+      "id": 978,
       "x": 0,
       "y": 221,
       "w": 41,
       "h": 29
     },
     {
+      "name": "Welcome home gardener!",
       "id": 1002,
-      "name": "Welcome home m88nwalker!",
       "x": 70,
       "y": 221,
       "w": 10,
       "h": 9
     },
     {
+      "name": "Welcome home Crono!",
       "id": 1003,
-      "name": "Welcome home m88nwalker!",
       "x": 80,
       "y": 221,
       "w": 10,
       "h": 9
     },
     {
+      "name": "Welcome home m88nwalker!",
       "id": 1004,
-      "name": "Welcome home m88nwalker!",
       "x": 90,
       "y": 221,
       "w": 10,
       "h": 9
     },
     {
+      "name": "Welcome home m88nwalker!",
       "id": 1005,
-      "name": "Welcome home m88nwalker!",
       "x": 70,
       "y": 230,
       "w": 10,
       "h": 9
     },
     {
+      "name": "Welcome home m88nwalker!",
       "id": 1006,
-      "name": "Welcome home m88nwalker!",
       "x": 80,
       "y": 230,
       "w": 10,
       "h": 9
     },
     {
-      "id": 1007,
       "name": "Welcome home m88nwalker!",
+      "id": 1007,
       "x": 90,
       "y": 230,
       "w": 10,
       "h": 9
     },
     {
-      "id": 1008,
       "name": "Welcome home m88nwalker!",
+      "id": 1008,
       "x": 70,
       "y": 239,
       "w": 10,
       "h": 9
     },
     {
-      "id": 1009,
       "name": "Welcome home m88nwalker!",
+      "id": 1009,
       "x": 80,
       "y": 239,
       "w": 10,
       "h": 9
     },
     {
-      "id": 1010,
       "name": "Welcome home m88nwalker!",
+      "id": 1010,
       "x": 90,
       "y": 239,
       "w": 10,
       "h": 9
     },
     {
-      "id": 1092,
       "name": "Portal Room",
+      "id": 1092,
       "x": 131,
       "y": 471,
       "w": 28,
       "h": 18
     },
     {
-      "id": 1093,
       "name": "Thunderdome",
+      "id": 1093,
       "x": 125,
       "y": 419,
       "w": 41,
       "h": 42
     },
     {
-      "id": 1094,
       "name": "Lava Falls Caverns",
+      "id": 1094,
       "x": 103,
       "y": 471,
       "w": 28,
       "h": 10
     },
     {
-      "id": 1095,
       "name": "Lava Falls Caverns",
+      "id": 1095,
       "x": 103,
       "y": 419,
       "w": 22,
       "h": 20
     },
     {
-      "id": 1096,
       "name": "Lava Falls Caverns",
+      "id": 1096,
       "x": 103,
       "y": 461,
       "w": 69,
       "h": 10
     },
     {
-      "id": 1112,
       "name": "Lava Falls Caverns",
+      "id": 1112,
       "x": 166,
       "y": 419,
       "w": 6,
       "h": 42
     },
     {
-      "id": 1139,
       "name": "Lava Falls Caverns",
+      "id": 1139,
       "x": 103,
       "y": 439,
       "w": 22,
       "h": 22
+    },
+    {
+      "name": "Nexus Arcade",
+      "id": 1184,
+      "x": 90,
+      "y": 133,
+      "w": 35,
+      "h": 14
     }
   ]
 }
