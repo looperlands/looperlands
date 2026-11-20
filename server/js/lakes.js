@@ -438,6 +438,17 @@ const Lakes = {
         }
     },
 
+    m88nballpitlake: {
+        level: 1,
+        fish: {
+            m88nreddodgeball: "common",
+            m88nsock: "uncommon",
+            m88ndigitalwatch: "rare",
+            m88ninhaler: "epic",
+            m88nprostheticleg: "legendary",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
