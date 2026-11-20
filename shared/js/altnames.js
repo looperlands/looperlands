@@ -201,6 +201,11 @@ const AltNames = {
     m88nzombiehand: "a bloated zombie hand!",
     m88nzombieeye: "a bloated zombie eyeball!",
     m88nweirdglass: "a weird glass! I wonder what's inside...",
+    m88ndigitalwatch: "a digital watch!",
+    m88ninhaler: "an inhaler!",
+    m88nprostheticleg: "a prosthetic leg!",
+    m88nreddodgeball: "a red dodgeball!",
+    m88nsock: "a sock!",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  

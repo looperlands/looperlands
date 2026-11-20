@@ -2311,7 +2311,7 @@ let Properties = {
     },
 
     m88nskorch: {
-        level: 69,
+        level: 101,
         drops: {
             flask: 45,
             loopring: 5,
