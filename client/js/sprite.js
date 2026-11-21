@@ -1,5 +1,52 @@
 define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
+	const groundAnchorWorkers = new WeakMap();
+	let nextGroundAnchorRequestId = 0;
+
+	function applyGroundOffset(sprite, offset) {
+		sprite.groundOffsetY = offset;
+		if (sprite.whiteSprite) sprite.whiteSprite.groundOffsetY = offset;
+		if (sprite.silhouetteSprite) sprite.silhouetteSprite.groundOffsetY = offset;
+	}
+
+	function groundAnchorRegistry(worker) {
+		let registry = groundAnchorWorkers.get(worker);
+		if (registry) return registry;
+		registry = new Map();
+		groundAnchorWorkers.set(worker, registry);
+		worker.addEventListener('message', event => {
+			const message = event.data;
+			if (message?.type !== 'spriteGroundAnchor') return;
+			const registration = registry.get(message.spriteName);
+			if (!registration || registration.requestId !== message.requestId || registration.src !== message.src) return;
+			if (registration.groundOffsetY === undefined) {
+				const minimum = Math.min(0, 16 - registration.offsetY - registration.height);
+				registration.groundOffsetY = Number.isInteger(message.groundOffsetY) && message.groundOffsetY >= minimum && message.groundOffsetY <= 0
+					? message.groundOffsetY : 0;
+				for (const sprite of registration.instances) applyGroundOffset(sprite, registration.groundOffsetY);
+				registration.instances.clear();
+			}
+			worker.postMessage({type: 'spriteGroundAnchorApplied', requestId: registration.requestId,
+				spriteName: message.spriteName, src: registration.src});
+		});
+		return registry;
+	}
+
+	function registerGroundAnchor(sprite, message) {
+		const registry = groundAnchorRegistry(sprite.renderWorker);
+		const key = JSON.stringify([message.src, message.width, message.height, message.offsetY, message.sourceScale, message.animationData]);
+		const previous = registry.get(message.spriteName);
+		if (previous?.key === key) {
+			if (previous.groundOffsetY !== undefined) applyGroundOffset(sprite, previous.groundOffsetY);
+			else previous.instances.add(sprite);
+			return;
+		}
+		const requestId = ++nextGroundAnchorRequestId;
+		registry.set(message.spriteName, {key, requestId, src: message.src, offsetY: message.offsetY,
+			height: message.height, instances: new Set([sprite])});
+		sprite.renderWorker.postMessage({...message, requestId});
+	}
+
 	var Sprite = Class.extend({
 		init: function (name, scale, renderWorker, tokenHash, assetType, nftId, deferImage) {
 			this.name = name;
@@ -7,6 +54,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			this.isLoaded = false;
 			this.offsetX = 0;
 			this.offsetY = 0;
+			this.groundOffsetY = 0;
+			this.autoGroundAnchor = false;
 			this.renderWorker = renderWorker;
 			this.deferImage = deferImage === true;
 
@@ -33,6 +82,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			} else if (assetType === "bot") {
 				assetType = "companion";
 			}
+			this.autoGroundAnchor = assetType === 'looper';
+			this.groundAnchorSpriteName = this.autoGroundAnchor ? this.name : undefined;
 
 			this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${assetType}/1/${tokenHash}.png`;
 			console.log("Loading dynamic nft", tokenHash, assetType, this.filepath);
@@ -98,6 +149,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			this.height = data.height;
 			this.offsetX = (data.offset_x !== undefined) ? data.offset_x : -16;
 			this.offsetY = (data.offset_y !== undefined) ? data.offset_y : -16;
+			applyGroundOffset(this, 0);
 			this.bubbleOffsetX = (data.bubble_offset_x !== undefined) ? data.bubble_offset_x : 0;
 			this.bubbleOffsetY = (data.bubble_offset_y !== undefined) ? data.bubble_offset_y : 0;
 			this.hasShadow = (data.hasShadow !== undefined) ? data.hasShadow : undefined;
@@ -168,7 +220,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				src = this.filepath;
 			}
 
-			self.renderWorker.postMessage({
+			const message = {
 				"type": "loadSprite",
 				"id": self.id,
 				"spriteName": self.name,
@@ -177,8 +229,15 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				"width": self.width,
 				"height": self.height,
 				"offsetX": self.offsetX,
-				"offsetY": self.offsetY
-			});
+				"offsetY": self.offsetY,
+				"autoGroundAnchor": self.autoGroundAnchor,
+				"sourceScale": self.dynamicNFT ? 1 : self.scale
+			};
+			if (self.autoGroundAnchor) registerGroundAnchor(self, message);
+			else {
+				groundAnchorWorkers.get(self.renderWorker)?.delete(self.name);
+				self.renderWorker.postMessage(message);
+			}
 			this.workerRegistered = true;
 		},
 
@@ -225,6 +284,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 					isLoaded: true,
 					offsetX: this.offsetX,
 					offsetY: this.offsetY,
+					groundOffsetY: this.groundOffsetY,
+					groundAnchorSpriteName: this.groundAnchorSpriteName,
 					width: this.width,
 					height: this.height
 				};
@@ -308,6 +369,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 				isLoaded: true,
 				offsetX: this.offsetX,
 				offsetY: this.offsetY,
+				groundOffsetY: this.groundOffsetY,
+				groundAnchorSpriteName: this.groundAnchorSpriteName,
 				width: this.width,
 				height: this.height,
 				hasShadow: this.hasShadow

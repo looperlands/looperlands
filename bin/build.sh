@@ -21,7 +21,7 @@ find $BUILDDIR/js -type f ! \( \
     -iname "*.mjs" -or -path "$BUILDDIR/js/lib/pixelfx/*" -or \
     -iname "game.js" -or -iname "home.js" -or -iname "log.js" -or \
     -iname "require-jquery.js" -or -iname "modernizr.js" -or \
-    -iname "css3-mediaqueries.js" -or -iname "*worker.js" -or -iname "sceneenvironment.js" -or \
+    -iname "css3-mediaqueries.js" -or -iname "*worker.js" -or -iname "sceneenvironment.js" -or -iname "sprite-ground-anchor.js" -or \
     -iname "detect.js" -or -iname "underscore.min.js" -or -iname "text.js" -or \
     -iname "axios.min.js" -or -iname "keyboardhandler.js" -or \
     -iname "settings.js" -or -iname "gamepad.js" -or \

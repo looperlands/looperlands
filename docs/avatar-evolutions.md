@@ -63,6 +63,36 @@ unlock celebration. The client stores visual sprites separately from canonical
 NFT identity, so different forms cannot overwrite one another's renderer slots.
 It preserves the previous visible sprite while downloading a replacement.
 
+## Automatic standing alignment
+
+Dynamic `looper` sprites (including the legacy `armor` asset type and evolution
+forms) infer one vertical correction when their image first loads in the render
+worker. No platform option or image edit is required. Bundled sprites and other
+asset types retain their existing placement.
+
+The detector checks that the image dimensions match the declared animation
+layout, then finds the lowest non-transparent pixel across all `idle_down`
+frames. It uses the bottom edge of that pixel as the standing baseline. Walking,
+attack and other poses do not determine the baseline: their feet, weapons or
+effects can intentionally extend below the standing pose. One fixed correction
+applies to every frame, preserving movement within the animation.
+
+The correction in native pixels is
+`min(0, 16 - offset_y - idleDownBottom)`. It only moves artwork up when it extends
+below the logical tile's ground line; padded artwork is never moved down. For a
+32-pixel frame with the usual `offset_y: -12`, a bottom edge at 28 or above leaves
+placement unchanged, and a full-height bottom edge at 32 moves the artwork up by
+four pixels. Blank standing frames, incompatible layouts or failed pixel
+readback keep the existing placement.
+
+The worker waits for the client to apply the correction before showing the
+avatar. Body artwork, held equipment, labels and body effects move together;
+the logical position, depth sorting, collisions and ground contact shadow stay
+at the existing tile coordinates. Each form gets its own result, shared by its
+display scales and hurt/outline variants. This is a conservative placement
+heuristic, not a way to distinguish feet from a shadow or effect painted into
+an idle frame.
+
 ## Rollout and acceptance
 
 Deploy the platform backend, then the game, then the creator frontend. No database

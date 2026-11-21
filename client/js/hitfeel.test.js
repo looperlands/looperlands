@@ -59,6 +59,26 @@ test('finisher requires lethal confirmed HP and uses the saved mob frame after d
     expect(data.hitFeel.shatter).toBeCloseTo(.18);expect(data.drawData.map(d=>d.spriteName)).toEqual(['shadow16','ogre']);
     expect(data.drawData[1]).toMatchObject({sx:32,sW:48,dx:-32,dW:96});
 });
+test.each([[1, 1, -16], [2, 1, -16], [3, 1, -16], [2, -1, -8]])(
+    'anchored impacts and saved shatter art retain placement at scale %s with vertical transform %s', (scale, scaleY, expectedY) => {
+    const {feedback, mob, player} = setup();
+    mob.sprite = {name: 'full-frame', width: 32, height: 32, offsetX: -8, offsetY: -12, groundOffsetY: -4};
+    player.sprite = {groundOffsetY: -2};
+    mob.hitPoints = 0;
+    feedback.addImpact(mob, 20, 1200, true);
+    expect(feedback.frame(1200).hitFeel[0]).toMatchObject({x: 40, y: 32, sourceX: 24, sourceY: 36});
+    mob.isDead = true;
+    mob.sprite = {name: 'death', groundOffsetY: 0};
+    feedback.finish(mob, 1210);
+    const shadow = {spriteName: 'shadow16', dy: 0};
+    const data = {scaleY, drawData: [shadow, {spriteName: 'death'}]};
+    feedback.decorate(mob, data, scale, 1300);
+    expect(data.drawData[0]).toBe(shadow);
+    expect(data.drawData[1]).toMatchObject({spriteName: 'full-frame', sx: 32, sW: 32, sH: 32,
+        dx: -8 * scale, dy: expectedY * scale, dW: 32 * scale, dH: 32 * scale});
+    expect(shadow.dy).toBe(0);
+    expect(mob).toMatchObject({x: 32, y: 32});
+});
 test('AoE sound and particles are bounded, expire, and clear across map/session transitions',()=>{
     const {feedback,mob,game}=setup();for(let i=0;i<100;i++)feedback.addImpact(mob,1,1000+i,false);
     expect(feedback.impacts).toHaveLength(24);expect(game.audioManager.playConfirmedImpact).toHaveBeenCalledTimes(2);

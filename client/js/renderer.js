@@ -434,11 +434,16 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     anim = entity.currentAnimation,
                     os = this.upscaledRendering ? 1 : this.scale,
                     ds = this.upscaledRendering ? this.scale : 1;
+                const groundOffsetY = sprite?.groundOffsetY || 0;
+                if (sprite?.groundAnchorSpriteName) {
+                    entityData.bodySpriteName = sprite.groundAnchorSpriteName;
+                    entityData.groundOffsetY = groundOffsetY;
+                }
     
                 if(anim && sprite) {
                     const healthTargetId = this.game.combatPrototype?.getHealthTargetId() ?? this.game.player?.target?.id;
                     if (this.game.app?.settings?.getMobHealthBarsEnabled?.() !== false && entity instanceof Mob && entity.id === healthTargetId && !entity.isDead && entity.id !== this.game.combatPrototype?.state?.mob?.id) {
-                        entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+3,
+                        entityData.healthBar = {id:entity.id,x:entity.x+8,y:entity.y+sprite.offsetY+groundOffsetY+3,
                             hp:entity.hitPoints,maxHp:entity.maxHitPoints};
                     }
                     let	frame = this.game.combatFeedback?.hitFeel?.pose(entity, anim, this.game.currentTime) || anim.currentFrame,
@@ -469,7 +474,13 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     }
     
                     if(!dissolve && !(entity instanceof Mob && (entity.nameless || (entity.isFriendly && !entity.exitingCombat)))) { // friendly mobs render nameless by default, make sure mob is actually friendly and not just exiting combat
-                        textData = this.drawEntityName(entity, sprite.offsetY);
+                        textData = this.drawEntityName(entity, sprite.offsetY + groundOffsetY);
+                        if (entityData.bodySpriteName) {
+                            for (const text of textData) {
+                                text.bodySpriteName = entityData.bodySpriteName;
+                                text.groundOffsetY = groundOffsetY;
+                            }
+                        }
                     }
     
                     if(entity.flipSpriteX) {
@@ -633,6 +644,13 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                        }
                     }
                 }
+                // Align the visible actor and attachments without moving its ground footprint.
+                if (groundOffsetY) {
+                    const dy = groundOffsetY * this.scale * (entityData.scaleY === -1 ? -1 : 1);
+                    for (const draw of entityData.drawData) {
+                        if (draw.spriteName !== 'shadow16') draw.dy += dy;
+                    }
+                }
                 if (entity instanceof Character) {
                     const recoil = this.game.combatFeedback?.getOffset(entity, this.game.currentTime);
                     if (recoil && (recoil.x || recoil.y)) {
@@ -738,7 +756,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                 if(spr) {
                     rect.x = (entity.x + spr.offsetX - this.camera.x) * s;
-                    rect.y = (entity.y + spr.offsetY - this.camera.y) * s;
+                    rect.y = (entity.y + spr.offsetY + (entity.sprite?.groundOffsetY || 0) - this.camera.y) * s;
                     rect.w = spr.width * s;
                     rect.h = spr.height * s;
                     rect.left = rect.x;
@@ -829,7 +847,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                                 "type": "text",
                                 "text": entity.title,
                                 "x": (entity.x + 8) * this.scale,
-                                "y": (entity.y + entity.nameOffsetY + 5) * this.scale,
+                                "y": (entity.y + entity.nameOffsetY + (entity.sprite?.groundOffsetY || 0) + 5) * this.scale,
                                 "pixelAligned": true,
                                 "centered": true,
                                 "color": "white",

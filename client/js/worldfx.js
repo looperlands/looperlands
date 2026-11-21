@@ -88,7 +88,7 @@ define(['worldfxconfig'], function (Config) {
             // Down-facing equipment is drawn on the left side of the avatar.
             const left = entity.orientation === 2 || entity.orientation === 3;
             const x = entity.x + (held ? (left ? 0 : 16) : 8);
-            const y = entity.y + (held ? 5 : 2);
+            const y = entity.y + (held ? 5 : 2) + (entity.sprite?.groundOffsetY || 0);
             const startedAt = this.game.currentTime || Date.now();
             const colors = ['#fff9d6', '#ffe078', '#f5af45', '#9cefe6'];
             for (let i = 0; i < 44; i++) {
@@ -113,16 +113,17 @@ define(['worldfxconfig'], function (Config) {
             if (!entity || entity.isDead || !this.enabled('evolution') ||
                 !Number.isFinite(entity.x) || !Number.isFinite(entity.y)) return 0;
             const startedAt = this.game.currentTime || Date.now(), revealDelayMs = 1800;
+            const offsetY = entity.sprite?.groundOffsetY || 0;
             const colors = ['#fff2d4', '#f1cd85', '#d7ab97', '#b97b50'];
             // Superseding a form replaces its ceremony instead of stacking effects.
             this.cancelEvolution(entity);
             this.rings.push({owner: 'evolution', actor: entity, x: entity.x + 8, y: entity.y + 12,
-                coreX: entity.x + 8, coreY: entity.y - 3, startedAt, revealDelayMs, radius: 54, lifetimeMs: 7200});
+                coreX: entity.x + 8, coreY: entity.y - 3 + offsetY, startedAt, revealDelayMs, radius: 54, lifetimeMs: 7200});
             // Warm star showers begin at the reveal, followed by a lingering aura.
             for (let i = 0; i < 84; i++) {
                 const wave = Math.floor(i / 28), angle = i / 28 * Math.PI * 2;
                 const speed = 14 + this.random() * 26;
-                this.particles.push({x: entity.x + 8, y: entity.y - 4,
+                this.particles.push({x: entity.x + 8, y: entity.y - 4 + offsetY,
                     vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed * 0.5 - 20,
                     gravity: 9, startedAt: startedAt + revealDelayMs + wave * 600, lifetimeMs: 2600,
                     color: colors[i % colors.length], size: i % 5 === 0 ? 2 : 1,
@@ -242,7 +243,7 @@ define(['worldfxconfig'], function (Config) {
             const particles = this.particles.filter(p => p.startedAt <= time).map(p => {
                 const age = Math.max(0, time - p.startedAt), seconds = age / 1000;
                 const actor = p.owner === 'evolution' && this.evolutionActor(p);
-                const x = actor ? actor.x + 8 : p.x, y = actor ? actor.y - 4 : p.y;
+                const x = actor ? actor.x + 8 : p.x, y = actor ? actor.y - 4 + (actor.sprite?.groundOffsetY || 0) : p.y;
                 return {x: x + p.vx * seconds, y: y + p.vy * seconds + 0.5 * p.gravity * seconds * seconds,
                     color: p.color, size: p.size, shape: p.shape, layer: p.owner === 'trail' ? 'ground' : 'foreground', trailX: p.vx * 0.055,
                     trailY: (p.vy + p.gravity * seconds) * 0.055, alpha: 1 - age / p.lifetimeMs,
@@ -254,7 +255,8 @@ define(['worldfxconfig'], function (Config) {
                     if (!actor) return ring;
                     const effect = {...ring};
                     delete effect.actor;
-                    return {...effect, x: actor.x + 8, y: actor.y + 12, coreX: actor.x + 8, coreY: actor.y - 3};
+                    return {...effect, x: actor.x + 8, y: actor.y + 12, coreX: actor.x + 8,
+                        coreY: actor.y - 3 + (actor.sprite?.groundOffsetY || 0)};
                 })};
             renderer.setExtensionData('world-fx', data);
             renderer.setExtensionData('world-fx-ground', data);

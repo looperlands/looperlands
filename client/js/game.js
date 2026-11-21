@@ -10474,7 +10474,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     var s = this.renderer.scale,
                         t = 16 * s, // tile size
                         x = ((character.x - this.camera.x) * s),
-                        y = ((character.y - this.camera.y) * s) - (t * 2),
+                        y = ((character.y + (character.sprite?.groundOffsetY || 0) - this.camera.y) * s) - (t * 2),
                         w = bubble.element.outerWidth(true), // true includes margins
                         offsetX = (w / 2) - (t / 2),
                         offsetY = 0;

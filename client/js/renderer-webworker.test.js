@@ -12,16 +12,26 @@ function deferred() {
 
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
 
-function createWorker({supportsFonts = true} = {}) {
+function createWorker({supportsFonts = true, anchorImageData, readbackError} = {}) {
     const font = deferred();
     const FontFace = jest.fn(function () { this.load = jest.fn(() => font.promise); });
     const fetch = jest.fn();
     const createImageBitmap = jest.fn();
     const log = jest.fn();
     const self = {FontFace: supportsFonts ? FontFace : undefined, fonts: {add: jest.fn()}, postMessage: jest.fn()};
-    const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log}};
-    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name], getLights: () => lights, getTileset: () => tileset});`, sandbox);
-    return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self};
+    const readPixels = jest.fn(() => {
+        if (readbackError) throw readbackError;
+        return anchorImageData;
+    });
+    const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log},
+        importScripts: name => {if (name === 'sprite-ground-anchor.js') self.SpriteGroundAnchor = require('./sprite-ground-anchor');},
+        OffscreenCanvas: anchorImageData || readbackError ? function (width, height) {
+            this.width = width; this.height = height;
+            this.getContext = () => ({drawImage: jest.fn(), getImageData: readPixels,
+                strokeText: jest.fn(), fillText: jest.fn()});
+        } : undefined};
+    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, drawText, getSprite: name => sprites[name], getLights: () => lights, getTileset: () => tileset});`, sandbox);
+    return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self, readPixels};
 }
 
 function mockImage(worker, image = {bitmap: true}) {
@@ -144,6 +154,145 @@ test.each(['fetch', 'decode'])('retries a sprite after a failed %s', async failu
 function context() {
     return Object.fromEntries(['clearRect', 'save', 'restore', 'translate', 'scale', 'rotate', 'drawImage'].map(name => [name, jest.fn()]));
 }
+
+function anchorFixture() {
+    const metadata = {type: 'loadSprite', spriteName: 'body', src: 'body.png', requestId: 1,
+        autoGroundAnchor: true, sourceScale: 1, width: 32, height: 32, offsetX: -8, offsetY: -12,
+        animationData: {idle_down: {row: 0, length: 2}, atk_down: {row: 1, length: 5}}};
+    const image = {width: 160, height: 64};
+    const pixels = {...image, data: new Uint8ClampedArray(image.width * image.height * 4)};
+    pixels.data[(31 * image.width + 16) * 4 + 3] = 255;
+    return {metadata, image, pixels};
+}
+
+test('automatic anchors reuse the lazy image request and perform one alpha read for a loaded sprite', async () => {
+    const {metadata, image, pixels} = anchorFixture();
+    const worker = createWorker({supportsFonts: false, anchorImageData: pixels});
+    mockImage(worker, image);
+    worker.send(metadata);
+    expect(worker.fetch).not.toHaveBeenCalled();
+    const sprite = worker.getSprite('body');
+    await Promise.all(Array.from({length: 60}, () => sprite.load()));
+    await sprite.load();
+    expect(worker.fetch).toHaveBeenCalledTimes(1);
+    expect(worker.readPixels).toHaveBeenCalledTimes(1);
+    expect(worker.self.postMessage).toHaveBeenCalledTimes(1);
+    expect(worker.self.postMessage).toHaveBeenCalledWith({type: 'spriteGroundAnchor', requestId: 1,
+        spriteName: 'body', src: 'body.png', groundOffsetY: -4});
+    expect(sprite.groundAnchorPending).toBe(true);
+});
+
+test('a whole avatar waits for its acknowledged correction, including gear and contact shadow', async () => {
+    const {metadata, image, pixels} = anchorFixture();
+    const worker = createWorker({supportsFonts: false, anchorImageData: pixels});
+    mockImage(worker, image);
+    const main = context(), high = context();
+    for (const [id, ctx] of [['entities', main], ['highEntities', high]]) {
+        worker.send({type: 'setCanvas', id, canvas: {width: 100, height: 100, getContext: () => ctx}});
+    }
+    for (const name of ['shadow16', 'sword']) {
+        worker.send({type: 'loadSprite', spriteName: name, src: name + '.png'});
+        await worker.getSprite(name).load();
+    }
+    worker.send(metadata);
+    const draw = (spriteName, dy) => ({spriteName, sx: 0, sy: 0, sW: 32, sH: 32, dx: -8, dy, dW: 32, dH: 32});
+    const actor = {bodySpriteName: 'body', groundOffsetY: 0, translateX: 32, translateY: 48,
+        drawData: [draw('shadow16', 0), draw('sword', -20), draw('body', -12)]};
+    const render = () => worker.drawEntities({id: 'entities', cameraX: 0, cameraY: 0, scale: 1, entityData: [actor]});
+    render();
+    expect(main.drawImage).not.toHaveBeenCalled();
+    await worker.getSprite('body').load();
+    render();
+    expect(main.drawImage).not.toHaveBeenCalled();
+    worker.send({type: 'spriteGroundAnchorApplied', requestId: 1, spriteName: 'body', src: 'body.png'});
+    render(); // A stale command still has the old baseline.
+    expect(main.drawImage).not.toHaveBeenCalled();
+    actor.groundOffsetY = -4;
+    actor.drawData[1].dy -= 4;
+    actor.drawData[2].dy -= 4;
+    render();
+    expect(main.drawImage).toHaveBeenCalledTimes(3);
+    expect(main.drawImage.mock.calls.map(call => call[6])).toEqual([0, -24, -16]);
+    expect(high.drawImage).not.toHaveBeenCalled();
+    expect(worker.fetch).toHaveBeenCalledTimes(3);
+    expect(worker.readPixels).toHaveBeenCalledTimes(1);
+});
+
+test('old source results and acknowledgements cannot release a replacement avatar', async () => {
+    const {metadata, image, pixels} = anchorFixture();
+    const worker = createWorker({supportsFonts: false, anchorImageData: pixels});
+    mockImage(worker, image);
+    const pending = deferred();
+    worker.fetch.mockReturnValueOnce(pending.promise);
+    worker.send(metadata);
+    const old = worker.getSprite('body').load();
+    worker.send({...metadata, requestId: 2, src: 'new-body.png'});
+    const current = worker.getSprite('body');
+    worker.send({type: 'spriteGroundAnchorApplied', requestId: 2, spriteName: 'body', src: 'new-body.png'});
+    expect(current.groundAnchorPending).toBe(true);
+    await current.load();
+    pending.resolve({blob: jest.fn().mockResolvedValue('old blob')});
+    await old;
+    expect(worker.self.postMessage).toHaveBeenCalledTimes(1);
+    expect(worker.self.postMessage.mock.calls[0][0]).toMatchObject({requestId: 2, src: 'new-body.png'});
+    for (const acknowledgement of [
+        {requestId: 1, src: 'body.png'}, {requestId: 1, src: 'new-body.png'}, {requestId: 2, src: 'body.png'}
+    ]) {
+        worker.send({type: 'spriteGroundAnchorApplied', spriteName: 'body', ...acknowledgement});
+        expect(current.groundAnchorPending).toBe(true);
+    }
+    worker.send({type: 'spriteGroundAnchorApplied', requestId: 2, spriteName: 'body', src: 'new-body.png'});
+    expect(current.groundAnchorPending).toBe(false);
+});
+
+test('names and titles wait for the same anchor as their body while combat text stays visible', async () => {
+    const {metadata, image, pixels} = anchorFixture();
+    const worker = createWorker({supportsFonts: false, anchorImageData: pixels});
+    mockImage(worker, image);
+    const text = {...context(), measureText: jest.fn(() => ({width: 30, actualBoundingBoxAscent: 10}))};
+    worker.send({type: 'setCanvas', id: 'text', canvas: {width: 100, height: 100, getContext: () => text}});
+    worker.send(metadata);
+    const names = ['Hero', 'Explorer'].map((label, index) => ({text: label, title: index === 1,
+        x: 40, y: 30 + index * 10, bodySpriteName: 'body', groundOffsetY: 0}));
+    const render = textData => worker.drawText({id: 'text', cameraX: 0, cameraY: 0, scale: 1, textData});
+    render(names);
+    expect(text.drawImage).not.toHaveBeenCalled();
+    await worker.getSprite('body').load();
+    render(names);
+    expect(text.drawImage).not.toHaveBeenCalled();
+    worker.drawText({id: 'text', cameraX: 0, cameraY: 0, scale: 1,
+        textData: [{text: '123', x: 40, y: 25}]}, false);
+    expect(text.drawImage).toHaveBeenCalledTimes(1);
+    worker.send({type: 'spriteGroundAnchorApplied', requestId: 1, spriteName: 'body', src: 'body.png'});
+    render(names);
+    expect(text.drawImage).toHaveBeenCalledTimes(1);
+    const corrected = names.map(entry => ({...entry, groundOffsetY: -4, y: entry.y - 4}));
+    render(corrected);
+    expect(text.drawImage).toHaveBeenCalledTimes(3);
+    expect(text.measureText).toHaveBeenCalledTimes(3);
+    render(corrected);
+    expect(text.drawImage).toHaveBeenCalledTimes(3); // The ready label frame retains its cache.
+    expect(names[0]).toMatchObject({y: 30, groundOffsetY: 0});
+});
+
+test.each(['canvas unavailable', 'readback failure', 'empty standing frames', 'malformed sheet'])(
+    'automatic anchor gracefully resolves to legacy placement after %s', async reason => {
+        const {metadata, image, pixels} = anchorFixture();
+        const options = {supportsFonts: false};
+        if (reason !== 'canvas unavailable') options.anchorImageData = pixels;
+        if (reason === 'readback failure') options.readbackError = new Error('SecurityError');
+        if (reason === 'empty standing frames') pixels.data.fill(0);
+        if (reason === 'malformed sheet') image.height--;
+        const worker = createWorker(options);
+        mockImage(worker, image);
+        worker.send(metadata);
+        const sprite = worker.getSprite('body');
+        await sprite.load();
+        expect(worker.self.postMessage).toHaveBeenCalledWith({type: 'spriteGroundAnchor', requestId: 1,
+            spriteName: 'body', src: 'body.png', groundOffsetY: 0});
+        worker.send({type: 'spriteGroundAnchorApplied', requestId: 1, spriteName: 'body', src: 'body.png'});
+        expect(sprite.groundAnchorPending).toBe(false);
+    });
 
 test('skips pending sprites without draw exceptions and preserves the layer for the following sprite', async () => {
     const worker = createWorker();
