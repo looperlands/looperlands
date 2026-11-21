@@ -3,6 +3,28 @@ const os = require('os');
 const path = require('path');
 const {spawnSync} = require('child_process');
 
+test('production pruning retains the automatic anchor detector and its worker dependency is verified', () => {
+    const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'looperlands-anchor-build-'));
+    const scripts = path.join(fixture, 'js');
+    fs.mkdirSync(scripts);
+    fs.writeFileSync(path.join(fixture, 'index.html'), '<script src="js/renderer-webworker.js"></script>');
+    fs.writeFileSync(path.join(scripts, 'renderer-webworker.js'), "importScripts('sprite-ground-anchor.js');");
+    fs.copyFileSync(path.join(__dirname, '../client/js/sprite-ground-anchor.js'), path.join(scripts, 'sprite-ground-anchor.js'));
+    fs.writeFileSync(path.join(scripts, 'sprite-ground-anchor.test.js'), '');
+    const prune = fs.readFileSync(path.join(__dirname, 'build.sh'), 'utf8').match(/find \$BUILDDIR\/js[\s\S]*?-delete/)[0];
+    try {
+        const result = spawnSync('bash', ['-c', prune], {encoding: 'utf8', env: {...process.env, BUILDDIR: fixture}});
+        expect(result.status).toBe(0);
+        expect(fs.existsSync(path.join(scripts, 'sprite-ground-anchor.js'))).toBe(true);
+        expect(fs.existsSync(path.join(scripts, 'sprite-ground-anchor.test.js'))).toBe(false);
+        const check = spawnSync(process.execPath, [path.join(__dirname, 'check-client-assets.js'), fixture], {encoding: 'utf8'});
+        expect(check.status).toBe(0);
+        expect(check.stderr).toBe('');
+    } finally {
+        fs.rmSync(fixture, {recursive: true, force: true});
+    }
+});
+
 test('startup resolves a shared dialogue dependency before loading the game bundle', () => {
     const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'looperlands-client-boot-'));
     const scripts = path.join(fixture, 'client/js');

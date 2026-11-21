@@ -56,3 +56,21 @@ test.each([{mobile: true}, {mobile: false}])('scaled rendering retains deferred 
     }
     expect(game.spritesets[1].rat.isLoaded).toBe(true);
 });
+
+test('speech bubbles follow the active artwork anchor without moving the character', () => {
+    const {game} = fixture();
+    const element = {outerWidth: () => 100, outerHeight: () => 30, css: jest.fn()};
+    game.bubbleManager = {getBubbleById: () => ({element})};
+    game.camera = {x: 0, y: 0};
+    const character = {id: 1, x: 32, y: 100, sprite: {groundOffsetY: 0}, normalSprite: {groundOffsetY: -4}};
+    const top = () => {
+        element.css.mockClear(); game.assignBubbleTo(character);
+        return parseInt(element.css.mock.calls.find(([property]) => property === 'top')[1], 10);
+    };
+    const legacy = top();
+    character.sprite = {groundOffsetY: -4};
+    expect(top()).toBe(legacy - 4 * game.renderer.scale);
+    character.sprite = {};
+    expect(top()).toBe(legacy);
+    expect(character.y).toBe(100);
+});

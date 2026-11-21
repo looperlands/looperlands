@@ -82,7 +82,7 @@ function fireAnimation(lightSource, time) {
 }
 
 class Sprite {
-    constructor(id, src, animationData, width, height, offsetX, offsetY) {
+    constructor(id, src, animationData, width, height, offsetX, offsetY, anchor = {}) {
         this.id = id;
         this.src = src;
         this.animationData = animationData;
@@ -90,6 +90,10 @@ class Sprite {
         this.height = height;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
+        this.sourceScale = anchor.sourceScale ?? 1;
+        this.requestId = anchor.requestId;
+        this.autoGroundAnchor = anchor.autoGroundAnchor === true && Number.isSafeInteger(this.requestId) && this.requestId > 0;
+        this.groundAnchorPending = this.autoGroundAnchor;
     }
 
     load() {
@@ -99,12 +103,32 @@ class Sprite {
         if (!this.loadPromise) {
             this.loadPromise = loadImg(this.src).then((img) => {
                 this.image = img;
+                if (img && this.autoGroundAnchor) this.resolveGroundAnchor(img);
                 return img;
             }).finally(() => {
                 this.loadPromise = null;
             });
         }
         return this.loadPromise;
+    }
+
+    resolveGroundAnchor(image) {
+        let groundOffsetY = 0;
+        try {
+            if (!self.SpriteGroundAnchor) importScripts('sprite-ground-anchor.js');
+            if (self.SpriteGroundAnchor.frameLayout(image.width, image.height, this)) {
+                const canvas = new OffscreenCanvas(image.width, image.height);
+                const context = canvas.getContext('2d', {willReadFrequently: true});
+                context.drawImage(image, 0, 0);
+                groundOffsetY = self.SpriteGroundAnchor.inferOffset(context.getImageData(0, 0, image.width, image.height), this);
+            }
+        } catch (error) {
+            // Missing canvas support or unreadable artwork keeps its legacy placement.
+        }
+        if (sprites[this.id] !== this) return;
+        this.groundOffsetY = groundOffsetY;
+        self.postMessage({type: 'spriteGroundAnchor', requestId: this.requestId,
+            spriteName: this.id, src: this.src, groundOffsetY});
     }
 }
 
@@ -522,7 +546,7 @@ onmessage = (e) => {
         }
         const frameTime = performance.now();
         const actors = e.data.renderData.find(data => data.type === 'entities');
-        const view = actors && {...actors, parallaxTime: frameTime};
+        const view = actors && {...filterReadyActors(actors), parallaxTime: frameTime};
         const scale = view?.scale || 1;
         resizeWorkerLayers(scale);
         if (rendererExtensions?.ready?.(e.data.extensions, {...view,
@@ -660,7 +684,12 @@ onmessage = (e) => {
         ctx.imageSmoothingEnabled = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
-        sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY, e.data);
+    } else if (e.data.type === 'spriteGroundAnchorApplied') {
+        const sprite = sprites[e.data.spriteName];
+        if (sprite && sprite.autoGroundAnchor && sprite.image && sprite.requestId === e.data.requestId && sprite.src === e.data.src) {
+            sprite.groundAnchorPending = false;
+        }
     }  else if (e.data.type === "setLights") {
         lights = e.data.lights ?? [];
     } else if (e.data.type === "setObstacles") {
@@ -735,7 +764,8 @@ function cachedLabel(text, fontSize, strokeSize, color, strokeColor, fontWeight 
 
 function drawText(renderData, clear = true) {
     const ctx = contexes[renderData.id], canvas = canvases[renderData.id];
-    const {cameraX, cameraY, scale, textData} = renderData;
+    const {cameraX, cameraY, scale} = renderData;
+    const textData = readySpriteEntries(renderData.textData);
     if (clear) {
         const key = JSON.stringify([cameraX, cameraY, scale, textData, canvas.width, canvas.height, hasLoadedFont]);
         if (key === textFrameKey) return;
@@ -810,7 +840,32 @@ function shadeTerrain(ctx, surface, scene, cameraX, cameraY) {
     ctx.restore();
 }
 
+function groundAnchorReady(entity) {
+    const body = sprites[entity.bodySpriteName];
+    if (!body?.autoGroundAnchor) return true;
+    if (body.image === undefined) body.load();
+    return body.image !== undefined && !body.groundAnchorPending && (entity.groundOffsetY || 0) === body.groundOffsetY;
+}
+
+function readySpriteEntries(entries) {
+    const firstPending = entries.findIndex(entry => !groundAnchorReady(entry));
+    if (firstPending === -1) return entries;
+    const ready = entries.slice(0, firstPending);
+    for (let i = firstPending + 1; i < entries.length; i++) {
+        if (groundAnchorReady(entries[i])) ready.push(entries[i]);
+    }
+    return ready;
+}
+
+function filterReadyActors(data) {
+    const entityData = readySpriteEntries(data.entityData);
+    return entityData === data.entityData ? data : {...data, entityData};
+}
+
 function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
+    // The main thread applies the inferred baseline to body, gear and labels together.
+    // Until its acknowledgement, withhold the whole actor rather than paint one stale frame.
+    drawEntitiesData = filterReadyActors(drawEntitiesData);
     let id = drawEntitiesData.id;
     let ctx = contexes[id];
     let canvas = canvases[id];
@@ -946,6 +1001,7 @@ function drawEntitySprite(ctx, entity, draw, scale) {
         sprite.load();
         return;
     }
+    if (sprite.groundAnchorPending) return;
     try {
         if (entity.hitFeel && spriteName !== 'shadow16' && !renderAbove && !a) {
             if (!self.HitFeelRenderer) importScripts('hitfeel-worker.js');

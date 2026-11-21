@@ -5,24 +5,26 @@ const vm = require('vm');
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => {jest.clearAllTimers(); jest.useRealTimers();});
 
-function createSprite(name, href = 'https://looperlands.io/game/', nft = false, deferImage = false) {
+function createSprite(name, href = 'https://looperlands.io/game/', nft = false, deferImage = false, options = {}) {
     let Sprite;
     const requests = [];
-    const renderWorker = {postMessage: jest.fn()};
-    const data = {id: name, width: 16, height: 16, animations: {idle: {length: 1, row: 0}}};
+    const listeners = [];
+    const renderWorker = {postMessage: jest.fn(), addEventListener: jest.fn((type, listener) => listeners.push(listener))};
+    const data = {id: name, width: 16, height: 16, animations: {idle: {length: 1, row: 0}}, ...options.data};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'sprite.js'), 'utf8'), {
-        define: (deps, factory) => { Sprite = factory({}, function () {}, {[name]: data, clotharmor: data}); },
+        define: (deps, factory) => { Sprite = factory({}, function () {}, {[name]: data, clotharmor: data, redsword: data}); },
         Class: {extend: methods => function (...args) { Object.assign(this, methods); this.init(...args); }},
         Image: function () {
             Object.defineProperty(this, 'src', {set(url) {
                 requests.push({url, crossOrigin: this.crossOrigin, onload: this.onload, onerror: this.onerror});
             }});
         },
-        window: {location: {href}}, URL, setTimeout, clearTimeout, console: {log: jest.fn(), error: jest.fn()}
+        window: {location: {href}}, document: options.document, self: {}, URL, setTimeout, clearTimeout,
+        console: {log: jest.fn(), error: jest.fn()}
     });
-    const sprite = nft ? new Sprite(name, 1, renderWorker, 'token-hash', 'armor', '0xabc')
+    const sprite = nft ? new Sprite(name, 1, renderWorker, 'token-hash', options.assetType || 'armor', '0xabc')
         : new Sprite(name, 1, renderWorker, undefined, undefined, undefined, deferImage);
-    return {sprite, requests, renderWorker};
+    return {sprite, requests, renderWorker, Sprite, data, receive: message => listeners.forEach(listener => listener({data: message}))};
 }
 
 test('startup sprites load from the repository and send the same URL to the worker', () => {
@@ -133,4 +135,98 @@ test('appearance preload resolves a failed image without replacing the previous 
     const ready = sprite.whenImageLoaded();
     requests[0].onerror();
     await expect(ready).resolves.toBe(false);
+});
+
+const avatarFrame = {width: 32, height: 32, offset_x: -8, offset_y: -12,
+    animations: {idle_down: {length: 2, row: 8}}};
+
+test.each(['armor', 'looper'])('dynamic %s requests worker anchor detection without fetching a main-thread image', assetType => {
+    const {sprite, requests, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame, assetType});
+    expect(requests).toHaveLength(0);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(sprite.groundOffsetY).toBe(0);
+    const registration = renderWorker.postMessage.mock.calls[0][0];
+    expect(registration).toMatchObject({autoGroundAnchor: true, sourceScale: 1, requestId: expect.any(Number)});
+    receive({...registration, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    expect(sprite).toMatchObject({groundOffsetY: -4, groundAnchorSpriteName: 'avatar', offsetY: -12});
+    expect(renderWorker.postMessage).toHaveBeenLastCalledWith({type: 'spriteGroundAnchorApplied',
+        requestId: registration.requestId, spriteName: 'avatar', src: registration.src});
+    expect(requests).toHaveLength(0);
+});
+
+test.each(['weapon', 'companion', 'bot'])('dynamic %s retains legacy placement without automatic detection', assetType => {
+    const {sprite, renderWorker} = createSprite('avatar', undefined, true, false, {data: avatarFrame, assetType});
+    expect(sprite.groundOffsetY).toBe(0);
+    expect(sprite.groundAnchorSpriteName).toBeUndefined();
+    expect(renderWorker.postMessage.mock.calls[0][0]).toMatchObject({autoGroundAnchor: false});
+    expect(renderWorker.addEventListener).not.toHaveBeenCalled();
+});
+
+test('static avatar sheets retain legacy offsets and the existing deferred loading path', () => {
+    const {sprite, requests, renderWorker} = createSprite('NFT_static', undefined, false, true, {data: avatarFrame});
+    expect(sprite.groundOffsetY).toBe(0);
+    expect(requests).toHaveLength(0);
+    expect(renderWorker.postMessage.mock.calls[0][0]).toMatchObject({autoGroundAnchor: false});
+    expect(renderWorker.addEventListener).not.toHaveBeenCalled();
+});
+
+test('one worker registration shares its detected anchor across scales and later instances', () => {
+    const {sprite, Sprite, requests, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame});
+    const scaled = new Sprite('avatar', 2, renderWorker, 'token-hash', 'looper', '0xabc');
+    expect(renderWorker.postMessage).toHaveBeenCalledTimes(1);
+    expect(renderWorker.addEventListener).toHaveBeenCalledTimes(1);
+    const registration = renderWorker.postMessage.mock.calls[0][0];
+    receive({...registration, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    const later = new Sprite('avatar', 3, renderWorker, 'token-hash', 'armor', '0xabc');
+    for (const instance of [sprite, scaled, later]) expect(instance.groundOffsetY).toBe(-4);
+    expect(renderWorker.postMessage).toHaveBeenCalledTimes(2); // One load and one acknowledgement.
+    expect(requests).toHaveLength(0);
+});
+
+test('replaced registrations reject stale source and request replies without releasing the new image', () => {
+    const {sprite, Sprite, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame});
+    const oldRegistration = renderWorker.postMessage.mock.calls[0][0];
+    const replacement = new Sprite('avatar', 1, renderWorker, 'new-token', 'looper', '0xabc');
+    const current = renderWorker.postMessage.mock.calls[1][0];
+    receive({...oldRegistration, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    receive({...current, src: oldRegistration.src, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    expect(renderWorker.postMessage).toHaveBeenCalledTimes(2);
+    expect(sprite.groundOffsetY).toBe(0);
+    expect(replacement.groundOffsetY).toBe(0);
+    receive({...current, type: 'spriteGroundAnchor', groundOffsetY: -2});
+    expect(replacement.groundOffsetY).toBe(-2);
+    expect(sprite.groundOffsetY).toBe(0);
+    expect(renderWorker.postMessage).toHaveBeenLastCalledWith(expect.objectContaining({type: 'spriteGroundAnchorApplied', requestId: current.requestId}));
+});
+
+test('registering a static replacement discards pending dynamic anchor state', () => {
+    const {Sprite, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame});
+    const registration = renderWorker.postMessage.mock.calls[0][0];
+    const replacement = new Sprite('avatar', 1, renderWorker, undefined, undefined, undefined, true);
+    receive({...registration, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    expect(replacement.groundOffsetY).toBe(0);
+    expect(renderWorker.postMessage).toHaveBeenCalledTimes(2);
+});
+
+test.each([0, 2, -100, NaN])('a zero or invalid detected offset %s falls back to legacy placement and acknowledges readiness', groundOffsetY => {
+    const {sprite, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame});
+    const registration = renderWorker.postMessage.mock.calls[0][0];
+    receive({...registration, type: 'spriteGroundAnchor', groundOffsetY});
+    expect(sprite.groundOffsetY).toBe(0);
+    expect(renderWorker.postMessage).toHaveBeenLastCalledWith(expect.objectContaining({type: 'spriteGroundAnchorApplied'}));
+});
+
+test('derived selection and hurt sprites follow the original avatar result', () => {
+    const ctx = {drawImage() {}, getImageData: () => ({data: new Uint8ClampedArray(4)}), putImageData() {}};
+    const document = {createElement: () => ({getContext: () => ctx, toDataURL: () => 'data:image/png;base64,AA=='})};
+    const {sprite, renderWorker, receive} = createSprite('avatar', undefined, true, false, {data: avatarFrame, document});
+    const registration = renderWorker.postMessage.mock.calls[0][0];
+    sprite.image = {width: 1, height: 1};
+    sprite.createHurtSprite(); sprite.createSilhouette();
+    receive({...registration, type: 'spriteGroundAnchor', groundOffsetY: -4});
+    for (const derived of [sprite.whiteSprite, sprite.silhouetteSprite]) {
+        expect(derived).toMatchObject({groundOffsetY: -4, groundAnchorSpriteName: 'avatar', offsetY: -12});
+    }
+    sprite.createHurtSprite();
+    expect(sprite.whiteSprite.groundOffsetY).toBe(-4);
 });

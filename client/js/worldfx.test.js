@@ -128,6 +128,15 @@ test.each([2, 3])('level-up bursts respect reduced motion and originate at the h
     fx.levelUp(game.player, 'Avatar'); fx.levelUp(null, 'Companion');
     expect(fx.particles).toHaveLength(0); expect(fx.rings).toHaveLength(0);
 });
+test.each(['Avatar', 'Weapon', 'Tool'])('anchored %s level-up art moves while its ground ring stays planted', asset => {
+    const {fx, game} = setup();
+    game.player.sprite = {groundOffsetY: -4};
+    fx.levelUp(game.player, asset);
+    const y = asset === 'Avatar' ? 318 : 321;
+    expect(fx.particles[0].y).toBe(y);
+    expect(fx.rings[0]).toMatchObject({y: 332, coreY: y});
+    expect(game.player).toMatchObject({x: 160, y: 320});
+});
 
 test('static weather can respect ambience toggles independently of reduced motion', () => {
     const {fx, settings} = setup();settings.getReducedMotion = () => true;
@@ -206,6 +215,25 @@ test('the full ceremony follows its moving actor and never follows a replacement
     game.player = {...game.player};
     fx.render(renderer, 2900);
     expect(fx.rings).toHaveLength(0); expect(fx.particles).toHaveLength(0);
+});
+test('evolution body effects follow the current form anchor while the ground halo and trails stay planted', () => {
+    const {fx, game, renderer} = setup();
+    game.player.sprite = {groundOffsetY: -4};
+    game.player.selectedTrail = 'trail:golden-sparks';
+    fx.evolve(game.player);
+    expect(fx.rings[0]).toMatchObject({y: 332, coreY: 313});
+    expect(fx.particles[0].y).toBe(312);
+    fx.render(renderer, 1000);
+    game.player.x += 4;
+    fx.render(renderer, 1100);
+    expect(fx.particles.find(particle => particle.owner === 'trail').y).toBe(333);
+    game.player.sprite = {groundOffsetY: -2};
+    game.player.y += 40;
+    fx.render(renderer, 2800);
+    const state = renderer.setExtensionData.mock.calls.at(-1)[1];
+    expect(state.rings[0]).toMatchObject({x: 172, y: 372, coreX: 172, coreY: 355});
+    expect(state.particles[0]).toMatchObject({x: 172, y: 354});
+    expect(game.player).toMatchObject({x: 164, y: 360});
 });
 
 test('canceling or superseding a ceremony removes only that actor’s evolution effects', () => {

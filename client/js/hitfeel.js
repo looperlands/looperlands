@@ -49,12 +49,14 @@ define(function () {
             const dx = hasOrigin ? entity.x - source.x : 0;
             const dy = hasOrigin ? entity.y - source.y : 0;
             const horizontal = Math.abs(dx) >= Math.abs(dy);
+            const sprite = entity.normalSprite || entity.sprite;
+            const sourceSprite = source?.normalSprite || source?.sprite;
             const impact={entity,receivedAt:time,startedAt:incoming ? null : time,strong,incoming,deflected,
                 lethal:entity.hitPoints===0&&entity.maxHitPoints>0,
                 dirX:horizontal ? Math.sign(dx) : 0,
                 dirY:horizontal ? 0 : Math.sign(dy),
-                x:entity.x+8,y:entity.y+4,
-                sourceX:hasOrigin ? source.x+8 : null,sourceY:hasOrigin ? source.y+6 : null,sprite:entity.normalSprite||entity.sprite,
+                x:entity.x+8,y:entity.y+4+(sprite?.groundOffsetY||0),
+                sourceX:hasOrigin ? source.x+8 : null,sourceY:hasOrigin ? source.y+6+(sourceSprite?.groundOffsetY||0) : null,sprite,
                 frame:entity.currentAnimation?{...entity.currentAnimation.currentFrame}:null,
                 poses:incoming ? [] : [source,entity].filter(actor=>actor.currentAnimation?.name?.startsWith('atk')).map(actor=>({actor,animation:actor.currentAnimation,frame:{...actor.currentAnimation.currentFrame}}))};
             // Older servers and damage without a visible attacker still get a short flinch.
@@ -128,9 +130,10 @@ define(function () {
                 shatterStrength:this.options.intense?1.5:1};
             if(data.hitFeel.shatter!==null && impact.sprite?.name && impact.frame){
                 const sprite=impact.sprite,frame=impact.frame;
+                const offsetY=(sprite.groundOffsetY||0)*(data.scaleY === -1 ? -1 : 1);
                 data.drawData=data.drawData.filter(draw=>draw.spriteName==='shadow16');
                 data.drawData.push({spriteName:sprite.name,sx:frame.x,sy:frame.y,sW:sprite.width,sH:sprite.height,
-                    dx:sprite.offsetX*scale,dy:sprite.offsetY*scale,dW:sprite.width*scale,dH:sprite.height*scale});
+                    dx:sprite.offsetX*scale,dy:(sprite.offsetY+offsetY)*scale,dW:sprite.width*scale,dH:sprite.height*scale});
             }
         }
         frame(time) {
