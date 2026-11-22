@@ -60,6 +60,22 @@ test('native radius, inherited or explicit color and preview resolution have ind
     expect(source).toEqual({x: 64, y: 64, glowIntensity: .3, glowRadius: 18, color: {r: 255, g: 180, b: 90}});
 });
 
+test('fire carries a broader warm shoulder than steady windows while sprite allocation remains bounded', () => {
+    const fixture = setup(), ctx = fixture.target.getContext();
+    const window = {...source, glowRadius: 24};
+    const fire = {...window, x: 128, animation: 'fire'};
+    expect(fixture.pass.draw(ctx, [window, fire], view)).toBe(2);
+    expect(fixture.pass.sprites.size).toBe(2);
+    expect(fixture.gradients).toHaveLength(2);
+    expect(fixture.gradients[0].stops).toContainEqual([.54, 'rgba(255,180,90,0.18)']);
+    expect(fixture.gradients[1].stops).toContainEqual([.5, 'rgba(255,180,90,0.34)']);
+    for (let i = 0; i < 60; i++) {
+        expect(fixture.pass.draw(ctx, [{...fire, glowIntensity: .3 + i / 1000}], view)).toBe(1);
+    }
+    expect(fixture.gradients).toHaveLength(2);
+    expect(fixture.pass.sprites.size).toBe(2);
+});
+
 test('source positions align to the same native grid as terrain and masks use world coordinates', () => {
     const fixture = setup(), mask = jest.fn();
     fixture.pass.draw(fixture.target.getContext(), [source], {...view, cameraX: 12.5, cameraY: 2.75, mask});

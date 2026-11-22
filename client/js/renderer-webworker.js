@@ -1421,7 +1421,7 @@ function drawEmissiveGlow(ctx, sources, cameraX, cameraY, options = {}) {
         fireAnimation(flame, time);
         // Emission is independent of ordinary intensity: an existing tile light
         // can opt into a local glow with a zero-intensity authored companion.
-        return {...source, glowIntensity: source.glowIntensity * (1 + .09 * flame.flamePulse)};
+        return {...source, glowIntensity: source.glowIntensity * (1 + .2 * flame.flamePulse)};
     });
     const scale = options.scale || 1;
     ctx.save();
