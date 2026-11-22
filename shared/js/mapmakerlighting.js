@@ -4,7 +4,7 @@
     else root.MapmakerLighting = api;
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
-    const glowPropertyNames = ['glowIntensity', 'glowRadius', 'glowColor'];
+    const glowPropertyNames = ['glowIntensity', 'glowRadius', 'glowColor', 'glowTexture'];
     const propertyNames = ['intensity', 'color', 'radius', 'innerRadius', 'spread', 'innerSpread', 'angle', 'shadow', 'animation', ...glowPropertyNames];
     function glow(properties = {}, round = true) {
         const result = {};
@@ -12,7 +12,10 @@
             const value = properties[key];
             if (value === null || value === undefined || value === '') continue;
             if (!round) throw new Error('Source glow belongs to a round light.');
-            if (key === 'glowColor') {
+            if (key === 'glowTexture') {
+                if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9-]{0,47}$/.test(value)) throw new Error('Use a glow texture name with lowercase letters, digits and dashes.');
+                result[key] = value;
+            } else if (key === 'glowColor') {
                 const channels = String(value).split(',');
                 if (channels.length !== 3 || channels.some(v => !/^\d{1,3}$/.test(v.trim()) || Number(v) > 255)) throw new Error('Use a glow color with three RGB channels from 0 to 255.');
                 const [r, g, b] = channels.map(Number);
@@ -30,6 +33,18 @@
         if (result.glowIntensity > 0 && spread > 0 && spread < 360) throw new Error('Turn source glow off for a spotlight, or use a beam spread of 0 or 360 degrees.');
         return result;
     }
+    function tileGlow(properties) {
+        if (!glowPropertyNames.some(key => properties[key] != null)) return;
+        // A window can cast a directional ordinary light and still emit through every pane.
+        const emission = glow({...properties, spread: 0});
+        if (!(emission.glowIntensity > 0)) return;
+        for (const axis of ['X', 'Y']) {
+            const offset = Number(properties['glowOffset' + axis] ?? 0);
+            if (!Number.isInteger(offset) || Math.abs(offset) > 32) throw new Error('Use a tile glow offset within 32 native pixels.');
+            emission['offset' + axis] = offset;
+        }
+        return emission;
+    }
     function light(row, tilesize) {
         const result = {id: Number(row.id), x: parseInt(row.x), y: parseInt(row.y)};
         if (row.shape === 'ellipse') {
@@ -44,7 +59,7 @@
             if (key === 'color' || key === 'glowColor') {
                 const [r, g, b] = String(value).split(',').map(Number);
                 result[key] = {r, g, b};
-            } else if (key === 'animation') result.animation = value;
+            } else if (key === 'animation' || key === 'glowTexture') result[key] = value;
             else if (key === 'glowIntensity' || key === 'glowRadius') result[key] = Number(String(value).replace(',', '.'));
             else result[key] = ['intensity', 'shadow'].includes(key)
                 ? parseFloat(String(value).replace(',', '.')) : parseInt(value);
@@ -104,5 +119,5 @@
             return {row, distance: Math.hypot(p.x - context.screen.x, p.y - context.screen.y)};
         }).filter(target => target.distance <= 14).sort((a, b) => a.distance - b.distance).map(target => ({row: target.row, kind: 'move'}))[0];
     }
-    return {light, glow, obstacle, preset, propertyNames, glowPropertyNames, position, move, setRadius, hit};
+    return {light, glow, tileGlow, obstacle, preset, propertyNames, glowPropertyNames, position, move, setRadius, hit};
 });

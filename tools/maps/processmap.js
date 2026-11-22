@@ -236,12 +236,11 @@ module.exports = function processMap(json, options) {
                 for (var i = 0; i < tileProperties.length; i += 1) {
                     var property = tileProperties[i]?.properties?.property ?? {};
                     var tilePropertyId = tileProperties[i].id + 1;
-                    if (property instanceof Array) {
-                        for (var pi = 0; pi < property.length; pi += 1) {
-                            handleProp(property[pi], tilePropertyId);
-                        }
-                    } else {
-                        handleProp(property, tilePropertyId);
+                    const properties = [].concat(property);
+                    for (const entry of properties) handleProp(entry, tilePropertyId);
+                    if (mode === 'client') {
+                        const glow = Lighting.tileGlow(Object.fromEntries(properties.map(entry => [entry.name, entry.value])));
+                        if (glow) (map.lightTiles[tilePropertyId] ??= {intensity: 0}).glow = glow;
                     }
                 }
             } else if (tileset.name === "Mobs" && mode === "server") {

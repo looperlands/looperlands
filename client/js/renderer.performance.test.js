@@ -579,6 +579,27 @@ test('static and animated tile lights stay centered on the artwork as the fire a
     }
 });
 
+test('tile emission follows animated terrain and gives an authored glow precedence at the same anchor', () => {
+    const worker = setup(), draw = jest.fn();
+    worker.sandbox.self.EmissiveGlow = {Pass: class {draw(...args) {return draw(...args);}}};
+    const glow = {glowTexture: 'wall-torch', glowRadius: 23, glowIntensity: .8, offsetX: 1, offsetY: 2};
+    worker.send({type: 'setLightEmittingTiles', lightEmittingTiles: {241: {radius: 3, spread: 145, glow}}});
+    const authored = {x: 57, y: 26, glowTexture: 'campsite', glowRadius: 34, glowIntensity: .9, intensity: 0};
+    worker.send({type: 'setLights', lights: [authored]});
+    const packet = frame(), floor = packet.renderData.find(layer => layer.id === 'background');
+    const tile = {...floor.tiles[0], tileid: 240, cellid: 33};
+    floor.tiles = [tile];
+    packet.renderData.splice(2, 0, {...floor, clear: false, tiles: [tile, {...tile, cellid: 34, slideOffsetX: 16}]});
+    worker.send(packet);
+    expect(draw.mock.lastCall[1].map(s => [s.x, s.y, s.glowTexture])).toEqual([[57, 26, 'campsite'], [73, 26, 'wall-torch']]);
+    worker.send({type: 'setLights', lights: []});
+    worker.send(packet);
+    expect(draw.mock.lastCall[1].map(s => s.glowTexture)).toEqual(['wall-torch', 'wall-torch']);
+    packet.renderData.at(-1).options.emissiveGlow = false;
+    worker.send(packet);
+    expect(draw).toHaveBeenCalledTimes(2);
+});
+
 test('an offscreen window only enters the lighting pass when its cone can reach the camera', () => {
     const worker = setup(), ctx = worker.canvases.lighting.ctx;
     worker.setPlayer({x: -1000, y: -1000});
@@ -619,6 +640,23 @@ test('fire pulses smoothly around authored settings, stays local to each source 
     worker.options(true, true, false);
     expect(worker.updateAnimatedLightSource(base, 0)).toBe(base);
     expect(base).toEqual({x:100,y:200,radius:4,intensity:0.8,animation:'fire'});
+});
+
+test('daylight sets a white floor for colored point lights and fire keeps a white-hot center at night', () => {
+    const worker = setup(), target = worker.canvases.lighting.ctx;
+    worker.setPlayer({x: 99999, y: 99999});
+    const light = {x: 100, y: 100, radius: 4, intensity: 1, color: {r: 255, g: 116, b: 42}};
+    const stops = (source, darkness) => {
+        worker.renderLightOverlay([], 0, 0, 1, 0, {darkness}, [], {shadows: false, playerShadow: false});
+        worker.drawLightSource(target, source, 0, 0);
+        const gradient = worker.allocations.at(-1).ctx.createRadialGradient.mock.results.at(-1).value;
+        return gradient.addColorStop.mock.calls;
+    };
+    expect(stops(light, 0)[0]).toEqual([0, 'rgba(255,255,255,1)']);
+    expect(stops(light, 1)[0]).toEqual([0, 'rgba(255,116,42,1)']);
+    const flame = stops({...light, animation: 'fire'}, 1);
+    expect(flame[0]).toEqual([0, 'rgba(255,255,255,1)']);
+    expect(flame[1]).toEqual([.25, 'rgba(255,116,42,0.75)']);
 });
 
 test('moving a static light does not create camera-specific gradients or canvases', () => {

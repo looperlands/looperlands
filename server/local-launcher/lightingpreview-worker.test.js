@@ -56,8 +56,26 @@ test('glow-only sources use the game helper and a separate bounded bitmap after 
     expect(h.glow).toHaveBeenCalledTimes(1);expect(h.post.mock.calls[1][0].glowBitmap).toBeUndefined();
 });
 
+test('a pending glow texture renders the latest view once its artwork is ready', async () => {
+    const h = setup(), lamp = L.preset('lamp', 10, 20);
+    Object.assign(lamp.properties, {glowIntensity: '.8', glowTexture: 'cottage-window'});
+    let finish;
+    const loading = new Promise(resolve => {finish = resolve;});
+    const waitForTexture = (_ctx, _sources, _x, _y, options) => options.onTexturePending(loading);
+    h.glow.mockImplementationOnce(waitForTexture).mockImplementationOnce(waitForTexture);
+    const packet = {objects: [lamp], dimensions, darkness: .8, view: {x: 64, y: 128, width: 400, height: 300}};
+    h.send({...packet, requestId: 1});
+    h.send({...packet, requestId: 2, view: {...packet.view, x: 80}});
+    expect(h.post).not.toHaveBeenCalled();
+    finish();
+    await new Promise(resolve => setImmediate(resolve));
+    expect(h.post).toHaveBeenCalledTimes(1);
+    expect(h.post.mock.calls[0][0]).toMatchObject({requestId: 2, glowBitmap: {width: 400}});
+    expect(h.glow.mock.lastCall[2]).toBe(80);
+});
+
 test.each([
-    {glowRadius: '65'}, {glowIntensity: '2'}, {glowColor: '300,0,0'}, {glowIntensity: '.3', spread: '90'}
+    {glowRadius: '65'}, {glowTexture: '../window'}, {glowIntensity: '2'}, {glowColor: '300,0,0'}, {glowIntensity: '.3', spread: '90'}
 ])('invalid glow drafts report a preview error without rendering: %p', properties => {
     const h = setup(), lamp = L.preset('lamp', 10, 20);
     Object.assign(lamp.properties, properties);

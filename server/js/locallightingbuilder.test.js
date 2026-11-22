@@ -69,6 +69,19 @@ test('reads existing lighting geometry and legacy custom properties without a ma
     expect(L.light(data.objects[0], 16)).not.toHaveProperty('glowIntensity');
     expect(L.preset('torch', 6, 6).properties).not.toHaveProperty('glowIntensity');
 });
+test('tile artwork can emit from an offset inside a directional ordinary light', () => {
+    const properties = {spread: '145', glowIntensity: '.9', glowRadius: '26', glowTexture: 'cottage-window', glowOffsetX: '-6', glowOffsetY: '7'};
+    const map = {width: 1, height: 1, tilewidth: 16, tileset: [{name: 'tilesheet', columns: 20, tile: [{id: 8,
+        properties: {property: Object.entries(properties).map(([name, value]) => ({name, value}))}}]}, {name: 'Mobs', tile: []}],
+        layer: {name: 'ground', data: {tile: [{gid: 9}]}}};
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    try {
+        expect(processMap({map}, {mode: 'client'}).lightTiles[9]).toMatchObject({spread: 145, glow: {
+            glowIntensity: .9, glowRadius: 26, glowTexture: 'cottage-window', offsetX: -6, offsetY: 7}});
+        expect(() => L.tileGlow({...properties, glowOffsetY: 'Infinity'})).toThrow(/offset/);
+    } finally {log.mockRestore();}
+});
+
 test('source glow survives save, reload and client export with optional color inheritance and explicit off', async () => {
     let data = await readLighting(root, 'one');
     const update = async properties => {
@@ -77,8 +90,8 @@ test('source glow survives save, reload and client export with optional color in
             object: {...current, properties: {...current.properties, ...properties}}});
         return exportClient().lights.find(light => light.id === 7);
     };
-    const glowing = await update({intensity: '0', glowIntensity: '0,3', glowRadius: '2e1', glowColor: '255,120,40'});
-    expect(glowing).toMatchObject({intensity: 0, glowIntensity: .3, glowRadius: 20, glowColor: {r: 255, g: 120, b: 40}});
+    const glowing = await update({intensity: '0', glowIntensity: '0,3', glowRadius: '2e1', glowColor: '255,120,40', glowTexture: 'cottage-window'});
+    expect(glowing).toMatchObject({intensity: 0, glowIntensity: .3, glowRadius: 20, glowColor: {r: 255, g: 120, b: 40}, glowTexture: 'cottage-window'});
     expect(glowing).toEqual(L.light(data.objects.find(row => row.id === '7'), 16));
     const inherited = await update({glowColor: null});
     expect(inherited).not.toHaveProperty('glowColor');
@@ -90,7 +103,7 @@ test('source glow survives save, reload and client export with optional color in
 });
 test.each([
     'name="glowIntensity" value="2"', 'name="glowRadius" value="65"',
-    'name="glowRadius" value="1.5"', 'name="glowColor" value="255,0"'
+    'name="glowRadius" value="1.5"', 'name="glowColor" value="255,0"', 'name="glowTexture" value="../window"'
 ])('direct Tiled exports reject invalid glow properties: %s', property => {
     fs.writeFileSync(file, xml.replace('name="intensity" value="0.6"', property));
     expect(exportClient).toThrow(/Glow|glow/);

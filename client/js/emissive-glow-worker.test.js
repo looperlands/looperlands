@@ -1,6 +1,6 @@
 const {Pass} = require('./emissive-glow-worker');
 
-function setup() {
+function setup(loadTexture) {
     const canvases = [], draws = [], gradients = [];
     function createCanvas(width, height) {
         const canvas = {width, height}, stack = [];
@@ -16,11 +16,36 @@ function setup() {
         canvas.getContext = () => ctx; canvases.push(canvas);
         return canvas;
     }
-    const target = createCanvas(480, 224), pass = new Pass(createCanvas);
+    const target = createCanvas(480, 224), pass = new Pass(createCanvas, loadTexture);
     return {pass, target, canvases, draws, gradients};
 }
 const source = {x: 64, y: 64, glowIntensity: .3, glowRadius: 18, color: {r: 255, g: 180, b: 90}};
 const view = {cameraX: 0, cameraY: 0, width: 480, height: 224};
+
+test('textured lights share their native artwork, fade into daylight and keep their mask aligned', async () => {
+    const image = {width: 20, height: 20}, load = jest.fn().mockResolvedValue(image);
+    const {pass, target} = setup(load), ctx = target.getContext();
+    const pane = {...source, glowTexture: 'window'}, pending = [];
+    expect(pass.draw(ctx, [pane], {...view, darkness: .05})).toBe(0);
+    expect(load).not.toHaveBeenCalled();
+    expect(pass.draw(ctx, [pane, {...pane, x: 96}], {...view, onTexturePending: p => pending.push(p)})).toBe(0);
+    await Promise.all(pending);
+    const mask = jest.fn();
+    expect(pass.draw(ctx, [pane], {...view, cameraX: 8, mask})).toBe(1);
+    expect(mask.mock.calls[0][0].drawImage).toHaveBeenCalledWith(image, 0, 0, 36, 36);
+    expect(ctx.drawImage.mock.lastCall.slice(1)).toEqual([0, 0, 36, 36, 38, 46, 36, 36]);
+    expect(load).toHaveBeenCalledTimes(1);
+});
+
+test('missing light artwork does not retry or draw a substitute every frame', async () => {
+    const load = jest.fn().mockRejectedValue(new Error('missing PNG'));
+    const {pass, target} = setup(load), pending = [];
+    const pane = {...source, glowTexture: 'missing'};
+    pass.draw(target.getContext(), [pane], {...view, onTexturePending: p => pending.push(p)});
+    await Promise.all(pending);
+    expect(pass.draw(target.getContext(), [pane], view)).toBe(0);
+    expect(load).toHaveBeenCalledTimes(1);
+});
 
 test('only explicitly opted-in finite round sources allocate or draw', () => {
     const fixture = setup();
@@ -109,7 +134,7 @@ test('the native pixel budget admits the demo, bounds large-source fill and stil
     expect(mask).toHaveBeenCalledTimes(1);
     expect(large.pass.sprites.size).toBe(1);
     const mixed = setup();
-    expect(mixed.pass.draw(mixed.target.getContext(), [60, 32, 20].map(glowRadius => ({...source, glowRadius})), view)).toBe(2);
-    expect(mixed.target.getContext().drawImage.mock.calls.map(call => call[3])).toEqual([120, 40]);
-    expect(mixed.canvases.some(canvas => canvas.width === 64)).toBe(false);
+    expect(mixed.pass.draw(mixed.target.getContext(), [62, 63, 20].map(glowRadius => ({...source, glowRadius})), view)).toBe(2);
+    expect(mixed.target.getContext().drawImage.mock.calls.map(call => call[3])).toEqual([124, 40]);
+    expect(mixed.canvases.some(canvas => canvas.width === 126)).toBe(false);
 });
