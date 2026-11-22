@@ -3,7 +3,7 @@
     if (typeof module === 'object' && module.exports) module.exports = factory();
     else root.EmissiveGlow = factory();
 })(typeof self !== 'undefined' ? self : null, function () {
-    const maxRadius = 64, maxSources = 16, maxPixels = 16384, maxSprites = 32, maxBytes = 2 * 1024 * 1024;
+    const maxRadius = 64, maxSources = 16, maxPixels = 30720, maxSprites = 32, maxBytes = 2 * 1024 * 1024;
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
     function colorOf(value) {

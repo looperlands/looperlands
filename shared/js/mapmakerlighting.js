@@ -33,6 +33,18 @@
         if (result.glowIntensity > 0 && spread > 0 && spread < 360) throw new Error('Turn source glow off for a spotlight, or use a beam spread of 0 or 360 degrees.');
         return result;
     }
+    function tileGlow(properties) {
+        if (!glowPropertyNames.some(key => properties[key] != null)) return;
+        // A window can cast a directional ordinary light and still emit through every pane.
+        const emission = glow({...properties, spread: 0});
+        if (!(emission.glowIntensity > 0)) return;
+        for (const axis of ['X', 'Y']) {
+            const offset = Number(properties['glowOffset' + axis] ?? 0);
+            if (!Number.isInteger(offset) || Math.abs(offset) > 32) throw new Error('Use a tile glow offset within 32 native pixels.');
+            emission['offset' + axis] = offset;
+        }
+        return emission;
+    }
     function light(row, tilesize) {
         const result = {id: Number(row.id), x: parseInt(row.x), y: parseInt(row.y)};
         if (row.shape === 'ellipse') {
@@ -107,5 +119,5 @@
             return {row, distance: Math.hypot(p.x - context.screen.x, p.y - context.screen.y)};
         }).filter(target => target.distance <= 14).sort((a, b) => a.distance - b.distance).map(target => ({row: target.row, kind: 'move'}))[0];
     }
-    return {light, glow, obstacle, preset, propertyNames, glowPropertyNames, position, move, setRadius, hit};
+    return {light, glow, tileGlow, obstacle, preset, propertyNames, glowPropertyNames, position, move, setRadius, hit};
 });

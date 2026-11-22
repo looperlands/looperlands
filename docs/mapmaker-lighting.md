@@ -28,7 +28,15 @@ The Tiled properties are `glowIntensity` (0–1, absent or 0 disables glow), `gl
 
 For a window or a light that falls across several materials, set **Light texture** to the name of a square RGBA PNG in `client/img/lighting/`. Paint the emission at native pixel resolution, with the emitter at its intended position in the square. A texture twice the **Glow radius** in width and height draws pixel for pixel. Transparent pixels preserve the original artwork, for example the dark wood between two lit panes. The texture supplies its own colors and fades into daylight. Ordinary point lighting still illuminates moving characters. When reusing a texture, check how its painted light lines up with the scenery at the new location.
 
-Keep halos small when placing several sources together. Each view draws at most 16 glows and 16,384 native pixels of total halo area, counting the full square around each radius. Sources are considered in map order; a source that exceeds the remaining area budget is skipped, while later smaller sources can still fit. The four-source Town example uses 15,528 pixels. The largest supported texture is 128 × 128 pixels.
+Keep halos small when placing several sources together. Each view draws at most 16 glows and 30,720 native pixels of total halo area, counting the full square around each radius. Placed glows are considered first, followed by visible tile sources. A source that exceeds the remaining area budget is skipped and smaller sources can still fit. The three cottage windows and the nearby campsite use 16,704 pixels. The largest supported texture is 128 × 128 pixels.
+
+### Reuse lighting from a tile
+
+In Tiled, set `glowTexture`, `glowRadius` and `glowIntensity` on the tile that emits light. The ordinary light properties still control how far the light reaches actors and scenery. The glow follows every placement of that tile, including its animation. Use optional `glowOffsetX` and `glowOffsetY` to move the texture anchor from the tile center by up to 32 native pixels on either axis. A round source in the map’s lights layer at the same anchor overrides the tile glow. The six campsites with nearby tents use this to light the fire-facing canvas. Three camps reuse the same north-facing layout. The creek reflections belong to the eastern Town camp.
+
+The main map uses these settings for the three windows on each of its 13 cottages, plus the mill, potion shop and forge windows. Nine campfires light nearby ground, 59 wall torches light the stone around their flames, and five small lanterns illuminate entrances and the forge wall. The beach’s two violet braziers use a matching light color. Use **Town · cottage windows**, **Desert · fire pit** and **Megamag · cave wall torches** in the preview launcher to inspect the different surfaces.
+
+![Cottage windows, the western Town fire pit and a Megamag wall torch at 22:00 in the first and updated playtests](images/map-lighting-locations.png)
 
 ## Cast shadows
 
@@ -63,8 +71,8 @@ In the local preview launcher, **Warm windows and campfire** starts at tile `(70
 | Source | Texture center in world pixels | Glow radius | Glow intensity |
 | --- | --- | --- | --- |
 | Cottage dormer | (1008, 3493) | 18 pixels | 0.98 |
-| Cottage west window | (978, 3547) | 23 pixels | 0.96 |
-| Cottage east window | (1037, 3547) | 23 pixels | 0.96 |
+| Cottage west window | (978, 3551) | 26 pixels | 0.96 |
+| Cottage east window | (1037, 3551) | 26 pixels | 0.96 |
 | Campfire | (1256, 3576) | 50 pixels | 0.92 |
 
 In **Lavaland · bridge over lava**, start at tile `(71, 7)`. Light from exposed lava catches the nearby rock faces and bridge planks, then fades with distance. Look along the far wall to see how the dark crevices preserve the shape of the rocks. [Watch the bridge crossing](images/lavaland-bridge-walk.mp4)

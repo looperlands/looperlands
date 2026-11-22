@@ -10,7 +10,7 @@ let cursor = undefined;
 let sprites = {};
 
 let lightEmittingTiles = {};
-let lights = [];
+let lights = [], frameGlowSources = [];
 let obstacles = [];
 let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask;
 let outdoorShadowAreas = [];
@@ -429,6 +429,25 @@ function tileLightAt(tile) {
         y: (Math.floor(tile.cellid / tile.gridW) + .5) * tilesize};
 }
 
+// An authored source at a tile glow's precise anchor can paint that placement's surroundings.
+function glowSourcesForTiles(placed, tiles) {
+    let result, occupied;
+    for (const tile of tiles) {
+        if (!tile.glow) continue;
+        if (!result) {
+            result = placed.slice();
+            occupied = new Set(placed.filter(source => source.glowIntensity > 0).map(source => source.x + ',' + source.y));
+        }
+        const {offsetX = 0, offsetY = 0, ...glow} = tile.glow;
+        const x = tile.x + offsetX * tilesize / 16, y = tile.y + offsetY * tilesize / 16;
+        const key = x + ',' + y;
+        if (occupied.has(key)) continue;
+        occupied.add(key);
+        result.push({...glow, x, y, animation: tile.animation, color: tile.color, shadow: 0});
+    }
+    return result || placed;
+}
+
 function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
     const ctx = contexes[id], canvas = canvases[id];
     const key = revision === undefined ? JSON.stringify(tiles) : revision;
@@ -505,6 +524,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
         ctx.restore();
     } else {
         renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime, atmosphere);
+        if (composingWorld && options?.emissiveGlow !== false) frameGlowSources = glowSourcesForTiles(lights, tileLights);
         tileLights = [];
     }
 }
@@ -578,6 +598,7 @@ onmessage = (e) => {
         composingWorld = true;
         frameEmissionForeground = null;
         frameTerrainBounce.length = 0;
+        frameGlowSources = lights;
         frameExtensions = e.data.extensions;
         const scene = e.data.scene;
         const lightOptions = e.data.renderData.find(layer => layer?.id === 'lights')?.options;
@@ -681,7 +702,7 @@ onmessage = (e) => {
             }
             combinedCtx.restore();
         }
-        drawEmissiveGlow(combinedCtx, lights, view?.cameraX || 0, view?.cameraY || 0,
+        drawEmissiveGlow(combinedCtx, frameGlowSources, view?.cameraX || 0, view?.cameraY || 0,
             {...lightOptions, scene, scale, time: frameLightTime, excludeWorld: true});
         drawBackgroundEmission(combinedCtx, view);
         framePointShadows = null;
@@ -1406,7 +1427,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     // Draw tile lights
     for(let i = 0; i < tileLights.length; i++) {
         const lightSource = tileLights[i];
-        if (!inScene(lightSource)) continue;
+        if (lightSource.intensity === 0 || !inScene(lightSource)) continue;
         if (!lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height)) continue;
         drawSource(lightSource);
     }

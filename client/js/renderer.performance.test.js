@@ -579,6 +579,27 @@ test('static and animated tile lights stay centered on the artwork as the fire a
     }
 });
 
+test('tile emission follows animated terrain and gives an authored glow precedence at the same anchor', () => {
+    const worker = setup(), draw = jest.fn();
+    worker.sandbox.self.EmissiveGlow = {Pass: class {draw(...args) {return draw(...args);}}};
+    const glow = {glowTexture: 'wall-torch', glowRadius: 23, glowIntensity: .8, offsetX: 1, offsetY: 2};
+    worker.send({type: 'setLightEmittingTiles', lightEmittingTiles: {241: {radius: 3, spread: 145, glow}}});
+    const authored = {x: 57, y: 26, glowTexture: 'campsite', glowRadius: 34, glowIntensity: .9, intensity: 0};
+    worker.send({type: 'setLights', lights: [authored]});
+    const packet = frame(), floor = packet.renderData.find(layer => layer.id === 'background');
+    const tile = {...floor.tiles[0], tileid: 240, cellid: 33};
+    floor.tiles = [tile];
+    packet.renderData.splice(2, 0, {...floor, clear: false, tiles: [tile, {...tile, cellid: 34, slideOffsetX: 16}]});
+    worker.send(packet);
+    expect(draw.mock.lastCall[1].map(s => [s.x, s.y, s.glowTexture])).toEqual([[57, 26, 'campsite'], [73, 26, 'wall-torch']]);
+    worker.send({type: 'setLights', lights: []});
+    worker.send(packet);
+    expect(draw.mock.lastCall[1].map(s => s.glowTexture)).toEqual(['wall-torch', 'wall-torch']);
+    packet.renderData.at(-1).options.emissiveGlow = false;
+    worker.send(packet);
+    expect(draw).toHaveBeenCalledTimes(2);
+});
+
 test('an offscreen window only enters the lighting pass when its cone can reach the camera', () => {
     const worker = setup(), ctx = worker.canvases.lighting.ctx;
     worker.setPlayer({x: -1000, y: -1000});

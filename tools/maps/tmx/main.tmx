@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="87" nextobjectid="725">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="87" nextobjectid="730">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="3740" columns="20">
   <image source="../../../client/img/1/tilesheet_main.png" width="320" height="3000"/>
   <tile id="0">
@@ -20,9 +20,13 @@
   <tile id="5">
    <properties>
     <property name="animation" value="fire"/>
-    <property name="light" type="float" value="0.7"/>
-    <property name="radius" type="int" value="10"/>
+    <property name="light" type="float" value="0.9"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
+    <property name="color" value="255,145,57"/>
+    <property name="glowTexture" value="campfire-ground"/>
+    <property name="glowRadius" type="int" value="32"/>
+    <property name="glowIntensity" type="float" value="0.94"/>
    </properties>
   </tile>
   <tile id="6">
@@ -204,10 +208,16 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.65"/>
+    <property name="radius" type="int" value="4"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="cottage-dormer"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="glowIntensity" type="float" value="0.98"/>
+    <property name="glowOffsetX" type="int" value="-6"/>
+    <property name="glowOffsetY" type="int" value="-5"/>
    </properties>
   </tile>
   <tile id="86">
@@ -412,10 +422,17 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="blue-sash-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="-6"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="166">
@@ -437,10 +454,17 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="blue-sash-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="-11"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="170">
@@ -551,6 +575,9 @@
     <property name="light" type="float" value="0.9"/>
     <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="campfire-ground"/>
+    <property name="glowRadius" type="int" value="32"/>
+    <property name="glowIntensity" type="float" value="0.94"/>
    </properties>
   </tile>
   <tile id="243">
@@ -744,10 +771,15 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.65"/>
+    <property name="radius" type="int" value="4"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="cottage-dormer"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="glowIntensity" type="float" value="0.98"/>
+    <property name="glowOffsetY" type="int" value="5"/>
    </properties>
   </tile>
   <tile id="287">
@@ -925,11 +957,18 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
     <property name="v" value=""/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="cottage-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="2"/>
+    <property name="glowOffsetY" type="int" value="15"/>
    </properties>
   </tile>
   <tile id="345">
@@ -951,10 +990,17 @@
    <properties>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.5"/>
-    <property name="radius" type="int" value="6"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="color" value="255,170,87"/>
+    <property name="glowTexture" value="cottage-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="-3"/>
+    <property name="glowOffsetY" type="int" value="15"/>
    </properties>
   </tile>
   <tile id="349">
@@ -3242,10 +3288,15 @@
     <property name="color" value="255,170,87"/>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.6"/>
+    <property name="light" type="float" value="0.65"/>
     <property name="radius" type="int" value="4"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="glowTexture" value="cottage-dormer"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="glowIntensity" type="float" value="0.98"/>
+    <property name="glowOffsetX" type="int" value="-8"/>
+    <property name="glowOffsetY" type="int" value="-3"/>
    </properties>
   </tile>
   <tile id="1556">
@@ -3414,10 +3465,16 @@
     <property name="color" value="255,170,87"/>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.6"/>
-    <property name="radius" type="int" value="4"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="glowTexture" value="cottage-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="-6"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="1614">
@@ -3440,10 +3497,16 @@
     <property name="color" value="255,170,87"/>
     <property name="angle" type="int" value="0"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.6"/>
-    <property name="radius" type="int" value="4"/>
+    <property name="light" type="float" value="0.74"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.8"/>
     <property name="spread" type="int" value="145"/>
+    <property name="innerSpread" type="int" value="16"/>
+    <property name="glowTexture" value="cottage-window"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.96"/>
+    <property name="glowOffsetX" type="int" value="-11"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="1618">
@@ -3643,9 +3706,13 @@
     <property name="animation" value="fire"/>
     <property name="c" value=""/>
     <property name="length" value="3"/>
-    <property name="light" type="float" value="0.65"/>
-    <property name="radius" type="int" value="8"/>
+    <property name="light" type="float" value="0.78"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.95"/>
+    <property name="color" value="255,159,68"/>
+    <property name="glowTexture" value="wall-torch"/>
+    <property name="glowRadius" type="int" value="23"/>
+    <property name="glowIntensity" type="float" value="0.88"/>
    </properties>
   </tile>
   <tile id="1763">
@@ -4695,6 +4762,17 @@
   <tile id="2475">
    <properties>
     <property name="v" value=""/>
+    <property name="light" type="float" value="0.58"/>
+    <property name="radius" type="int" value="4"/>
+    <property name="color" value="255,170,87"/>
+    <property name="angle" type="int" value="0"/>
+    <property name="spread" type="int" value="145"/>
+    <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="forge-window"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="glowIntensity" type="float" value="0.9"/>
+    <property name="glowOffsetX" type="int" value="-2"/>
+    <property name="glowOffsetY" type="int" value="6"/>
    </properties>
   </tile>
   <tile id="2476">
@@ -4812,6 +4890,15 @@
   <tile id="2514">
    <properties>
     <property name="v" value=""/>
+    <property name="light" type="float" value="0.53"/>
+    <property name="radius" type="int" value="3"/>
+    <property name="color" value="255,171,79"/>
+    <property name="shadow" type="float" value="0.65"/>
+    <property name="glowTexture" value="brass-lantern"/>
+    <property name="glowRadius" type="int" value="19"/>
+    <property name="glowIntensity" type="float" value="0.86"/>
+    <property name="glowOffsetX" type="int" value="-4"/>
+    <property name="glowOffsetY" type="int" value="5"/>
    </properties>
   </tile>
   <tile id="2515">
@@ -4920,6 +5007,16 @@
   <tile id="2542">
    <properties>
     <property name="v" value=""/>
+    <property name="light" type="float" value="0.58"/>
+    <property name="radius" type="int" value="4"/>
+    <property name="color" value="235,163,98"/>
+    <property name="angle" type="int" value="0"/>
+    <property name="spread" type="int" value="145"/>
+    <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="potion-window"/>
+    <property name="glowRadius" type="int" value="23"/>
+    <property name="glowIntensity" type="float" value="0.84"/>
+    <property name="glowOffsetY" type="int" value="12"/>
    </properties>
   </tile>
   <tile id="2543">
@@ -5113,13 +5210,29 @@
   <tile id="2594">
    <properties>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.7"/>
-    <property name="radius" type="int" value="4"/>
+    <property name="light" type="float" value="0.53"/>
+    <property name="radius" type="int" value="3"/>
+    <property name="color" value="255,171,79"/>
+    <property name="shadow" type="float" value="0.65"/>
+    <property name="glowTexture" value="brass-lantern"/>
+    <property name="glowRadius" type="int" value="19"/>
+    <property name="glowIntensity" type="float" value="0.86"/>
+    <property name="glowOffsetX" type="int" value="3"/>
+    <property name="glowOffsetY" type="int" value="-8"/>
    </properties>
   </tile>
   <tile id="2596">
    <properties>
     <property name="c" value=""/>
+    <property name="light" type="float" value="0.53"/>
+    <property name="radius" type="int" value="3"/>
+    <property name="color" value="255,171,79"/>
+    <property name="shadow" type="float" value="0.65"/>
+    <property name="glowTexture" value="brass-lantern"/>
+    <property name="glowRadius" type="int" value="19"/>
+    <property name="glowIntensity" type="float" value="0.86"/>
+    <property name="glowOffsetX" type="int" value="-3"/>
+    <property name="glowOffsetY" type="int" value="-8"/>
    </properties>
   </tile>
   <tile id="2597">
@@ -5131,10 +5244,15 @@
    <properties>
     <property name="animation" value="fire"/>
     <property name="c" value=""/>
-    <property name="light" type="float" value="0.65"/>
-    <property name="radius" type="int" value="8"/>
+    <property name="light" type="float" value="0.83"/>
+    <property name="radius" type="int" value="5"/>
     <property name="shadow" type="float" value="0.95"/>
     <property name="spread" value="220"/>
+    <property name="color" value="255,142,55"/>
+    <property name="glowTexture" value="forge-hearth"/>
+    <property name="glowRadius" type="int" value="26"/>
+    <property name="glowIntensity" type="float" value="0.85"/>
+    <property name="glowOffsetX" type="int" value="-6"/>
    </properties>
   </tile>
   <tile id="2599">
@@ -5150,6 +5268,15 @@
   <tile id="2601">
    <properties>
     <property name="c" value=""/>
+    <property name="light" type="float" value="0.53"/>
+    <property name="radius" type="int" value="3"/>
+    <property name="color" value="255,171,79"/>
+    <property name="shadow" type="float" value="0.65"/>
+    <property name="glowTexture" value="brass-lantern"/>
+    <property name="glowRadius" type="int" value="19"/>
+    <property name="glowIntensity" type="float" value="0.86"/>
+    <property name="glowOffsetX" type="int" value="1"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="2602">
@@ -5160,6 +5287,15 @@
   <tile id="2603">
    <properties>
     <property name="c" value=""/>
+    <property name="light" type="float" value="0.53"/>
+    <property name="radius" type="int" value="3"/>
+    <property name="color" value="255,171,79"/>
+    <property name="shadow" type="float" value="0.65"/>
+    <property name="glowTexture" value="brass-lantern"/>
+    <property name="glowRadius" type="int" value="19"/>
+    <property name="glowIntensity" type="float" value="0.86"/>
+    <property name="glowOffsetX" type="int" value="-3"/>
+    <property name="glowOffsetY" type="int" value="7"/>
    </properties>
   </tile>
   <tile id="2604">
@@ -5302,6 +5438,9 @@
     <property name="light" type="float" value="0.7"/>
     <property name="radius" type="int" value="10"/>
     <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="arcane-brazier"/>
+    <property name="glowRadius" type="int" value="23"/>
+    <property name="glowIntensity" type="float" value="0.76"/>
    </properties>
   </tile>
   <tile id="2735">
@@ -5483,6 +5622,17 @@
   <tile id="3042">
    <properties>
     <property name="v" value=""/>
+    <property name="light" type="float" value="0.58"/>
+    <property name="radius" type="int" value="4"/>
+    <property name="color" value="255,170,87"/>
+    <property name="angle" type="int" value="0"/>
+    <property name="spread" type="int" value="145"/>
+    <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="mill-window"/>
+    <property name="glowRadius" type="int" value="22"/>
+    <property name="glowIntensity" type="float" value="0.85"/>
+    <property name="glowOffsetX" type="int" value="-1"/>
+    <property name="glowOffsetY" type="int" value="11"/>
    </properties>
   </tile>
   <tile id="3043">
@@ -5523,6 +5673,17 @@
   <tile id="3064">
    <properties>
     <property name="c" value=""/>
+    <property name="light" type="float" value="0.58"/>
+    <property name="radius" type="int" value="4"/>
+    <property name="color" value="255,170,87"/>
+    <property name="angle" type="int" value="0"/>
+    <property name="spread" type="int" value="145"/>
+    <property name="shadow" type="float" value="0.8"/>
+    <property name="glowTexture" value="mill-wide-window"/>
+    <property name="glowRadius" type="int" value="25"/>
+    <property name="glowIntensity" type="float" value="0.85"/>
+    <property name="glowOffsetX" type="int" value="-4"/>
+    <property name="glowOffsetY" type="int" value="14"/>
    </properties>
   </tile>
   <tile id="3065">
@@ -41580,24 +41741,24 @@
    </properties>
    <ellipse/>
   </object>
-  <object id="722" name="Town cottage west window glow" x="970" y="3539" width="16" height="16">
+  <object id="722" name="Town cottage west window glow" x="970" y="3543" width="16" height="16">
    <properties>
     <property name="glowTexture" value="cottage-window"/>
     <property name="glowColor" value="255,204,128"/>
     <property name="glowIntensity" type="float" value="0.96"/>
-    <property name="glowRadius" type="int" value="23"/>
+    <property name="glowRadius" type="int" value="26"/>
     <property name="light" type="float" value="0"/>
     <property name="radius" type="int" value="1"/>
     <property name="shadow" type="float" value="0"/>
    </properties>
    <ellipse/>
   </object>
-  <object id="723" name="Town cottage east window glow" x="1029" y="3539" width="16" height="16">
+  <object id="723" name="Town cottage east window glow" x="1029" y="3543" width="16" height="16">
    <properties>
     <property name="glowTexture" value="cottage-window"/>
     <property name="glowColor" value="255,204,128"/>
     <property name="glowIntensity" type="float" value="0.96"/>
-    <property name="glowRadius" type="int" value="23"/>
+    <property name="glowRadius" type="int" value="26"/>
     <property name="light" type="float" value="0"/>
     <property name="radius" type="int" value="1"/>
     <property name="shadow" type="float" value="0"/>
@@ -41611,6 +41772,66 @@
     <property name="glowColor" value="255,158,64"/>
     <property name="glowIntensity" type="float" value="0.92"/>
     <property name="glowRadius" type="int" value="50"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="725" name="Desert tent campfire glow" x="64" y="1248" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowIntensity" type="float" value="0.92"/>
+    <property name="glowRadius" type="int" value="47"/>
+    <property name="glowTexture" value="campfire-north-tent"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="726" name="Graveyard north tent campfire glow" x="896" y="1968" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowIntensity" type="float" value="0.92"/>
+    <property name="glowRadius" type="int" value="47"/>
+    <property name="glowTexture" value="campfire-north-tent"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="727" name="Graveyard west tent campfire glow" x="1200" y="2224" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowIntensity" type="float" value="0.92"/>
+    <property name="glowRadius" type="int" value="49"/>
+    <property name="glowTexture" value="campfire-west-tent"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="728" name="Forest tents campfire glow" x="256" y="2608" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowIntensity" type="float" value="0.92"/>
+    <property name="glowRadius" type="int" value="52"/>
+    <property name="glowTexture" value="campfire-two-tents"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="729" name="Western Town tent campfire glow" x="192" y="3760" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowIntensity" type="float" value="0.92"/>
+    <property name="glowRadius" type="int" value="47"/>
+    <property name="glowTexture" value="campfire-north-tent"/>
     <property name="light" type="float" value="0"/>
     <property name="radius" type="int" value="1"/>
     <property name="shadow" type="float" value="0"/>

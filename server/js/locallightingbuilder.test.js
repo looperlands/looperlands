@@ -69,6 +69,19 @@ test('reads existing lighting geometry and legacy custom properties without a ma
     expect(L.light(data.objects[0], 16)).not.toHaveProperty('glowIntensity');
     expect(L.preset('torch', 6, 6).properties).not.toHaveProperty('glowIntensity');
 });
+test('tile artwork can emit from an offset inside a directional ordinary light', () => {
+    const properties = {spread: '145', glowIntensity: '.9', glowRadius: '26', glowTexture: 'cottage-window', glowOffsetX: '-6', glowOffsetY: '7'};
+    const map = {width: 1, height: 1, tilewidth: 16, tileset: [{name: 'tilesheet', columns: 20, tile: [{id: 8,
+        properties: {property: Object.entries(properties).map(([name, value]) => ({name, value}))}}]}, {name: 'Mobs', tile: []}],
+        layer: {name: 'ground', data: {tile: [{gid: 9}]}}};
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    try {
+        expect(processMap({map}, {mode: 'client'}).lightTiles[9]).toMatchObject({spread: 145, glow: {
+            glowIntensity: .9, glowRadius: 26, glowTexture: 'cottage-window', offsetX: -6, offsetY: 7}});
+        expect(() => L.tileGlow({...properties, glowOffsetY: 'Infinity'})).toThrow(/offset/);
+    } finally {log.mockRestore();}
+});
+
 test('source glow survives save, reload and client export with optional color inheritance and explicit off', async () => {
     let data = await readLighting(root, 'one');
     const update = async properties => {

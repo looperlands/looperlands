@@ -134,7 +134,7 @@ test('the native pixel budget admits the demo, bounds large-source fill and stil
     expect(mask).toHaveBeenCalledTimes(1);
     expect(large.pass.sprites.size).toBe(1);
     const mixed = setup();
-    expect(mixed.pass.draw(mixed.target.getContext(), [60, 32, 20].map(glowRadius => ({...source, glowRadius})), view)).toBe(2);
-    expect(mixed.target.getContext().drawImage.mock.calls.map(call => call[3])).toEqual([120, 40]);
-    expect(mixed.canvases.some(canvas => canvas.width === 64)).toBe(false);
+    expect(mixed.pass.draw(mixed.target.getContext(), [62, 63, 20].map(glowRadius => ({...source, glowRadius})), view)).toBe(2);
+    expect(mixed.target.getContext().drawImage.mock.calls.map(call => call[3])).toEqual([124, 40]);
+    expect(mixed.canvases.some(canvas => canvas.width === 126)).toBe(false);
 });
