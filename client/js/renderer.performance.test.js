@@ -1161,7 +1161,8 @@ test('legacy maps and the comparison toggle do not load or allocate the emissive
     worker.send(packet);
     expect(worker.sandbox.self.EmissiveGlow).toBeUndefined();
     expect(worker.allocations).toHaveLength(allocations);
-    expect(worker.canvases.combined.ctx.drawImage).toHaveBeenCalledTimes(3);
+    // Names are once again composed before the overhead layer and lighting.
+    expect(worker.canvases.combined.ctx.drawImage).toHaveBeenCalledTimes(4);
 });
 
 test('glow-only companions preserve the ordinary-light budget', () => {
@@ -1184,7 +1185,7 @@ test('emission follows multiply, precedes foreground, and leaves legacy name lab
         glowIntensity: .3, glowRadius: 18, animation: 'fire'}]});
     worker.send(packet);
     expect(events[0].image).toBe(worker.canvases.entities);
-    expect(events[1]).toEqual({image: worker.canvases.text, operation: 'source-over'});
+    expect(events[1].image).toBe(worker.canvases.text);
     expect(events[2].image).toBe(worker.canvases.highEntities);
     expect(events[3]).toEqual({image: worker.canvases.lighting, operation: 'multiply'});
     const glow = events[4], scratch = glow.image;

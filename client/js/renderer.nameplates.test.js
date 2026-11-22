@@ -46,19 +46,76 @@ test.each([
     expect(labels()[0]).toMatchObject({color, globalAlpha: 0.5});
 });
 
-test('distant idle mobs remain labelled, regardless of distance or player presence', () => {
+test.each([
+    [0, 0.5], [64, 0.5], [80, 0.421875], [96, 0.25], [112, 0.078125]
+])('idle enemy names smoothly fade with distance %i', (distance, alpha) => {
     const {actor, host, labels} = fixture();
-    host.game.player = {x: 5000, y: 5000};
-    expect(labels()).toHaveLength(1);
+    host.game.player = {x: actor.x + distance, y: actor.y};
+    expect(labels()[0].globalAlpha).toBeCloseTo(alpha, 6);
+});
+
+test('enemy names disappear only after fading out entirely', () => {
+    const {actor, host, labels} = fixture();
+    host.game.player = {x: actor.x + 127, y: actor.y};
+    expect(labels()[0].globalAlpha).toBeGreaterThan(0);
+    expect(labels()[0].globalAlpha).toBeLessThan(0.001);
+    for (const distance of [128, 129, 4000]) {
+        host.game.player.x = actor.x + distance;
+        expect(labels()).toEqual([]);
+    }
+});
+
+test('missing player or enemy coordinates retain name visibility', () => {
+    const {actor, host, labels} = fixture();
     host.game.player = null;
+    actor.x = 5000;
+    expect(labels()[0].globalAlpha).toBe(0.5);
+    host.game.player = {x: NaN, y: 48};
+    expect(labels()).toHaveLength(1);
+    actor.x = undefined;
+    host.game.player = {x: 32, y: 48};
     expect(labels()).toHaveLength(1);
 });
 
-test('remote players use HP colors and idle opacity; local names remain gold', () => {
-    const {actor, labels} = fixture({self: true});
+test.each(['inCombat', 'attackingMode', 'followingMode'])(
+    'distant %s mobs keep their names at normal engaged opacity', flag => {
+        const {actor, host, labels} = fixture();
+        host.game.player = {x: actor.x + 4000, y: actor.y};
+        actor[flag] = true;
+        expect(labels()[0].globalAlpha).toBe(1);
+    }
+);
+
+test('targeted or injured distant enemies remain identifiable', () => {
+    const {actor, host, labels} = fixture();
+    host.game.player = {x: actor.x + 4000, y: actor.y, target: {id: actor.id}};
+    expect(labels()[0].globalAlpha).toBe(0.5);
+    host.game.player.target = null;
+    host.game.combatPrototype = {getHealthTargetId: () => actor.id};
+    expect(labels()[0].globalAlpha).toBe(0.5);
+    host.game.combatPrototype = null;
+    actor.hitPoints = 95;
+    expect(labels()[0].globalAlpha).toBe(0.5);
+});
+
+test('enemy titles fade with names, while retaining their original full opacity nearby', () => {
+    const {actor, host, labels} = fixture();
+    actor.title = 'Elite';
+    expect(labels()[1]).toMatchObject({color: 'orange', globalAlpha: 1});
+    host.game.player = {x: actor.x + 96, y: actor.y};
+    const [name, title] = labels();
+    expect(name.globalAlpha).toBeCloseTo(0.25);
+    expect(title.globalAlpha).toBeCloseTo(0.5);
+    host.game.player.x = actor.x + 128;
+    expect(labels()).toEqual([]);
+});
+
+test('remote players remain visible regardless of distance; local names remain gold', () => {
+    const {actor, host, labels} = fixture({self: true});
     actor.hitPoints = 1;
     expect(labels()[0]).toMatchObject({color: '#fcda5c', globalAlpha: 1});
     actor.id = 99;
+    host.game.player = {x: 4000, y: 4000};
     expect(labels()[0]).toMatchObject({color: 'black', globalAlpha: 0.5});
 });
 
