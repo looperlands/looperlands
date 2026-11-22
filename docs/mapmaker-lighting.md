@@ -18,11 +18,11 @@ Area lights illuminate their rectangle with a uniform color. Use round lights fo
 
 ## Source glow
 
-For a round light, open **Source glow** and set **Glow** to **On**. **Glow intensity** controls a small halo around the source artwork. **Glow radius (pixels)** uses the original map pixels, independently of the light's radius in tiles; start around 12–24 pixels. The supported range is 1–64 pixels. **Glow color** can be warmer than the surrounding light. **Use light color** restores the source's regular light color.
+For a round light, open **Source glow** and set **Glow** to **On**. **Glow intensity** controls a warm, softly fading spill around the source artwork. The fire profile has a broader, brighter shoulder than steady windows, while both retain their authored radius and intensity. **Glow radius (pixels)** uses the original map pixels, independently of the light's radius in tiles; start around 12–24 pixels. The supported range is 1–64 pixels. **Glow color** can be warmer than the surrounding light. **Use light color** restores the source's regular light color.
 
 Glow is off for existing lights until explicitly enabled. Area lights and directional spotlights do not support it; a round source must use a beam spread of 0 or 360 degrees. Keep the radius close to the flame, bulb or window so nearby roof tiles, characters and signs stay clear. The ordinary intensity and radius continue to control illumination of the ground and scenery.
 
-When artwork already emits light through its tile properties, add a round source at the same pixel center and set its ordinary intensity and shadow strength to zero. Enable glow on that source to decorate only this placement without adding another light pool or changing every copy of the tile. A fire source can use the existing fire animation for a gentle change in glow brightness.
+When artwork already emits light through its tile properties, add a round source at the same pixel center and set its ordinary intensity and shadow strength to zero. Enable glow on that source to decorate only this placement without adding another light pool or changing every copy of the tile. A fire source can use the existing fire animation for an irregular, more noticeable glow pulse; disabling dynamic lights or reduced motion makes it steady.
 
 The Tiled properties are `glowIntensity` (0–1, absent or 0 disables glow), `glowRadius` (whole native pixels, default 16) and optional `glowColor` (`r,g,b`). They are saved and exported with the ellipse light object. Players can turn the effect off with **Light-source glow** in the game's graphics settings.
 
@@ -54,7 +54,7 @@ Open Inventory with **Z** or Settings with **C** to see a panel cast onto the ma
 
 ![Town before and after source glow, rendered offline](images/source-glow-town.png)
 
-This comparison uses the actual renderer, map, tilesheet and height atlas in an offline Canvas raster fixture at 22:00. It shows warmed, fixed-animation frames without actors or interactive UI; use the local playtest links to check movement and browser performance.
+The image above captures the initial glow profile with the actual renderer, map and artwork at 22:00. The live comparison links below use the updated falloff, with a wider, softer warm shoulder around the same authored four lights. Use the live playtest to check movement, shadows and browser performance.
 
 In the local preview launcher, **Warm windows and campfire** offers **Original lighting** and **With source glow**. Both start at Town tile `(70, 224)` at 22:00 with clear weather. Each link overrides glow only for that preview session; it does not change your saved preference. Saving the game's graphics settings stores your chosen setting. The cottage to the west and campfire to the east use their existing artwork, light pools and shadows. The new glow sources are attached only to these four placements; the other Town lights keep their current appearance.
 

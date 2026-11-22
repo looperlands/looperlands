@@ -19,7 +19,8 @@
         return {
             intensity: clamp(source.glowIntensity, 0, 1),
             radius: Math.round(clamp(Number.isFinite(source.glowRadius) ? source.glowRadius : 16, 1, maxRadius)),
-            color: colorOf(source.glowColor) || colorOf(source.color) || [255, 255, 255]
+            color: colorOf(source.glowColor) || colorOf(source.color) || [255, 255, 255],
+            profile: source.animation === 'fire' ? 'fire' : 'steady'
         };
     }
 
@@ -31,8 +32,8 @@
         }
 
         sprite(style) {
-            const {radius, color} = style, size = radius * 2;
-            const key = radius + ':' + color.join(',');
+            const {radius, color, profile} = style, size = radius * 2;
+            const key = radius + ':' + color.join(',') + ':' + profile;
             let canvas = this.sprites.get(key);
             if (canvas) {
                 this.sprites.delete(key); this.sprites.set(key, canvas);
@@ -48,9 +49,13 @@
             canvas = this.createCanvas(size, size);
             const ctx = canvas.getContext('2d');
             const gradient = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius);
-            // A bright compact core and a quiet tail keep a lamp readable without
-            // flattening the surrounding pixel art into a large luminous disc.
-            for (const [stop, alpha] of [[0, 1], [.12, .65], [.4, .16], [.7, .03], [1, 0]]) {
+            // Flame and window art cover most of the bright center. A smooth shoulder
+            // keeps the surrounding terrain visibly warm while preserving a soft edge.
+            // Both profiles share the same bounded cached-sprite rendering path.
+            const stops = profile === 'fire'
+                ? [[0, 1], [.14, .9], [.3, .67], [.5, .34], [.75, .1], [1, 0]]
+                : [[0, 1], [.12, .78], [.3, .44], [.54, .18], [.78, .045], [1, 0]];
+            for (const [stop, alpha] of stops) {
                 gradient.addColorStop(stop, 'rgba(' + color.join(',') + ',' + alpha + ')');
             }
             ctx.fillStyle = gradient;
