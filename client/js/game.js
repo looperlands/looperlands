@@ -9870,8 +9870,9 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             this.startFishing(fishablePos.gridX, fishablePos.gridY);
                         }
                     } else {
-                        if (this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
-                            let z = this.getZoningOrientation(pos.x, pos.y);
+                        const z = !pos.keyboard && (this.getZoningOrientation(pos.x, pos.y)
+                            || this.getClickSceneExitOrientation(pos.x, pos.y));
+                        if (z) {
                             switch (z) {
                                 case Types.Orientations.LEFT:
                                     if (!this.map.isColliding(pos.x - 1, pos.y)) {
@@ -10368,6 +10369,30 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
 
                 return orientation;
+            },
+
+            // Camera zoning stops at scene bounds. A mouse click on the last visible
+            // tile must still be able to walk into an adjacent scene, even when the
+            // camera cannot scroll any farther in the current one.
+            getClickSceneExitOrientation: function (x, y) {
+                const c = this.camera;
+                if (!c?.bounds || c.boundsOverride || !this.map.getCurrentScene || this.map.isDoor(x, y)) return "";
+
+                const scene = this.map.getCurrentScene({gridX: x, gridY: y});
+                if (!scene) return "";
+
+                for (const [atEdge, dx, dy, orientation] of [
+                    [x === c.gridX, -1, 0, Types.Orientations.LEFT],
+                    [y === c.gridY, 0, -1, Types.Orientations.UP],
+                    [x === c.gridX + c.gridW - 1, 1, 0, Types.Orientations.RIGHT],
+                    [y === c.gridY + c.gridH - 1, 0, 1, Types.Orientations.DOWN],
+                ]) {
+                    if (!atEdge) continue;
+                    const nextX = x + dx, nextY = y + dy;
+                    if (this.map.isColliding(nextX, nextY)) continue;
+                    if (this.map.getCurrentScene({gridX: nextX, gridY: nextY}) !== scene) return orientation;
+                }
+                return "";
             },
 
             startZoningFrom: function (x, y) {
