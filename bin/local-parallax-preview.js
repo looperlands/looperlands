@@ -50,6 +50,7 @@ const destinations = {
     town: {label: 'Town · garden breeze', x: 42, y: 216},
     'town-clouds': {label: 'Town · passing clouds', x: 40, y: 212, timeOfDay: '09:00', weather: 'cloudy', shadowProxies: true},
     campfire: {label: 'Town · campfire at night', x: 77, y: 224, timeOfDay: '22:00'},
+    glow: {label: 'Town · warm windows and campfire', x: 70, y: 224, timeOfDay: '22:00', weather: 'clear'},
     windows: {label: 'Town · window light at night', x: 49, y: 206, timeOfDay: '22:00'},
     torch: {label: 'Megamag · cave wall torch', x: 151, y: 164},
     beach: {label: 'Beach · clouds', x: 44, y: 272},
@@ -95,6 +96,7 @@ server.app.get('/parallax/play/:scene', async (req, res) => {
         if (['clear', 'cloudy', 'rain', 'sunrays'].includes(weather)) gameUrl.searchParams.set('weather', weather);
         const proxyView = req.query.shadowProxies ?? (destination.shadowProxies ? '0' : undefined);
         if (['0', '1'].includes(proxyView)) gameUrl.searchParams.set('shadowProxies', proxyView);
+        if (['0', '1'].includes(req.query.emissiveGlow)) gameUrl.searchParams.set('emissiveGlow', req.query.emissiveGlow);
         res.redirect(gameUrl.pathname + gameUrl.search);
     } catch (error) {res.status(500).send(error.message);}
 });
@@ -113,6 +115,9 @@ body{margin:0;background:#141e1a;color:#e7e6d5;font:17px/1.6 system-ui,sans-seri
 <a href="/parallax/play/forest?time=07:00&amp;shadowProxies=0">Forest tree shadows</a> ·
 <a href="/img/common/height-proxies/main.png">Open the Town proxy atlas</a></p>
 <p>Drag <strong>Time of day</strong> to compare the shadows from the same spot. The slider holds the selected minute until you choose <strong>Resume clock</strong>. Use <strong>Weather</strong> beside the slider to watch passing clouds soften the same tree’s shadow. In the proxy view, blue marks low surfaces and magenta marks high ones.</p>
+<h2>Warm windows and campfire</h2>
+<p><a href="/parallax/play/glow?emissiveGlow=0">Original lighting</a> · <a href="/parallax/play/glow?emissiveGlow=1">With source glow</a></p>
+<p>Both links start beside the same Town cottage at 22:00 with clear weather. Compare the three windows and the campfire to the east. Use <strong>Light-source glow</strong> in the game’s graphics settings to compare from your current position.</p>
 <nav>${Object.entries(destinations).map(([id, destination]) => `<a href="/parallax/play/${id}">${destination.label}</a>`).join('')}</nav>
 <p>Move with WASD or the arrow keys. Walk in both directions to compare the terrain and overhead layers, or stand still to watch the weather drift. Settings → Reduced motion anchors the layers to the map and pauses the drift.</p>
 <p><a href="/parallax/play/forest?time=12:55">Forest rain</a> · <a href="/parallax/play/forest?time=18:00">Forest dusk</a> · <a href="/parallax/play/forest?time=20:55">Forest night rain</a></p>

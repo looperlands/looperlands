@@ -59,6 +59,7 @@ function setup() {
         self: {postMessage: jest.fn(), WorldTime: require('./worldtime-worker')},
         importScripts: jest.fn(name => {
             if (name === 'mobhealthbar-worker.js') sandbox.self.MobHealthBars = {Bars: ObservedBars};
+            else if (name === 'emissive-glow-worker.js') vm.runInContext(fs.readFileSync(path.join(__dirname, name), 'utf8'), sandbox);
         })};
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
@@ -130,6 +131,34 @@ test('world labels and bars compose after lighting, with overhead masking before
     expect(copies.map(op => op.composite)).toEqual(['source-over', 'source-over', 'destination-out']);
     expect(copies.at(-1).args.slice(1)).toEqual([0, 0, combined.width, combined.height]);
     expect(worker.canvases.entities.ctx.fillRect).not.toHaveBeenCalled();
+});
+
+test('glow stays below opaque names and health bars without invalidating cached labels', () => {
+    const worker = setup();
+    worker.setExtensions({draw(layer, ctx) {
+        if (layer === 'foreground') ctx.fillRect(1, 2, 3, 4);
+    }});
+    worker.send({type: 'setLights', lights: [{x: 30, y: 30, intensity: 0, shadow: 0,
+        glowIntensity: .6, glowRadius: 24, animation: 'fire'}]});
+    worker.send(frame());
+    const combined = worker.canvases.combined;
+    const copies = worker.operations.filter(op => op.canvas === combined && op.method === 'drawImage');
+    expect(copies.map(op => op.composite)).toEqual(['source-over', 'source-over', 'multiply', 'screen', 'source-over']);
+    const ui = copies.at(-1).args[0], glow = copies.at(-2).args[0];
+    expect(copies.at(-1).alpha).toBe(1);
+    expect(glow).toMatchObject({width: 48, height: 48});
+    const uiCopies = worker.operations.filter(op => op.canvas === ui && op.method === 'drawImage');
+    expect(uiCopies.map(op => op.args[0])).toEqual([
+        worker.barDraw.mock.calls[0][0].canvas, worker.canvases.text, worker.canvases.highEntities
+    ]);
+    expect(uiCopies.map(op => op.alpha)).toEqual([1, 1, 1]);
+    expect(worker.operations.indexOf(copies.at(-1))).toBeLessThan(worker.operations.findIndex(op =>
+        op.canvas === combined && op.method === 'fillRect'));
+    const text = worker.canvases.text.ctx, clears = text.clearRect.mock.calls.length, draws = text.drawImage.mock.calls.length;
+    worker.send(frame({hp: 60, time: 100}));
+    expect(text.clearRect).toHaveBeenCalledTimes(clears);
+    expect(text.drawImage).toHaveBeenCalledTimes(draws);
+    expect(worker.barInstances[0].states.get('mob').ratio).toBe(.6);
 });
 
 test.each([1, 2, 3])('health bars retain native pixels and camera alignment at display scale %i', scale => {

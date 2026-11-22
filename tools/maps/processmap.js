@@ -2,6 +2,7 @@ var _ = require('underscore'),
     Types = require("../../shared/js/gametypes");
 const Zones = require('../../shared/js/gameplayzones');
 const WorldFxConfig = require('../../client/js/worldfxconfig');
+const Lighting = require('../../shared/js/mapmakerlighting');
 
 var map,
     mode,
@@ -377,6 +378,7 @@ module.exports = function processMap(json, options) {
             // The TMX converter wraps properties differently for a single child
             // and for an object with both properties and an ellipse.
             const lightProps = [].concat(light.properties).flatMap(group => [].concat(group.property || []));
+            Object.assign(newLight, Lighting.glow(Object.fromEntries(lightProps.map(property => [property.name, property.value])), light.ellipse !== undefined));
 
             if (lightProps) {
                 for (var k = 0; k < lightProps.length; k += 1) {

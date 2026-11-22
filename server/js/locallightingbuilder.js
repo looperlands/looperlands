@@ -72,7 +72,9 @@ function validateObject(row, current, dimensions) {
         }
         if (value === null) {properties[key] = null;continue;}
         if (typeof value !== 'string' || !value.trim()) fail('Choose a value for ' + key + '.');
-        if (key === 'color') {
+        if (Lighting.glowPropertyNames.includes(key)) {
+            // Validate the merged glow fields together using the exporter contract below.
+        } else if (key === 'color') {
             const channels = value.split(',');
             if (channels.length !== 3 || channels.some(v => !/^\d{1,3}$/.test(v.trim()) || Number(v) > 255)) fail('Use a color with three RGB channels from 0 to 255.');
         } else if (key === 'animation') {
@@ -87,6 +89,8 @@ function validateObject(row, current, dimensions) {
     const merged = {...current?.properties};
     for (const [key, value] of Object.entries(properties)) {if (value === null) delete merged[key];else merged[key] = value;}
     if (row.kind === 'light') {
+        try {Lighting.glow(merged, row.shape === 'ellipse');}
+        catch (error) {fail(error.message);}
         const light = Lighting.light({...row, properties: merged}, dimensions.tilewidth);
         if (light.radius > 64) fail('Light radius must be at most 64 tiles.');
         if ((light.innerRadius || 0) > (light.radius || 1)) fail('Inner radius must not exceed the light radius.');

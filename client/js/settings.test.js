@@ -37,6 +37,42 @@ test('combat effects default on and retain a saved disabled preference', () => {
     expect(disabled.elements.get('combatEffectsEnabled').checked).toBe(false);
 });
 
+test('light-source glow defaults on and persists independently of light animation', () => {
+    const {settings, elements, values} = setup({enableDynamicLights: 'false'});
+    expect(settings.getEmissiveGlowEnabled()).toBe(true);
+    expect(elements.get('emissiveGlowEnabled').checked).toBe(true);
+    elements.get('emissiveGlowEnabled').checked = false;
+    settings.setSettings();
+    const reopened = setup(Object.fromEntries(values));
+    expect(reopened.settings.getEmissiveGlowEnabled()).toBe(false);
+    expect(reopened.elements.get('emissiveGlowEnabled').checked).toBe(false);
+    reopened.elements.get('emissiveGlowEnabled').checked = true;
+    reopened.settings.setSettings();
+    expect(reopened.settings.getEmissiveGlowEnabled()).toBe(true);
+    expect(reopened.settings.getEnableDynamicLights()).toBe(false);
+});
+
+test('local glow comparisons are temporary until the player saves settings', () => {
+    const {settings, elements, values} = setup({emissiveGlowEnabled: 'false'});
+    settings.setEmissiveGlowPreview(true);
+    expect(settings.getEmissiveGlowEnabled()).toBe(true);
+    expect(elements.get('emissiveGlowEnabled').checked).toBe(true);
+    expect(values.get('emissiveGlowEnabled')).toBe('false');
+    expect(setup(Object.fromEntries(values)).settings.getEmissiveGlowEnabled()).toBe(false);
+    // The game applies settings when its audio manager starts or restarts.
+    settings.setSettings();
+    expect(values.get('emissiveGlowEnabled')).toBe('false');
+    expect(settings.getEmissiveGlowEnabled()).toBe(true);
+    listener(elements.get('settingsForm'), 'submit')({preventDefault: jest.fn()});
+    expect(values.get('emissiveGlowEnabled')).toBe('true');
+    settings.setEmissiveGlowPreview(false);
+    expect(settings.getEmissiveGlowEnabled()).toBe(false);
+    expect(values.get('emissiveGlowEnabled')).toBe('true');
+    elements.get('emissiveGlowEnabled').checked = true;
+    listener(elements.get('settingsForm'), 'submit')({preventDefault: jest.fn()});
+    expect(settings.getEmissiveGlowEnabled()).toBe(true);
+});
+
 test('each player can disable fish cards, retain the preference and dismiss an active reveal', () => {
     const {settings,elements,values,app}=setup();
     expect(settings.getFishCatchCardsEnabled()).toBe(true);

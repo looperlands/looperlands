@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="87" nextobjectid="721">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="87" nextobjectid="725">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="3740" columns="20">
   <image source="../../../client/img/1/tilesheet_main.png" width="320" height="3000"/>
   <tile id="0">
@@ -41563,6 +41563,51 @@
    <properties>
     <property name="light" type="float" value="0.7"/>
    </properties>
+  </object>
+  <object id="721" name="Town cottage dormer glow" x="1008" y="3488" width="16" height="16">
+   <properties>
+    <property name="glowColor" value="255,204,128"/>
+    <property name="glowIntensity" type="float" value="0.18"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="722" name="Town cottage west window glow" x="976" y="3536" width="16" height="16">
+   <properties>
+    <property name="glowColor" value="255,204,128"/>
+    <property name="glowIntensity" type="float" value="0.22"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="723" name="Town cottage east window glow" x="1040" y="3536" width="16" height="16">
+   <properties>
+    <property name="glowColor" value="255,204,128"/>
+    <property name="glowIntensity" type="float" value="0.22"/>
+    <property name="glowRadius" type="int" value="18"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="724" name="Town campfire glow" x="1248" y="3568" width="16" height="16">
+   <properties>
+    <property name="animation" value="fire"/>
+    <property name="glowColor" value="255,158,64"/>
+    <property name="glowIntensity" type="float" value="0.32"/>
+    <property name="glowRadius" type="int" value="24"/>
+    <property name="light" type="float" value="0"/>
+    <property name="radius" type="int" value="1"/>
+    <property name="shadow" type="float" value="0"/>
+   </properties>
+   <ellipse/>
   </object>
  </objectgroup>
  <objectgroup id="83" name="shadows">
