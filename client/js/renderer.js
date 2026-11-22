@@ -2,6 +2,8 @@
 define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorcontroller'],
     function(Camera, Item, Character, Player, Timer, Mob, Npc, CursorController) {
 
+        const NAMEPLATE_STROKE = '#17202b';
+
         var Renderer = Class.extend({
             init: function(game, canvas, background, foreground) {
                 this.game = game;
@@ -819,7 +821,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 if (entity.id === this.game.combatPrototype?.state?.mob?.id) return textData;
                 if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                     let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
-                    let opacity = (entity.id === this.game.playerId || entity.attackingMode || entity.followingMode || entity.inCombat) ? 1.0 : 0.5;
                     let entityData = entity.name;
                     
                     let renderThisText = (entity.id === this.game.playerId) ? this.game.app.settings.getRenderMyText() : this.game.app.settings.getRenderText();
@@ -838,7 +839,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         "pixelAligned": true,
                         "centered": true,
                         "color": color,
-                        "globalAlpha": opacity
+                        "strokeColor": NAMEPLATE_STROKE,
+                        "globalAlpha": 1
                     });
     
                     if (entity.title !== undefined && (!(entity instanceof Player) || entity.title !== entity.name)) {
@@ -852,6 +854,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                                 "pixelAligned": true,
                                 "centered": true,
                                 "color": "white",
+                                "strokeColor": NAMEPLATE_STROKE,
                                 "title": true
                             });
                         } else {
@@ -863,7 +866,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                                 "y": (entity.y + oy + 6) * this.scale,
                                 "pixelAligned": true,
                                 "centered": true,
-                                "color": "orange",
+                                "color": "#ffc17c",
+                                "strokeColor": NAMEPLATE_STROKE,
                                 "title" : true
                             });
                         }
@@ -874,24 +878,24 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
             getHpIndicatorColor: function(entity) {
                 if (entity.maxHitPoints !== undefined && entity.hitPoints !== undefined) {
-                    lifePercentage = entity.hitPoints/entity.maxHitPoints * 100;
+                    const lifePercentage = entity.hitPoints/entity.maxHitPoints * 100;
     
                     if (lifePercentage >= 95) {
-                        return "green";
+                        return "#a8edb4";
                     } else if (lifePercentage >= 90) {
-                        return "forestgreen";
+                        return "#98daa8";
                     } else if (lifePercentage >= 80) {
-                        return "greenyellow"
+                        return "#cfed91";
                     } else if (lifePercentage >= 50) {
-                        return "yellow";
+                        return "#ffe58a";
                     } else if (lifePercentage >= 25) {
-                        return "orange";
+                        return "#ffc17c";
                     } else if (lifePercentage >= 10) {
-                        return "orangered";
+                        return "#ffad8a";
                     } else if (lifePercentage >= 5) {
-                        return "red";
+                        return "#ff9898";
                     } else if (lifePercentage >= 0) {
-                        return "black";
+                        return "#ffb3c1";
                     }
                 }
             },
