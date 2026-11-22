@@ -545,3 +545,21 @@ test('recessed lava emission follows its original drift and only activates at ni
     delete s.layer.emissionIntensity;
     expect(s.renderer.backgroundEmission(s.state, view)).toBeNull();
 });
+
+test('lava light spill is opt-in, tied to the exposed shoreline and bounded by scene', async () => {
+    const s = setup();
+    Object.assign(s.state.scenes[0], {id: 631, cutoutColors: [[254, 173, 2]]});
+    Object.assign(s.layer, {plane: 'background', emissionIntensity: .65,
+        illuminationIntensity: .7, illuminationRadius: 40});
+    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, sceneId: 631};
+    expect(s.renderer.terrainIllumination(s.state, view)).toEqual([
+        {x: 0, y: 0, w: 1600, h: 1600, intensity: .7, radius: 40}
+    ]);
+    expect(s.renderer.terrainIllumination(s.state, {...view, cameraX: 9000})).toEqual([]);
+    expect(s.renderer.terrainIllumination(s.state, {...view, sceneId: 628})).toEqual([]);
+    s.layer.illuminationIntensity = 0;
+    expect(s.renderer.terrainIllumination(s.state, view)).toEqual([]);
+    s.layer.illuminationIntensity = .7;
+    s.state.scenes[0].cutoutColors = [];
+    expect(s.renderer.terrainIllumination(s.state, view)).toEqual([]);
+});

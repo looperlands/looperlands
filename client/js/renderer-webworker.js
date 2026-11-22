@@ -1215,6 +1215,73 @@ function drawFrameClouds(ctx, cameraX, cameraY, scale, operation) {
     ctx.restore();
 }
 
+// Build the receiver field only when the padded static terrain cache changes.
+// The *visible cutout*, not the parallax bitmap underneath solid rock, emits light.
+// A small, softly upscaled field can illuminate nearby walls, bridges and actors.
+function terrainSpillRaster(cached, setting, areas) {
+    const step = 4, width = Math.ceil(cached.canvas.width / step), height = Math.ceil(cached.canvas.height / step);
+    const raster = new OffscreenCanvas(width, height);
+    const rasterCtx = raster.getContext('2d', {willReadFrequently: true});
+    rasterCtx.imageSmoothingEnabled = false;
+    rasterCtx.drawImage(cached.canvas, 0, 0, width, height);
+    let pixels;
+    try {pixels = rasterCtx.getImageData(0, 0, width, height);}
+    catch (error) {raster.width = raster.height = 0; return null;}
+    const mask = new Uint8Array(width * height);
+    let sources = 0;
+    for (let y = 0; y < height; y++) {
+        const worldY = cached.y + (y + .5) * cached.canvas.height / height;
+        for (let x = 0; x < width; x++) {
+            const i = y * width + x;
+            if (pixels.data[i * 4 + 3] >= 64) continue;
+            const worldX = cached.x + (x + .5) * cached.canvas.width / width;
+            if (!areas.some(area => worldX >= area.x && worldY >= area.y &&
+                worldX < area.x + area.w && worldY < area.y + area.h &&
+                !(area.exclude || []).some(hole => worldX >= hole.x && worldY >= hole.y &&
+                    worldX < hole.x + hole.w && worldY < hole.y + hole.h))) continue;
+            mask[i] = 1;
+            sources++;
+        }
+    }
+    if (!sources) {raster.width = raster.height = 0; return null;}
+    if (!self.AreaEmission) importScripts('area-emission-worker.js');
+    const colored = self.AreaEmission.build(mask, width, height, setting.radius / step);
+    pixels.data.set(colored);
+    rasterCtx.putImageData(pixels, 0, 0);
+    return raster;
+}
+
+function drawTerrainIllumination(ctx, setting, cameraX, cameraY) {
+    if (!(setting?.intensity > 0) || !(GLOBAL_LIGHT_INTENSITY < 1)) return;
+    const cached = terrainCache.get('background');
+    if (!cached) return;
+    const areas = frameCutouts.filter(area => area?.colors?.length &&
+        area.x < setting.x + setting.w && area.x + area.w > setting.x &&
+        area.y < setting.y + setting.h && area.y + area.h > setting.y);
+    if (!areas.length) return;
+    const key = JSON.stringify([setting, frameCutoutKey]);
+    cached.spillFields ??= new Map();
+    if (!cached.spillFields.has(key)) {
+        if (cached.spillFields.size >= 4) {
+            const oldest = cached.spillFields.keys().next().value;
+            const previous = cached.spillFields.get(oldest);
+            if (previous) previous.width = previous.height = 0;
+            cached.spillFields.delete(oldest);
+        }
+        cached.spillFields.set(key, terrainSpillRaster(cached, setting, areas));
+    }
+    const field = cached.spillFields.get(key);
+    if (!field) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha *= Math.min(1, setting.intensity) * (1 - GLOBAL_LIGHT_INTENSITY);
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(field, 0, 0, field.width, field.height,
+        Math.round(cached.x - cameraX), Math.round(cached.y - cameraY),
+        cached.canvas.width, cached.canvas.height);
+    ctx.restore();
+}
+
 function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime,
     atmosphereLight = authoredLightAt(scene, worldTime ?? serverTime + performance.now())) {
 
@@ -1266,6 +1333,17 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
     // Local emitters add their light after the patches of sunlight and cloud shade.
     if (state?.cloudLight) drawFrameClouds(ctx, cameraX, cameraY, 1, 'source-over');
+    // Lava outlines already exist as transparent static terrain cutouts. Reuse
+    // their cached geometry to light the entire nearby world, not isolated tile
+    // centers, without regenerating a blur texture for every animated frame.
+    if (composingWorld && rendererExtensions?.terrainIllumination) {
+        const surfaceView = {cameraX, cameraY, scale: 1, viewportWidth: canvas.width,
+            viewportHeight: canvas.height, sceneId: scene?.id};
+        for (const setting of rendererExtensions.terrainIllumination(frameExtensions, surfaceView)) {
+            drawTerrainIllumination(ctx, setting, cameraX, cameraY);
+        }
+    }
+
 
     const time = performance.now();
     frameLightTime = time;

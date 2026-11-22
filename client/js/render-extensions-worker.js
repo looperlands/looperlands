@@ -53,6 +53,17 @@
             }
             return painters;
         },
+        terrainIllumination(data = {}, view) {
+            const fields = [];
+            if (!view) return fields;
+            for (const [id, extension] of extensions) {
+                if (typeof extension.terrainIllumination !== 'function' || data[id] == null) continue;
+                try {fields.push(...extension.terrainIllumination(data[id], view).slice(0, 4 - fields.length));}
+                catch (error) {extensions.delete(id); console.error('Disabled render extension ' + id + ': ' + error.message);}
+                if (fields.length >= 4) break;
+            }
+            return fields;
+        },
         tileAppearance(data = {}) {
             const tiles = [];
             for (const [id, extension] of extensions) {

@@ -79,6 +79,18 @@ Each atmosphere override has a `sceneId` and a `parallax` object with an ordered
   transform are reused and the second pass is masked by terrain, overhead scenery,
   actors, and depth-sorted objects before compositing. Does not create a light halo
   or alter collision; existing layers are unchanged when omitted. Lavaland uses 0.65.
+- `illuminationIntensity`: optional 0–1 **world illumination**, independent of
+  `emissionIntensity`. For unplaced luminous backgrounds that use `cutoutColors`,
+  a cached field is generated from the *visible transparent shoreline* in the
+  static terrain bitmap. This lights nearby rock, bridges and characters through
+  the ordinary multiply-lighting pass rather than adding another white halo.
+  The effect is strongest in darkness and does not create per-tile point lights.
+- `illuminationRadius`: optional 8–64 native pixels (default 36). The source
+  field is sampled at quarter resolution and rebuilt only when the padded
+  terrain cache or authored cutout changes; camera movement within the cache
+  reuses the same pixels. The radius is not a physically occluded 3D light:
+  thick walls beyond the falloff remain dark, but thin rock does not yet
+  cast proper *area-light* shadows. Omit the property to preserve legacy maps.
 - `offsetX`, `offsetY`: native pixel offsets relative to the scene origin.
 - `driftX`, `driftY`: ambient movement in pixels per second, default 0,
   limited to -32–32. Camera scrolling and ambient movement are independent.
