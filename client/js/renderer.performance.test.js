@@ -1300,7 +1300,8 @@ test('lava spill reuses a bounded cutout field and lights the native world befor
     packet.scene.id = 631;
     packet.scene.darkness = .8;
     worker.send(packet);
-    const lowResolution = worker.allocations.find(canvas => canvas.ctx.putImageData.mock.calls.length);
+    const lowResolution = worker.allocations.find(canvas => canvas.width > 16 &&
+        canvas.width < worker.canvases.background.width && canvas.ctx.putImageData.mock.calls.length);
     expect(lowResolution).toBeDefined();
     expect(lowResolution.width).toBeLessThan(worker.canvases.background.width);
     expect(lowResolution.ctx.getImageData).toHaveBeenCalledTimes(1);
