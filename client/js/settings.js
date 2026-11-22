@@ -93,6 +93,7 @@ class GameSettings {
         document.getElementById('renderShadows').checked = this.getRenderShadows();
         document.getElementById('renderPlayerShadow').checked = this.getRenderPlayerShadow();
         document.getElementById('enableDynamicLights').checked = this.getEnableDynamicLights();
+        document.getElementById('emissiveGlowEnabled').checked = this.getEmissiveGlowEnabled();
 
         for (const key of Object.keys(AUDIO_VOLUME_DEFAULTS)) {
             const input = document.getElementById(key + 'Volume');
@@ -112,7 +113,7 @@ class GameSettings {
         const form = document.getElementById('settingsForm');
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-            this.setSettings();
+            this.setSettings({savePreview: true});
             app.toggleSettings();
         });
     }
@@ -278,6 +279,21 @@ class GameSettings {
         localStorage.setItem('enableDynamicLights', enabled ? 'true' : 'false');
     }
 
+    getEmissiveGlowEnabled() {
+        return this.previewEmissiveGlow ?? localStorage.getItem('emissiveGlowEnabled') !== 'false';
+    }
+
+    setEmissiveGlowEnabled(enabled) {
+        this.previewEmissiveGlow = undefined;
+        localStorage.setItem('emissiveGlowEnabled', enabled ? 'true' : 'false');
+    }
+
+    setEmissiveGlowPreview(enabled) {
+        // Local comparison links must not replace the player's saved preference.
+        this.previewEmissiveGlow = enabled;
+        document.getElementById('emissiveGlowEnabled').checked = enabled;
+    }
+
     getCombatEffectsEnabled() {
         return localStorage.getItem('combatEffectsEnabled') === 'true';
     }
@@ -332,7 +348,7 @@ class GameSettings {
         return !!(this.reducedMotionQuery && this.reducedMotionQuery.matches);
     }
 
-    setSettings() {
+    setSettings({savePreview = false} = {}) {
         for (const key of COMBAT_VISUAL_SETTINGS) {
             localStorage.setItem(key, document.getElementById(key).checked ? 'true' : 'false');
         }
@@ -353,6 +369,11 @@ class GameSettings {
         this.setRenderShadows(document.getElementById('renderShadows').checked);
         this.setRenderPlayerShadow(document.getElementById('renderPlayerShadow').checked);
         this.setEnableDynamicLights(document.getElementById('enableDynamicLights').checked);
+        // Audio initialization also applies settings; only a form submission
+        // should turn a temporary comparison override into a saved preference.
+        if (this.previewEmissiveGlow === undefined || savePreview) {
+            this.setEmissiveGlowEnabled(document.getElementById('emissiveGlowEnabled').checked);
+        }
         this.app.consumableHud?.tick(Date.now());
     }
 }

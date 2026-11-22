@@ -22,6 +22,7 @@ function install(app, root) {
         '/local/lighting-contract.js': 'shared/js/mapmakerlighting.js',
         '/local/vendor/height-shadows-worker.js': 'client/js/height-shadows-worker.js',
         '/local/vendor/lighting-renderer.js': 'client/js/renderer-webworker.js',
+        '/local/vendor/emissive-glow-worker.js': 'client/js/emissive-glow-worker.js',
         '/local/item-effects.js': 'shared/js/itemeffects.js',
         '/local/interaction-templates.js': 'shared/js/interactiontemplates.js',
         '/local/vendor/worldtime.js': 'client/js/worldtime-worker.js',

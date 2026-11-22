@@ -32,6 +32,13 @@ async function add(type, mapId = 'one', data) {
     data ||= await readLighting(root, mapId);
     return saveObject(root, {mapId, operation: 'add', revision: data.revision, object: L.preset(type, 6, 6)});
 }
+function exportClient() {
+    const jsonFile = path.join(root, 'converted.json');
+    const converter = fs.readFileSync(path.resolve(__dirname, '../../tools/maps/tmx2json.py'), 'utf8').replace('from lxml import etree', 'import xml.etree.ElementTree as etree');
+    execFileSync('python3', ['-c', converter, file, jsonFile]);
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    try {return processMap(JSON.parse(fs.readFileSync(jsonFile)), {mode: 'client'});} finally {log.mockRestore();}
+}
 test('batch lighting adds reuse self-closing layers, create missing layers once and allocate unique IDs', async () => {
     const initial=await readLighting(root,'empty');
     const saved=await saveObject(root,{mapId:'empty',revision:initial.revision,operations:[
@@ -59,6 +66,34 @@ test('reads existing lighting geometry and legacy custom properties without a ma
     expect(data.objects).toHaveLength(2);
     expect(data.objects[0]).toMatchObject({id: '7', shape: 'ellipse', x: 32, properties: {future: 'keep'}});
     expect(L.light(data.objects[0], 16)).toMatchObject({x: 64, y: 80, radius: 2, intensity: .6, color: {r: 255, g: 180, b: 90}});
+    expect(L.light(data.objects[0], 16)).not.toHaveProperty('glowIntensity');
+    expect(L.preset('torch', 6, 6).properties).not.toHaveProperty('glowIntensity');
+});
+test('source glow survives save, reload and client export with optional color inheritance and explicit off', async () => {
+    let data = await readLighting(root, 'one');
+    const update = async properties => {
+        const current = data.objects.find(row => row.id === '7');
+        data = await saveObject(root, {mapId: 'one', operation: 'update', objectId: '7', revision: data.revision,
+            object: {...current, properties: {...current.properties, ...properties}}});
+        return exportClient().lights.find(light => light.id === 7);
+    };
+    const glowing = await update({intensity: '0', glowIntensity: '0,3', glowRadius: '2e1', glowColor: '255,120,40'});
+    expect(glowing).toMatchObject({intensity: 0, glowIntensity: .3, glowRadius: 20, glowColor: {r: 255, g: 120, b: 40}});
+    expect(glowing).toEqual(L.light(data.objects.find(row => row.id === '7'), 16));
+    const inherited = await update({glowColor: null});
+    expect(inherited).not.toHaveProperty('glowColor');
+    expect(inherited.color).toEqual({r: 255, g: 180, b: 90});
+    expect((await update({glowIntensity: '0'})).glowIntensity).toBe(0);
+    const removed = await update({glowIntensity: null, glowRadius: null});
+    expect(removed).not.toHaveProperty('glowIntensity');expect(removed).not.toHaveProperty('glowRadius');
+    expect(data.objects.find(row => row.id === '7').properties.future).toBe('keep');
+});
+test.each([
+    'name="glowIntensity" value="2"', 'name="glowRadius" value="65"',
+    'name="glowRadius" value="1.5"', 'name="glowColor" value="255,0"'
+])('direct Tiled exports reject invalid glow properties: %s', property => {
+    fs.writeFileSync(file, xml.replace('name="intensity" value="0.6"', property));
+    expect(exportClient).toThrow(/Glow|glow/);
 });
 test('updates only the chosen object and preserves other bytes, comments and custom properties', async () => {
     const before = fs.readFileSync(file, 'utf8'), data = await readLighting(root, 'one');
@@ -86,12 +121,7 @@ test('new radial, area and polygon objects survive the normal TMX and client exp
     data = await saveObject(root, {mapId: 'one', operation: 'update', objectId: edited.id, revision: data.revision,
         object: {...edited, x: 112, name: 'Moved legacy shadow'}});
     expect(data.objects.find(row => row.id === '8').properties.proxyOwner).toBe('tile:234,1,2');
-    const jsonFile = path.join(root, 'converted.json');
-    // The converter has no lxml dependency in this test: use ElementTree for its element traversal.
-    const converter = fs.readFileSync(path.resolve(__dirname, '../../tools/maps/tmx2json.py'), 'utf8').replace('from lxml import etree', 'import xml.etree.ElementTree as etree');
-    execFileSync('python3', ['-c', converter, file, jsonFile]);
-    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-    let built;try {built = processMap(JSON.parse(fs.readFileSync(jsonFile)), {mode: 'client'});} finally {log.mockRestore();}
+    const built = exportClient();
     expect(built.lights).toHaveLength(3);expect(built.shadows).toHaveLength(2);
     expect(built.shadows.find(s => s.id === 8).proxyOwner).toEqual({gid: 234, tileX: 8, tileY: 6});
     expect(built.shadows.find(s => s.id !== 8).proxyOwner).toBeUndefined();
@@ -126,7 +156,13 @@ test.each([
     row => {row.properties.innerRadius = '12';}, row => {row.properties.color = '999,0,0';},
     row => {row.properties.innerSpread = '90';}, row => {row.x = -10000;},
     row => {row.properties.future = 'changed';}, row => {row.shape = 'polygon';},
-    row => {row.width = Infinity;}
+    row => {row.width = Infinity;}, row => {row.properties.glowIntensity = '-0.1';},
+    row => {row.properties.glowIntensity = 'Infinity';}, row => {row.properties.glowRadius = '0';},
+    row => {row.properties.glowRadius = '65';}, row => {row.properties.glowRadius = '2.5';},
+    row => {row.properties.glowColor = '256,120,40';}, row => {row.properties.glowColor = '255,40';},
+    row => {row.properties.glowIntensity = '.3';row.properties.spread = '90';},
+    row => {row.shape = 'rectangle';row.properties.glowIntensity = '0.3';},
+    row => {row.kind = 'shadow';row.shape = 'rectangle';row.properties = {glowIntensity: '0.3'};}
 ])('rejects invalid geometry or settings before writing', async mutate => {
     const data = await readLighting(root, 'one'), row = L.preset('torch', 6, 6), before = fs.readFileSync(file);mutate(row);
     await expect(saveObject(root, {mapId: 'one', operation: 'add', revision: data.revision, object: row})).rejects.toMatchObject({status: 400});

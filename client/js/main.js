@@ -284,6 +284,10 @@ define(['jquery', 'app', 'clientupdates'], function($, App, ClientUpdates) {
     		app.setGame(game);
 
             const preview = new URLSearchParams(window.location.search);
+            const glowMode = preview.get('emissiveGlow');
+            if (preview.get('previewClock') === '1' && (glowMode === '0' || glowMode === '1')) {
+                app.settings.setEmissiveGlowPreview(glowMode === '1');
+            }
             const proxyMode = preview.get('shadowProxies');
             const inspectShadows = proxyMode === '1' || proxyMode === '0';
             if (preview.get('previewClock') === '1' || inspectShadows) {

@@ -15,7 +15,7 @@
     let data, draft, selected = null, busy = false, loaded = false, booting, pending, fieldId = 0;
     let mapView, mapId, startPoint, creation = null, ghost = null, gesture, snap = true, previewEnabled = true, darkness = .65;
     let inspectorFields = [], cleanupPreview = () => {}, refreshPreview = () => {}, renderedView;
-    let previewBitmap, previewKey, previewObjects = 0;
+    let previewBitmap, previewGlowBitmap, previewKey, previewObjects = 0;
     const modeButtons = new Map();
     let collection;
     const dirty = () => !!collection?.count;
@@ -162,6 +162,27 @@
             }
             else form.append(el('p', 'Area lights fill their rectangle. Use a round light for projected shadows.', {className: 'field-hint'}));
             if (round) {
+                const glow = details(form, 'Source glow'), glowFields = grid(glow);
+                glow.open = Number(String(draft.properties.glowIntensity || 0).replace(',', '.')) > 0;
+                const glowToggle = field(glowFields, 'Glow', () => Number(String(draft.properties.glowIntensity || 0).replace(',', '.')) > 0 ? 'on' : '', value => {
+                    draft.properties.glowIntensity = value ? '0.3' : '0';
+                }, {choices: [['', 'Off'], ['on', 'On']], required: false});
+                const glowIntensity = property(glowFields, 'glowIntensity', 'Glow intensity', '0', {type: 'number', min: 0, max: 1, step: .05, hint: '0 turns source glow off. Ground illumination uses the light intensity above.'});
+                property(glowFields, 'glowRadius', 'Glow radius (pixels)', '16', {type: 'number', min: 1, max: 64, hint: 'Native artwork pixels; one map tile is ' + data.dimensions.tilewidth + ' pixels.'});
+                field(glowFields, 'Glow color', () => {
+                    const source = L.light(draft, data.dimensions.tilewidth), color = source.glowColor || source.color || {r: 255, g: 255, b: 255};
+                    return '#' + [color.r, color.g, color.b].map(v => Number(v).toString(16).padStart(2, '0')).join('');
+                }, value => {draft.properties.glowColor = [1, 3, 5].map(i => parseInt(value.slice(i, i + 2), 16)).join(',');}, {type: 'color', hint: 'Uses the light color until you choose a separate glow color.'});
+                button(glow, 'Use light color', () => {draft.properties.glowColor = null;touch();});
+                const glowNotice = el('p', 'Source glow supports a beam spread of 0 or 360 degrees. Choose Off to save a spotlight.', {className: 'field-hint'});
+                glow.append(glowNotice);
+                const syncGlow = () => {
+                    const spread = Number(draft.properties.spread || 0), spotlight = spread > 0 && spread < 360;
+                    glowIntensity.disabled = spotlight;
+                    Array.from(glowToggle.children).find(option => option.value === 'on').disabled = spotlight;
+                    glowNotice.hidden = !spotlight;
+                };
+                inspectorFields.push(syncGlow);syncGlow();
                 const advanced = details(form, 'Spotlight & falloff'), fields = grid(advanced);
                 property(fields, 'innerRadius', 'Inner radius (tiles)', '0', {type: 'number', min: 0, max: 64});
                 property(fields, 'spread', 'Beam spread (degrees)', '0', {type: 'number', min: 0, max: 360, hint: '0 lights every direction.'});
@@ -201,7 +222,8 @@
         return row;
     }
     function mountMap(id) {
-        cleanupPreview();mapView?.destroy();$('.lighting-map-host').replaceChildren();mapId = id;previewBitmap?.close();previewBitmap = null;
+        cleanupPreview();mapView?.destroy();$('.lighting-map-host').replaceChildren();mapId = id;
+        previewBitmap?.close();previewGlowBitmap?.close();previewBitmap = previewGlowBitmap = null;
         const interaction = {
             start(context) {
                 if (context.shiftKey) return false;
@@ -266,7 +288,9 @@
         renderedView = view;const key = JSON.stringify([view, previewObjects, darkness, previewEnabled]);
         refreshPreview(key, view);
         if (previewEnabled && previewBitmap && previewKey === JSON.stringify(view)) {
-            ctx.save();ctx.globalCompositeOperation = 'multiply';ctx.drawImage(previewBitmap, 0, 0, ctx.canvas.width, ctx.canvas.height);ctx.restore();
+            ctx.save();ctx.globalCompositeOperation = 'multiply';ctx.drawImage(previewBitmap, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            if (previewGlowBitmap) {ctx.globalCompositeOperation = 'screen';ctx.drawImage(previewGlowBitmap, 0, 0, ctx.canvas.width, ctx.canvas.height);}
+            ctx.restore();
         }
         for (const row of rows().concat(ghost ? [ghost] : []).filter(editable)) {
             const p = project(position(row)), active = row === draft || row === ghost;
@@ -301,9 +325,9 @@
         try {
             worker = new Worker('./lightingpreview-worker.js');
             worker.onmessage = event => {
-                inFlight = false;if (stopped) {event.data.bitmap?.close();return;}
+                inFlight = false;if (stopped) {event.data.bitmap?.close();event.data.glowBitmap?.close();return;}
                 if (event.data.error) note.textContent = 'Preview: ' + event.data.error + '. Check the selected object.';
-                else {previewBitmap?.close();previewBitmap = event.data.bitmap;previewKey = workerView;note.textContent = 'Live lighting preview · preview darkness does not change the map atmosphere.';}
+                else {previewBitmap?.close();previewGlowBitmap?.close();previewBitmap = event.data.bitmap;previewGlowBitmap = event.data.glowBitmap;previewKey = workerView;note.textContent = 'Live lighting and source glow · preview darkness does not change the map atmosphere.';}
                 if (queued) {const next = queued;queued = null;send(next.key, next.view);}
                 mapView?.draw();
             };

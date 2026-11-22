@@ -1141,6 +1141,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                       'playerShadow': this.game.app.settings.getRenderPlayerShadow(),
                       inspectShadowProxies: this.inspectShadowProxies === true,
                       'dynamicLights': this.game.app.settings.getEnableDynamicLights(),
+                      emissiveGlow: this.game.app.settings.getEmissiveGlowEnabled?.() !== false,
+                      reducedMotion: this.game.app.settings.getReducedMotion?.() === true,
                       'ambience': this.game.worldFx?.enabled('ambience', false) !== false,
                   }
               };

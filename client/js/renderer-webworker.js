@@ -15,6 +15,7 @@ let obstacles = [];
 let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask;
 let outdoorShadowAreas = [];
 let framePointShadows, actorPointShadows;
+let emissiveGlowPass, frameEmissionForeground, frameLightTime;
 
 let hasLoadedFont = false;
 let fontLoadPromise = null;
@@ -574,6 +575,7 @@ onmessage = (e) => {
             return;
         }
         composingWorld = true;
+        frameEmissionForeground = null;
         frameExtensions = e.data.extensions;
         const scene = e.data.scene;
         const lightOptions = e.data.renderData.find(layer => layer?.id === 'lights')?.options;
@@ -642,10 +644,10 @@ onmessage = (e) => {
         }
 
         let combinedCanvas = canvases["combined"];
-        framePointShadows = null;
         let combinedCtx = contexes["combined"];
 
         if (inspect && shadowSurface) {
+            framePointShadows = null;
             composingWorld = false;
             combinedCtx.drawImage(shadowSurface, 0, 0, combinedCanvas.width, combinedCanvas.height);
             if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
@@ -663,6 +665,9 @@ onmessage = (e) => {
         combinedCtx.globalCompositeOperation = 'multiply';
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'source-over';
+        drawEmissiveGlow(combinedCtx, lights, view?.cameraX || 0, view?.cameraY || 0,
+            {...lightOptions, scene, scale, time: frameLightTime, excludeWorld: true});
+        framePointShadows = null;
         drawWorldUi(combinedCtx, view);
         composingWorld = false;
         const foregroundView = {...view, lightIntensity: GLOBAL_LIGHT_INTENSITY};
@@ -967,7 +972,10 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
     const scenery = composingWorld ? rendererExtensions?.sorted?.(frameExtensions, {
         ...drawEntitiesData, viewportWidth: canvas.width, viewportHeight: canvas.height
     }) || [] : [];
-    if (framePointShadows) framePointShadows.foreground = () => pointForeground(drawEntitiesData, scenery);
+    let foreground;
+    const foregroundSurface = () => foreground ??= pointForeground(drawEntitiesData, scenery);
+    if (framePointShadows) framePointShadows.foreground = foregroundSurface;
+    if (composingWorld) frameEmissionForeground = foregroundSurface;
     let sceneryIndex = 0;
     const drawSceneryUntil = depth => {
         while (sceneryIndex < scenery.length && scenery[sceneryIndex].y <= depth) scenery[sceneryIndex++].draw(ctx);
@@ -1259,6 +1267,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     if (state?.cloudLight) drawFrameClouds(ctx, cameraX, cameraY, 1, 'source-over');
 
     const time = performance.now();
+    frameLightTime = time;
     // Panels share one screen-space direction sampled at the player's feet.
     // Reuse the visible emitters and the sky direction that this frame already drew.
     const samplePanels = composingWorld && time >= nextPanelSample;
@@ -1290,7 +1299,9 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
-            return inScene(lightSource) && lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
+            // Glow-only companions do not consume the ordinary-light budget.
+            return (lightSource.intensity ?? 1) > 0 && inScene(lightSource) &&
+                lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
         }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(drawSource);
     }
 
@@ -1316,6 +1327,85 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
             sources: {overhead: canvases.highEntities}});
     }
     ctx.restore();
+}
+
+// The preview uses the same source-only pass on a transparent surface. Its
+// coordinates and tilesize are resolution-scaled; glowRadius stays in art pixels.
+function drawEmissiveGlow(ctx, sources, cameraX, cameraY, options = {}) {
+    if (options.emissiveGlow === false || !Array.isArray(sources)) return 0;
+    const scene = options.scene;
+    const visible = sources.filter(source => source?.glowIntensity > 0 && lightInScene(source, scene));
+    if (!visible.length) return 0;
+    if (!self.EmissiveGlow) importScripts('emissive-glow-worker.js');
+    emissiveGlowPass ??= new self.EmissiveGlow.Pass();
+    const time = options.time ?? performance.now();
+    const animated = options.dynamicLights !== false && options.reducedMotion !== true;
+    const emitters = visible.map(source => {
+        if (!animated || source.animation !== 'fire') return source;
+        const flame = {...source};
+        fireAnimation(flame, time);
+        // Emission is independent of ordinary intensity: an existing tile light
+        // can opt into a local glow with a zero-intensity authored companion.
+        return {...source, glowIntensity: source.glowIntensity * (1 + .09 * flame.flamePulse)};
+    });
+    const scale = options.scale || 1;
+    ctx.save();
+    if (scale !== 1) ctx.scale(scale, scale);
+    if (boundedScene(scene)) clipToScene(ctx, scene, cameraX, cameraY);
+    const drawn = emissiveGlowPass.draw(ctx, emitters, {
+        cameraX, cameraY, width: ctx.canvas.width / scale, height: ctx.canvas.height / scale,
+        pixelScale: tilesize / 16,
+        mask: (mask, source, region) => subtractEmissiveOcclusion(mask, source, region, options)
+    });
+    ctx.restore();
+    return drawn;
+}
+
+function subtractEmissiveOcclusion(ctx, source, region, options) {
+    const shadow = source.shadow ?? DEFAULT_POINT_SHADOW_STRENGTH;
+    if (shadow > 0 && (options.shadows !== false || options.playerShadow !== false)) {
+        const pointPass = preparePointShadows(framePointShadows);
+        const radius = region.width / 2;
+        if (pointPass) {
+            // A glow may extend beyond a tiny ordinary light. Reuse its mask
+            // whenever that mask already covers the authored emission radius.
+            const shadowSource = radius > (source.radius || 1) * tilesize
+                ? {...source, radius: radius / tilesize} : source;
+            const mask = pointPass.pointMask(shadowSource, beamBounds(shadowSource));
+            if (mask) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = Math.min(1, shadow);
+                ctx.drawImage(mask.canvas, mask.x - region.worldX, mask.y - region.worldY);
+                ctx.globalAlpha = 1;
+            }
+        }
+        if (options.shadows !== false) {
+            const frame = pointPass?.pointFrame;
+            const independent = frame ? (frame.obstacles ??= obstacles.filter(p =>
+                !p.proxyOwner || !pointPass.ownsPointBlocker(p.proxyOwner, frame.scenery))) : obstacles;
+            const blockers = independent.filter(p => polygonIntersectsLight(p, source, radius));
+            if (blockers.length) {
+                ctx.save();
+                ctx.translate(source.x - radius - region.worldX, source.y - radius - region.worldY);
+                subtractShadows(ctx, {...source, radius: radius / tilesize, innerRadius: 0,
+                    intensity: 1, shadow, animation: undefined}, blockers, region.width, region.height);
+                ctx.restore();
+            }
+        }
+    }
+    if (!options.excludeWorld) return;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 1;
+    const foreground = frameEmissionForeground?.();
+    const overlaps = !foreground?.regions || foreground.regions.some(r =>
+        r.left < region.x + region.width && r.right > region.x && r.top < region.y + region.height && r.bottom > region.y);
+    const erase = canvas => {
+        if (!canvas) return;
+        ctx.drawImage(canvas, region.x, region.y, region.width, region.height,
+            0, 0, region.width, region.height);
+    };
+    if (overlaps) erase(foreground?.canvas);
+    erase(canvases.highEntities);
 }
 
 function updateAnimatedLightSource(lightSource, time) {

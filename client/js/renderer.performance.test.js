@@ -15,6 +15,7 @@ function setup() {
         ctx.createRadialGradient = ctx.createConicGradient = jest.fn(() => ({addColorStop: jest.fn()}));
         ctx.getImageData = jest.fn(() => ({data: new Uint8ClampedArray([254,173,2,255, 100,70,40,255, 72,196,248,255])}));
         ctx.putImageData = jest.fn();
+        ctx.getTransform = () => ({a: 1, d: 1, e: 0, f: 0});
         return ctx;
     }
     class Canvas {
@@ -30,6 +31,7 @@ function setup() {
         postMessage: message => {if (message.type === 'rendered') acknowledgements.push(now);}
     };
     vm.createContext(sandbox);
+    sandbox.importScripts = name => vm.runInContext(fs.readFileSync(path.join(__dirname, name), 'utf8'), sandbox);
     vm.runInContext(source, sandbox);
     const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, renderLightOverlay, updateAnimatedLightSource, scheduleNextFrame,
         addToImageCache, clearImageCache, clearTextCache, drawScaledImage, sceneDaylight, drawSceneWeather,
@@ -1145,4 +1147,110 @@ test('outdoor rectangles enable preview weather and sun only on the selected map
     worker.send(packet);
     expect(vm.runInContext('frameWeather', api)).toBeUndefined();
     expect(sky).toHaveBeenCalledTimes(1);
+});
+
+test('legacy maps and the comparison toggle do not load or allocate the emissive pass', () => {
+    const worker = setup();
+    worker.send(frame());
+    expect(worker.sandbox.self.EmissiveGlow).toBeUndefined();
+    worker.send({type: 'setLights', lights: [{x: 40, y: 40, intensity: 0, shadow: 0, glowIntensity: .3}]});
+    const packet = frame();
+    packet.renderData.find(layer => layer.id === 'lights').options.emissiveGlow = false;
+    const allocations = worker.allocations.length;
+    worker.canvases.combined.ctx.drawImage.mockClear();
+    worker.send(packet);
+    expect(worker.sandbox.self.EmissiveGlow).toBeUndefined();
+    expect(worker.allocations).toHaveLength(allocations);
+    expect(worker.canvases.combined.ctx.drawImage).toHaveBeenCalledTimes(3);
+});
+
+test('glow-only companions preserve the ordinary-light budget', () => {
+    const worker = setup(), ctx = worker.canvases.lighting.ctx;
+    worker.setPlayer({x: 32, y: 32});
+    const companions = Array.from({length: 100}, () => ({x: 40, y: 40, radius: 2, intensity: 0, glowIntensity: .3}));
+    const lamp = {x: 80, y: 40, radius: 3, intensity: .8, shadow: 0};
+    worker.renderLightOverlay([...companions, lamp], 0, 0, 1, 0, {darkness: .6}, [],
+        {shadows: false, playerShadow: false}, 'test', 0);
+    expect(ctx.drawImage).toHaveBeenCalledTimes(2); // The real lamp and the player's lantern.
+});
+
+test('emission follows multiply, precedes world UI and foreground, and excludes visible actors and overhead art', () => {
+    const worker = setup(), packet = frame(0, 0, 1, [{text: 'Lamp', x: 120, y: 120}]), events = [];
+    const ctx = worker.canvases.combined.ctx;
+    ctx.drawImage.mockImplementation(image => events.push({image, operation: ctx.globalCompositeOperation}));
+    ctx.fillRect.mockImplementation(() => events.push({foreground: true}));
+    vm.runInContext("rendererExtensions = {draw(layer,ctx){if(layer==='foreground')ctx.fillRect(1,2,3,4);}}", worker.sandbox);
+    worker.send({type: 'setLights', lights: [{x: 40, y: 40, intensity: 0, shadow: 0,
+        glowIntensity: .3, glowRadius: 18, animation: 'fire'}]});
+    worker.send(packet);
+    const glow = events[3], scratch = glow.image;
+    expect(events[2]).toEqual({image: worker.canvases.lighting, operation: 'multiply'});
+    expect(glow.operation).toBe('screen');
+    const ui = vm.runInContext('worldUiScratch.canvas', worker.sandbox);
+    expect(events[4].image).toBe(ui);
+    expect(events[5]).toEqual({foreground: true});
+    const exclusions = scratch.ctx.drawImage.mock.calls.map(([image]) => image);
+    expect(exclusions).toContain(worker.canvases.highEntities);
+    const foreground = vm.runInContext('pointForegroundScratch.canvas', worker.sandbox);
+    expect(exclusions).toContain(foreground);
+    expect(scratch).toMatchObject({width: 36, height: 36});
+    expect(exclusions).not.toContain(worker.canvases.text);
+    expect(ui.ctx.drawImage).toHaveBeenCalledWith(worker.canvases.text, 0, 0);
+    expect(ctx.scale).toHaveBeenCalledWith(3, 3);
+    const allocations = worker.allocations.length;
+    for (let i = 0; i < 60; i++) {worker.advance(i * 17); worker.send(packet);}
+    expect(worker.allocations).toHaveLength(allocations);
+    expect(vm.runInContext('emissiveGlowPass.sprites.size', worker.sandbox)).toBe(1);
+    expect(vm.runInContext('framePointShadows', worker.sandbox)).toBeNull();
+});
+
+test('emission clips to the selected scene and scales authored pixels in the map preview', () => {
+    const worker = setup(), output = new worker.Canvas(160, 100);
+    vm.runInContext('tilesize = 4', worker.sandbox);
+    const scene = {x: 1, y: 1, width: 4, height: 4};
+    const light = {x: 10, y: 12, intensity: 0, shadow: 0, glowIntensity: .3};
+    const drawn = worker.sandbox.drawEmissiveGlow(output.ctx, [light, {...light, x: 20}], 0, 0,
+        {scene, dynamicLights: false});
+    expect(drawn).toBe(1);
+    expect(output.ctx.rect).toHaveBeenCalledWith(4, 4, 16, 16);
+    expect(output.ctx.clip).toHaveBeenCalledTimes(1);
+    expect(output.ctx.drawImage.mock.lastCall.slice(1)).toEqual([0, 0, 32, 32, 6, 8, 8, 8]);
+});
+
+test('glow-only fire animates opacity independently and motion preferences freeze it without disabling emission', () => {
+    const worker = setup(), output = new worker.Canvas(160, 100), alpha = [];
+    output.ctx.drawImage.mockImplementation(() => alpha.push(output.ctx.globalAlpha));
+    const source = {x: 40, y: 40, intensity: 0, shadow: 0, glowIntensity: .3, animation: 'fire'};
+    for (const time of [0, 500]) {
+        output.ctx.globalAlpha = 1;
+        worker.sandbox.drawEmissiveGlow(output.ctx, [source], 0, 0, {time});
+    }
+    expect(alpha[0]).not.toBe(alpha[1]);
+    // Mock save/restore is inert, so reset opacity as a real restored context would.
+    for (const options of [{reducedMotion: true}, {dynamicLights: false}]) {
+        for (const time of [0, 500]) {
+            output.ctx.globalAlpha = 1;
+            worker.sandbox.drawEmissiveGlow(output.ctx, [source], 0, 0, {...options, time});
+            expect(alpha.at(-1)).toBe(.3);
+        }
+    }
+    expect(source).not.toHaveProperty('flamePulse');
+    expect(source.intensity).toBe(0);
+    expect(vm.runInContext('emissiveGlowPass.sprites.size', worker.sandbox)).toBe(1);
+});
+
+test('emission reuses current point-shadow masks and extends their radius only when needed', () => {
+    const worker = setup(), output = new worker.Canvas(160, 100), shadow = new worker.Canvas(64, 64);
+    const pointMask = jest.fn(() => ({canvas: shadow, x: 24, y: 24}));
+    worker.sandbox.testPointPass = {pointFrame: {}, pointMask};
+    vm.runInContext('framePointShadows = {pass: testPointPass}', worker.sandbox);
+    const source = {x: 40, y: 40, radius: 1, shadow: .8, glowIntensity: .3, glowRadius: 32};
+    worker.sandbox.drawEmissiveGlow(output.ctx, [source], 0, 0, {shadows: false, playerShadow: true});
+    expect(pointMask).toHaveBeenCalledWith(expect.objectContaining({radius: 2}), null);
+    const scratch = output.ctx.drawImage.mock.lastCall[0];
+    expect(scratch.ctx.drawImage).toHaveBeenCalledWith(shadow, 16, 16);
+    expect(source.radius).toBe(1);
+    pointMask.mockClear();
+    worker.sandbox.drawEmissiveGlow(output.ctx, [source], 0, 0, {shadows: false, playerShadow: false});
+    expect(pointMask).not.toHaveBeenCalled();
 });

@@ -107,3 +107,29 @@ test('keyboard moves stay within map bounds and shrinking radius keeps falloff v
     L.move(row, {x: -10, y: 100}, dimensions);expect(L.position(row, dimensions)).toEqual({x: 0, y: 29.9375});
     row.properties.innerRadius = '12';L.setRadius(row, 3);expect(row.properties).toMatchObject({radius: '3', innerRadius: '3'});
 });
+
+test('source glow defaults off, supports inherited colors and persists its separate settings', async () => {
+    const h = await setup();
+    const set = (name, value) => {const input = h.field(name);input.value = value;input.oninput();};
+    expect(h.field('Glow').value).toBe('');expect(h.field('Glow radius (pixels)').value).toBe('16');
+    expect(h.field('Glow color').value).toBe(h.field('Color').value);
+    set('Glow', 'on');expect(h.field('Glow intensity').value).toBe('0.3');
+    set('Glow radius (pixels)', '24');set('Glow color', '#ff8800');
+    await h.nodes['.lighting-save'].onclick();
+    expect(h.payloads[0].operations[0].object.properties).toMatchObject({glowIntensity: '0.3', glowRadius: '24', glowColor: '255,136,0'});
+    h.button('Use light color').onclick();set('Glow', '');
+    await h.nodes['.lighting-save'].onclick();
+    expect(h.payloads[1].operations[0].object.properties).toMatchObject({glowIntensity: '0', glowRadius: '24', glowColor: null});
+});
+
+test('spotlights explain the glow limitation and keep Off available', async () => {
+    const h = await setup(), spread = h.field('Beam spread (degrees)');
+    spread.value = '90';spread.oninput();
+    expect(h.field('Glow intensity').disabled).toBe(true);
+    expect(h.field('Glow').children.find(option => option.value === 'on').disabled).toBe(true);
+    h.field('Glow').value = '';h.field('Glow').oninput();
+    await h.nodes['.lighting-save'].onclick();
+    expect(h.payloads[0].operations[0].object.properties).toMatchObject({spread: '90', glowIntensity: '0'});
+    spread.value = '360';spread.oninput();
+    expect(h.field('Glow intensity').disabled).toBe(false);
+});
