@@ -37,7 +37,7 @@ function setup(reducedMotion = false) {
 
 function core(context, scale) {
     return context.fillRect.mock.calls.find(([x, y, width, height]) =>
-        width === 2 * scale && height === 2 * scale && x > 100 && y > 100);
+        width === scale && height === scale && x > 100 && y > 100);
 }
 
 test('configuration supplies the worker without creating an overlay or animation loop', () => {

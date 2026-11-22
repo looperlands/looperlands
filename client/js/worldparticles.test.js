@@ -77,9 +77,14 @@ test('ember cores use normal compositing and stay strong at noon', () => {
     expect(noon.at(-1).color[3]).toBeGreaterThan(night.at(-1).color[3]);
 });
 
-test('fireflies retain their night-only additive glow', () => {
+test('fireflies retain their night-only additive glow with smaller, quieter cores', () => {
     expect(draw('fireflies', 1)).toHaveLength(0);
-    expect(draw('fireflies', 0).at(-1).blend).toBe('lighter');
+    const night = draw('fireflies', 0);
+    expect(night.at(-1).blend).toBe('lighter');
+    // Native one-pixel center and five-pixel radius, both scaled by display zoom.
+    expect(night.at(-1).rect.slice(2)).toEqual([2, 2]);
+    expect(night[0].rect.slice(2)).toEqual([20, 20]);
+    expect(night.at(-1).color[3]).toBeLessThan(.8);
 });
 
 test('night opacity dims ordinary particles while retaining configurable luminous effects', () => {

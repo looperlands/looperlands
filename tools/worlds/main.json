@@ -13,7 +13,7 @@
       "particles": [
         {
           "type": "fireflies",
-          "count": 18
+          "count": 10
         },
         {
           "type": "pollen",
