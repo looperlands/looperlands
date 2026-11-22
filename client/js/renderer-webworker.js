@@ -380,6 +380,7 @@ let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
 let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
 let framePending = false, nextFrameTime;
+const drawWaiters = [];
 let frameWeather, frameWeatherScene, frameSky, nextPanelSample = 0, panelShadow, pendingPanelShadow;
 const FRAME_INTERVAL = 1000 / 60;
 function scheduleNextFrame() {
@@ -404,6 +405,15 @@ function scheduleNextFrame() {
         postMessage(message);
     }
     requestAnimationFrame(ready);
+}
+
+function finishDraw() {
+    while (drawWaiters.length) {
+        const port = drawWaiters.pop();
+        port.postMessage(true);
+        port.close();
+    }
+    scheduleNextFrame();
 }
 
 function resizeWorkerLayers(scale) {
@@ -537,7 +547,9 @@ onmessage = (e) => {
         });
     }
 
-    if (e.data.type === "setTileset") {
+    if (e.data.type === 'notifyOnDraw') {
+        drawWaiters.push(e.ports[0]);
+    } else if (e.data.type === "setTileset") {
         const generation = ++tilesetGeneration;
         const {requestId, src} = e.data;
         const previousTileset = tileset;
@@ -651,7 +663,7 @@ onmessage = (e) => {
             composingWorld = false;
             combinedCtx.drawImage(shadowSurface, 0, 0, combinedCanvas.width, combinedCanvas.height);
             if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
-            scheduleNextFrame();
+            finishDraw();
             return;
         }
 
@@ -690,7 +702,7 @@ onmessage = (e) => {
         // Cursor and DOM HUD do not participate in the camera shake.
         if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
 
-        scheduleNextFrame();
+        finishDraw();
     } else if (e.data.type === "setCanvasSize") {
 
         for (const id of ['combined', 'text']) {

@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics', 'fishingcatch', 'worldtime-worker'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics, FishingCatch, WorldTime) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consumablehud', 'healthbarfeedback', 'dialoguetext', 'fieldguide', 'playername', 'questcelebration', 'progressioncards', 'equipmenticon', 'cardartwork', '../../shared/js/dialogueformat', 'growthanalytics', 'fishingcatch', 'worldtime-worker', 'diagonalwipe'], function ($, Storage, SocialChat, EventBoard, PointsStore, ConsumableHud, HealthBarFeedback, DialogueText, FieldGuide, PlayerName, QuestCelebration, ProgressionCards, EquipmentIcon, CardArtwork, DialogueFormat, GrowthAnalytics, FishingCatch, WorldTime, playDiagonalWipe) {
 
     var App = Class.extend({
         init: function () {
@@ -237,8 +237,12 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
             }, 1000);
         },
 
+        isMapTransitionVisible: function () {
+            return !!this.mapTransition && !this.mapTransition.overlay.hidden;
+        },
+
         setMapTransition: function (active, message = 'Loading map…') {
-            if (!active && (!this.mapTransition || this.mapTransition.overlay.hidden)) return;
+            if (!active && !this.isMapTransitionVisible()) return;
             if (!this.mapTransition) {
                 const overlay = document.createElement('div');
                 overlay.id = 'map-transition';
@@ -248,6 +252,11 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 overlay.setAttribute('aria-modal', 'true');
                 overlay.setAttribute('aria-label', 'Map travel');
                 overlay.setAttribute('aria-describedby', 'map-transition-status');
+                const canvas = document.createElement('canvas');
+                canvas.id = 'door-wipe';
+                canvas.hidden = true;
+                canvas.setAttribute('aria-hidden', 'true');
+                document.getElementById('canvas').appendChild(canvas);
                 const panel = document.createElement('div');
                 panel.className = 'map-transition-panel';
                 const status = document.createElement('p');
@@ -278,7 +287,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                     }
                 });
                 document.body.appendChild(overlay);
-                this.mapTransition = {overlay, status, retry, chooseCharacter, container: document.getElementById('container')};
+                this.mapTransition = {overlay, canvas, panel, status, retry, chooseCharacter, container: document.getElementById('container')};
             }
             const transition = this.mapTransition;
             if (active) {
@@ -290,6 +299,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 transition.status.setAttribute('role', 'status');
                 transition.status.setAttribute('aria-live', 'polite');
                 transition.status.textContent = message;
+                transition.panel.hidden = !message;
+                transition.overlay.setAttribute('data-loading', '');
                 transition.retry.hidden = true;
                 transition.chooseCharacter.hidden = true;
                 transition.retry.onclick = null;
@@ -301,20 +312,31 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
                 if (opening || document.activeElement === transition.retry || document.activeElement === transition.chooseCharacter) {
                     transition.overlay.focus({preventScroll: true});
                 }
-            } else {
+                if (opening) {
+                    transition.canvas.hidden = false;
+                    transition.covered = playDiagonalWipe(transition.canvas, this.game.renderer, false, this.settings.getReducedMotion());
+                }
+                return transition.covered;
+            }
+
+            transition.panel.hidden = true;
+            return playDiagonalWipe(transition.canvas, this.game.renderer, true, this.settings.getReducedMotion()).then(() => {
+                const restoreFocus = transition.overlay.contains(document.activeElement);
                 transition.overlay.hidden = true;
+                transition.canvas.hidden = true;
                 transition.retry.onclick = null;
                 if (transition.container) {
-                    transition.container.inert = transition.previousInert;
+                    transition.container.inert = transition.previousInert || $('body').hasClass('death');
                     transition.container.removeAttribute('aria-busy');
                 }
-                if (transition.previousFocus?.isConnected) transition.previousFocus.focus({preventScroll: true});
-            }
+                if (restoreFocus && transition.previousFocus?.isConnected) transition.previousFocus.focus({preventScroll: true});
+            });
         },
 
         showMapTransitionFailure: function (retryCallback, message = 'Could not load this map. Try again to continue.') {
             this.setMapTransition(true, message);
             const transition = this.mapTransition;
+            transition.overlay.removeAttribute('data-loading');
             transition.status.setAttribute('role', 'alert');
             transition.status.setAttribute('aria-live', 'assertive');
             transition.chooseCharacter.hidden = false;
@@ -1147,7 +1169,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'pointsstore', 'consuma
         },
 
         hideDeath: function () {
-            $('#container, #intro').prop('inert', false);
+            $('#intro').prop('inert', false);
+            $('#container').prop('inert', this.isMapTransitionVisible());
             $('#death').attr('aria-hidden', 'true').prop('inert', true).attr('aria-busy', 'false');
             document.getElementById('respawn').blur();
             $('body').removeClass('death');

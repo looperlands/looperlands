@@ -75,7 +75,7 @@ function setup() {
         sandbox.onmessage({data: {type: 'setCanvas', id, canvas: canvases[id]}});
     }
     return {...api, canvases, allocations, operations, barDraw, barInstances,
-        send: data => sandbox.onmessage({data})};
+        send: (data, ports) => sandbox.onmessage({data, ports})};
 }
 
 function frame({scale = 3, cameraX = 10.6, cameraY = 20.1, hp = 100, time = 0,
@@ -105,6 +105,19 @@ function uiSurface(worker) {
     return worker.canvases.combined.ctx.drawImage.mock.calls.map(call => call[0])
         .find(canvas => canvas && !known.has(canvas));
 }
+
+test('a draw request is acknowledged once the worker composites the destination', () => {
+    const worker = setup(), port = {postMessage: jest.fn(), close: jest.fn()};
+    worker.send({type: 'notifyOnDraw'}, [port]);
+    worker.setExtensions({ready: () => false});
+    worker.send(frame());
+    expect(port.postMessage).not.toHaveBeenCalled();
+    worker.setExtensions(null);
+    worker.send(frame());
+    worker.send(frame());
+    expect(port.postMessage).toHaveBeenCalledTimes(1);
+    expect(port.close).toHaveBeenCalledTimes(1);
+});
 
 test('world labels stay below lighting and overhead scenery while bars remain above lighting', () => {
     const worker = setup();
