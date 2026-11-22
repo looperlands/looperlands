@@ -661,6 +661,7 @@ onmessage = (e) => {
         const shake = e.data.combatFeedback?.shake;
         if (shake) combinedCtx.translate(shake.x * scale, shake.y * scale);
         combinedCtx.drawImage(canvases.entities, 0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.drawImage(canvases.text, 0, 0);
         combinedCtx.drawImage(canvases.highEntities, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'multiply';
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
@@ -700,7 +701,6 @@ onmessage = (e) => {
         }
         terrainCache.clear();
         textFrameKey = undefined;
-        hasWorldText = false;
         resizeWorkerLayers(renderScale);
     } else if (e.data.type === "setCanvas") {
         let id = e.data.id;
@@ -749,7 +749,7 @@ function renderCursor(renderData, clear = true) {
 
 const labelCache = new Map();
 const MAX_LABEL_BYTES = 2 * 1024 * 1024;
-let labelBytes = 0, textFrameKey, hasWorldText = false;
+let labelBytes = 0, textFrameKey;
 function clearTextCache() {
     for (const label of labelCache.values()) label.canvas.width = label.canvas.height = 0;
     labelCache.clear(); labelBytes = 0; textFrameKey = undefined;
@@ -797,13 +797,11 @@ function drawText(renderData, clear = true) {
         if (key === textFrameKey) return;
         textFrameKey = key;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (renderData.id === 'text') hasWorldText = false;
     }
     ctx.save();
     for (const entry of textData) {
         const {text, x, y} = entry;
         if (!text || !Number.isFinite(x) || !Number.isFinite(y)) continue;
-        if (clear && renderData.id === 'text') hasWorldText = true;
         const grid = entry.pixelAligned ? scale : 1;
         const screenX = Math.round((x - cameraX * scale) / grid) * grid;
         const screenY = Math.round((y - cameraY * scale) / grid) * grid;
@@ -845,14 +843,12 @@ function drawWorldUi(ctx, view) {
         mobHealthBars.draw(bars.ctx, healthBars, view || {}, view?.healthTime || 0, view?.reducedMotion);
         bars.ctx.restore();
     }
-    if (!hasWorldText && !healthBars.length) return;
+    if (!healthBars.length) return;
 
     const {width, height} = canvases.combined;
     const ui = scratchCanvas(worldUiScratch, width, height);
-    if (healthBars.length) ui.ctx.drawImage(bars.canvas, 0, 0, nativeWidth, nativeHeight, 0, 0, width, height);
-    if (hasWorldText) ui.ctx.drawImage(canvases.text, 0, 0);
-    // Mask a fresh copy: retained names must survive moving overhead scenery.
-    // Opaque pixels hide UI; partial alpha attenuates it. Foreground art follows normally.
+    ui.ctx.drawImage(bars.canvas, 0, 0, nativeWidth, nativeHeight, 0, 0, width, height);
+    // Health bars remain readable after lighting, but overhead scenery still occludes them.
     ui.ctx.globalCompositeOperation = 'destination-out';
     ui.ctx.drawImage(canvases.highEntities, 0, 0, width, height);
     ui.ctx.globalCompositeOperation = 'source-over';
