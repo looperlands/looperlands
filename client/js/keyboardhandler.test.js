@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-test('arrow keys in focused chat history do not start player movement', () => {
-    const history = { tagName: 'DIV', closest: selector => selector === '#global' ? history : null };
+test.each(['#global', '#map-transition'])('arrow keys in %s do not start player movement', region => {
+    const history = { tagName: 'DIV', closest: selector => selector.split(', ').includes(region) ? history : null };
     const document = { activeElement: history, addEventListener: jest.fn() };
     const setInterval = jest.fn();
     const source = fs.readFileSync(path.join(__dirname, 'keyboardhandler.js'), 'utf8');

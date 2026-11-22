@@ -50,12 +50,13 @@ function entrance(dest, hour = 12) {
     const axios = {get: jest.fn(() => Promise.resolve({data: true})),
         post: jest.fn(() => Promise.resolve({status: 200, data: {sessionId: 'next'}}))};
     const window = {location: {}, open: jest.fn(), sessionStorage: {setItem: jest.fn()}};
-    let stop;
+    let stop, visible = false;
     Object.assign(game, {
         getWorldTime: () => at(hour), showNotification: jest.fn(), travelToMap: jest.fn(),
         handleScene: jest.fn(), isItemAt: () => false, updatePos: jest.fn(),
+        app: {isMapTransitionVisible: () => visible, setMapTransition: jest.fn(active => {visible = active;})},
         map: {isDoor: () => true, getDoorDestination: () => dest, getCurrentTrigger: () => undefined},
-        player: {hasTarget: () => false, forEachAttacker: jest.fn(),
+        player: {gridX: 10, gridY: 20, hasTarget: () => false, forEachAttacker: jest.fn(),
             onStopPathing: callback => {stop = callback;}},
     });
     // Register the real stop-pathing callback without connecting to a live server.
@@ -117,20 +118,55 @@ test('closed hours prevent HTTP redirects and fall back to the general gate mess
     expect(game.showNotification).toHaveBeenCalledWith('Come back tonight.');
 });
 
-test('local portals teleport only inside their opening range', () => {
-    const {game, stop} = entrance({x: 30, y: 40, portal: true, timeRange: '08:00-18:00'});
-    Object.assign(game.player, {setGridPosition: jest.fn(), turnTo: jest.fn()});
+test.each([true, false])('local door travel moves the player under cover and waits for a drawn frame (portal=%s)', async portal => {
+    const {game, stop} = entrance({x: 30, y: 40, portal, timeRange: '08:00-18:00'});
+    Object.assign(game.player, {cancelPath: jest.fn(), checkAreaExit: jest.fn(), turnTo: jest.fn(),
+        setGridPosition(x, y) {this.gridX = x; this.gridY = y;}});
+    let cover, draw;
+    const covered = new Promise(resolve => {cover = resolve;});
+    const drawn = new Promise(resolve => {draw = resolve;});
+    const setOverlay = game.app.setMapTransition.getMockImplementation();
+    game.app.setMapTransition.mockImplementation(active => {setOverlay(active); return active ? covered : undefined;});
     Object.assign(game, {
-        client: {sendTeleport: jest.fn()}, renderer: {}, assignBubbleTo: jest.fn(),
+        client: {sendTeleport: jest.fn()}, renderer: {whenNextFrameDrawn: () => drawn}, assignBubbleTo: jest.fn(),
+        registerEntityPosition: jest.fn(), unregisterEntityPosition: jest.fn(), handleTrigger: jest.fn(),
+        canUseCenteredCamera: () => true, focusPlayer: jest.fn(), resetZone: jest.fn(),
         updatePlateauMode: jest.fn(), audioManager: {playSound: jest.fn(), updateMusic: jest.fn()},
     });
+    game.map.getCurrentTrigger = player => player.gridX === 10 ? {id: 'source'} : {id: 'arrival'};
+    const travel = jest.spyOn(game, 'travelThroughLocalDoor');
     stop();
+    stop();
+    expect(travel).toHaveBeenCalledTimes(1);
+    expect(game.client.sendTeleport).not.toHaveBeenCalled();
+    expect(game.handleTrigger).not.toHaveBeenCalled();
+    cover();
+    await new Promise(setImmediate);
     expect(game.client.sendTeleport).toHaveBeenCalledWith(30, 40);
-    expect(game.audioManager.playSound).toHaveBeenCalledWith('teleport');
-    game.client.sendTeleport.mockClear();
+    expect(game.handleTrigger).toHaveBeenCalledWith({id: 'arrival'}, game.player);
+    expect(game.app.isMapTransitionVisible()).toBe(true);
+    expect(game.audioManager.playSound.mock.calls).toEqual(portal ? [['teleport']] : []);
+    expect(game.resetZone).toHaveBeenCalledTimes(portal ? 0 : 1);
+    draw();
+    await travel.mock.results[0].value;
+    expect(game.app.isMapTransitionVisible()).toBe(false);
+    game.player.setGridPosition(10, 20);
     game.getWorldTime = () => at(18);
     stop();
+    expect(travel).toHaveBeenCalledTimes(1);
+    expect(game.client.sendTeleport).toHaveBeenCalledTimes(1);
+});
+
+test('a server correction during a local wipe keeps the new position and releases the overlay', async () => {
+    const {game, stop} = entrance({x: 30, y: 40, portal: true});
+    game.player.cancelPath = jest.fn();
+    game.client = {sendTeleport: jest.fn()};
+    const travel = jest.spyOn(game, 'travelThroughLocalDoor');
+    stop();
+    game.player.gridX = 11;
+    await travel.mock.results[0].value;
     expect(game.client.sendTeleport).not.toHaveBeenCalled();
+    expect(game.app.isMapTransitionVisible()).toBe(false);
 });
 
 test('opening hours do not bypass a failed level gate', () => {

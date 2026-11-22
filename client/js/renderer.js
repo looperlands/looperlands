@@ -137,6 +137,24 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 return this.tilesetLoad?.promise || Promise.resolve(this.tileset);
             },
 
+            whenNextFrameDrawn: function() {
+                // A regular 'rendered' tick can also mean the worker skipped drawing
+                // while assets were loading. Wait for a composite after this request.
+                const {port1, port2} = new MessageChannel();
+                return new Promise((resolve, reject) => {
+                    const timer = setTimeout(() => {
+                        port1.close();
+                        reject(new Error('Timed out waiting for a rendered frame'));
+                    }, 20000);
+                    port1.onmessage = () => {
+                        clearTimeout(timer);
+                        port1.close();
+                        resolve();
+                    };
+                    this.worker.postMessage({type: 'notifyOnDraw'}, [port2]);
+                });
+            },
+
             handleTilesetReady: function(data) {
                 const load = this.tilesetLoad;
                 if (!load || load.requestId !== data.requestId) return;

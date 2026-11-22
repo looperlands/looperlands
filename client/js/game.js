@@ -6355,6 +6355,57 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 return this.mapTransition.start(destination);
             },
 
+            async travelThroughLocalDoor(dest) {
+                const player = this.player, map = this.map;
+                const {gridX, gridY} = player;
+                this.keyboardHandler?.handleBlur();
+                this.touchListener?.reset();
+                player.cancelPath();
+                await this.app.setMapTransition(true, '');
+                try {
+                    // The source socket stays live. A death or server correction
+                    // during the cover takes precedence over the pending door.
+                    if (this.disconnected || player.isDead || this.player !== player || this.map !== map ||
+                        player.gridX !== gridX || player.gridY !== gridY) return;
+
+                    this.unregisterEntityPosition(player);
+                    player.setGridPosition(dest.x, dest.y);
+                    player.nextGridX = dest.x;
+                    player.nextGridY = dest.y;
+                    this.registerEntityPosition(player);
+                    this.handleScene(player);
+                    player.turnTo(dest.orientation);
+                    this.client.sendTeleport(dest.x, dest.y);
+
+                    if (this.renderer.mobile && dest.cameraX && dest.cameraY) {
+                        this.camera.setGridPosition(dest.cameraX, dest.cameraY);
+                        this.resetZone();
+                    } else if (dest.portal) {
+                        this.assignBubbleTo(player);
+                    } else {
+                        if (this.canUseCenteredCamera()) this.focusPlayer();
+                        else this.camera.focusEntity(player);
+                        this.resetZone();
+                    }
+                    player.forEachAttacker(attacker => {
+                        attacker.disengage();
+                        attacker.idle();
+                    });
+                    this.updatePlateauMode();
+                    if (this.renderer.mobile || this.renderer.tablet) this.renderer.clearScreen(this.renderer.context);
+                    if (dest.portal) this.audioManager.playSound('teleport');
+                    this.audioManager.updateMusic();
+                    player.checkAreaExit();
+                    const trigger = map.getCurrentTrigger(player);
+                    if (trigger) this.handleTrigger(trigger, player);
+                    await this.renderer.whenNextFrameDrawn();
+                } catch (error) {
+                    console.error('[map] Local door transition failed', error);
+                } finally {
+                    await this.app.setMapTransition(false);
+                }
+            },
+
             pauseForMapTransition: function () {
                 this.cancelAvatarAppearance?.(this.player);
                 if (this.player.isFishing) this.stopFishing();
@@ -7668,56 +7719,17 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         if (!self.player.hasTarget() && self.map.isDoor(x, y)) {
                             var dest = self.map.getDoorDestination(x, y);
                             var _self = self;
+                            const doorMap = self.map, player = self.player;
 
                             function goInside() {
                                 // Ownership/trigger requests may finish after the opening window ends.
+                                if (self.app.isMapTransitionVisible() || self.map !== doorMap || self.player !== player ||
+                                    player.isDead || self.disconnected || player.gridX !== x || player.gridY !== y) return;
                                 if (!_self.canEnterDoorByTime(dest)) return;
                                 if (dest.map !== undefined) {
                                     _self.travelToMap(dest);
                                 } else {
-                                    _self.player.setGridPosition(dest.x, dest.y);
-                                    _self.player.nextGridX = dest.x;
-                                    _self.player.nextGridY = dest.y;
-                                    _self.handleScene(_self.player);
-
-                                    _self.player.turnTo(dest.orientation);
-                                    _self.client.sendTeleport(dest.x, dest.y);
-
-                                    if (_self.renderer.mobile && dest.cameraX && dest.cameraY) {
-                                        _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
-                                        _self.resetZone();
-                                    } else {
-                                        if (dest.portal) {
-                                            _self.assignBubbleTo(_self.player);
-                                        } else {
-                                            if (_self.canUseCenteredCamera()) {
-                                                _self.focusPlayer();
-                                            } else {
-                                                _self.camera.focusEntity(_self.player);
-                                            }
-                                            _self.resetZone();
-                                        }
-                                    }
-
-                                    _self.player.forEachAttacker(function (attacker) {
-                                        attacker.disengage();
-                                        attacker.idle();
-                                    });
-
-                                    _self.updatePlateauMode();
-
-                                    if (_self.renderer.mobile || _self.renderer.tablet) {
-                                        // When rendering with dirty rects, clear the whole screen when entering a door.
-                                        _self.renderer.clearScreen(_self.renderer.context);
-                                    }
-
-                                    if (dest.portal) {
-                                        _self.audioManager.playSound("teleport");
-                                    }
-
-                                    if (!_self.player.isDead) {
-                                        _self.audioManager.updateMusic();
-                                    }
+                                    _self.travelThroughLocalDoor(dest);
                                 }
                             }
 
@@ -7735,7 +7747,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     axios.get(trUrl).then(function (response) {
                                         if ((response.data === true && !inverted) || (response.data === false && inverted)) {
                                             goInside();
-                                            _self.updatePos(self.player);
                                         } else {
                                             _self.showNotification(dest.trigger_message ? dest.trigger_message : (dest.message ? dest.message : "This entrance is currently inactive."));
                                         }
@@ -7746,13 +7757,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                                     });
                                 } else {
                                     goInside();
-                                    _self.updatePos(self.player);
                                 }
                             }
 
                             if (self.storage?.data?.localAllowAllDoors === true) {
                                 if (dest.http_redirect !== undefined) window.open(dest.http_redirect, '_blank');
-                                else {goInside(); _self.updatePos(self.player);}
+                                else goInside();
                             } else if (!_self.canEnterDoorByTime(dest)) {
                                 _self.doorCheck = false;
                             } else if (dest.nft !== undefined) {
@@ -7852,9 +7862,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                         self.updatePos(self.player);
 
-                        if (self.map.getCurrentTrigger(self.player)) {
-                            self.handleTrigger(self.map.getCurrentTrigger(self.player), self.player);
-                        }
+                        const trigger = self.map.getCurrentTrigger(self.player);
+                        if (trigger && !self.app.isMapTransitionVisible()) self.handleTrigger(trigger, self.player);
 
                     });
 

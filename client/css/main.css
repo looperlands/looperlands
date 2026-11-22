@@ -30,7 +30,6 @@ body {
     justify-content: center;
     box-sizing: border-box;
     padding: 24px;
-    background: rgba(20, 17, 25, 0.22);
     color: #f5e5c9;
     font: 16px/1.5 'GraphicPixel', sans-serif;
     text-align: center;
@@ -38,6 +37,14 @@ body {
     touch-action: none;
 }
 #map-transition[hidden], #map-transition button[hidden], #map-transition a[hidden] { display: none; }
+#door-wipe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
 #map-transition .map-transition-panel {
     box-sizing: border-box;
     max-width: 320px;
@@ -46,6 +53,14 @@ body {
     border-image: url('../img/common/panel.png') 12 fill / 6px / 0 round;
     image-rendering: pixelated;
     overflow-wrap: anywhere;
+}
+/* Short trips finish without flashing a loading panel over the wipe. */
+#map-transition[data-loading] .map-transition-panel {
+    animation: map-loading-status 800ms step-end;
+}
+@keyframes map-loading-status {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 #map-transition-status {
     margin: 0;
@@ -179,7 +194,7 @@ body {
 
 #canvas {cursor:auto;}
 #canvas.game-cursor-active > canvas {cursor:none;}
-#canvas {touch-action:none;}
+#canvas {position:relative;touch-action:none;}
 
 #foreground {
     -webkit-tap-highlight-color:rgba(0,0,0,0);

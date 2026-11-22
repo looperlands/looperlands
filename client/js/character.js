@@ -140,6 +140,10 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
     	walk: function(orientation) {
     	    this.setOrientation(orientation);
     	    this.animate("walk", this.walkSpeed);
+            this.checkAreaExit();
+        },
+
+        checkAreaExit: function() {
             if(this.leave_callback && !this.leave_callback_area.contains(this)) {
                 this.leave_callback();
                 this.leave_callback = null;
@@ -359,11 +363,7 @@ define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Trans
                 this.stop_pathing_callback(this.gridX, this.gridY);
             }
 
-            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
-                this.leave_callback();
-                this.leave_callback = null;
-                this.leave_callback_area = null;
-            }
+            this.checkAreaExit();
         },
     
         onBeforeStep: function(callback) {

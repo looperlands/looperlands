@@ -241,7 +241,7 @@ class KeyBoardHandler {
 
     inputHasFocus() {
         const elem = document.activeElement;
-        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea" || elem.isContentEditable || elem.closest('#global'));
+        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea" || elem.isContentEditable || elem.closest('#global, #map-transition'));
     }
 
     hasOpenPanel() {

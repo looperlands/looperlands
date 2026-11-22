@@ -22,6 +22,7 @@ class GamePadListener {
     }
 
     update() {
+        if (this.game.app.isMapTransitionVisible()) return;
         if (!this.gamepad) {
             const gamepad = navigator.getGamepads ? navigator.getGamepads()[0] : null;
             if (gamepad) {

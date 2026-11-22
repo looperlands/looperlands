@@ -7,7 +7,8 @@ function fixture() {
     let MapTransition;
     const maps = [], storages = [], order = [];
     const nextClient = () => ({disable: jest.fn()});
-    const game = {sessionId: 'old', client: nextClient(), renderer: {upscaledRendering: true, whenTilesetReady: jest.fn().mockResolvedValue()},
+    const game = {sessionId: 'old', client: nextClient(), renderer: {upscaledRendering: true,
+        whenTilesetReady: jest.fn().mockResolvedValue(), whenNextFrameDrawn: jest.fn().mockResolvedValue()},
         app: {setMapTransition: jest.fn(), showMapTransitionFailure: jest.fn()},
         pauseForMapTransition: jest.fn(), tick: jest.fn(), initAchievements: jest.fn(),
         resetForMapTransition: jest.fn((map, storage) => {
@@ -67,6 +68,32 @@ test('a failed map download leaves the old session intact and explicit retry res
     await turn();
     f.transition.complete();
     expect(await retry).toBe(true);
+});
+
+test('a fast map waits for black before adoption and for a drawn destination frame before revealing', async () => {
+    const {game, transition, maps} = fixture();
+    let cover, draw, reveal;
+    game.app.setMapTransition.mockImplementation(active => new Promise(resolve => {
+        if (active) cover = resolve;
+        else reveal = resolve;
+    }));
+    game.renderer.whenNextFrameDrawn.mockReturnValue(new Promise(resolve => {draw = resolve;}));
+    const trip = transition.start({map: 'destination'});
+    maps[0].resolve();
+    await turn();
+    expect(game.resetForMapTransition).not.toHaveBeenCalled();
+    cover();
+    await turn();
+    expect(game.connect).toHaveBeenCalledTimes(1);
+    transition.complete();
+    expect(game.tick).toHaveBeenCalledTimes(1);
+    expect(game.app.setMapTransition).not.toHaveBeenCalledWith(false);
+    draw();
+    await turn();
+    expect(game.app.setMapTransition).toHaveBeenLastCalledWith(false);
+    expect(transition.start({map: 'again'})).toBe(trip);
+    reveal();
+    expect(await trip).toBe(true);
 });
 
 test('a lost session response rotates its possibly consumed ticket using the still-live original session', async () => {

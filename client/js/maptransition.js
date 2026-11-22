@@ -11,7 +11,7 @@ define(['map', 'storage'], function (Mapx, Storage) {
         }
 
         start(destination) {
-            if (this.active) return this.pending || Promise.resolve(false);
+            if (this.pending || this.active) return this.pending || Promise.resolve(false);
             this.active = true;
             this.context = {destination: {...destination}, sourceSessionId: this.game.sessionId};
             this.game.pauseForMapTransition();
@@ -21,8 +21,8 @@ define(['map', 'storage'], function (Mapx, Storage) {
         retry() {
             if (this.pending) return this.pending;
             const context = this.context;
-            this.game.app.setMapTransition(true);
-            this.pending = this.perform(context).catch(error => {
+            const covered = this.game.app.setMapTransition(true);
+            this.pending = this.perform(context, covered).catch(error => {
                 this.cancel(this.timer);
                 this.welcomeResolve = this.welcomeReject = null;
                 this.game.started = false;
@@ -46,7 +46,7 @@ define(['map', 'storage'], function (Mapx, Storage) {
             return this.pending;
         }
 
-        async perform(context) {
+        async perform(context, covered) {
             context.phase = 'map';
             if (!context.map) {
                 context.map = await new Promise((resolve, reject) => {
@@ -79,6 +79,7 @@ define(['map', 'storage'], function (Mapx, Storage) {
             }
 
             context.phase = 'renderer';
+            await covered;
             this.game.resetForMapTransition(context.map, context.storage);
             const url = new URL(this.location.href);
             url.searchParams.set('sessionId', context.sessionId);
@@ -95,6 +96,10 @@ define(['map', 'storage'], function (Mapx, Storage) {
                 this.game.connect(() => {});
                 context.client = this.game.client;
             }), 20000);
+            this.welcomeReject = null;
+            this.active = false;
+            this.game.initAchievements();
+            await this.game.app.setMapTransition(false);
             return true;
         }
 
@@ -107,15 +112,12 @@ define(['map', 'storage'], function (Mapx, Storage) {
 
         complete() {
             if (!this.active || !this.welcomeResolve || this.context.client !== this.game.client) return;
-            const resolve = this.welcomeResolve;
-            this.welcomeResolve = this.welcomeReject = null;
-            this.active = false;
+            const resolve = this.welcomeResolve, reject = this.welcomeReject;
+            this.welcomeResolve = null;
             this.game.started = true;
             this.game.isStopped = false;
-            this.game.initAchievements();
-            this.game.app.setMapTransition(false);
+            this.game.renderer.whenNextFrameDrawn().then(resolve, reject);
             this.game.tick();
-            resolve();
         }
 
         connectionLost() {
