@@ -5,7 +5,7 @@
         root.createSceneParallax = factory;
         if (!root.RendererExtensions) return;
         const parallax = factory();
-        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
+        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, backgroundEmission: parallax.backgroundEmission, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
         root.RendererExtensions.register('parallax-ground', {layer: 'ground', subpixel: true, draw: parallax.ground});
         root.RendererExtensions.register('parallax-entities', {layer: 'entities', entries: parallax.entries, shadowBodies: parallax.shadowBodies});
         root.RendererExtensions.register('parallax-foreground', {layer: 'foreground', draw: parallax.foreground});
@@ -361,12 +361,28 @@
         ctx.drawImage(foregroundGroup, 0, 0);
     }
 
+    // Emission is a second sampling of the SAME moving background; the worker
+    // composites it through an occlusion stencil after the world is darkened.
+    function backgroundEmission(state, view) {
+        if (!state || !view || ![view.cameraX, view.cameraY, view.viewportWidth, view.viewportHeight].every(Number.isFinite) ||
+            !(view.viewportWidth > 0 && view.viewportHeight > 0) || !(view.lightIntensity < 1)) return null;
+        const active = (Array.isArray(state.scenes) ? state.scenes : []).slice(0, 100).some(scene =>
+            sceneClip(scene, view, view.viewportWidth, view.viewportHeight) &&
+            (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8).some(layer =>
+                layer && layer.plane === 'background' && layer.placed !== true &&
+                Number.isFinite(layer.emissionIntensity) && layer.emissionIntensity > 0 &&
+                visibleLayer(layer, scene, view)));
+        return active ? ctx => draw('backgroundEmission', ctx, state, {...view, scale: 1}) : null;
+    }
+
     function draw(plane, ctx, state, view) {
         if (!state || !view || ![view.cameraX, view.cameraY, view.scale].every(Number.isFinite) || view.scale <= 0) return;
         const time = view.parallaxTime ?? now();
         const viewportWidth = ctx.canvas.width / view.scale, viewportHeight = ctx.canvas.height / view.scale;
         view = {...view, viewportWidth, viewportHeight};
         const shade = plane === 'foreground' && view.shadePlacedForeground;
+        const emission = plane === 'backgroundEmission';
+        const sourcePlane = emission ? 'background' : plane;
         for (const scene of (Array.isArray(state.scenes) ? state.scenes : []).slice(0, 100)) {
             const clip = sceneClip(scene, view, viewportWidth, viewportHeight);
             if (!clip) continue;
@@ -378,7 +394,8 @@
             }
             let group;
             for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
-                if (!layer || (layer.plane || 'foreground') !== plane) continue;
+                if (!layer || (layer.plane || 'foreground') !== sourcePlane) continue;
+                if (emission && (layer.placed || !(layer.emissionIntensity > 0))) continue;
                 // Do not show neighboring outdoor layers while the viewer is in an interior.
                 if (!visibleLayer(layer, scene, view)) continue;
                 const sprites = layer.placed && placedSprites(layer, scene, view, clip, time);
@@ -395,6 +412,12 @@
                 // Overhead art is composed after world lighting. Dim it continuously
                 // with ambient light, while luminous effects can opt into brighter nights.
                 let layerBrightness = 1;
+                if (emission) {
+                    // Night-only screen contribution: hot lava stays bright while
+                    // dark crust contributes little. No extra image decoding/readbacks.
+                    target.globalAlpha *= finite(layer.emissionIntensity, 0, 0, 1) *
+                        (1 - finite(view.lightIntensity, 1, 0, 1));
+                }
                 if (plane === 'foreground' && Number.isFinite(view.lightIntensity)) {
                     const light = finite(view.lightIntensity, 1, 0, 1);
                     const opacity = finite(layer.nightOpacity, layer.placed ? 1 : .45, 0, 1);
@@ -417,6 +440,7 @@
         entries,
         shadowBodies,
         terrainCutouts,
+        backgroundEmission,
         background: (ctx, state, view) => draw('background', ctx, state, view),
         ground: (ctx, state, view) => draw('ground', ctx, state, view),
         foreground: (ctx, state, view) => draw('foreground', ctx, state, view)

@@ -86,3 +86,17 @@ test('temporary tile appearances disappear with their scene and isolate broken e
     expect(log).toHaveBeenCalledTimes(1); log.mockRestore();
     expect(registry.tileAppearance({season: {tiles: Array(600).fill(tile)}})).toHaveLength(512);
 });
+
+test('emission painters are lazy, isolated, and do not affect other scene extensions', () => {
+    const registry = createRegistry(), draw = jest.fn(), context = {save:jest.fn(), restore:jest.fn()};
+    registry.register('lava', {layer:'background', draw(){}, backgroundEmission: () => draw});
+    registry.register('mist', {layer:'background', draw(){}, backgroundEmission: () => null});
+    const commands = registry.backgroundEmission({lava:{active:true},mist:{}}, {cameraX:0});
+    expect(commands).toHaveLength(1);
+    expect(draw).not.toHaveBeenCalled();
+    commands[0](context);
+    expect(draw).toHaveBeenCalledWith(context);
+    expect(context.save).toHaveBeenCalledTimes(1);
+    expect(context.restore).toHaveBeenCalledTimes(1);
+    expect(registry.backgroundEmission({mist:{}}, {cameraX:0})).toHaveLength(0);
+});

@@ -525,3 +525,23 @@ test('individual flight varies speed, turn direction and scale smoothly without 
     for (let time = 0; time < 1000; time += 16) frame(time);
     expect(s.canvases).toHaveLength(buffers); // Height changes reuse the original raster.
 });
+
+test('recessed lava emission follows its original drift and only activates at night', async () => {
+    const s = setup();
+    Object.assign(s.layer, {plane: 'background', factorX: .62, factorY: .62, emissionIntensity: .65});
+    const view = {...s.view, viewportWidth: 320, viewportHeight: 240, lightIntensity: .2};
+    expect(typeof s.renderer.backgroundEmission(s.state, view)).toBe('function');
+    s.renderer.background(s.ctx, s.state, view); await flush();
+    const paint = s.renderer.backgroundEmission(s.state, view);
+    s.ctx.drawImage.mockClear();
+    paint(s.ctx);
+    const first = s.ctx.drawImage.mock.calls.at(-1);
+    expect(first).toBeDefined();
+    s.renderer.backgroundEmission(s.state, {...view, cameraX: view.cameraX + 10})(s.ctx);
+    const next = s.ctx.drawImage.mock.calls.at(-1);
+    expect(next[1] - first[1]).toBeCloseTo(-6.2);
+    expect(s.renderer.backgroundEmission(s.state, {...view, lightIntensity: 1})).toBeNull();
+    expect(s.renderer.backgroundEmission(s.state, {...view, cameraX: 9000})).toBeNull();
+    delete s.layer.emissionIntensity;
+    expect(s.renderer.backgroundEmission(s.state, view)).toBeNull();
+});

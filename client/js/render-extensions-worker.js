@@ -27,6 +27,32 @@
             }
             return cutouts;
         },
+        // Delay allocating a native emission surface until a visible extension
+        // actually requests one. Faulty effects cannot take down the renderer.
+        backgroundEmission(data = {}, view) {
+            const painters = [];
+            if (!view) return painters;
+            for (const [id, extension] of extensions) {
+                if (typeof extension.backgroundEmission !== 'function' || data[id] == null) continue;
+                try {
+                    const painter = extension.backgroundEmission(data[id], view);
+                    if (typeof painter !== 'function') continue;
+                    painters.push(context => {
+                        if (!extensions.has(id)) return;
+                        context.save();
+                        try {painter(context);}
+                        catch (error) {
+                            extensions.delete(id);
+                            console.error('Disabled render extension ' + id + ': ' + error.message);
+                        } finally {context.restore();}
+                    });
+                } catch (error) {
+                    extensions.delete(id);
+                    console.error('Disabled render extension ' + id + ': ' + error.message);
+                }
+            }
+            return painters;
+        },
         tileAppearance(data = {}) {
             const tiles = [];
             for (const [id, extension] of extensions) {
