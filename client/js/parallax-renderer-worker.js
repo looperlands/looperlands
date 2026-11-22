@@ -5,7 +5,7 @@
         root.createSceneParallax = factory;
         if (!root.RendererExtensions) return;
         const parallax = factory();
-        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, backgroundEmission: parallax.backgroundEmission, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
+        root.RendererExtensions.register('parallax-background', {layer: 'background', draw: parallax.background, backgroundEmission: parallax.backgroundEmission, terrainIllumination: parallax.terrainIllumination, terrainCutouts: parallax.terrainCutouts, ready: parallax.ready});
         root.RendererExtensions.register('parallax-ground', {layer: 'ground', subpixel: true, draw: parallax.ground});
         root.RendererExtensions.register('parallax-entities', {layer: 'entities', entries: parallax.entries, shadowBodies: parallax.shadowBodies});
         root.RendererExtensions.register('parallax-foreground', {layer: 'foreground', draw: parallax.foreground});
@@ -363,6 +363,27 @@
 
     // Emission is a second sampling of the SAME moving background; the worker
     // composites it through an occlusion stencil after the world is darkened.
+    // The lava *shoreline* is fixed to terrain cutouts, even though the texture
+    // behind it drifts. Return the small authored receiver field, not point lights.
+    function terrainIllumination(state, view) {
+        if (!state || !view) return [];
+        const fields = [];
+        for (const scene of (Array.isArray(state.scenes) ? state.scenes : []).slice(0, 100)) {
+            if (!scene.cutoutColors?.length || (view.sceneId != null && String(view.sceneId) !== String(scene.id)) ||
+                !sceneClip(scene, view, view.viewportWidth, view.viewportHeight)) continue;
+            for (const layer of (Array.isArray(scene.layers) ? scene.layers : []).slice(0, 8)) {
+                if (layer?.plane !== 'background' || layer.placed ||
+                    !(layer.emissionIntensity > 0) || !(layer.illuminationIntensity > 0) ||
+                    !visibleLayer(layer, scene, view)) continue;
+                fields.push({x: scene.x * 16, y: scene.y * 16, w: scene.w * 16, h: scene.h * 16,
+                    intensity: finite(layer.illuminationIntensity, 0, 0, 1),
+                    radius: finite(layer.illuminationRadius, 36, 8, 64)});
+                if (fields.length === 4) return fields;
+            }
+        }
+        return fields;
+    }
+
     function backgroundEmission(state, view) {
         if (!state || !view || ![view.cameraX, view.cameraY, view.viewportWidth, view.viewportHeight].every(Number.isFinite) ||
             !(view.viewportWidth > 0 && view.viewportHeight > 0) || !(view.lightIntensity < 1)) return null;
@@ -441,6 +462,7 @@
         shadowBodies,
         terrainCutouts,
         backgroundEmission,
+        terrainIllumination,
         background: (ctx, state, view) => draw('background', ctx, state, view),
         ground: (ctx, state, view) => draw('ground', ctx, state, view),
         foreground: (ctx, state, view) => draw('foreground', ctx, state, view)

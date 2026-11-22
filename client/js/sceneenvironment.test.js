@@ -57,3 +57,18 @@ test('background emission is opt-in, bounded and rejected on occluding planes', 
     expect(() => E.parallax({layers: [{...base, plane: 'foreground', emissionIntensity: .5}]})).toThrow('background');
     expect(() => E.parallax({layers: [{...base, placed: true, emissionIntensity: .5}]})).toThrow('unplaced');
 });
+
+test('light spill requires exposed luminous background and bounded authoring values', () => {
+    const base = {image: '/img/parallax/lava-depth.png', plane: 'background', width: 384, height: 384,
+        emissionIntensity: .65, illuminationIntensity: .7, illuminationRadius: 40};
+    expect(E.parallax({layers: [base], cutoutColors: [[254, 173, 2]]})).toBeTruthy();
+    for (const invalid of [-1, 1.01, NaN, Infinity]) {
+        expect(() => E.parallax({layers: [{...base, illuminationIntensity: invalid}], cutoutColors: [[254, 173, 2]]})).toThrow();
+    }
+    for (const invalid of [7, 65, NaN]) {
+        expect(() => E.parallax({layers: [{...base, illuminationRadius: invalid}], cutoutColors: [[254, 173, 2]]})).toThrow();
+    }
+    expect(() => E.parallax({layers: [base]})).toThrow('cutout');
+    expect(() => E.parallax({layers: [{...base, emissionIntensity: 0}], cutoutColors: [[254,173,2]]})).toThrow('luminous');
+    expect(() => E.parallax({layers: [{...base, plane: 'foreground'}], cutoutColors: [[254,173,2]]})).toThrow('background');
+});

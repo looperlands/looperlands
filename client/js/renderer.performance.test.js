@@ -1279,3 +1279,40 @@ test('background emission composites after darkness and masks terrain, overhead,
     const overlay = operations.findIndex(op => op.method === 'drawImage' && op.args[0] === mask);
     expect(overlay).toBeGreaterThan(light);
 });
+
+test('lava spill reuses a bounded cutout field and lights the native world before compositing', () => {
+    const worker = setup(), OriginalCanvas = worker.sandbox.OffscreenCanvas;
+    worker.sandbox.OffscreenCanvas = class extends OriginalCanvas {
+        constructor(...args) {
+            super(...args);
+            this.ctx.getImageData = jest.fn((x, y, w, h) => ({data: new Uint8ClampedArray(w * h * 4)}));
+            this.ctx.putImageData = jest.fn();
+        }
+    };
+    worker.sandbox.lavaExtension = {
+        terrainCutouts: () => [{x: 0, y: 0, w: 1600, h: 1600, colors: [[254, 173, 2]]}],
+        terrainIllumination: () => [{x: 0, y: 0, w: 1600, h: 1600, radius: 40, intensity: .7}],
+        draw() {}
+    };
+    vm.runInContext('rendererExtensions = lavaExtension', worker.sandbox);
+    worker.sandbox.self.AreaEmission = require('./area-emission-worker');
+    const packet = frame();
+    packet.scene.id = 631;
+    packet.scene.darkness = .8;
+    worker.send(packet);
+    const lowResolution = worker.allocations.find(canvas => canvas.ctx.putImageData.mock.calls.length);
+    expect(lowResolution).toBeDefined();
+    expect(lowResolution.width).toBeLessThan(worker.canvases.background.width);
+    expect(lowResolution.ctx.getImageData).toHaveBeenCalledTimes(1);
+    expect(worker.canvases.lighting.ctx.drawImage.mock.calls.some(([image]) => image === lowResolution)).toBe(true);
+    worker.send(packet);
+    expect(lowResolution.ctx.getImageData).toHaveBeenCalledTimes(1);
+    const drawn = worker.canvases.lighting.ctx.drawImage.mock.calls.filter(([image]) => image === lowResolution);
+    expect(drawn).toHaveLength(2);
+    // The source follows cached world pixels; camera changes within its padded
+    // region only adjust the draw offset and do not regenerate source pixels.
+    for (const command of packet.renderData) {command.cameraX = 8; command.cameraY = 6;}
+    worker.send(packet);
+    expect(lowResolution.ctx.getImageData).toHaveBeenCalledTimes(1);
+    expect(worker.canvases.lighting.ctx.drawImage.mock.calls.filter(([image]) => image === lowResolution)).toHaveLength(3);
+});
