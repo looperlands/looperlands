@@ -116,7 +116,7 @@ updated scene geometry, and existing renderer/map-transition behavior.
 Forest uses 45 shared `placements` in scene-local native pixels, each with `x`,
 `y`, optional `scale` and `flipX`. Layers marked `placed: true` draw at those
 anchors instead of repeating across the scene. A root is fixed at factor 1;
-three canopy heights use 1.03, 1.09 and 1.17. Placed-image factors project the
+three canopy heights use 1.025, 1.055 and 1.085. Placed-image factors project the
 anchor around the viewport center, so crown/trunk separation is bounded by the
 viewport size and never accumulates over a long walk. `offsetX/Y` and
 `anchorX/Y` (fractions of image dimensions) align the sprite components.
