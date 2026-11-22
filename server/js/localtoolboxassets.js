@@ -10,6 +10,7 @@ function install(app, root) {
         '/local/vendor/pixelfxpainter.mjs': 'client/js/pixelfxpainter.mjs',
         '/local/vendor/pixelfxcatalog.js': 'shared/js/pixelfxcatalog.js',
         '/local/vendor/placedfxconfig.js': 'shared/js/placedfxconfig.js',
+        '/local/vendor/watersurfaces.js': 'client/js/watersurfaces.js',
         '/local/vendor/ambientconfig.js': 'client/js/ambientconfig.js',
         '/local/vendor/soundscape.js': 'client/js/soundscape.js',
         '/local/dialogue-format.js': 'shared/js/dialogueformat.js',

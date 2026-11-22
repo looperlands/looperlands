@@ -37,9 +37,9 @@ define(function () {
                 if (this.distance >= 12 && time - this.lastStep >= 90) {
                     this.distance %= 12;
                     this.lastStep = time;
-                    const surface = surfaceFor(player.getScene()?.name);
+                    const surface = this.game.map?.waterSurfaces?.sample(player.x + 8, player.y + 15) ? 'water' : surfaceFor(player.getScene()?.name);
                     this.game.audioManager?.playFootstep(surface);
-                    if (!reduced && effects && surface !== 'stone') {
+                    if (!reduced && effects && surface !== 'stone' && surface !== 'water') {
                         this.steps.push({x: player.x + 8, y: player.y + 14, startedAt: time,
                             surface, lifetime: surface === 'sand' ? 650 : 380});
                         if (this.steps.length > 24) this.steps.shift();

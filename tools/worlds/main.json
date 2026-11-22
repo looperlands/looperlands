@@ -1,5 +1,20 @@
 {
   "version": 1,
+  "waterSurfaces": [
+    {
+      "id": "town_crossing",
+      "name": "Town swimming pond",
+      "kind": "pond",
+      "x": 20, "y": 237, "width": 7, "height": 6,
+      "shape": "natural", "depth": "swim", "paint": true
+    },
+    {
+      "id": "town_tree",
+      "name": "North bank tree",
+      "kind": "reflection",
+      "x": 22, "y": 233, "width": 4, "height": 5
+    }
+  ],
   "rules": [],
   "dialogues": [],
   "atmosphere": [

@@ -263,3 +263,16 @@ test('deleting a Tiled scene with atmosphere still lets Toolbox reload and save 
     await W.saveTool(root, {mapId: 'one', tool: 'scenes', revision: reloaded.revision, entries: reloaded.entries});
     expect(W.readDocument(root, 'one').atmosphere).toEqual([]);
 });
+
+test('water drafts are optional per map, revision-checked, and validated before writing', async () => {
+    const base = await W.readTool(root, 'one', 'water');
+    expect(base.entries).toEqual([]);
+    const pond = {id:'pond',name:'Pond',kind:'pond',x:2,y:2,width:3,height:2,depth:'swim',paint:false,shape:'oval'};
+    const save = (revision, entries) => W.saveTool(root, {mapId:'one',tool:'water',revision,entries});
+    const saved = await save(base.revision,[pond]);
+    expect((await W.readTool(root,'one','water')).entries).toEqual([pond]);
+    await expect(save(base.revision,[])).rejects.toMatchObject({status:409});
+    await expect(save(saved.revision,[{...pond,x:-1}])).rejects.toMatchObject({status:400});
+    expect((await W.readTool(root,'one','water')).entries).toEqual([pond]);
+    expect((await save(saved.revision,[])).entries).toEqual([]);
+});

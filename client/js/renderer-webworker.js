@@ -377,6 +377,7 @@ function boundedScene(scene) {
 }
 let renderScale = 1;
 let composingWorld = false;
+let waterPainter;
 let frameExtensions;
 let frameCutouts = [], frameCutoutKey = '';
 let frameTileAppearance = new Map(), frameTileAppearanceKey = '';
@@ -541,6 +542,15 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
 
 
 onmessage = (e) => {
+    if (e.data.type === 'setWaterSurfaces') {
+        waterPainter = null;
+        if (e.data.wet.length) {
+            if (!self.WaterSurfaces) importScripts('watersurfaces.js');
+            if (!self.WaterPainter) importScripts('water-renderer-worker.js');
+            waterPainter = new self.WaterPainter(e.data);
+        }
+        return;
+    }
     if (e.data.type === 'setTerrain') {
         const {id, tiles, revision} = e.data;
         if ((id === 'background' || id === 'high') && Array.isArray(tiles)) {
@@ -600,6 +610,7 @@ onmessage = (e) => {
         const frameTime = performance.now();
         const actors = e.data.renderData.find(data => data.type === 'entities');
         const view = actors && {...filterReadyActors(actors), parallaxTime: frameTime};
+        if (view && waterPainter) waterPainter.prepare(view, sprites);
         const scale = view?.scale || 1;
         resizeWorkerLayers(scale);
         if (rendererExtensions?.ready?.(e.data.extensions, {...view,
@@ -986,6 +997,7 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
     if (composingWorld) {
         rendererExtensions?.draw('background', ctx, frameExtensions, {...drawEntitiesData, scale: 1});
         ctx.drawImage(canvases.background, 0, 0);
+        waterPainter?.ground(ctx, drawEntitiesData, tileset, drawEntitySprite);
         rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1,
             sources: {background: canvases.background}, fireLights: lights.concat(tileLights)});
         if (shadowSurface) shadeTerrain(ctx, shadowSurface, scene, cameraX, cameraY);
@@ -1040,6 +1052,7 @@ function drawEntities(drawEntitiesData, skyOptions, shadowSurface, scene) {
         }
         ctx.restore();
         highCtx.restore();
+        if (entityData.immersion !== undefined) waterPainter?.contact(ctx, entityData, drawEntitiesData);
     }
     drawSceneryUntil(Infinity);
     ctx.restore();

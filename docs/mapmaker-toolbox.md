@@ -22,6 +22,7 @@ Expand a group to find its tools. **Map & world** starts open; opening a tool fr
 - **Map inspector:** place items, mobs and NPCs with sprite previews; explore searchable object layers and open their editors. See [Interactive map inspector](mapmaker-inspector.md).
 - **Doors & portals:** find entrances and edit access rules, opening hours and player messages. See [Doors & portals](mapmaker-doors.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
+- **Water & swimming** lets you draw ponds, streams, dry decks and reflections. Use existing artwork or paint a new water surface on a walkable route. [Author a crossing](#author-a-water-crossing)
 - **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
 - **Temporary content:** create seasonal events on any map; edit their schedules, actors, decorations, tile appearance, parallax and positional sounds, even outside the active dates. Link custom quests to an event's dates in Quest builder. See [Temporary content](mapmaker-temporary-content.md).
 - **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
@@ -139,3 +140,13 @@ Use **Gameplay → Checkpoints & zones** to edit spawn and revival areas, trigge
 ## Sound design
 
 Use [Ambient sounds](mapmaker-audio.md) to place campfires, water, surf, wind, birds and lava sounds. Preview from a movable listener, adjust radius and volume, then save and playtest. Sources fade and pan relative to the player.
+
+## Author a water crossing
+
+1. Open **Map & world → Water & swimming** and choose your map. Main’s Town pond is a working example. Walk east from tile **(19, 240)** through **(23, 240)** to reach the far bank.
+2. Choose **Pond** or **Stream**, click **Add area**, and drag across the water. Choose **Use existing map art** for a pond already drawn in Tiled. **Paint a water surface** adds a bank and water over the selected ground. The natural shoreline works well for ponds.
+3. Choose **Swim at waist depth** for a crossing, or **Wade in the shallows** for a ford. For a stream, set its current direction. Foam, leaves and wakes travel with the flow. Player movement follows the existing walkable tiles. To add running-water audio, place a **Flowing water** source in **Ambient sounds**.
+4. Add a **Dry deck or island** over any bridge or stepping platform. For a reflection, choose **Scenery reflection**, box the tree or dock tiles on the north bank, and end the box at its base. The reflection extends south into the water.
+5. Click **Save water** and start a fresh playtest. To switch water off, remove the areas and save again.
+
+![An equipped Looper crosses the Town pond beneath the north-bank tree](images/town-swimming.webp)

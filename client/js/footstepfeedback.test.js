@@ -62,3 +62,14 @@ test.each(['Town', 'Forest'])('%s marks remain visible after the original faint 
     expect(feedback.getFrame(1450)).toHaveLength(1);
     expect(feedback.getFrame(1480)).toHaveLength(0);
 });
+
+test('swimming across sand makes water sounds and resumes sand footprints on the bank', () => {
+    const {feedback, game} = setup();
+    game.map = {waterSurfaces: {sample: x => x < 60 ? {depth: 1} : null}};
+    feedback.getFrame(1000);
+    game.player.x += 12;
+    expect(feedback.getFrame(1100)).toEqual([]);
+    expect(game.audioManager.playFootstep).toHaveBeenLastCalledWith('water');
+    game.player.x += 12;
+    expect(feedback.getFrame(1200)[0].surface).toBe('sand');
+});

@@ -1,4 +1,4 @@
-define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
+define(['jquery', 'area', 'mapassets', 'watersurfaces'], function ($, Area, MapAssets, WaterSurfaces) {
 
     var Mapx = Class.extend({
         init: function (loadMultiTilesheets, game, mapId) {
@@ -185,6 +185,7 @@ define(['jquery', 'area', 'mapassets'], function ($, Area, MapAssets) {
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
             this.ambientSounds = map.ambientSounds || [];
+            this.waterSurfaces = map.waterSurfaces?.length ? new WaterSurfaces.Field(map.waterSurfaces) : null;
             this.placedFx = map.placedFx || [];
             this.pvpZones = map.pvpZones || [];
             this.fishingTiles = map.fishingTiles || {};

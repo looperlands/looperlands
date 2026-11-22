@@ -686,6 +686,18 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 }
                 this.game.worldFx?.decorate?.(entity, entityData, this.scale);
                 this.game.combatFeedback?.hitFeel?.decorate(entity, entityData, this.scale, this.game.currentTime);
+                const water = this.game.map?.waterSurfaces;
+                if (water && entity instanceof Player && anim && sprite && entity.isVisible() && !entity.isDead) {
+                    entityData.waterPlayer = entity.id;
+                    entityData.waterX = entity.x + 8;
+                    entityData.waterY = entity.y + 15;
+                    const wet = water.sample(entityData.waterX, entityData.waterY);
+                    if (wet) {
+                        entityData.immersion = wet.depth;
+                        entityData.waterArea = wet.area.id;
+                        entityData.waterBody = sprite.name;
+                    }
+                }
                 return [textData, entityData];
             },
     
@@ -1193,6 +1205,13 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
             renderFrame: function() {
     
+                const field = this.game.map?.waterSurfaces;
+                if (field !== this.syncedWater || (field && this.waterSession !== this.game.sessionId)) {
+                    this.worker.postMessage({type: 'setWaterSurfaces', wet: field?.wet || [], dry: field?.dry || [],
+                        sources: field?.reflectionSources(this.game.map) || [], columns: this.game.map?.tilesetColumns});
+                    this.syncedWater = field;
+                    this.waterSession = this.game.sessionId;
+                }
                 if(this.game.map && !this.syncedLights) {
                     this.worker.postMessage({"type": "setLights", "lights": this.game.map.lights})
                     const map = this.game.map;
