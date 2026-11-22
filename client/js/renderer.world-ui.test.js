@@ -106,7 +106,7 @@ function uiSurface(worker) {
         .find(canvas => canvas && !known.has(canvas));
 }
 
-test('world labels and bars compose after lighting, with overhead masking before foreground effects', () => {
+test('world labels stay below lighting and overhead scenery while bars remain above lighting', () => {
     const worker = setup();
     worker.setExtensions({draw(layer, ctx) {
         if (layer === 'foreground') ctx.fillRect(1, 2, 3, 4);
@@ -115,25 +115,30 @@ test('world labels and bars compose after lighting, with overhead masking before
 
     const ui = uiSurface(worker), combined = worker.canvases.combined;
     expect(ui).toBeDefined();
+    const copyIndex = image => worker.operations.findIndex(op => op.canvas === combined && op.method === 'drawImage'
+        && op.args[0] === image);
+    const names = copyIndex(worker.canvases.text);
+    const overhead = copyIndex(worker.canvases.highEntities);
     const light = worker.operations.findIndex(op => op.canvas === combined && op.method === 'drawImage'
         && op.args[0] === worker.canvases.lighting && op.composite === 'multiply');
-    const overlay = worker.operations.findIndex(op => op.canvas === combined && op.method === 'drawImage'
-        && op.args[0] === ui && op.composite === 'source-over');
+    const overlay = copyIndex(ui);
     const foreground = worker.operations.findIndex(op => op.canvas === combined && op.method === 'fillRect');
-    expect(light).toBeGreaterThan(-1);
+    expect(names).toBeGreaterThan(-1);
+    expect(overhead).toBeGreaterThan(names);
+    expect(light).toBeGreaterThan(overhead);
     expect(overlay).toBeGreaterThan(light);
     expect(foreground).toBeGreaterThan(overlay);
 
     const copies = worker.operations.filter(op => op.canvas === ui && op.method === 'drawImage');
     expect(copies.map(op => op.args[0])).toEqual([
-        worker.barDraw.mock.calls[0][0].canvas, worker.canvases.text, worker.canvases.highEntities
+        worker.barDraw.mock.calls[0][0].canvas, worker.canvases.highEntities
     ]);
-    expect(copies.map(op => op.composite)).toEqual(['source-over', 'source-over', 'destination-out']);
+    expect(copies.map(op => op.composite)).toEqual(['source-over', 'destination-out']);
     expect(copies.at(-1).args.slice(1)).toEqual([0, 0, combined.width, combined.height]);
     expect(worker.canvases.entities.ctx.fillRect).not.toHaveBeenCalled();
 });
 
-test('glow stays below opaque names and health bars without invalidating cached labels', () => {
+test('glow affects restored world names but health bars remain on the post-lighting pass', () => {
     const worker = setup();
     worker.setExtensions({draw(layer, ctx) {
         if (layer === 'foreground') ctx.fillRect(1, 2, 3, 4);
@@ -143,15 +148,18 @@ test('glow stays below opaque names and health bars without invalidating cached 
     worker.send(frame());
     const combined = worker.canvases.combined;
     const copies = worker.operations.filter(op => op.canvas === combined && op.method === 'drawImage');
-    expect(copies.map(op => op.composite)).toEqual(['source-over', 'source-over', 'multiply', 'screen', 'source-over']);
+    expect(copies.map(op => op.composite)).toEqual([
+        'source-over', 'source-over', 'source-over', 'multiply', 'screen', 'source-over'
+    ]);
+    expect(copies[1].args[0]).toBe(worker.canvases.text);
     const ui = copies.at(-1).args[0], glow = copies.at(-2).args[0];
     expect(copies.at(-1).alpha).toBe(1);
     expect(glow).toMatchObject({width: 48, height: 48});
     const uiCopies = worker.operations.filter(op => op.canvas === ui && op.method === 'drawImage');
     expect(uiCopies.map(op => op.args[0])).toEqual([
-        worker.barDraw.mock.calls[0][0].canvas, worker.canvases.text, worker.canvases.highEntities
+        worker.barDraw.mock.calls[0][0].canvas, worker.canvases.highEntities
     ]);
-    expect(uiCopies.map(op => op.alpha)).toEqual([1, 1, 1]);
+    expect(uiCopies.map(op => op.alpha)).toEqual([1, 1]);
     expect(worker.operations.indexOf(copies.at(-1))).toBeLessThan(worker.operations.findIndex(op =>
         op.canvas === combined && op.method === 'fillRect'));
     const text = worker.canvases.text.ctx, clears = text.clearRect.mock.calls.length, draws = text.drawImage.mock.calls.length;
@@ -212,7 +220,7 @@ test('each UI frame clears the previous overhead mask without mutating retained 
     const copies = next.filter(op => op.method === 'drawImage');
     expect(clear).toBeGreaterThan(-1);
     expect(next.findIndex(op => op.method === 'drawImage')).toBeGreaterThan(clear);
-    expect(copies.map(op => op.composite)).toEqual(['source-over', 'source-over', 'destination-out']);
+    expect(copies.map(op => op.composite)).toEqual(['source-over', 'destination-out']);
     expect(worker.canvases.highEntities.ctx.clearRect).toHaveBeenCalledTimes(2);
     expect(text.clearRect).toHaveBeenCalledTimes(nameClears);
     expect(worker.operations.filter(op => op.canvas === worker.canvases.text && op.composite === 'destination-out')).toEqual([]);

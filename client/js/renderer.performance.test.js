@@ -114,7 +114,7 @@ test('duplicate frame requests and a resumed tab do not create additional render
     expect(worker.acknowledgements).toHaveLength(3);
 });
 
-test('world buffers use native resolution and frames without world UI need only three layer copies', () => {
+test('world buffers use native resolution and world text is composed before lighting in four copies', () => {
     const worker = setup(); worker.send(frame());
     for (const id of ['background','high','entities','highEntities','lighting']) {
         expect(worker.canvases[id]).toMatchObject({width:480,height:224});
@@ -122,7 +122,7 @@ test('world buffers use native resolution and frames without world UI need only 
     for (const id of ['text','combined']) expect(worker.canvases[id]).toMatchObject({width:1440,height:672});
     expect(worker.canvases.entities.ctx.scale).toHaveBeenCalledWith(1 / 3, 1 / 3);
     expect(worker.canvases.combined.ctx.drawImage.mock.calls.map(call => call[0])).toEqual([
-        worker.canvases.entities, worker.canvases.highEntities, worker.canvases.lighting
+        worker.canvases.entities, worker.canvases.text, worker.canvases.highEntities, worker.canvases.lighting
     ]);
 });
 
@@ -1174,7 +1174,7 @@ test('glow-only companions preserve the ordinary-light budget', () => {
     expect(ctx.drawImage).toHaveBeenCalledTimes(2); // The real lamp and the player's lantern.
 });
 
-test('emission follows multiply, precedes world UI and foreground, and excludes visible actors and overhead art', () => {
+test('emission follows multiply, precedes foreground, and leaves legacy name labels below lighting', () => {
     const worker = setup(), packet = frame(0, 0, 1, [{text: 'Lamp', x: 120, y: 120}]), events = [];
     const ctx = worker.canvases.combined.ctx;
     ctx.drawImage.mockImplementation(image => events.push({image, operation: ctx.globalCompositeOperation}));
@@ -1183,19 +1183,20 @@ test('emission follows multiply, precedes world UI and foreground, and excludes 
     worker.send({type: 'setLights', lights: [{x: 40, y: 40, intensity: 0, shadow: 0,
         glowIntensity: .3, glowRadius: 18, animation: 'fire'}]});
     worker.send(packet);
-    const glow = events[3], scratch = glow.image;
-    expect(events[2]).toEqual({image: worker.canvases.lighting, operation: 'multiply'});
+    expect(events[0].image).toBe(worker.canvases.entities);
+    expect(events[1]).toEqual({image: worker.canvases.text, operation: 'source-over'});
+    expect(events[2].image).toBe(worker.canvases.highEntities);
+    expect(events[3]).toEqual({image: worker.canvases.lighting, operation: 'multiply'});
+    const glow = events[4], scratch = glow.image;
     expect(glow.operation).toBe('screen');
-    const ui = vm.runInContext('worldUiScratch.canvas', worker.sandbox);
-    expect(events[4].image).toBe(ui);
     expect(events[5]).toEqual({foreground: true});
+    expect(vm.runInContext('worldUiScratch.canvas', worker.sandbox)).toBeUndefined();
     const exclusions = scratch.ctx.drawImage.mock.calls.map(([image]) => image);
     expect(exclusions).toContain(worker.canvases.highEntities);
     const foreground = vm.runInContext('pointForegroundScratch.canvas', worker.sandbox);
     expect(exclusions).toContain(foreground);
     expect(scratch).toMatchObject({width: 36, height: 36});
     expect(exclusions).not.toContain(worker.canvases.text);
-    expect(ui.ctx.drawImage).toHaveBeenCalledWith(worker.canvases.text, 0, 0);
     expect(ctx.scale).toHaveBeenCalledWith(3, 3);
     const allocations = worker.allocations.length;
     for (let i = 0; i < 60; i++) {worker.advance(i * 17); worker.send(packet);}
