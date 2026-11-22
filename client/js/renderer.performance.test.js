@@ -1254,3 +1254,28 @@ test('emission reuses current point-shadow masks and extends their radius only w
     worker.sandbox.drawEmissiveGlow(output.ctx, [source], 0, 0, {shadows: false, playerShadow: false});
     expect(pointMask).not.toHaveBeenCalled();
 });
+
+test('background emission composites after darkness and masks terrain, overhead, and actors', () => {
+    const worker = setup();
+    worker.sandbox.emissionRegistry = {
+        draw() {},
+        backgroundEmission() {return [ctx => ctx.drawImage('deep-lava', 0, 0)];}
+    };
+    vm.runInContext('rendererExtensions = emissionRegistry', worker.sandbox);
+    const packet = frame();
+    packet.renderData.find(command => command.type === 'entities').entityData = [];
+    worker.send(packet);
+    const combined = worker.canvases.combined.ctx;
+    const mask = worker.allocations.find(canvas => canvas.ctx.drawImage.mock.calls.some(call => call[0] === 'deep-lava'));
+    expect(mask).toBeDefined();
+    const masked = mask.ctx.drawImage.mock.calls.map(call => call[0]);
+    expect(masked).toContain(worker.canvases.background);
+    expect(masked).toContain(worker.canvases.highEntities);
+    const draw = combined.drawImage.mock.calls.find(call => call[0] === mask);
+    expect(draw).toBeDefined();
+    expect(draw.slice(1)).toEqual([0, 0, 480, 224, 0, 0, 1440, 672]);
+    const operations = worker.operations.filter(op => op.id === 'combined');
+    const light = operations.findIndex(op => op.method === 'drawImage' && op.args[0] === worker.canvases.lighting);
+    const overlay = operations.findIndex(op => op.method === 'drawImage' && op.args[0] === mask);
+    expect(overlay).toBeGreaterThan(light);
+});

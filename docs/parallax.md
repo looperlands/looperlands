@@ -74,6 +74,11 @@ Each atmosphere override has a `sceneId` and a `parallax` object with an ordered
   follows terrain, below 1 appears farther away, above 1 appears closer. Zero
   stays fixed relative to the viewport. Defaults to 1.
 - `opacity`: 0–1, default 1.
+- `emissionIntensity`: optional 0–1 for an **unplaced background** image. Bright parts
+  remain luminous as global darkness increases. The same source bitmap and parallax
+  transform are reused and the second pass is masked by terrain, overhead scenery,
+  actors, and depth-sorted objects before compositing. Does not create a light halo
+  or alter collision; existing layers are unchanged when omitted. Lavaland uses 0.65.
 - `offsetX`, `offsetY`: native pixel offsets relative to the scene origin.
 - `driftX`, `driftY`: ambient movement in pixels per second, default 0,
   limited to -32–32. Camera scrolling and ambient movement are independent.

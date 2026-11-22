@@ -855,6 +855,7 @@
             "factorX": 0.62,
             "factorY": 0.62,
             "opacity": 1,
+            "emissionIntensity": 0.65,
             "driftX": 0.12,
             "driftY": 0.04
           },

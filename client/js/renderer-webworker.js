@@ -667,6 +667,7 @@ onmessage = (e) => {
         combinedCtx.globalCompositeOperation = 'source-over';
         drawEmissiveGlow(combinedCtx, lights, view?.cameraX || 0, view?.cameraY || 0,
             {...lightOptions, scene, scale, time: frameLightTime, excludeWorld: true});
+        drawBackgroundEmission(combinedCtx, view);
         framePointShadows = null;
         drawWorldUi(combinedCtx, view);
         composingWorld = false;
@@ -1361,6 +1362,28 @@ function drawEmissiveGlow(ctx, sources, cameraX, cameraY, options = {}) {
     return drawn;
 }
 
+function drawBackgroundEmission(ctx, view) {
+    if (!view || !rendererExtensions?.backgroundEmission) return;
+    const width = canvases.entities.width, height = canvases.entities.height;
+    const painters = rendererExtensions.backgroundEmission(frameExtensions, {...view,
+        scale: 1, viewportWidth: width, viewportHeight: height, lightIntensity: GLOBAL_LIGHT_INTENSITY});
+    if (!painters.length) return;
+    const emission = scratchCanvas(backgroundEmissionScratch, width, height);
+    for (const paint of painters) paint(emission.ctx);
+    // Lava is behind terrain, roofs, actors, and depth-sorted scenery. Remove
+    // their opaque pixels BEFORE applying this post-darkness screen contribution.
+    emission.ctx.globalCompositeOperation = 'destination-out';
+    emission.ctx.drawImage(canvases.background, 0, 0, width, height);
+    emission.ctx.drawImage(canvases.highEntities, 0, 0, width, height);
+    const foreground = frameEmissionForeground?.();
+    if (foreground) emission.ctx.drawImage(foreground.canvas, 0, 0, width, height);
+    emission.ctx.globalCompositeOperation = 'source-over';
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.drawImage(emission.canvas, 0, 0, width, height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.restore();
+}
+
 function subtractEmissiveOcclusion(ctx, source, region, options) {
     const shadow = source.shadow ?? DEFAULT_POINT_SHADOW_STRENGTH;
     if (shadow > 0 && (options.shadows !== false || options.playerShadow !== false)) {
@@ -1429,7 +1452,7 @@ function updateAnimatedLightSource(lightSource, time) {
     return lightSource
 }
 
-const lightScratch = {}, shadowScratch = {}, gradientScratch = {};
+const lightScratch = {}, shadowScratch = {}, gradientScratch = {}, backgroundEmissionScratch = {};
 const pointForegroundScratch = {}, pointMaskScratch = {};
 let obstacleRevision = 0;
 function scratchCanvas(scratch, width, height) {

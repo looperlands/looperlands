@@ -47,3 +47,13 @@ test('individual orbit and height variation reject unbounded inputs', () => {
         expect(() => E.parallax({layers: [{...layer, ...invalid}]})).toThrow();
     }
 });
+
+test('background emission is opt-in, bounded and rejected on occluding planes', () => {
+    const base = {image: '/img/parallax/lava-depth.png', plane: 'background', width: 384, height: 384};
+    expect(E.parallax({layers: [{...base, emissionIntensity: .65}]})).toBeTruthy();
+    for (const invalid of [-.1, 1.01, NaN, Infinity]) {
+        expect(() => E.parallax({layers: [{...base, emissionIntensity: invalid}]})).toThrow();
+    }
+    expect(() => E.parallax({layers: [{...base, plane: 'foreground', emissionIntensity: .5}]})).toThrow('background');
+    expect(() => E.parallax({layers: [{...base, placed: true, emissionIntensity: .5}]})).toThrow('unplaced');
+});
