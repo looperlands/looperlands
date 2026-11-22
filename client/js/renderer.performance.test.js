@@ -112,7 +112,7 @@ test('duplicate frame requests and a resumed tab do not create additional render
     expect(worker.acknowledgements).toHaveLength(3);
 });
 
-test('world buffers use native resolution, names stay sharp, and output needs four layer copies', () => {
+test('world buffers use native resolution and frames without world UI need only three layer copies', () => {
     const worker = setup(); worker.send(frame());
     for (const id of ['background','high','entities','highEntities','lighting']) {
         expect(worker.canvases[id]).toMatchObject({width:480,height:224});
@@ -120,7 +120,7 @@ test('world buffers use native resolution, names stay sharp, and output needs fo
     for (const id of ['text','combined']) expect(worker.canvases[id]).toMatchObject({width:1440,height:672});
     expect(worker.canvases.entities.ctx.scale).toHaveBeenCalledWith(1 / 3, 1 / 3);
     expect(worker.canvases.combined.ctx.drawImage.mock.calls.map(call => call[0])).toEqual([
-        worker.canvases.entities, worker.canvases.text, worker.canvases.highEntities, worker.canvases.lighting
+        worker.canvases.entities, worker.canvases.highEntities, worker.canvases.lighting
     ]);
 });
 
