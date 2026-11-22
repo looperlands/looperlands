@@ -47,7 +47,7 @@ console.log('Cached artwork survives simulation eviction.');
 
 // Match the gallery's native palette option pixel-for-pixel, including switching
 // palettes on a shared effect and returning to a cached variant.
-const colors=new PixelFxPainter((width,height)=>{const canvas={width,height};canvas.getContext=()=>({createImageData:()=>({data:new Uint8ClampedArray(width*height*4)}),putImageData:image=>{canvas.pixels=image.data;}});return canvas;});
+const colors=new PixelFxPainter((width,height)=>{const canvas={width,height};canvas.getContext=()=>({createImageData:()=>({data:new Uint8ClampedArray(width*height*4)}),putImageData:image=>{canvas.pixels=image.data.slice();}});return canvas;});
 const effect='water/waterfall',mod=await colors.load(effect),meta=effects[effect];
 for(const palette of [undefined,...Object.keys(PAL)]) {
     colors.beginFrame();colors.frame(effect,500,{palette,seed:1});await colors.load(effect);await Promise.resolve();
@@ -88,3 +88,45 @@ for(const [id,options]of [
     assert.notDeepEqual(defaults.pixels,frames[0].pixels,'Options must visibly change '+id);
 }
 console.log('Custom options and randomized seeds match native pixels without cache collisions.');
+
+// Reuse the CPU upload buffer without sharing pixels between cached canvases.
+// Alternating dimensions, rewinding time and changing appearance must still match
+// fresh native frames, including pixels that become transparent on the next draw.
+let uploadBuffers=0;
+const reuse=new PixelFxPainter((width,height)=>{
+    const canvas={width,height};
+    canvas.getContext=()=>({
+        createImageData:()=>{uploadBuffers++;return {data:new Uint8ClampedArray(width*height*4)};},
+        putImageData:image=>{canvas.pixels=image.data.slice();}
+    });
+    return canvas;
+});
+const ids=['weather/rain','fire/candle'], saved=[];
+for(const id of ids){reuse.frame(id,500,{seed:1});await reuse.load(id);await Promise.resolve();}
+for(const [time,hue,removeBackdrop]of [[500,0,false],[550,120,false],[600,120,true],[50,0,false]]) {
+    for(const id of ids) {
+        reuse.beginFrame();
+        const actual=reuse.frame(id,time,{seed:1,hue,removeBackdrop}),mod=await reuse.load(id),meta=effects[id];
+        const reference=createFx(mod,{x:meta.origin[0],y:meta.origin[1],seed:1});
+        reference.update(time/1000);
+        const frame=createFrame(...meta.size),expected=new Uint8ClampedArray(frame.w*frame.h*4);
+        reference.draw(frame);if(removeBackdrop)removeDarkBackdrop(frame.color);
+        composite(frame,expected,null);rotatePixels(expected,hue);
+        assert.deepEqual(actual.pixels,expected,'Reused output buffer changed '+id+' at '+time);
+        saved.push({id,time,hue,removeBackdrop,canvas:actual,expected});
+    }
+}
+assert.equal(uploadBuffers,ids.length,'Allocate one upload buffer per live simulation, not per animation frame');
+assert.equal(new Set(saved.map(frame=>frame.canvas)).size,saved.length,'Cached frames need independent canvases');
+for(const {id,time,hue,removeBackdrop,canvas,expected}of saved) {
+    assert.deepEqual(canvas.pixels,expected,'A later draw changed a cached canvas');
+    assert.equal(reuse.frame(id,time,{seed:1,hue,removeBackdrop}),canvas,'A cached variant should remain drawable');
+}
+const firstPixels=[...reuse.instances.values()][0].pixels;
+for(const id of small.slice(0,31)) {
+    reuse.beginFrame();reuse.frame(id,0,{seed:2});await reuse.load(id);await Promise.resolve();reuse.frame(id,0,{seed:2});
+}
+assert.equal(reuse.instances.size,32,'The existing simulation limit must remain unchanged');
+assert.ok(![...reuse.instances.values()].some(item=>item.pixels===firstPixels),'Evicted simulations must release their upload buffer');
+assert.equal(reuse.frame(ids[0],500,{seed:1}),saved[0].canvas,'Eviction must preserve cached artwork');
+console.log('Upload buffers are reused with exact pixels, independent cached frames and bounded simulation retention.');

@@ -34,7 +34,10 @@ export class PixelFxPainter {
         item.fx.update(Math.max(0,t-item.fx.t));
         item.raw ||= createFrame(w,h); clearFrame(item.raw); item.fx.draw(item.raw);
         if(removeBackdrop) removeDarkBackdrop(item.raw.color);
-        const canvas=this.canvas(w,h), ctx=canvas.getContext('2d'), pixels=ctx.createImageData(w,h);
+        const canvas=this.canvas(w,h), ctx=canvas.getContext('2d');
+        // Module dimensions are fixed for this simulation. putImageData copies
+        // these bytes, so cached canvases remain independent of the scratch buffer.
+        const pixels=item.pixels ||= ctx.createImageData(w,h);
         composite(item.raw,pixels.data,null); rotatePixels(pixels.data,hue); ctx.putImageData(pixels,0,0);
         item.last=canvas;item.lastHue=hue;item.lastBackdrop=removeBackdrop;this.frameSpent=(this.frameSpent || 0)+performance.now()-started;
         this.frames.set(key,canvas); this.bytes+=w*h*4;

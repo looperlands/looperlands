@@ -33,8 +33,10 @@ function setup(centered = false, {sceneBounded = false} = {}) {
         tileIndexToGridPosition: modules.map.prototype.tileIndexToGridPosition,
         getTileAnimationProps: () => ({length: 2}),
     };
+    const terrain = new Map();
     const renderer = Object.assign(Object.create(modules.renderer.prototype), {
         mobile: false, tilesize: 16, scale: 1, tileset: {width: 256, height: 256},
+        worker: {postMessage: message => {if (message.type === 'setTerrain') terrain.set(message.id, message);}},
     });
     const camera = renderer.camera = new modules.camera(renderer);
     const game = Object.assign(Object.create(modules.game.prototype), {
@@ -51,8 +53,13 @@ function setup(centered = false, {sceneBounded = false} = {}) {
     if (sceneBounded) camera.setBoundingBox(0, 0, 40, 30);
     renderer.game = game;
     const frames = [];
+    const resolveTerrain = command => {
+        const definition = terrain.get(command.id);
+        expect(definition.revision).toBe(command.revision);
+        return {...command, tiles: definition.tiles};
+    };
     renderer.renderFrame = () => frames.push({
-        ground: renderer.drawTerrain(), high: renderer.drawHighTiles(),
+        ground: resolveTerrain(renderer.drawTerrain()), high: resolveTerrain(renderer.drawHighTiles()),
         animated: game.visibleAnimatedTiles, animatedHigh: game.visibleAnimatedHighTiles,
     });
     const sequence = game.scriptedSequence = new modules.scriptedsequenceplayer(game);

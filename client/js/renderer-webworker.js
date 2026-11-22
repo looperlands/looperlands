@@ -357,6 +357,7 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
 }
 
 const terrainCache = new Map();
+const terrainDefinitions = new Map();
 let frameSkyTerrain = null, framePaint = null;
 
 function setSkyTerrain(scene) {
@@ -464,6 +465,16 @@ let tileLights = [];
 function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options, mapId, worldTime, revision, atmosphere) {
     let ctx = contexes[id];
     if (id !== 'lights' && clear) {
+        if (tiles === undefined) {
+            const definition = terrainDefinitions.get(id);
+            if (!definition || definition.revision !== revision) {
+                // A missing or stale reference must never display the previous map's terrain.
+                ctx.clearRect(0, 0, canvases[id].width, canvases[id].height);
+                terrainCache.delete(id);
+                return;
+            }
+            tiles = definition.tiles;
+        }
         drawStaticTerrain(id, tiles, cameraX, cameraY, revision);
         return;
     }
@@ -498,6 +509,13 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
 
 
 onmessage = (e) => {
+    if (e.data.type === 'setTerrain') {
+        const {id, tiles, revision} = e.data;
+        if ((id === 'background' || id === 'high') && Array.isArray(tiles)) {
+            terrainDefinitions.set(id, {tiles, revision});
+        }
+        return;
+    }
     if (e.data.type === 'registerExtension') {
         const name = e.data.module;
         if (!/^[a-z][a-z0-9-]*-worker\.js$/.test(name) || extensionModules.has(name)) return;
@@ -525,6 +543,7 @@ onmessage = (e) => {
         tileset = undefined;
         clearImageCache();
         terrainCache.clear();
+        terrainDefinitions.clear();
         previousTileset?.close?.();
         loadImg(src).then((img) => {
             if (generation !== tilesetGeneration) {
