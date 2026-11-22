@@ -4,7 +4,7 @@
     else root.MapmakerLighting = api;
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
-    const glowPropertyNames = ['glowIntensity', 'glowRadius', 'glowColor'];
+    const glowPropertyNames = ['glowIntensity', 'glowRadius', 'glowColor', 'glowTexture'];
     const propertyNames = ['intensity', 'color', 'radius', 'innerRadius', 'spread', 'innerSpread', 'angle', 'shadow', 'animation', ...glowPropertyNames];
     function glow(properties = {}, round = true) {
         const result = {};
@@ -12,7 +12,10 @@
             const value = properties[key];
             if (value === null || value === undefined || value === '') continue;
             if (!round) throw new Error('Source glow belongs to a round light.');
-            if (key === 'glowColor') {
+            if (key === 'glowTexture') {
+                if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9-]{0,47}$/.test(value)) throw new Error('Use a glow texture name with lowercase letters, digits and dashes.');
+                result[key] = value;
+            } else if (key === 'glowColor') {
                 const channels = String(value).split(',');
                 if (channels.length !== 3 || channels.some(v => !/^\d{1,3}$/.test(v.trim()) || Number(v) > 255)) throw new Error('Use a glow color with three RGB channels from 0 to 255.');
                 const [r, g, b] = channels.map(Number);
@@ -44,7 +47,7 @@
             if (key === 'color' || key === 'glowColor') {
                 const [r, g, b] = String(value).split(',').map(Number);
                 result[key] = {r, g, b};
-            } else if (key === 'animation') result.animation = value;
+            } else if (key === 'animation' || key === 'glowTexture') result[key] = value;
             else if (key === 'glowIntensity' || key === 'glowRadius') result[key] = Number(String(value).replace(',', '.'));
             else result[key] = ['intensity', 'shadow'].includes(key)
                 ? parseFloat(String(value).replace(',', '.')) : parseInt(value);

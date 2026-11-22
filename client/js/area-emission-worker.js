@@ -35,17 +35,25 @@
                 }
             }
         }
-        const pixels = new Uint8ClampedArray(mask.length * 4);
+        const light = new Uint8ClampedArray(mask.length * 4), bounce = new Uint8ClampedArray(light.length);
         for (let i = 0; i < dist.length; i++) {
             if (dist[i] >= radius) continue;
             const falloff = Math.pow(1 - dist[i] / radius, 2);
             const offset = i * 4;
-            pixels[offset] = 255;
-            pixels[offset + 1] = 154;
-            pixels[offset + 2] = 62;
-            pixels[offset + 3] = Math.round(190 * falloff);
+            light[offset] = 255;
+            light[offset + 1] = 154;
+            light[offset + 2] = 62;
+            light[offset + 3] = Math.round(190 * falloff);
+            // Only solid receivers need a second highlight. A dark orange
+            // dodge tint retains differences between charcoal, wood and stone.
+            if (!mask[i]) {
+                bounce[offset] = 232;
+                bounce[offset + 1] = 170;
+                bounce[offset + 2] = 63;
+                bounce[offset + 3] = light[offset + 3];
+            }
         }
-        return pixels;
+        return {light, bounce};
     }
     return {build};
 });

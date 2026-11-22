@@ -16,6 +16,7 @@ let bodyMap, heightShadows, proxyAtlasRequest, bakedShadowMask;
 let outdoorShadowAreas = [];
 let framePointShadows, actorPointShadows;
 let emissiveGlowPass, frameEmissionForeground, frameLightTime;
+const frameTerrainBounce = [];
 
 let hasLoadedFont = false;
 let fontLoadPromise = null;
@@ -576,6 +577,7 @@ onmessage = (e) => {
         }
         composingWorld = true;
         frameEmissionForeground = null;
+        frameTerrainBounce.length = 0;
         frameExtensions = e.data.extensions;
         const scene = e.data.scene;
         const lightOptions = e.data.renderData.find(layer => layer?.id === 'lights')?.options;
@@ -666,6 +668,19 @@ onmessage = (e) => {
         combinedCtx.globalCompositeOperation = 'multiply';
         combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.globalCompositeOperation = 'source-over';
+        if (frameTerrainBounce.length && view) {
+            combinedCtx.save();
+            combinedCtx.scale(scale, scale);
+            if (boundedScene(scene)) clipToScene(combinedCtx, scene, view.cameraX, view.cameraY);
+            // Color dodge lifts the lit facets of the existing pixels and keeps black crevices dark.
+            combinedCtx.globalCompositeOperation = 'color-dodge';
+            combinedCtx.imageSmoothingEnabled = true;
+            for (const spill of frameTerrainBounce) {
+                combinedCtx.globalAlpha = spill.strength;
+                combinedCtx.drawImage(spill.image, spill.x, spill.y, spill.width, spill.height);
+            }
+            combinedCtx.restore();
+        }
         drawEmissiveGlow(combinedCtx, lights, view?.cameraX || 0, view?.cameraY || 0,
             {...lightOptions, scene, scale, time: frameLightTime, excludeWorld: true});
         drawBackgroundEmission(combinedCtx, view);
@@ -1241,10 +1256,13 @@ function terrainSpillRaster(cached, setting, areas) {
     }
     if (!sources) {raster.width = raster.height = 0; return null;}
     if (!self.AreaEmission) importScripts('area-emission-worker.js');
-    const colored = self.AreaEmission.build(mask, width, height, setting.radius / step);
-    pixels.data.set(colored);
+    const field = self.AreaEmission.build(mask, width, height, setting.radius / step);
+    pixels.data.set(field.light);
     rasterCtx.putImageData(pixels, 0, 0);
-    return raster;
+    const bounce = new OffscreenCanvas(width, height);
+    pixels.data.set(field.bounce);
+    bounce.getContext('2d').putImageData(pixels, 0, 0);
+    return {light: raster, bounce};
 }
 
 function drawTerrainIllumination(ctx, setting, cameraX, cameraY) {
@@ -1261,7 +1279,10 @@ function drawTerrainIllumination(ctx, setting, cameraX, cameraY) {
         if (cached.spillFields.size >= 4) {
             const oldest = cached.spillFields.keys().next().value;
             const previous = cached.spillFields.get(oldest);
-            if (previous) previous.width = previous.height = 0;
+            if (previous) {
+                previous.light.width = previous.light.height = 0;
+                previous.bounce.width = previous.bounce.height = 0;
+            }
             cached.spillFields.delete(oldest);
         }
         cached.spillFields.set(key, terrainSpillRaster(cached, setting, areas));
@@ -1270,11 +1291,13 @@ function drawTerrainIllumination(ctx, setting, cameraX, cameraY) {
     if (!field) return;
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha *= Math.min(1, setting.intensity) * (1 - GLOBAL_LIGHT_INTENSITY);
+    const strength = Math.min(1, setting.intensity) * (1 - GLOBAL_LIGHT_INTENSITY);
+    ctx.globalAlpha *= strength;
     ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(field, 0, 0, field.width, field.height,
-        Math.round(cached.x - cameraX), Math.round(cached.y - cameraY),
-        cached.canvas.width, cached.canvas.height);
+    const x = Math.round(cached.x - cameraX), y = Math.round(cached.y - cameraY);
+    const {width, height} = cached.canvas;
+    ctx.drawImage(field.light, 0, 0, field.light.width, field.light.height, x, y, width, height);
+    frameTerrainBounce.push({image: field.bounce, strength, x, y, width, height});
     ctx.restore();
 }
 
@@ -1283,7 +1306,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
     OPTION_SHADOWS = options?.shadows ?? true;
     OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
-    OPTION_DYNAMIC_LIGHTS = options?.dynamicLights ?? true;
+    OPTION_DYNAMIC_LIGHTS = options?.dynamicLights !== false && options?.reducedMotion !== true;
 
     if (atmosphereLight) {
         GLOBAL_LIGHT_INTENSITY = 1 - atmosphereLight.darkness;
@@ -1429,7 +1452,7 @@ function drawEmissiveGlow(ctx, sources, cameraX, cameraY, options = {}) {
     if (boundedScene(scene)) clipToScene(ctx, scene, cameraX, cameraY);
     const drawn = emissiveGlowPass.draw(ctx, emitters, {
         cameraX, cameraY, width: ctx.canvas.width / scale, height: ctx.canvas.height / scale,
-        pixelScale: tilesize / 16,
+        pixelScale: tilesize / 16, darkness: 1 - GLOBAL_LIGHT_INTENSITY, onTexturePending: options.onTexturePending,
         mask: (mask, source, region) => subtractEmissiveOcclusion(mask, source, region, options)
     });
     ctx.restore();
@@ -1502,7 +1525,9 @@ function subtractEmissiveOcclusion(ctx, source, region, options) {
             0, 0, region.width, region.height);
     };
     if (overlaps) erase(foreground?.canvas);
-    erase(canvases.highEntities);
+    // A painted light includes its static receivers (e.g. both rows of a tall tent).
+    // The foreground stencil above already covers visible actors and their overhead gear.
+    if (!source.glowTexture) erase(canvases.highEntities);
 }
 
 function updateAnimatedLightSource(lightSource, time) {
@@ -1549,13 +1574,20 @@ function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light
     const screenX = Math.round(light.global ? light.x : light.x - outerRadius) + offsetX;
     const screenY = Math.round(light.global ? light.y : light.y - outerRadius) + offsetY;
     const intensity = light.intensity ?? 1;
-    const color = light.color || {r: 255, g: 255, b: 255};
+    let color = light.color || {r: 255, g: 255, b: 255};
+    if (light.color && !light.global) {
+        // On a translucent multiply lightmap the unpainted portion is white daylight.
+        // Lift each channel to that floor so a colored point light cannot darken a sunny field.
+        const channel = value => Math.round(value + (255 - value) * GLOBAL_LIGHT_INTENSITY);
+        color = {r: channel(color.r), g: channel(color.g), b: channel(color.b)};
+    }
+    const flameCore = !!light.color && light.animation === 'fire';
     const spread = parseInt(light.spread || 0), innerSpread = parseInt(light.innerSpread || 0);
     const angle = parseInt(light.angle || 0);
     const width = Math.max(1, Math.ceil(light.global ? light.w : outerRadius * 2));
     const height = Math.max(1, Math.ceil(light.global ? light.h : outerRadius * 2));
     const gradientKey = ['gradient', width, height, outerRadius, innerRadius, intensity,
-        color.r, color.g, color.b, spread, innerSpread, angle, !!light.global].join(',');
+        color.r, color.g, color.b, spread, innerSpread, angle, !!light.global, flameCore].join(',');
     let gradientCanvas = imageCache[gradientKey];
     if (!gradientCanvas) {
         // Animated lights use one growing scratch surface instead of retaining each flicker.
@@ -1582,7 +1614,14 @@ function drawLightSource(ctx, light, cameraX, cameraY, pointPass, source = light
             gradientCtx.fillStyle = `rgba(${color.r},${color.g},${color.b},${intensity})`;
         } else {
             const gradient = gradientCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
-            gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${intensity})`);
+            if (flameCore && outerRadius > innerRadius) {
+                // Let the actual animated flame keep its white-hot pixels inside the amber pool.
+                const core = Math.min(1, tilesize / (outerRadius - innerRadius));
+                gradient.addColorStop(0, `rgba(255,255,255,${intensity})`);
+                gradient.addColorStop(core, `rgba(${color.r},${color.g},${color.b},${intensity * (1 - core)})`);
+            } else {
+                gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${intensity})`);
+            }
             gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
             gradientCtx.fillStyle = gradient;
         }

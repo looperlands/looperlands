@@ -22,11 +22,13 @@ For a round light, open **Source glow** and set **Glow** to **On**. **Glow inten
 
 Glow is off for existing lights until explicitly enabled. Area lights and directional spotlights do not support it; a round source must use a beam spread of 0 or 360 degrees. Keep the radius close to the flame, bulb or window so nearby roof tiles, characters and signs stay clear. The ordinary intensity and radius continue to control illumination of the ground and scenery.
 
-When artwork already emits light through its tile properties, add a round source at the same pixel center and set its ordinary intensity and shadow strength to zero. Enable glow on that source to decorate only this placement without adding another light pool or changing every copy of the tile. A fire source can use the existing fire animation for an irregular, more noticeable glow pulse; disabling dynamic lights or reduced motion makes it steady.
+When artwork already emits light through its tile properties, add a round source at the same pixel center and set its ordinary intensity and shadow strength to zero. Enable glow on that source to decorate only this placement without adding another light pool or changing every copy of the tile. A fire source can use the existing fire animation for an irregular, more noticeable glow pulse; turning off **Enable Dynamic Lights** or turning on **Reduced motion** holds it steady.
 
-The Tiled properties are `glowIntensity` (0–1, absent or 0 disables glow), `glowRadius` (whole native pixels, default 16) and optional `glowColor` (`r,g,b`). They are saved and exported with the ellipse light object. Players can turn the effect off with **Light-source glow** in the game's graphics settings.
+The Tiled properties are `glowIntensity` (0–1, absent or 0 disables glow), `glowRadius` (whole native pixels, default 16) and optional `glowColor` (`r,g,b`) and `glowTexture` (a PNG filename without its extension). They are saved and exported with the ellipse light object. Players can turn the effect off with **Light-source glow** in the game's graphics settings.
 
-Keep halos small when placing several sources together. Each view draws at most 16 glows and 16,384 native pixels of total halo area, counting the full square around each radius. Sources are considered in map order; a source that exceeds the remaining area budget is skipped, while later smaller sources can still fit. The four-source Town example uses 6,192 pixels of this budget.
+For a window or a light that falls across several materials, set **Light texture** to the name of a square RGBA PNG in `client/img/lighting/`. Paint the emission at native pixel resolution, with the emitter at its intended position in the square. A texture twice the **Glow radius** in width and height draws pixel for pixel. Transparent pixels preserve the original artwork, for example the dark wood between two lit panes. The texture supplies its own colors and fades into daylight. Ordinary point lighting still illuminates moving characters. When reusing a texture, check how its painted light lines up with the scenery at the new location.
+
+Keep halos small when placing several sources together. Each view draws at most 16 glows and 16,384 native pixels of total halo area, counting the full square around each radius. Sources are considered in map order; a source that exceeds the remaining area budget is skipped, while later smaller sources can still fit. The four-source Town example uses 15,528 pixels. The largest supported texture is 128 × 128 pixels.
 
 ## Cast shadows
 
@@ -50,22 +52,24 @@ Build the client with `node bin/build-client.js` and run `node bin/local-paralla
 
 Open Inventory with **Z** or Settings with **C** to see a panel cast onto the map. Panels share the light direction sampled at the player's feet. Scrub the outdoor clock or cross a nearby fire to change the cast direction.
 
-### Town glow comparison
+### Town and Lavaland at 22:00
 
-![Town before and after source glow, rendered offline](images/source-glow-town.png)
+The two sides show the same camera, time and clear weather in the running browser game. The left side comes from `main` at `b417ab91c`. In Town, compare the cottage panes and the stones beneath them, then follow the campfire light across the near face of the tent to the creek.
 
-The image above captures the initial glow profile with the actual renderer, map and artwork at 22:00. The live comparison links below use the updated falloff, with a wider, softer warm shoulder around the same authored four lights. Use the live playtest to check movement, shadows and browser performance.
+![Town cottage and campfire at 22:00, before and after](images/source-glow-town.png)
 
-In the local preview launcher, **Warm windows and campfire** offers **Original lighting** and **With source glow**. Both start at Town tile `(70, 224)` at 22:00 with clear weather. Each link overrides glow only for that preview session; it does not change your saved preference. Saving the game's graphics settings stores your chosen setting. The cottage to the west and campfire to the east use their existing artwork, light pools and shadows. The new glow sources are attached only to these four placements; the other Town lights keep their current appearance.
+In the local preview launcher, **Warm windows and campfire** starts at tile `(70, 222)`. **Source glow off** and **Source glow on** switch the painted emission for that session. The ordinary point lights use the colors set on the window and campfire tiles. Walk beside the fire to see its light on the player and the cast shadow change direction. [Watch the Town walk](images/town-firelight-walk.mp4)
 
-| Source | Tile | Glow radius | Glow intensity |
+| Source | Texture center in world pixels | Glow radius | Glow intensity |
 | --- | --- | --- | --- |
-| Cottage dormer | (63, 218) | 18 pixels | 0.18 |
-| Cottage west window | (61, 221) | 18 pixels | 0.22 |
-| Cottage east window | (65, 221) | 18 pixels | 0.22 |
-| Campfire | (78, 223) | 24 pixels | 0.32 |
+| Cottage dormer | (1008, 3493) | 18 pixels | 0.98 |
+| Cottage west window | (978, 3547) | 23 pixels | 0.96 |
+| Cottage east window | (1037, 3547) | 23 pixels | 0.96 |
+| Campfire | (1256, 3576) | 50 pixels | 0.92 |
 
-Walk in front of the windows and around the fire, then switch **Light-source glow** from the same position. Check that the window frames, player, equipment and labels remain readable, and that the glow follows the source while the camera moves. Disable **Enable Dynamic Lights** for a steady lighting comparison. **Reduced motion** also pauses the new glow pulse.
+In **Lavaland · bridge over lava**, start at tile `(71, 7)`. Light from exposed lava catches the nearby rock faces and bridge planks, then fades with distance. Look along the far wall to see how the dark crevices preserve the shape of the rocks. [Watch the bridge crossing](images/lavaland-bridge-walk.mp4)
+
+![Lavaland bridge at 22:00, before and after](images/lavaland-lighting.png)
 
 **Duckville · tree shadows** starts at tile `(67, 437)`, directly below the tall bare tree. Its thin branches let light pass below them, and its wide roots meet the ground. **Duckville cave · firelit tree** starts at `(112, 428)`, beside the smaller bare tree and the existing fire at `(113.5, 427.5)`. These two tree profiles apply wherever their artwork is reused, including the alternate roots. The rest of Duckville's static artwork can use authored polygon blockers. [Duckville atlas](../client/img/common/height-proxies/duckville.png)
 

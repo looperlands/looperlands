@@ -2,6 +2,7 @@ const path = require('path');
 
 // Both local entry points serve the same editor shell and its shared scripts.
 function install(app, root) {
+    app.use('/img/lighting', require('express').static(path.join(root, 'client/img/lighting')));
     app.use('/local/vendor/lib/pixelfx', require('express').static(path.join(root, 'client/js/lib/pixelfx')));
     const assets = {
         '/local/vendor/attackwarning-worker.js': 'client/js/attackwarning-worker.js',

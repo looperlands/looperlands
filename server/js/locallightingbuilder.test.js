@@ -77,8 +77,8 @@ test('source glow survives save, reload and client export with optional color in
             object: {...current, properties: {...current.properties, ...properties}}});
         return exportClient().lights.find(light => light.id === 7);
     };
-    const glowing = await update({intensity: '0', glowIntensity: '0,3', glowRadius: '2e1', glowColor: '255,120,40'});
-    expect(glowing).toMatchObject({intensity: 0, glowIntensity: .3, glowRadius: 20, glowColor: {r: 255, g: 120, b: 40}});
+    const glowing = await update({intensity: '0', glowIntensity: '0,3', glowRadius: '2e1', glowColor: '255,120,40', glowTexture: 'cottage-window'});
+    expect(glowing).toMatchObject({intensity: 0, glowIntensity: .3, glowRadius: 20, glowColor: {r: 255, g: 120, b: 40}, glowTexture: 'cottage-window'});
     expect(glowing).toEqual(L.light(data.objects.find(row => row.id === '7'), 16));
     const inherited = await update({glowColor: null});
     expect(inherited).not.toHaveProperty('glowColor');
@@ -90,7 +90,7 @@ test('source glow survives save, reload and client export with optional color in
 });
 test.each([
     'name="glowIntensity" value="2"', 'name="glowRadius" value="65"',
-    'name="glowRadius" value="1.5"', 'name="glowColor" value="255,0"'
+    'name="glowRadius" value="1.5"', 'name="glowColor" value="255,0"', 'name="glowTexture" value="../window"'
 ])('direct Tiled exports reject invalid glow properties: %s', property => {
     fs.writeFileSync(file, xml.replace('name="intensity" value="0.6"', property));
     expect(exportClient).toThrow(/Glow|glow/);

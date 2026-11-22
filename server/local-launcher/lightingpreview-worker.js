@@ -1,7 +1,8 @@
 // Reuse the game renderer so beams, color blending and shadow projection match gameplay.
 importScripts('./vendor/lighting-renderer.js', './vendor/emissive-glow-worker.js', './lighting-contract.js');
-let previewGlowCanvas;
+let previewGlowCanvas, latestView;
 self.onmessage = event => {
+    latestView = event;
     try {
         const {objects, dimensions, x, y, darkness, requestId, motion, view} = event.data;
         const nativeWidth = view?.width || dimensions.tilewidth * 13, nativeHeight = view?.height || dimensions.tileheight * 13;
@@ -39,7 +40,13 @@ self.onmessage = event => {
             if (previewGlowCanvas.height !== height) previewGlowCanvas.height = height;
             const ctx = previewGlowCanvas.getContext('2d');
             ctx.clearRect(0, 0, width, height);
-            drawEmissiveGlow(ctx, sources, cameraX, cameraY, {scene, scale: 1, emissiveGlow: true, dynamicLights: motion, reducedMotion: !motion});
+            const pending = new Set();
+            drawEmissiveGlow(ctx, sources, cameraX, cameraY, {scene, scale: 1, emissiveGlow: true,
+                dynamicLights: motion, reducedMotion: !motion, onTexturePending: texture => pending.add(texture)});
+            if (pending.size) {
+                Promise.all(pending).then(() => {if (latestView === event) self.onmessage(event);});
+                return;
+            }
             glowBitmap = previewGlowCanvas.transferToImageBitmap();
         }
         const bitmap = canvases.lighting.transferToImageBitmap();

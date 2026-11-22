@@ -621,6 +621,23 @@ test('fire pulses smoothly around authored settings, stays local to each source 
     expect(base).toEqual({x:100,y:200,radius:4,intensity:0.8,animation:'fire'});
 });
 
+test('daylight sets a white floor for colored point lights and fire keeps a white-hot center at night', () => {
+    const worker = setup(), target = worker.canvases.lighting.ctx;
+    worker.setPlayer({x: 99999, y: 99999});
+    const light = {x: 100, y: 100, radius: 4, intensity: 1, color: {r: 255, g: 116, b: 42}};
+    const stops = (source, darkness) => {
+        worker.renderLightOverlay([], 0, 0, 1, 0, {darkness}, [], {shadows: false, playerShadow: false});
+        worker.drawLightSource(target, source, 0, 0);
+        const gradient = worker.allocations.at(-1).ctx.createRadialGradient.mock.results.at(-1).value;
+        return gradient.addColorStop.mock.calls;
+    };
+    expect(stops(light, 0)[0]).toEqual([0, 'rgba(255,255,255,1)']);
+    expect(stops(light, 1)[0]).toEqual([0, 'rgba(255,116,42,1)']);
+    const flame = stops({...light, animation: 'fire'}, 1);
+    expect(flame[0]).toEqual([0, 'rgba(255,255,255,1)']);
+    expect(flame[1]).toEqual([.25, 'rgba(255,116,42,0.75)']);
+});
+
 test('moving a static light does not create camera-specific gradients or canvases', () => {
     const worker = setup(); worker.options(false,false);
     const light = {x:100,y:200,radius:4,intensity:0.8};
