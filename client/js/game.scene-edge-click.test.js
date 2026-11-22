@@ -3,6 +3,7 @@ const vm = require('vm');
 
 function setup() {
     const modules = Object.fromEntries(['mob', 'player', 'item', 'npc', 'chest'].map(name => [name, class {}]));
+    modules.mapmakerentities = require('../../shared/js/mapmakerentities.json');
     const sandbox = {
         Date, Math, console,
         $: () => ({hasClass: () => false, filter: () => [], is: () => false}),

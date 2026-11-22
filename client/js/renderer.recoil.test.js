@@ -72,7 +72,7 @@ test('a standing hero animates while casting from one pose for the current direc
 
 test('trainer uses only its custom level/nameplate, while ordinary mob labels remain', () => {
     const actor=Object.assign(new Mob(), {id:7,name:'ogre',level:6,x:0,y:0});
-    const host={scale:2,getHpIndicatorColor:()=> '#fff',game:{combatPrototype:{state:{mob:{id:7}}},
+    const host={...renderer,scale:2,getHpIndicatorColor:()=> '#fff',game:{combatPrototype:{state:{mob:{id:7}}},
         app:{settings:{getRenderText:()=>true}}}};
     expect(renderer.drawEntityName.call(host,actor,-20)).toEqual([]);
     actor.id=8;
@@ -80,7 +80,7 @@ test('trainer uses only its custom level/nameplate, while ordinary mob labels re
 });
 
 test('live combat without a trainer renders avatar and mob names',()=>{
-    const host={scale:2,getHpIndicatorColor:()=> '#fff',game:{playerId:1,combatPrototype:{state:{live:true,mob:null}},
+    const host={...renderer,scale:2,getHpIndicatorColor:()=> '#fff',game:{playerId:1,combatPrototype:{state:{live:true,mob:null}},
         app:{settings:{getRenderText:()=>true,getRenderMyText:()=>true}}}};
     for(const actor of [Object.assign(new Character(),{id:1,name:'Local Looper',level:30,x:0,y:0}),
         Object.assign(new Mob(),{id:7,name:'spectre',level:6,x:0,y:0})]) {

@@ -44,11 +44,13 @@ function draw(type, daylight) {
     const pixels = [];
     const context = {
         globalCompositeOperation: 'source-over', save() {}, restore() {}, translate() {}, rotate() {},
-        createRadialGradient: () => ({addColorStop() {}}),
+        createRadialGradient: () => ({
+            addColorStop(offset, color) {if (offset === 0) this.centerColor = color;}
+        }),
         fillRect(...rect) {
-            if (typeof this.fillStyle === 'string') {
-                pixels.push({rect, color: this.fillStyle.match(/[\d.]+/g).map(Number), blend: this.globalCompositeOperation});
-            }
+            const gradient = typeof this.fillStyle !== 'string';
+            const color = gradient ? this.fillStyle.centerColor : this.fillStyle;
+            pixels.push({rect, gradient, color: color.match(/[\d.]+/g).map(Number), blend: this.globalCompositeOperation});
         },
     };
     WorldParticles.draw(context, {x: 20, y: 20, scale: 2, seed: 0.5}, type, 10, daylight);
@@ -57,9 +59,8 @@ function draw(type, daylight) {
 
 test.each(['leaves', 'dust', 'spray', 'pollen', 'sand', 'ash'])(
     '%s gets a darker underside and a stronger core in daylight', type => {
-        const day = draw(type, 1);
-        const dusk = draw(type, 0.5);
-        const night = draw(type, 0);
+        const [day, dusk, night] = [1, .5, 0].map(daylight =>
+            draw(type, daylight).filter(pixel => !pixel.gradient));
         const brightness = pixel => pixel.color.slice(0, 3).reduce((sum, value) => sum + value, 0);
         expect(day.length).toBeGreaterThan(night.length);
         expect(brightness(day[0])).toBeLessThan(brightness(day.at(-1)) / 2);
