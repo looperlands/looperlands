@@ -292,11 +292,6 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
             if (target) {
                 target.update(t);
             }
-
-            var floats = this.game.floatAnimation;
-            if (floats) {
-                floats.update(t);
-            }
         },
 
         updateAnimatedTiles: function () {

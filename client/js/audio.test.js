@@ -68,7 +68,9 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
     vm.runInContext(fs.readFileSync(require.resolve('./ambientconfig'), 'utf8'), sandbox);
     sandbox.define = Object.assign((deps, factory) => {sandbox.Soundscape = factory(sandbox.AmbientConfig);}, {amd: true});
     vm.runInContext(fs.readFileSync(require.resolve('./soundscape'), 'utf8'), sandbox);
-    sandbox.define = (dependencies, factory) => {sandbox.AudioManager = factory(sandbox.Area, sandbox.MusicPlayer, sandbox.AmbientConfig, sandbox.Soundscape);};
+    sandbox.define = factory => {sandbox.FishingSounds = factory();};
+    vm.runInContext(fs.readFileSync(require.resolve('./fishingsounds'), 'utf8'), sandbox);
+    sandbox.define = (dependencies, factory) => {sandbox.AudioManager = factory(sandbox.Area, sandbox.MusicPlayer, sandbox.AmbientConfig, sandbox.Soundscape, sandbox.FishingSounds);};
     vm.runInContext(fs.readFileSync(require.resolve('./audio'), 'utf8'), sandbox);
     const manager = new sandbox.AudioManager({renderer: {mobile}, player: {gridX: 1, gridY: 1}});
     const dispatch = event => documentListeners.get(event)?.forEach(callback => callback());
@@ -95,6 +97,30 @@ test('server sound indices select the same effects on the Safari path', () => {
     manager.playSound('10');
     expect(manager.soundEffects.kill1.play).toHaveBeenCalledTimes(1);
     expect(manager.soundEffects.kill2.play).toHaveBeenCalledTimes(1);
+});
+
+test('fishing cues use audible, cached one-shots within earshot and honor mute', () => {
+    const {manager} = setup();
+    manager.game.started = true;
+    const context = manager.soundscape.context = {state: 'running', createBuffer: jest.fn((channels, length) => {
+        const samples = new Float32Array(length);
+        return {getChannelData: () => samples};
+    })};
+    const connect = manager.soundscape.connect = jest.fn(() => ({}));
+    const shore = {gridX: 3, gridY: 1};
+    for (const cue of ['cast', 'land', 'bite', 'reel']) {
+        manager.playFishingSound(cue, shore);
+        const [buffer, loop, gain, pan] = connect.mock.lastCall;
+        const peak = Math.max(...buffer.getChannelData(0).map(Math.abs));
+        expect(peak).toBeGreaterThan(.15); expect(peak).toBeLessThanOrEqual(1);
+        expect(loop).toBe(false); expect(gain).toBeGreaterThan(0); expect(pan).toBeGreaterThan(0);
+    }
+    manager.playFishingSound('cast', shore);
+    expect(context.createBuffer).toHaveBeenCalledTimes(4);
+    manager.playFishingSound('land', {gridX: 20, gridY: 20});
+    manager.enabled = false;
+    manager.playFishingSound('bite', shore);
+    expect(connect).toHaveBeenCalledTimes(5);
 });
 
 test('confirmed combo audio caps pitch and respects the existing audio switch', () => {
