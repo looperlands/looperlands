@@ -15,6 +15,7 @@ function fixture({self = false, renderNames = true, renderMyName = true} = {}) {
     });
     const host = Object.assign({}, renderer, {scale: 2, game: {
         playerId: 1,
+        player: {x: 32, y: 48},
         app: {settings: {getRenderText: () => renderNames, getRenderMyText: () => renderMyName}},
     }});
     return {actor, host, labels: () => host.drawEntityName(actor, -16)};
@@ -46,21 +47,56 @@ test.each([{}, {attackingMode: true}, {followingMode: true}, {inCombat: true}])(
     }
 );
 
-test('every existing HP band remains distinct and readable, including critical health', () => {
+test('ordinary mob names use one neutral readable color regardless of HP', () => {
     const {actor, labels} = fixture();
-    const ranges = [[0, 4], [5, 9], [10, 24], [25, 49], [50, 79], [80, 89], [90, 94], [95, 100]];
-    const colors = ranges.map(([minimum, maximum]) => {
-        actor.hitPoints = minimum;
+    for (const hp of [100, 94, 79, 49, 24, 9, 0]) {
+        actor.hitPoints = hp;
         const label = labels()[0];
+        expect(label.color).toBe('#d8d5c8');
         expect(contrast(label)).toBeGreaterThanOrEqual(7);
-        actor.hitPoints = maximum;
-        expect(labels()[0].color).toBe(label.color);
-        return label.color;
-    });
-    expect(new Set(colors).size).toBe(ranges.length);
-    const channel = (color, start) => parseInt(color.slice(start, start + 2), 16);
-    expect(channel(colors[0], 1)).toBeGreaterThan(channel(colors[0], 3)); // Critical: red.
-    expect(channel(colors.at(-1), 3)).toBeGreaterThan(channel(colors.at(-1), 1)); // Healthy: green.
+    }
+});
+
+test('distant idle mobs are unlabelled until approached, targeted, hurt or engaged', () => {
+    const {actor, host, labels} = fixture();
+    host.game.player = {x: actor.x + 200, y: actor.y + 200};
+    expect(labels()).toEqual([]);
+    host.game.player = {x: actor.x + 80, y: actor.y};
+    expect(labels()).toHaveLength(1);
+    host.game.player.x = actor.x + 81;
+    expect(labels()).toEqual([]);
+    host.game.player.target = {id: actor.id};
+    expect(labels()).toHaveLength(1);
+    host.game.player.target = null;
+    host.game.combatPrototype = {getHealthTargetId: () => actor.id};
+    expect(labels()).toHaveLength(1);
+    host.game.combatPrototype = null;
+    actor.hitPoints = actor.maxHitPoints - 1;
+    expect(labels()).toHaveLength(1);
+    actor.hitPoints = actor.maxHitPoints;
+    actor.inCombat = true;
+    expect(labels()).toHaveLength(1);
+    actor.inCombat = false;
+    actor.attackingMode = true;
+    expect(labels()).toHaveLength(1);
+    actor.attackingMode = false;
+    actor.followingMode = true;
+    expect(labels()).toHaveLength(1);
+});
+
+test('remote and local player names are not proximity-culled', () => {
+    const {actor, host, labels} = fixture({self: true});
+    host.game.player = {x: 900, y: 900};
+    expect(labels()[0]).toMatchObject({color: '#fcda5c'});
+    actor.id = 99;
+    expect(labels()[0]).toMatchObject({color: '#d8d5c8'});
+});
+
+test('mob nameplates default to legacy visibility when player position is unavailable', () => {
+    const {actor, host, labels} = fixture();
+    host.game.player = null;
+    actor.x = 5000;
+    expect(labels()).toHaveLength(1);
 });
 
 test('the local name keeps its gold color regardless of HP or other-name visibility', () => {

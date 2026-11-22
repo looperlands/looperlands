@@ -11,12 +11,12 @@
     "nightOpacity": 0.3,
     "mode": "cycle",
     "particles": "fireflies",
-    "particleCount": 12,
+    "particleCount": 10,
     "areas": {
       "Town": [
         {
           "type": "fireflies",
-          "count": 18
+          "count": 10
         },
         {
           "type": "pollen",

@@ -3,6 +3,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     function(Camera, Item, Character, Player, Timer, Mob, Npc, CursorController) {
 
         const NAMEPLATE_STROKE = '#17202b';
+        const NAMEPLATE_NEUTRAL = '#d8d5c8';
+        const MOB_NAME_RADIUS = 80; // Five map tiles; beyond this, combat state decides visibility.
 
         var Renderer = Class.extend({
             init: function(game, canvas, background, foreground) {
@@ -815,12 +817,27 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                          (rect2.bottom < rect1.top));
             },
     
+            showMobName: function(entity) {
+                // Mob names should help identify nearby threats, not cover a quiet town.
+                // Players, health bars, NPC indicators and combat text have their own rules.
+                const targetId = this.game.combatPrototype?.getHealthTargetId?.() ?? this.game.player?.target?.id;
+                if (entity.id === targetId || entity.inCombat || entity.attackingMode || entity.followingMode ||
+                    (Number.isFinite(entity.maxHitPoints) && Number.isFinite(entity.hitPoints) &&
+                        entity.hitPoints < entity.maxHitPoints)) return true;
+                const player = this.game.player;
+                // Preserve spectator/preview behaviour until a local player is available.
+                if (!player || !Number.isFinite(player.x) || !Number.isFinite(player.y)) return true;
+                const dx = entity.x - player.x, dy = entity.y - player.y;
+                return dx * dx + dy * dy <= MOB_NAME_RADIUS * MOB_NAME_RADIUS;
+            },
+
             drawEntityName: function(entity, oy) {
                 let textData = [];
     
                 if (entity.id === this.game.combatPrototype?.state?.mob?.id) return textData;
                 if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
-                    let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
+                    if (entity instanceof Mob && !this.showMobName(entity)) return textData;
+                    const color = entity.id === this.game.playerId ? "#fcda5c" : NAMEPLATE_NEUTRAL;
                     let entityData = entity.name;
                     
                     let renderThisText = (entity.id === this.game.playerId) ? this.game.app.settings.getRenderMyText() : this.game.app.settings.getRenderText();
@@ -876,30 +893,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 return textData;
             },
     
-            getHpIndicatorColor: function(entity) {
-                if (entity.maxHitPoints !== undefined && entity.hitPoints !== undefined) {
-                    const lifePercentage = entity.hitPoints/entity.maxHitPoints * 100;
-    
-                    if (lifePercentage >= 95) {
-                        return "#a8edb4";
-                    } else if (lifePercentage >= 90) {
-                        return "#98daa8";
-                    } else if (lifePercentage >= 80) {
-                        return "#cfed91";
-                    } else if (lifePercentage >= 50) {
-                        return "#ffe58a";
-                    } else if (lifePercentage >= 25) {
-                        return "#ffc17c";
-                    } else if (lifePercentage >= 10) {
-                        return "#ffad8a";
-                    } else if (lifePercentage >= 5) {
-                        return "#ff9898";
-                    } else if (lifePercentage >= 0) {
-                        return "#ffb3c1";
-                    }
-                }
-            },
-    
+
             drawTerrain: function() {
                 return this.staticTileCommand('background', this.game.visibleTerrainTiles, false);
             },

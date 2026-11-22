@@ -91,9 +91,10 @@
                 const glow = (1 - daylight) * flutter;
                 if (glow <= 0) return;
                 context.globalCompositeOperation = 'lighter';
-                halo(context, x, y, 8 * scale, '236,255,148', glow * 0.45);
-                context.fillStyle = 'rgba(255,255,208,' + glow + ')';
-                context.fillRect(x, y, 2 * scale, 2 * scale);
+                // Keep fireflies visible as small living lights, not bright HUD-like dots.
+                halo(context, x, y, 5 * scale, '236,255,148', glow * 0.25);
+                context.fillStyle = 'rgba(255,255,208,' + glow * 0.8 + ')';
+                context.fillRect(x, y, scale, scale);
                 context.globalCompositeOperation = 'source-over';
                 break;
             }
