@@ -1,6 +1,6 @@
 
-define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorcontroller'],
-    function(Camera, Item, Character, Player, Timer, Mob, Npc, CursorController) {
+define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorcontroller', 'fishingcast'],
+    function(Camera, Item, Character, Player, Timer, Mob, Npc, CursorController, FishingCast) {
 
         // Map art uses 16px tiles; fade idle enemy labels between four and eight tiles.
         const MOB_NAME_FADE_START = 64;
@@ -1117,29 +1117,17 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 return combatTextData;
             },
     
-            drawFishingFloat: function(inputFloat) {
-                let float = this.game.sprites[inputFloat.spriteName],
-                                anim = this.game.floatAnimation;
-                if(anim && float) {
-                    const image = float.getImage();
-                    if (!image) return;
-                    let s = this.scale,
-                    os = this.upscaledRendering ? 1 : s,
-                    ds = this.upscaledRendering ? s : 1,
-                    frame = anim.currentFrame,
-                    fx = float.width * frame.index * os,
-                    fy = float.height * anim.row * os,
-                    fw = float.width * os,
-                    fh = float.height * os;
-    
-                    this.context.save();
-                    this.context.translate(inputFloat.gridX * this.tilesize * s, inputFloat.gridY * this.tilesize * s);
-                    this.context.drawImage(image, fx, fy, fw, fh,
-                                        float.offsetX * s,
-                                        float.offsetY * s,
-                                        fw * ds, fh * ds);
-                    this.context.restore();
-                }
+            drawFishingFloat: function(float) {
+                if (!this.camera.isVisiblePosition(float.gridX, float.gridY, 2)) return;
+                const caster = this.game.getEntityById(float.id);
+                if (caster && (caster.isDead || !caster.isVisible() ||
+                    Math.abs(caster.gridX - float.gridX) + Math.abs(caster.gridY - float.gridY) > 2)) return;
+                const sprites = this.game.sprites;
+                this.context.save();
+                this.context.scale(this.scale, this.scale);
+                FishingCast.draw(this.context, float, caster, sprites[float.rodName], sprites[float.spriteName],
+                    this.tilesize, this.game.currentTime, this.game.app.settings.getReducedMotion());
+                this.context.restore();
             },
     
             drawFloats: function() {

@@ -138,9 +138,15 @@
                 voice.pan?.pan.setTargetAtTime(pan, now, .08);
             }
         }
-        cue(material, position = {gain: 1, pan: 0}, footstep = false) {
+        playCue(makeBuffer, position, level = 1) {
             if (!this.enabled || this.doc.hidden || this.context?.state !== 'running' || this.cues.size >= 16 || position.gain <= .001) return;
-            const c = this.context, duration = footstep ? .075 : .16;
+            this.cues.add(this.connect(makeBuffer(this.context), false, position.gain * level, position.pan));
+        }
+        cue(material, position = {gain: 1, pan: 0}, footstep = false) {
+            this.playCue(c => this.materialBuffer(c, material, footstep), position, footstep ? .22 : .65);
+        }
+        materialBuffer(c, material, footstep) {
+            const duration = footstep ? .075 : .16;
             const buffer = c.createBuffer(1, Math.ceil(c.sampleRate * duration), c.sampleRate), out = buffer.getChannelData(0);
             const frequency = (material === 'stone' ? 1250 : material === 'wood' ? 340 : 160) * (.9 + Math.random() * .2);
             let low = 0;
@@ -155,8 +161,7 @@
                                 : low * .5 + Math.sin(t * 2 * Math.PI * 95) * .12;
                 out[i] = value * Math.min(1, t / .003) * Math.exp(-t / (duration / 5));
             }
-            const voice = this.connect(buffer, false, position.gain * (footstep ? .22 : .65), position.pan);
-            this.cues.add(voice);
+            return buffer;
         }
         clear() {
             for (const controller of this.pending.values()) controller.abort();

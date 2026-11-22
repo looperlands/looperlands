@@ -1,5 +1,5 @@
 
-define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, MusicPlayer, AmbientConfig, Soundscape) {
+define(['area', 'musicplayer', 'ambientconfig', 'soundscape', 'fishingsounds'], function (Area, MusicPlayer, AmbientConfig, Soundscape, FishingSounds) {
 
     // At full sliders, reproduce the reference mix without changing spatial attenuation.
     const BASE_MIX = Object.freeze({music: .13, sound: .09, ambient: .88});
@@ -144,6 +144,14 @@ define(['area', 'musicplayer', 'ambientconfig', 'soundscape'], function (Area, M
 
         playFootstep: function (surface) {
             if (this.enabled) this.soundscape.cue(surface, {gain: 1, pan: 0}, true);
+        },
+
+        playFishingSound: function (name, source) {
+            const game = this.game;
+            if (!this.enabled || !game.started || game.isStopped || game.disconnected || game.minigameLoaded || game.player?.isDead) return;
+            this.soundscape.playCue(FishingSounds[name], AmbientConfig.spatial({
+                x: source.gridX, y: source.gridY, radius: 9, volume: 1
+            }, this.listenerPosition()));
         },
 
         playToolImpact: function (material, x, y) {

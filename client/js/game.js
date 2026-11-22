@@ -6357,7 +6357,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             pauseForMapTransition: function () {
                 this.cancelAvatarAppearance?.(this.player);
-                if (this.player.isFishing) this.stopFishing(false, false, false);
+                if (this.player.isFishing) this.stopFishing();
                 this.app.hideChat();
                 this.started = false;
                 this.isStopped = true;
@@ -6583,9 +6583,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 this.indicatorAnimation = new Animation("idle_down", 7, 0, 16, 16);
                 this.indicatorAnimation.setSpeed(120);
-
-                this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
-                this.floatAnimation.setSpeed(240);
             },
 
             initHurtSprites: function () {
@@ -6835,6 +6832,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
             removeEntity: function (entity) {
                 if (this.entities[entity.id] === entity) {
+                    if (this.floats?.[entity.id]) this.removeFloat(entity.id);
                     this.cancelAvatarAppearance?.(entity);
                     this.forgetEntityAttacks(entity.id);
                     this.unregisterEntityPosition(entity);
@@ -6894,48 +6892,37 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 }
             },
 
-            addFloat: function (float) {
-                let self = this;
-                float.despawnTimeout = setTimeout(function () {
-                    self.removeFloat(float.id);
-                }, float.despawnDuration);
-
-                if (this.floats[float.id] === undefined) {
-                    this.floats[float.id] = float;
-                } else {
-                    console.error("This float already exists : " + float.id);
-                }
+            scheduleFloatRemoval: function (float, duration) {
+                clearTimeout(float.despawnTimeout);
+                float.despawnTimeout = setTimeout(() => this.removeFloat(float.id), duration);
             },
 
             castFloat: function (float) {
-                let self = this;
-                let player = this.getEntityById(float.id);
-                if (player) {
-                    let orientationToLake = player.getOrientationTo(float);
-                    if (orientationToLake !== player.orientation) {
-                        player.turnTo(orientationToLake);
-                    }
-                    ;
+                this.removeFloat(float.id);
+                this.floats[float.id] = float;
+                this.scheduleFloatRemoval(float, float.despawnDuration);
 
-                    if (this.camera.isVisible(player)) {
-                        player.animate("atk", 75, 1, function () {
-                            self.audioManager.playSound("watersplash");
-                            player.idle();
-                            self.addFloat(float);
-                        });
+                const caster = this.getEntityById(float.id);
+                if (caster) {
+                    const facing = caster.getOrientationTo(float);
+                    if (facing !== caster.orientation) caster.turnTo(facing);
+                    if (this.camera.isVisible(caster) && !this.app.settings?.getReducedMotion()) {
+                        caster.animate("atk", 75, 1);
                     }
-                } else {
-                    self.addFloat(float);
+                    this.audioManager.playFishingSound('cast', caster);
                 }
+                float.landingTimeout = setTimeout(() => {
+                    // A background tab may resume well after the bobber has landed.
+                    if (Date.now() - float.landAt < 250) this.audioManager.playFishingSound('land', float);
+                }, float.landAt - float.castAt);
             },
 
             removeFloat: function (floatId) {
-                if (floatId in this.floats) {
-                    clearTimeout(this.floats[floatId].despawnTimeout);
-                    delete this.floats[floatId];
-                } else {
-                    console.error("Cannot remove float. Unknown ID : " + floatId);
-                }
+                const float = this.floats[floatId];
+                if (!float) return;
+                clearTimeout(float.landingTimeout);
+                clearTimeout(float.despawnTimeout);
+                delete this.floats[floatId];
             },
 
             initPathingGrid: function () {
@@ -7586,7 +7573,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.findVisibleTiles();
 
                         if (this.isFishing) {
-                            self.stopFishing(false, false, false);
+                            self.stopFishing();
                         }
 
                         // A click reroute may still be awaiting its path after the last tile.
@@ -7920,7 +7907,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         }
 
                         if (this.isFishing) {
-                            self.stopFishing(false, false, false);
+                            self.stopFishing();
                         }
 
                         if (self.equipment_callback) {
@@ -8808,7 +8795,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                     entity.setWeaponName(itemName);
                     entity.dynamicWeaponNFTData = metadata;
                     if (entity === this.player) {
-                        if (entity.isFishing && !Types.isFishingRod(itemKind)) this.stopFishing(false, false, false);
+                        if (entity.isFishing && !Types.isFishingRod(itemKind)) this.stopFishing();
                         this.renderStatistics();
                     }
                 }
@@ -10551,7 +10538,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.cancelAvatarAppearance?.(this.player);
                 this.audioManager?.soundscape?.clear();
                 const player = this.player;
-                if (player.isFishing) this.stopFishing(false, false, false);
+                if (player.isFishing) this.stopFishing();
                 const duration = this.app.settings.getReducedMotion() ? 120 : 1000;
                 clearTimeout(this.playerDeathTimer);
                 clearTimeout(this.reviveTimer);
@@ -11129,6 +11116,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 const isCurrent = () => self.player === player && self.map === map && self.sessionId === sessionId && !self.mapTransition?.active;
                 if (!isCurrent()) return;
                 if (!this.player.isFishing && !this.fishingRequest) {
+                    this.removeFloat(player.id);
                     clearTimeout(this.fishingBarTimeout);
                     this.app.hideFishing();
                     this.app.fishingCatch?.clear();
@@ -11187,6 +11175,11 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
 
                 this.fishingData.fishName = fishName;
                 this.fishingData.fishTime = new Date().getTime();
+                const float = this.floats[this.player.id];
+                if (float) {
+                    float.biteAt = this.fishingData.fishTime;
+                    this.audioManager.playFishingSound('bite', float);
+                }
                 this.app.setFish(fishSpriteUrl);
                 this.generateFishingTarget(difficulty, bullseyeSize);
                 clearInterval(this.slidingFish);
@@ -11195,11 +11188,16 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 clearTimeout(self.uniFishTimeout);
                 this.uniFishTimeout = setTimeout(function () {
                     self.showNotification(self.fishingData.fishName + " escaped!");
-                    self.stopFishing(false, false, false);
+                    self.stopFishing();
                 }, fishEscapeDuration);
             },
 
-            stopFishing: function (success, barHoldDuration, bullseye) {
+            stopFishing: function () {
+                this.removeFloat(this.player.id);
+                this.finishFishing(false, false, false);
+            },
+
+            finishFishing: function (success, barHoldDuration, bullseye) {
                 let self = this;
 
                 self.player.isFishing = false;
@@ -11213,8 +11211,6 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 } else {
                     this.app.hideFishing();
                 }
-
-                if (this.floats[this.player.id]) this.removeFloat(this.player.id);
 
                 this.client.sendFishingResult(success, bullseye);
                 this.fishingData.fishPos = 0;
@@ -11251,8 +11247,13 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             clickFishingBar: function () {
-                if (!this.player.isFishing) return;
-                let self = this;
+                if (!this.player.isFishing || !this.fishingData.fishName) return;
+                const float = this.floats[this.player.id];
+                if (float) {
+                    float.reelAt = Date.now();
+                    this.scheduleFloatRemoval(float, float.reelDuration);
+                    this.audioManager.playFishingSound('reel', this.player);
+                }
                 const markerOffset = 12; // 8 from the marker + 4 from the bar border
                 let clickPos = this.fishingData.fishPos + markerOffset;
                 let minTargetPos = this.fishingData.targetPos;
@@ -11260,17 +11261,12 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 let minBullseyePos = minTargetPos + this.fishingData.bullseyeRelPos;
                 let maxBullseyePos = minBullseyePos + this.fishingData.bullseyeHeight;
 
-                clearInterval(this.slidingFish);
                 if (clickPos >= minTargetPos && clickPos < maxTargetPos) {
-                    let bullseye = false;
-                    if (clickPos >= minBullseyePos && clickPos < maxBullseyePos) {
-                        bullseye = true;
-                    }
-                    self.stopFishing(true, false, bullseye);
+                    this.finishFishing(true, false, clickPos >= minBullseyePos && clickPos < maxBullseyePos);
                 } else {
-                    self.audioManager.playSound("fishingfail");
-                    self.showNotification("Failed to catch " + this.fishingData.fishName);
-                    self.stopFishing(false, 2000, false);
+                    this.audioManager.playSound("fishingfail");
+                    this.showNotification("Failed to catch " + this.fishingData.fishName);
+                    this.finishFishing(false, 2000, false);
                 }
             },
 

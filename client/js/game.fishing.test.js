@@ -21,17 +21,17 @@ function setup() {
     const game = Object.assign(Object.create(modules.game.prototype), {
         sessionId: 'session', player: {id: 1, isFishing: false, orientation: 'right',
             getWeaponName: () => 'rod', getOrientationTo: () => 'right', idle: jest.fn(),
-            animate: (name, speed, count, onEnd) => onEnd()},
+            animate: jest.fn()},
         map: {getLakeName: () => 'm88nDreamPond1', isDoor: () => false, isColliding: () => true}, floats: {}, fish: {},
         fishingData: {fishName: null, fishPos: 0}, renderer: {scale: 1}, camera: {isVisible: () => true},
         app: {setFish: jest.fn(), setFishPos: jest.fn(), setFishingTarget: jest.fn(),
             showFishing: jest.fn(), hideFishing: jest.fn(), holdFishing: jest.fn()},
         client: {sendFishingResult: jest.fn()}, showNotification: jest.fn(),
-        audioManager: {playSound: jest.fn()}, renderStatistics: jest.fn(),
+        audioManager: {playSound: jest.fn(), playFishingSound: jest.fn()}, renderStatistics: jest.fn(),
     });
     game.getEntityById = () => game.player;
     sandbox.self = game;
-    return {game, axios};
+    return {game, axios, Float: modules.float};
 }
 
 beforeEach(() => jest.useFakeTimers());
@@ -77,9 +77,12 @@ test.each([[0, 6000], [0.5, 9000]])('a cast stays active until the bite (random=
     jest.advanceTimersByTime(wait - 1);
     expect(game.player.isFishing).toBe(true);
     expect(game.floats[1]).toEqual(expect.objectContaining({gridX: 2, gridY: 3}));
+    expect(game.audioManager.playFishingSound.mock.calls.map(([cue]) => cue)).toEqual(['cast', 'land']);
     expect(game.app.showFishing).not.toHaveBeenCalled();
     expect(game.client.sendFishingResult).not.toHaveBeenCalled();
     jest.advanceTimersByTime(1);
+    expect(game.floats[1].biteAt).toBe(Date.now());
+    expect(game.audioManager.playFishingSound).toHaveBeenLastCalledWith('bite', game.floats[1]);
     expect(game.app.showFishing).toHaveBeenCalledTimes(1);
     expect(game.player.isFishing).toBe(true);
     expect(game.showNotification).not.toHaveBeenCalled();
@@ -96,7 +99,7 @@ test('a successful catch clears its escape timer and allows another cast immedia
     game.clickFishingBar();
     expect(game.player.isFishing).toBe(false);
     expect(game.client.sendFishingResult).toHaveBeenCalledWith(true, true);
-    expect(game.floats[1]).toBeUndefined();
+    expect(game.floats[1].reelAt).toBe(Date.now());
 
     game.startFishing(2, 3);
     await settle();
@@ -116,6 +119,9 @@ test('a successful local result waits for the server award and cannot submit twi
     jest.advanceTimersByTime(12000);
     game.fishingData.fishPos = game.fishingData.targetPos + game.fishingData.bullseyeRelPos - 12;
     game.clickFishingBar(); game.clickFishingBar();
+    expect(game.audioManager.playFishingSound).toHaveBeenLastCalledWith('reel', game.player);
+    jest.advanceTimersByTime(game.floats[1].reelDuration);
+    expect(game.floats[1]).toBeUndefined();
     expect(game.client.sendFishingResult).toHaveBeenCalledTimes(1);
     expect(game.showNotification).not.toHaveBeenCalled();
     expect(game.audioManager.playSound).not.toHaveBeenCalledWith('fishingsuccess');
@@ -125,7 +131,7 @@ test('an old held bar cannot hide a new cast', async () => {
     jest.spyOn(Math, 'random').mockReturnValue(0);
     const {game, axios} = setup();
     game.player.isFishing = true;
-    game.stopFishing(false, 9000, false);
+    game.finishFishing(false, 9000, false);
     axios.get.mockResolvedValue(catchResponse);
     game.startFishing(2, 3); await settle();
     jest.advanceTimersByTime(6000);
@@ -180,7 +186,7 @@ test('a cancelled pending request cannot cast a float or overlap a newer request
     let finish;
     axios.get.mockReturnValue(new Promise(resolve => {finish = resolve;}));
     game.startFishing(2, 3);
-    game.stopFishing(false, false, false);
+    game.stopFishing();
     game.startFishing(4, 5);
     expect(axios.get).toHaveBeenCalledTimes(1);
     finish(catchResponse); await settle();
@@ -195,6 +201,41 @@ test('the accepted rod determines the float even before its equipment broadcast 
     axios.get.mockResolvedValue({data: {...catchResponse.data, rod: 'selected-rod'}});
     game.startFishing(2, 3); await settle();
     expect(game.floats[1].spriteName).toBe('item-selected-rod');
+});
+
+test('walking away during the swing cancels the line, splash and bite', async () => {
+    const {game, axios} = setup();
+    axios.get.mockResolvedValue(catchResponse);
+    game.startFishing(2, 3); await settle();
+    expect(game.player.animate).toHaveBeenCalledWith('atk', 75, 1);
+    expect(game.floats[1]).toBeDefined();
+    game.clickFishingBar(); // Input before the bite cannot hook a fish.
+    expect(game.client.sendFishingResult).not.toHaveBeenCalled();
+    game.stopFishing();
+    jest.advanceTimersByTime(30000);
+    expect(game.floats[1]).toBeUndefined();
+    expect(game.audioManager.playFishingSound.mock.calls.map(([cue]) => cue)).toEqual(['cast']);
+    expect(game.app.showFishing).not.toHaveBeenCalled();
+    expect(game.client.sendFishingResult).toHaveBeenCalledTimes(1);
+});
+
+test('observer casts survive an offscreen caster and a replacement owns its landing and lifetime', () => {
+    const {game, Float} = setup();
+    game.camera.isVisible = () => false;
+    const first = new Float(2, 3, 7, 'old-rod');
+    game.castFloat(first);
+    expect(game.floats[7]).toBe(first);
+    expect(game.player.animate).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(200);
+    const next = new Float(3, 3, 7, 'new-rod');
+    game.getEntityById = () => undefined;
+    game.castFloat(next);
+    jest.advanceTimersByTime(first.despawnDuration - 200);
+    expect(game.floats[7]).toBe(next);
+    expect(game.audioManager.playFishingSound.mock.calls.filter(([cue]) => cue === 'land')).toEqual([['land', next]]);
+    game.removeFloat(7); game.removeFloat(7);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(game.client.sendFishingResult).not.toHaveBeenCalled();
 });
 
 test('server equipment broadcasts update the local rod and restore the weapon and its metadata', () => {
