@@ -116,6 +116,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             setTileset: function(tileset) {
                 this.tilesetLoad?.reject(new Error('Tileset replaced'));
                 this.tileset = tileset;
+                this.staticTileData = null;
                 const requestId = this.tilesetRequestId = (this.tilesetRequestId || 0) + 1;
                 const load = {requestId};
                 load.promise = new Promise((resolve, reject) => {
@@ -910,8 +911,10 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         tiles: this.drawTileStages(visibleTiles || [], high, false),
                         version: this.staticTileVersion = (this.staticTileVersion || 0) + 1
                     };
+                    // Retain each static layer in the worker instead of cloning its tiles every frame.
+                    this.worker.postMessage({type: 'setTerrain', id, tiles: cached.tiles, revision: cached.version});
                 }
-                return {type: 'render', id, tiles: cached.tiles, revision: cached.version,
+                return {type: 'render', id, revision: cached.version,
                     cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
             },
     
@@ -1217,7 +1220,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 renderData.push(drawEntitiesData);
     
                 this.drawFloats();
-                this.drawLights();
     
                 let combatInfoTextData = this.drawCombatInfo();
                 let textData = []

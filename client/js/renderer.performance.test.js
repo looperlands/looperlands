@@ -34,7 +34,7 @@ function setup() {
     const api = vm.runInContext(`({render, drawText, cachedLabel, drawLightSource, renderLightOverlay, updateAnimatedLightSource, scheduleNextFrame,
         addToImageCache, clearImageCache, clearTextCache, drawScaledImage, sceneDaylight, drawSceneWeather,
         state: () => ({cacheBytes, cacheKeys: cacheKeys.slice(), labels: labelCache.size, labelBytes,
-            terrain: terrainCache.size, lightScratch, shadowScratch, gradientScratch}),
+            terrain: terrainCache.size, definitions: terrainDefinitions.size, lightScratch, shadowScratch, gradientScratch}),
         options: (shadows, player, dynamic = true) => {OPTION_SHADOWS = shadows; OPTION_PLAYER_SHADOW = player; OPTION_DYNAMIC_LIGHTS = dynamic;},
         setTileset: value => {tileset = value;},
         loadSprite: () => {sprites.avatar = {image: {avatar: true}};},
@@ -67,6 +67,15 @@ function frame(cameraX = 0, cameraY = 0, revision = 1, text = []) {
             {id: 'text', type: 'text', cameraX, cameraY, scale, textData: text},
             {id: 'lights', type: 'render', tiles: [], cameraX, cameraY, scale, options: {shadows: false, playerShadow: false}}
         ]};
+}
+
+function retainTerrain(worker, packet) {
+    return {...packet, renderData: packet.renderData.map(command => {
+        if (!command.clear) return command;
+        const {tiles, ...reference} = command;
+        worker.send({type: 'setTerrain', id: command.id, tiles, revision: command.revision});
+        return reference;
+    })};
 }
 
 test.each([30,60,120,144])('paces at most 60 rendered frames per second on a %i Hz display', hz => {
@@ -316,16 +325,17 @@ test('recessed layers sit behind terrain and cutout changes invalidate static bu
         if (plane === 'background') ctx.drawImage('deep-surface', 0, 0);
     }};
     vm.runInContext('rendererExtensions = depthRegistry', worker.sandbox);
-    worker.send(frame());
+    const packet = retainTerrain(worker, frame());
+    worker.send(packet);
     expect(worker.canvases.entities.ctx.drawImage.mock.calls.slice(0, 2).map(call => call[0])).toEqual(['deep-surface', worker.canvases.background]);
     const previous = worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
     cutouts = [{x: 0, y: 0, w: 480, h: 224, colors: [[254,173,2]]}];
-    worker.send(frame());
+    worker.send(packet);
     const prepared = worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
     expect(prepared).not.toBe(previous);
-    worker.send(frame());
+    worker.send(packet);
     expect(worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0]).toBe(prepared);
-    cutouts = []; worker.send(frame());
+    cutouts = []; worker.send(packet);
     expect(worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0]).not.toBe(prepared);
 });
 
@@ -345,11 +355,111 @@ test('terrain bitmaps survive fractional camera scrolling and rebuild on tile ch
     expect(worker.state().terrain).toBe(2);
 });
 
+test('retained terrain rebuilds after camera, viewport and scale changes without resending tile arrays', () => {
+    const worker = setup(), packet = retainTerrain(worker, frame());
+    worker.send(packet);
+    const original = worker.canvases.background.ctx.drawImage.mock.lastCall[0], warm = worker.allocations.length;
+    for (const command of packet.renderData) {command.cameraX = 12.5; command.cameraY = 8.5;}
+    worker.send(packet);
+    expect(worker.allocations).toHaveLength(warm);
+    expect(worker.canvases.background.ctx.drawImage.mock.lastCall[0]).toBe(original);
+    for (const command of packet.renderData) command.cameraX = 80;
+    worker.send(packet);
+    expect(worker.canvases.background.ctx.drawImage.mock.lastCall[0]).not.toBe(original);
+    worker.send({type: 'setCanvasSize', width: 960, height: 448});
+    worker.send(packet);
+    expect(worker.canvases.background).toMatchObject({width: 320, height: 150});
+    for (const command of packet.renderData) command.scale = 2;
+    worker.send(packet);
+    expect(worker.canvases.background).toMatchObject({width: 480, height: 224});
+    const rebuilt = worker.canvases.background.ctx.drawImage.mock.lastCall[0];
+    expect(rebuilt.ctx.drawImage).toHaveBeenCalled();
+    expect(worker.state()).toMatchObject({terrain: 2, definitions: 2});
+});
+
+test.each(['background', 'high'])('an empty retained %s layer replaces its old pixels', id => {
+    const worker = setup(), initial = frame();
+    initial.renderData.find(command => command.id === 'high').tiles = initial.renderData[1].tiles;
+    const packet = retainTerrain(worker, initial), target = worker.canvases[id].ctx;
+    worker.send(packet);
+    expect(target.drawImage.mock.lastCall[0].ctx.drawImage).toHaveBeenCalled();
+    worker.send({type: 'setTerrain', id, revision: 2, tiles: []});
+    packet.renderData.find(command => command.id === id).revision = 2;
+    worker.send(packet);
+    expect(target.drawImage.mock.lastCall[0].ctx.drawImage).not.toHaveBeenCalled();
+    expect(worker.state().definitions).toBe(2);
+});
+
+test('missing and obsolete terrain references clear their layer without drawing the previous definition', () => {
+    const worker = setup(), packet = retainTerrain(worker, frame()), target = worker.canvases.background.ctx;
+    worker.send(packet);
+    target.clearRect.mockClear(); target.drawImage.mockClear();
+    worker.send({type: 'setTerrain', id: 'background', revision: 2, tiles: []});
+    worker.send(packet);
+    expect(target.clearRect).toHaveBeenCalledWith(0, 0, 480, 224);
+    expect(target.drawImage).not.toHaveBeenCalled();
+    expect(worker.state().terrain).toBe(1);
+    packet.renderData.find(command => command.id === 'background').revision = 3;
+    worker.send(packet);
+    expect(target.drawImage).not.toHaveBeenCalled();
+    worker.send({type: 'setTerrain', id: 'background', revision: 3, tiles: []});
+    worker.send(packet);
+    expect(target.drawImage).toHaveBeenCalledTimes(1);
+    worker.send({type: 'setTerrain', id: 'unexpected-layer', revision: 4, tiles: []});
+    expect(worker.state().definitions).toBe(2);
+});
+
+test('terrain sent during tileset loading survives skipped frames and is cleared on the next tileset', async () => {
+    const worker = setup(); let release;
+    worker.sandbox.fetch = jest.fn(() => new Promise(resolve => {release = () => resolve({blob: async () => ({tiles: true})});}));
+    worker.sandbox.createImageBitmap = async image => image;
+    worker.send({type: 'setTileset', src: 'first.png', requestId: 1});
+    const packet = retainTerrain(worker, frame()), target = worker.canvases.background.ctx;
+    worker.send(packet);
+    expect(target.drawImage).not.toHaveBeenCalled();
+    release(); await new Promise(resolve => setImmediate(resolve));
+    worker.send(packet);
+    expect(target.drawImage).toHaveBeenCalledTimes(1);
+    worker.send({type: 'setTileset', src: 'second.png', requestId: 2});
+    expect(worker.state().definitions).toBe(0);
+    release(); await new Promise(resolve => setImmediate(resolve));
+    target.drawImage.mockClear();
+    worker.send(packet);
+    expect(target.drawImage).not.toHaveBeenCalled();
+    worker.send(retainTerrain(worker, frame(0, 0, 2)));
+    expect(target.drawImage).toHaveBeenCalledTimes(1);
+});
+
+test('extension readiness cannot discard retained terrain and animated layers still repaint on every frame', () => {
+    const worker = setup(); let ready = false;
+    worker.sandbox.pendingExtension = {ready: () => ready, draw() {}};
+    vm.runInContext('rendererExtensions = pendingExtension', worker.sandbox);
+    const packet = retainTerrain(worker, frame());
+    for (const id of ['background', 'high']) packet.renderData.splice(2, 0, {
+        type: 'render', id, tiles: [{tileid: 2, setW: 16, setH: 16, gridW: 30, cellid: 2}],
+        cameraX: 0, cameraY: 0, scale: 3, clear: false
+    });
+    worker.send(packet);
+    expect(worker.canvases.background.ctx.drawImage).not.toHaveBeenCalled();
+    ready = true; worker.send(packet);
+    for (const id of ['background', 'high']) {
+        const target = worker.canvases[id].ctx, tile = target.drawImage.mock.lastCall[0];
+        expect(tile.ctx.drawImage.mock.calls[0][1]).toBe(32);
+        packet.renderData.find(command => command.id === id && command.clear === false).tiles[0].tileid = 3;
+    }
+    worker.send(packet);
+    for (const id of ['background', 'high']) {
+        const tile = worker.canvases[id].ctx.drawImage.mock.lastCall[0];
+        expect(tile.ctx.drawImage.mock.calls[0][1]).toBe(48);
+    }
+    expect(worker.state().definitions).toBe(2);
+});
+
 test('temporary tile replacements guard the current cell and restore cached baseline terrain on expiry', () => {
     const worker = setup(); let appearances = [];
     worker.sandbox.appearanceRegistry = {tileAppearance: () => appearances, draw() {}};
     vm.runInContext('rendererExtensions = appearanceRegistry', worker.sandbox);
-    const packet = frame(), original = JSON.stringify(packet);
+    const packet = retainTerrain(worker, frame()), original = JSON.stringify(packet);
     const terrain = () => worker.canvases.background.ctx.drawImage.mock.calls.at(-1)[0];
     const tileAt = (buffer, x) => buffer.ctx.drawImage.mock.calls.find(call => call[1] === x * 16)[0];
     worker.send(packet);
@@ -559,30 +669,99 @@ test('image caches are bounded by bytes and replacing a key does not duplicate e
     expect(worker.state().cacheKeys).toHaveLength(8);
 });
 
-test('staged terrain does not grow its visible array, and farming changes invalidate the cached command', () => {
+function mainRenderer() {
     const sandbox = {console, _: {forEach: (values,fn) => values.forEach(fn)},
+        $: () => ({hasClass: () => false}),
         define: (dependencies,factory) => {sandbox.Renderer = factory();}};
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(path.join(__dirname,'lib/class.js'),'utf8'),sandbox);
     vm.runInContext(fs.readFileSync(path.join(__dirname,'renderer.js'),'utf8'),sandbox);
-    const visible = [{tileid:0,cellid:0,gridW:30,setW:16}];
-    const renderer = Object.assign(Object.create(sandbox.Renderer.prototype), {
+    return Object.assign(Object.create(sandbox.Renderer.prototype), {
+        worker: {postMessage: jest.fn()},
         camera: {x:0,y:0}, scale:3, tileset: {width:256,height:256},
-        game: {currentTime:0, visibleTerrainTiles: visible,
+        game: {currentTime:0, visibleTerrainTiles: [{tileid:0,cellid:0,gridW:30,setW:16}], visibleHighTiles: [],
             tileStages: {'1.1': {x:1,y:1,tile:2,stage:0}},
             map: {width:30,tilesize:16,isHighTile:()=>false,isAnimatedTile:()=>false,GridPositionToTileIndex:()=>30}}
     });
+}
+
+test('staged terrain is sent once per revision without growing its visible array', () => {
+    const renderer = mainRenderer(), visible = renderer.game.visibleTerrainTiles;
     const initial = renderer.drawTerrain();
-    for (let frame=0;frame<1000;frame++) expect(renderer.drawTerrain().tiles).toHaveLength(2);
+    for (let frame=0;frame<1000;frame++) expect(renderer.drawTerrain()).toEqual(initial);
+    expect(initial).not.toHaveProperty('tiles');
     expect(visible).toHaveLength(1);
-    expect(renderer.drawTerrain().tiles).toBe(initial.tiles);
+    expect(renderer.worker.postMessage).toHaveBeenCalledTimes(1);
+    expect(renderer.worker.postMessage.mock.lastCall[0]).toMatchObject({type: 'setTerrain', revision: initial.revision});
+    expect(renderer.worker.postMessage.mock.lastCall[0].tiles).toHaveLength(2);
     renderer.game.tileStages['1.1'].stage = 1;
     renderer.game.terrainRevision = 1;
     const changed = renderer.drawTerrain();
     expect(changed.revision).not.toBe(initial.revision);
-    expect(changed.tiles[1].tileid).toBe(3);
+    expect(renderer.worker.postMessage.mock.lastCall[0].tiles[1].tileid).toBe(3);
     renderer.game.tileStages = {}; renderer.game.terrainRevision++;
-    expect(renderer.drawTerrain().tiles).toHaveLength(1);
+    renderer.drawTerrain();
+    expect(renderer.worker.postMessage.mock.lastCall[0].tiles).toHaveLength(1);
+    expect(renderer.worker.postMessage).toHaveBeenCalledTimes(3);
+});
+
+test.each(['visible tiles', 'map', 'tileset', 'same tileset object', 'explicit redraw'])('%s changes resend terrain before its new reference', change => {
+    const renderer = mainRenderer(), first = renderer.drawTerrain();
+    renderer.drawHighTiles(); renderer.worker.postMessage.mockClear();
+    if (change === 'visible tiles') renderer.game.visibleTerrainTiles = [...renderer.game.visibleTerrainTiles];
+    else if (change === 'map') renderer.game.map = {...renderer.game.map};
+    else if (change === 'tileset') renderer.setTileset({...renderer.tileset});
+    else if (change === 'same tileset object') renderer.setTileset(renderer.tileset);
+    else renderer.renderStaticCanvases();
+    const next = renderer.drawTerrain(), high = renderer.drawHighTiles();
+    expect(next.revision).not.toBe(first.revision);
+    expect(next).not.toHaveProperty('tiles');
+    const messages = renderer.worker.postMessage.mock.calls.map(([message]) => message);
+    const terrain = messages.filter(message => message.type === 'setTerrain');
+    expect(terrain[0]).toMatchObject({id: 'background', revision: next.revision});
+    if (change.includes('tileset')) expect(messages[0].type).toBe('setTileset');
+    if (change !== 'visible tiles') expect(terrain[1]).toMatchObject({id: 'high', revision: high.revision, tiles: []});
+    renderer.drawTerrain(); renderer.drawHighTiles();
+    expect(renderer.worker.postMessage).toHaveBeenCalledTimes(messages.length);
+});
+
+test('frame packets keep animated commands and toggled layers but omit static arrays and build lighting once', () => {
+    const renderer = mainRenderer(), game = renderer.game;
+    let offset = 0;
+    const animated = id => ({id, index: 0, getCurrentOffset: () => ({x: offset, y: 0}), getColorShiftForFrame: () => null});
+    game.tileStages = {};
+    game.visibleAnimatedTiles = [animated(1)]; game.visibleAnimatedHighTiles = [animated(2)];
+    const settings = game.app = {settings: {
+        getRenderText: () => true, getReducedMotion: () => false,
+        getRenderShadows: jest.fn(() => false), getRenderPlayerShadow: () => false, getEnableDynamicLights: () => false
+    }};
+    game.combatFeedback = {getFrame: () => ({impacts: []})};
+    game.worldAmbience = {getRenderState: () => ({})};
+    game.getViewScene = () => ({darkness: 0}); game.getWorldTime = () => 0;
+    Object.assign(renderer, {
+        syncedLights: true, extensionData: {}, canvas: {width: 1440, height: 672},
+        context: {clearRect() {}, save() {}, restore() {}, translate() {}},
+        drawToggledLayers: jest.fn(), drawPathingCells() {}, drawEntities: () => [[], []],
+        drawFloats() {}, drawCombatInfo: () => [], drawDebugInfo() {}, cursorController: {update: () => false}
+    });
+    renderer.renderFrame(); offset = 1; renderer.renderFrame();
+    const messages = renderer.worker.postMessage.mock.calls.map(([message]) => message);
+    expect(messages.map(message => message.type)).toEqual(['setTerrain', 'setTerrain', 'render', 'render']);
+    const frames = messages.filter(message => message.type === 'render');
+    for (const [index, packet] of frames.entries()) {
+        const staticLayers = packet.renderData.filter(command => command?.clear === true);
+        expect(staticLayers).toHaveLength(2);
+        for (const command of staticLayers) expect(command).not.toHaveProperty('tiles');
+        for (const id of ['background', 'high']) {
+            expect(packet.renderData.find(command => command.id === id && command.clear === false).tiles[0].slideOffsetX).toBe(index);
+        }
+        expect(packet.renderData.filter(command => command.id === 'lights')).toHaveLength(1);
+    }
+    expect(settings.settings.getRenderShadows).toHaveBeenCalledTimes(2);
+    expect(renderer.drawToggledLayers.mock.calls.map(call => call.slice(1))).toEqual([
+        [false, false], [false, true], [true, false], [true, true],
+        [false, false], [false, true], [true, false], [true, true]
+    ]);
 });
 
 test('combat number scaling and rotation reuse one bitmap and isolate transforms from normal labels', () => {
