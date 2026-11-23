@@ -57,18 +57,13 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
         },
 
         updateEntityFading: function (entity) {
-            if (entity && entity.isFading) {
-                var duration = 1000,
-                    t = this.game.currentTime,
-                    dt = t - entity.startFadingTime;
+            const now = this.game.currentTime;
+            if (!entity?.isFading || !Number.isFinite(now)) return;
 
-                if (dt > duration) {
-                    this.isFading = false;
-                    entity.fadingAlpha = 1;
-                } else {
-                    entity.fadingAlpha = dt / duration;
-                }
-            }
+            // The local hero can spawn before the first game tick supplies a timestamp.
+            entity.startFadingTime ??= now;
+            entity.fadingAlpha = Math.min(1, Math.max(0, (now - entity.startFadingTime) / 1000));
+            entity.isFading = entity.fadingAlpha < 1;
         },
 
         updateTransitions: function () {

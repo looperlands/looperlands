@@ -195,6 +195,37 @@ test('offscreen scenery is not rasterized when an ocean spans the entire map', (
     expect(painter.sources[0].image).toBeNull();
 });
 
+test('a swimmer reflects in a short translucent band at the waterline, including during a spawn fade', () => {
+    const self = {WaterSurfaces:Water};
+    const ink = {clearRect() {}, save() {}, restore() {}, translate() {}, scale() {}, fillRect() {}};
+    class Canvas { getContext() { return ink; } }
+    vm.runInNewContext(fs.readFileSync(require.resolve('./water-renderer-worker'), 'utf8'), {self, OffscreenCanvas:Canvas});
+    const painter = new self.WaterPainter({wet:[], dry:[], sources:[]});
+    function bands(immersion, globalAlpha) {
+        const actor = {waterX:24, waterY:32, translateX:16, translateY:17, drawData:[], immersion, globalAlpha};
+        const rows = [];
+        let alpha = 1;
+        const ctx = {
+            // Canvas ignores invalid assignments, leaving the previous opacity in effect.
+            set globalAlpha(value) { if (value >= 0 && value <= 1) alpha = value; },
+            drawImage(image, sx, sy, sw, sh, x, y) { rows.push({y, alpha}); }
+        };
+        painter.drawMirror(ctx, actor, 1, 0, () => {});
+        return rows;
+    }
+    const shore = bands(undefined), wading = bands(.4), swim = bands(1);
+    expect(swim[0].y).toBe(32);
+    expect(swim[0].alpha).toBeGreaterThan(0);
+    expect(swim[0].alpha).toBeLessThan(.2);
+    expect(swim.at(-1).alpha).toBeLessThan(swim[0].alpha);
+    expect(swim.at(-1).y).toBeLessThan(wading.at(-1).y);
+    expect(wading.at(-1).y).toBeLessThan(shore.at(-1).y);
+    expect(wading[0].alpha).toBeLessThan(shore[0].alpha);
+    expect(bands(1, NaN)).toEqual(swim);
+    expect(bands(1, .5)[0].alpha).toBeCloseTo(swim[0].alpha / 2);
+    expect(bands(1, 0)).toEqual([]);
+});
+
 test('a natural bank samples the same pixel contour as the painter', () => {
     const a = {...pond, shape:'natural'}, field = new Water.Field([a]);
     for (let y=.5;y<64;y+=5) {

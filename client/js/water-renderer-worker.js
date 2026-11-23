@@ -6,6 +6,7 @@
     const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
     const grain = (x, y) => (Math.imul(x + 31, 73856093) ^ Math.imul(y + 17, 19349663)) >>> 0;
     const wrap = (value, span) => ((value % span) + span) % span;
+    const actorOpacity = actor => Number.isFinite(actor.globalAlpha) ? actor.globalAlpha : 1;
 
     function oceanPath(area, left, top, right, bottom) {
         const path = new Path2D();
@@ -231,6 +232,9 @@
             ctx.globalAlpha = 1;
         }
         drawMirror(ctx, actor, scale, tick, drawPart) {
+            const depth = actor.immersion ?? 0;
+            const opacity = actorOpacity(actor) * (.34 - .18 * depth);
+            if (opacity === 0) return;
             const canvas = this.actorMirror ||= new OffscreenCanvas(64, 64), ink = canvas.getContext('2d');
             ink.clearRect(0, 0, 64, 64);
             ink.save();
@@ -241,10 +245,16 @@
                 if (!part.renderAbove && part.spriteName !== 'shadow16') drawPart(ink, actor, part, scale);
             }
             ink.restore();
+            ink.globalCompositeOperation = 'source-atop';
+            ink.fillStyle = 'rgba(53,99,122,.55)';
+            ink.fillRect(0, 0, 64, 64);
+            ink.globalCompositeOperation = 'source-over';
             const x = Math.round(actor.waterX) - 32, y = Math.round(actor.waterY);
-            for (let row = 0; row < actorMirror.height; row++) {
+            // Close to the surface, only the nearest few pixels show through the swimmer's ripples.
+            const length = Math.round(actorMirror.height * (1 - .65 * depth));
+            for (let row = 0; row < length; row++) {
                 if (row > 5 && row % 4 === 1) continue;
-                ctx.globalAlpha = (actor.globalAlpha ?? 1) * (.34 - .016 * row);
+                ctx.globalAlpha = opacity * (1 - row / length);
                 const shift = row < 2 ? 0 : Math.round(Math.sin(row * .55 + tick * .28));
                 ctx.drawImage(canvas, 0, 58 - row * 2, 64, 2, x + shift, y + row, 64, 1);
             }
@@ -312,7 +322,7 @@
                 ctx.clip(surface.clip?.path || surface.path);
                 for (const hole of surface.holes) ctx.clip(hole, 'evenodd');
             }
-            ctx.globalAlpha = (actor.globalAlpha ?? 1) * Math.min(1, actor.immersion * 3);
+            ctx.globalAlpha = actorOpacity(actor) * Math.min(1, actor.immersion * 3);
             ctx.fillStyle = '#427f8d'; ctx.fillRect(x - 5, y, 10, 1);
             ctx.fillStyle = '#c0e4d6'; ctx.fillRect(x - 4, y, 3, 1); ctx.fillRect(x + 2, y, 3, 1);
             ctx.fillRect(x - 6, y - 1, 2, 1); ctx.fillRect(x + 5, y - 1, 2, 1);
