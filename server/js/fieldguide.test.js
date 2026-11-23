@@ -91,6 +91,20 @@ test('encounter and defeat are distinct, repeat events do not rewrite facts or n
     await guide.record(player, 'defeat', Types.Entities.RAT);
     expect(guide.facts(session).has(flag('rat', 'completed'))).toBe(true);
     expect(player.send).toHaveBeenCalledTimes(2);
+    const id = project(collection, guide.facts(session)).entries.find(entry => entry.name === 'Rat').id;
+    expect(player.send.mock.calls.map(([packet]) => packet[2].fieldGuide)).toEqual([
+        [{id, discovered: true, completed: false}], [{id, discovered: false, completed: true}]
+    ]);
+});
+test('an initial credited defeat earns both cues and reconciled history stays quiet', async () => {
+    session.gameData.mobKills[Types.Entities.RAT] = 2;
+    await guide.reconcile(player);
+    await guide.record(player, 'encounter', Types.Entities.RAT);
+    expect(player.send).not.toHaveBeenCalled();
+    await Promise.all([guide.record(player, 'defeat', 'boss'), guide.record(player, 'defeat', 'boss')]);
+    const boss = project(collection, guide.facts(session)).entries.find(entry => entry.name === 'Secret boss');
+    expect(player.send).toHaveBeenCalledTimes(1);
+    expect(player.send.mock.calls[0][0][2]).toEqual({fieldGuide: [{id: boss.id, discovered: true, completed: true}]});
 });
 test('gifts reveal fish without proving a catch and a catch both reveals and completes it', async () => {
     await guide.record(player, 'obtain', 'cobguppy');
@@ -98,6 +112,7 @@ test('gifts reveal fish without proving a catch and a catch both reveals and com
     await guide.record(player, 'catch', 'cobguppy', 2);
     expect(guide.facts(session).has(flag('guppy', 'completed'))).toBe(true);
     expect(player.send.mock.calls.at(-1)[0][1]).toContain('caught');
+    expect(player.send.mock.calls.at(-1)[0]).toHaveLength(2);
 });
 test('purchases cannot satisfy combat-loot requirements and negative inventory changes cannot discover anything', async () => {
     guide.entries = [{...item, completion: 'loot'}];

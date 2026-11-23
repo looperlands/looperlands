@@ -8,6 +8,67 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8'
 const unknown = {id: 'hidden', category: 'monsters', state: 'unknown', name: null, completion: 'defeat'};
 const encountered = {...unknown, id: 'known', name: 'Bat', state: 'discovered'};
 const completed = {...encountered, id: 'done', state: 'completed'};
+function revealGuide() {
+    let Reveals, Journal, visible;
+    const storage = () => {
+        const data = new Map();
+        return {getItem: key => data.get(key), setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key)};
+    };
+    const window = {localStorage: storage(), sessionStorage: storage(), IntersectionObserver: class {
+        constructor(callback) {visible = (slot, ratio) => callback([{target: slot, isIntersecting: ratio > 0, intersectionRatio: ratio}], this);}
+        observe() {} unobserve() {}
+    }};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguidereveals.js'), 'utf8'), {define: factory => {Reveals = factory();}});
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'fieldguide.js'), 'utf8'), {
+        window, define: (deps, factory) => {Journal = factory({}, {}, Reveals);}
+    });
+    const guide = (nftId, f2p = false, sessionId = 'one') => Object.assign(Object.create(Journal.prototype), {
+        app: {storage: {nftId, f2p}, sessionId}, view: 'quests', opened: true, load: jest.fn()
+    });
+    return {guide, window, visible: (slot, ratio) => visible(slot, ratio)};
+}
+test('unseen monster milestones survive reopening and wait for the matching Guide state', () => {
+    const {guide} = revealGuide(), id = 'ab'.repeat(12), first = guide('avatar');
+    first.recordMonsters([{id, discovered: true}, {id, completed: true}]);
+    expect(first.load).not.toHaveBeenCalled();
+    const reopened = guide('avatar'), cues = reopened.monsterReveals();
+    expect(cues.forEntry({...unknown, id})).toBeNull();
+    expect(cues.forEntry({...completed, category: 'fish', id})).toBeNull();
+    expect(guide('another-avatar').monsterReveals().forEntry({...completed, id})).toBeNull();
+    const discovery = cues.forEntry({...encountered, id});
+    expect(discovery).toEqual({discovered: true, completed: false});
+    cues.seen(id, discovery);
+    expect(cues.forEntry({...encountered, id})).toBeNull();
+    expect(cues.forEntry({...completed, id})).toEqual({discovered: false, completed: true});
+    reopened.view = 'field-guide';
+    reopened.recordMonsters([{id, completed: true}]);
+    expect(reopened.load).toHaveBeenCalledTimes(1);
+});
+test('scrolling a queued monster into view plays the reveal and stamp once per avatar', () => {
+    const h = revealGuide(), guide = h.guide('avatar'), id = '12'.repeat(12);
+    guide.recordMonsters([{id, discovered: true, completed: true}]);
+    const classes = new Set(['fg-reveal-pending', 'fg-first-encounter', 'fg-first-defeat']);
+    const slot = {dataset: {fgFocus: id}, classList: {contains: name => classes.has(name),
+        replace(from, to) {classes.delete(from); classes.add(to);}}};
+    guide.root = {querySelectorAll: () => [slot], contains: el => el === slot};
+    guide.showVisibleReveals();
+    h.visible(slot, 0.1);
+    expect(classes.has('fg-reveal-playing')).toBe(false);
+    expect(h.guide('avatar').monsterReveals().forEntry({...completed, id})).toEqual({discovered: true, completed: true});
+    h.visible(slot, 1);
+    expect(classes.has('fg-reveal-playing')).toBe(true);
+    expect(h.guide('avatar').monsterReveals().forEntry({...completed, id})).toBeNull();
+});
+test('free-to-play cues follow the session and blocked browser storage still permits a reveal', () => {
+    const h = revealGuide(), guest = h.guide('avatar', true), id = 'cd'.repeat(12);
+    guest.recordMonsters([{id, discovered: true}]);
+    expect(h.guide('avatar', true, 'two').monsterReveals().forEntry({...encountered, id})).toBeNull();
+    expect(h.guide('avatar').monsterReveals().forEntry({...encountered, id})).toBeNull();
+    Object.defineProperty(h.window, 'localStorage', {get() {throw new Error('Storage blocked');}});
+    const offline = h.guide('avatar');
+    offline.recordMonsters([{id, discovered: true}]);
+    expect(offline.monsterReveals().forEntry({...encountered, id})).toEqual({discovered: true, completed: false});
+});
 test('Current map shows active and completed local quests without changing the other views', () => {
     const records = [{id: 'local', status: 'IN_PROGRESS', mapIds: ['main']},
         {id: 'shared', status: 'COMPLETED', mapIds: ['main', 'cave']},

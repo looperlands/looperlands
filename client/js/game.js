@@ -20,7 +20,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                 this.pixelFx = new PixelFx(this);
                 this.combatPrototype = new CombatPrototype(this);
                 this.footstepFeedback = new FootstepFeedback(this);
-                this.scriptedSequence = new SequencePlayer(this);
+                this.scriptedSequence = new SequencePlayer(this, active => app.questCelebration?.setPaused(active));
 
                 this.renderer = null;
                 this.updater = null;
@@ -8648,7 +8648,8 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                         self.showNotification('I\'m Out of ammo!');
                     });
 
-                    self.client.onNotify(function (text) {
+                    self.client.onNotify(function (text, details) {
+                        if (details?.fieldGuide) self.app.fieldGuide?.recordMonsters(details.fieldGuide);
                         if (text) {
                             self.showNotification(text);
                         }

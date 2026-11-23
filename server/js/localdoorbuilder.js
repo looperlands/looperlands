@@ -3,9 +3,9 @@ const path = require('path');
 const {execFile} = require('child_process');
 const WorldTime = require('../../client/js/worldtime-worker');
 const DialogueFormat = require('../../shared/js/dialogueformat');
-const gates = ['nft', 'item', 'quest', 'collection', 'http_redirect', 'level', 'weapon_level'];
+const {gates, questAloneOpensDoor} = require('./doorgates');
 const messages = ['message', 'nft_message', 'item_message', 'quest_message', 'collection_message', 'trigger_message', 'time_message'];
-const editable = [...gates, ...messages, 'tid', 'time_range'];
+const editable = [...gates, ...messages, 'tid', 'time_range', 'quest_reveal'];
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
 function mapFile(root, mapId) {
     root = path.resolve(root);
@@ -44,6 +44,10 @@ function validateChanges(changes, properties) {
     if (!changes || typeof changes !== 'object' || Array.isArray(changes) || Object.keys(changes).some(key => !editable.includes(key))) fail('Only supported entrance conditions and messages can be edited.');
     for (const [key, value] of Object.entries(changes)) {
         if (value === null) continue;
+        if (key === 'quest_reveal') {
+            if (typeof value !== 'string' || !value.trim() || value.length > 120 || /[<>\u0000-\u001f]/.test(value)) fail('Enter a gate reveal caption of up to 120 plain-text characters.');
+            continue;
+        }
         if (messages.includes(key)) {DialogueFormat.validate(value, 'Entrance message'); continue;}
         if (key === 'level' || key === 'weapon_level') {
             if (!Number.isInteger(value) || value < 1 || value > 10000) fail('Level requirements must be whole numbers from 1 to 10000.');
@@ -59,6 +63,7 @@ function validateChanges(changes, properties) {
     }
     const merged = {...properties};
     for (const [key, value] of Object.entries(changes)) {if (value === null) delete merged[key]; else merged[key] = value;}
+    if (merged.quest_reveal && !questAloneOpensDoor(merged)) fail('A gate reveal requires a quest to be the only entrance condition.');
     if (gates.some(key => Object.hasOwn(changes, key)) && gates.filter(key => Object.hasOwn(merged, key)).length > 1) fail('Choose one main access condition. The game does not combine these conditions.');
     return changes;
 }

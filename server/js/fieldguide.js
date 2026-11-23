@@ -1,4 +1,4 @@
-const {loadCatalog, flag, visitFlag, project} = require('./fieldguidecatalog');
+const {loadCatalog, flag, visitFlag, project, publicEntryId} = require('./fieldguidecatalog');
 const {FieldGuideStore} = require('./fieldguidestore');
 const Types = require('../../shared/js/gametypes');
 const Lakes = require('./lakes');
@@ -112,7 +112,14 @@ class FieldGuide {
             if (found.length && this.context(player.sessionId)?.player === player) {
                 const entry = found[0], completed = missing.includes(flag(entry.id, 'completed'));
                 const first = missing.includes(flag(entry.id, 'discovered'));
-                player.send([Types.Messages.NOTIFY, (first ? 'New discovery: ' : '') + entry.name + (completed ? ' — ' + {obtain: 'collected', loot: 'looted', catch: 'caught', defeat: 'defeated'}[entry.completion] : '')]);
+                const notice = [Types.Messages.NOTIFY, (first ? 'New discovery: ' : '') + entry.name + (completed ? ' — ' + {obtain: 'collected', loot: 'looted', catch: 'caught', defeat: 'defeated'}[entry.completion] : '')];
+                const monsters = found.filter(row => row.category === 'monsters').map(row => ({
+                    id: publicEntryId(row.id),
+                    discovered: missing.includes(flag(row.id, 'discovered')),
+                    completed: missing.includes(flag(row.id, 'completed'))
+                }));
+                if (monsters.length) notice.push({fieldGuide: monsters});
+                player.send(notice);
             }
         });
     }

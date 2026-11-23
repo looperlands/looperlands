@@ -1,7 +1,7 @@
 define(['dialoguetext','../../shared/js/dialogueformat'],function(DialogueText,Format){
     'use strict';
     class SequencePlayer {
-        constructor(game){this.game=game;this.actors=new Map();this.cameraActive=false;this.locked=false;this.key=event=>{if(event.key==='Escape'&&this.runId&&this.skippable){event.preventDefault();event.stopImmediatePropagation();this.skip();}};}
+        constructor(game, onCameraChange){this.game=game;this.onCameraChange=onCameraChange;this.actors=new Map();this.cameraActive=false;this.locked=false;this.key=event=>{if(event.key==='Escape'&&this.runId&&this.skippable){event.preventDefault();event.stopImmediatePropagation();this.skip();}};}
         connect(socket){this.reset();this.socket?.off('scripted-sequence',this.receive);this.socket?.off('disconnect',this.disconnect);this.socket=socket;this.receive=packet=>this.packet(packet);socket.on('scripted-sequence',this.receive);this.disconnect=()=>this.reset();socket.on('disconnect',this.disconnect);}
         packet(packet){
             if(packet.type==='start'){
@@ -64,14 +64,22 @@ define(['dialoguetext','../../shared/js/dialogueformat'],function(DialogueText,F
             if(moving)this.game.makeCharacterGoTo(entity,state[2],state[3]);
         }
         takeCamera(){
-            if(!this.cameraActive)this.game.visibleTileArea=null;
-            this.cameraActive=true;
+            if(!this.cameraActive){
+                this.game.visibleTileArea=null;
+                this.cameraActive=true;
+                this.onCameraChange?.(true);
+            }
             this.game.renderer.camera.boundsOverride={x:0,y:0,w:this.game.map.width,h:this.game.map.height};
         }
         skip(){if(!this.runId||!this.skippable)return;this.socket?.emit('sequence-skip',{runId:this.runId});if(this.button){this.button.disabled=true;this.button.textContent='Skipping…';}}
         restoreCamera(){
-            if(this.cameraActive){this.game.renderer.camera.boundsOverride=null;this.game.visibleTileArea=null;}
-            this.cameraActive=false;this.pan=null;this.followActor=null;if(this.game.player)this.game.renderer?.camera?.lookAt(this.game.player);
+            if(this.cameraActive){
+                this.game.renderer.camera.boundsOverride=null;
+                this.game.visibleTileArea=null;
+                this.cameraActive=false;
+                this.onCameraChange?.(false);
+            }
+            this.pan=null;this.followActor=null;if(this.game.player)this.game.renderer?.camera?.lookAt(this.game.player);
         }
         reset(){this.text?.cancel();this.text=null;this.panel?.remove();this.panel=null;document.removeEventListener('keydown',this.key,true);this.runId=null;this.locked=false;this.restoreCamera();const actors=this.actorIds();this.actors.clear();if(actors.length)this.game.client?.releaseSequenceActors(actors);if(this.music){this.music=null;this.game.audioManager?.updateMusic();}}
         destroy(){this.reset();this.socket?.off('scripted-sequence',this.receive);this.socket?.off('disconnect',this.disconnect);this.socket=null;}

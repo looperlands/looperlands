@@ -735,10 +735,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         receiveNotify: function(data) {
-            let text = data[1];
-        
             if(this.notify_callback) {
-                this.notify_callback(text);
+                this.notify_callback(data[1], data[2]);
             }
         },
 

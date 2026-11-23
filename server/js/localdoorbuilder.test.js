@@ -30,6 +30,17 @@ test('patches one object, escapes messages, keeps unknown fields/comments and pr
 test('adds properties to a self-closing object and removes a single property without dropping the object',async()=>{let data=await readDoors(root,'one');data=await saveDoor(root,{mapId:'one',doorId:'9',revision:data.revision,changes:{message:'New message'}});expect(data.doors[2].properties.message).toBe('New message');data=await saveDoor(root,{mapId:'one',doorId:'8',revision:data.revision,changes:{level:null}});expect((await readDoors(root,'one')).doors.find(door=>door.id==='8').properties).toEqual({});});
 test('stale revisions and simultaneous saves cannot overwrite another change',async()=>{const data=await readDoors(root,'one');const payload={mapId:'one',doorId:'7',revision:data.revision,changes:{message:'First'}};const results=await Promise.allSettled([saveDoor(root,payload),saveDoor(root,{...payload,changes:{message:'Second'}})]);expect(results.filter(result=>result.status==='fulfilled')).toHaveLength(1);expect(results.find(result=>result.status==='rejected').reason.status).toBe(409);fs.appendFileSync(file,'\n');await expect(saveDoor(root,payload)).rejects.toMatchObject({status:409});});
 test('empty changes do not rewrite the map',async()=>{const before=fs.readFileSync(file),data=await readDoors(root,'one');await saveDoor(root,{mapId:'one',doorId:'7',revision:data.revision,changes:{}});expect(fs.readFileSync(file)).toEqual(before);});
+test('a mapmaker can opt an entrance into a quest reveal and clear it while keeping its gate', async () => {
+    let data = await readDoors(root, 'one');
+    const save = async changes => {
+        data = await saveDoor(root, {mapId: 'one', doorId: '9', revision: data.revision, changes});
+        return data.doors.find(door => door.id === '9').properties;
+    };
+    expect(await save({quest: 'VILLAGE', quest_reveal: 'The village exit is open.'})).toMatchObject({quest: 'VILLAGE', quest_reveal: 'The village exit is open.'});
+    await expect(save({tid: 'puzzle'})).rejects.toThrow('only entrance condition');
+    expect(await save({quest_reveal: null, tid: 'puzzle'})).toEqual({quest: 'VILLAGE', tid: 'puzzle'});
+    expect(() => validateChanges({quest_reveal: '<b>Open</b>'}, {quest: 'VILLAGE'})).toThrow('plain-text');
+});
 test.each(['../one','one.tmx','missing',null])('rejects paths outside configured sources: %j',async mapId=>{await expect(readDoors(root,mapId)).rejects.toMatchObject({status:400});});
 test('rejects symlink sources and XML entities without exposing file contents',async()=>{fs.unlinkSync(file);fs.symlinkSync(path.join(root,'server/config.json'),file);await expect(readDoors(root,'one')).rejects.toThrow('symbolic');fs.unlinkSync(file);fs.writeFileSync(file,'<!DOCTYPE map [<!ENTITY secret SYSTEM "file:///etc/passwd">]><map width="1" height="1"/>');await expect(readDoors(root,'one')).rejects.toThrow('DTD');});
 test('message-only changes preserve legacy mixed gates; changing gate rules must leave just one',()=>{expect(validateChanges({message:'Come back later.'},{nft:'token',level:'12'})).toEqual({message:'Come back later.'});expect(()=>validateChanges({level:15},{nft:'token',level:'12'})).toThrow('one main');expect(validateChanges({nft:null,level:15},{nft:'token',level:'12'})).toMatchObject({nft:null,level:15});});

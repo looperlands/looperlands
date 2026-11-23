@@ -45,6 +45,14 @@ test('confirmed fishing receipts have their own callback and never count as a co
     expect(caught).toHaveBeenCalledTimes(1);
 });
 
+test('private Field Guide notifications carry earned monster milestones alongside the toast', () => {
+    const {client, receive, messages: M} = setup(), notify = jest.fn();
+    client.onNotify(notify);
+    const details = {fieldGuide: [{id: 'ab'.repeat(12), discovered: true, completed: false}]};
+    receive([[M.NOTIFY, 'New discovery: Rat', details], [M.NOTIFY, 'Hello']]);
+    expect(notify.mock.calls).toEqual([['New discovery: Rat', details], ['Hello', undefined]]);
+});
+
 test('local clock updates are delivered after WELCOME on joining and reviving', () => {
     const {client, receive, messages: M} = setup();
     const order = [];

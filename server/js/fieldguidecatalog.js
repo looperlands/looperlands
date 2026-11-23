@@ -3,6 +3,7 @@ const categories = ['items', 'fish', 'monsters'];
 const rules = {items: ['obtain', 'loot'], fish: ['catch'], monsters: ['defeat']};
 const flag = (id, state) => 'field-guide:entry:' + id + ':' + state;
 const visitFlag = map => 'field-guide:map:' + map;
+const publicEntryId = id => crypto.createHash('sha256').update(id).digest('hex').slice(0, 24);
 
 function validateCatalog(catalog, types, lakes) {
     const idPattern = /^[a-zA-Z0-9_-]{1,80}$/;
@@ -41,7 +42,7 @@ function project(collection, facts) {
         const state = completed ? 'completed' : discovered ? 'discovered' : 'unknown';
         const revealed = discovered || entry.visibility === 'listed';
         const row = {
-            id: crypto.createHash('sha256').update(entry.id).digest('hex').slice(0, 24),
+            id: publicEntryId(entry.id),
             category: entry.category, state, bonus, completion: entry.completion,
             name: revealed ? entry.name : null, sprite: revealed ? entry.sprite : null, hint: entry.hint
         };
@@ -53,4 +54,4 @@ function project(collection, facts) {
         completed: required.filter(e => e.state === 'completed').length
     }, bonusDiscoveries: bonuses.length};
 }
-module.exports = {loadCatalog, validateCatalog, project, flag, visitFlag};
+module.exports = {loadCatalog, validateCatalog, project, flag, visitFlag, publicEntryId};

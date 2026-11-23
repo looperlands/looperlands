@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const {questGateReveals} = require('./doorgates');
 function validateDefinitions(root,mapId,entries,registry) {
     if(!entries.length)return;
     const Types=require('../../shared/js/gametypes'),catalog={items:[],mobs:[],npcs:[],quests:registry.quests.map(q=>({id:q.id}))};
@@ -22,7 +23,10 @@ function register(root,target) {
     for(const mapId of JSON.parse(maps).maps) {
         const entries=W.readDocument(root,mapId).sequences;require('./scriptedsequenceconfig').validate(entries);
         validateDefinitions(root,mapId,entries,target);
-        if(entries.length)target.register(mapId,{id:'mapmaker-sequences',createScene:world=>new SequenceDirector(world,entries)});
+        target.register(mapId, {id: 'mapmaker-sequences', createScene(world) {
+            const sequences = [...entries, ...questGateReveals(world.map?.doors || [])];
+            return sequences.length ? new SequenceDirector(world, sequences) : null;
+        }});
     }
 }
 module.exports={register,validateDefinitions};

@@ -8,6 +8,8 @@ The guide follows the player's current map. Discovered and completed totals sit 
 
 ## Progress and visibility
 
+On first contact, the monster’s question mark fades into its idle sprite when its tile comes into view in the Field Guide. The first credited defeat stamps the tile with a check mark. If both happen before you open the Journal, the stamp follows the reveal. Reduced motion shows the final tile immediately. Pending reveals follow the avatar in this browser, or the current session for free-to-play characters.
+
 Discovery and completion are separate lifetime facts for each Looper. Facing a monster reveals it; normal defeat credit completes it. Receiving a fish reveals it, while a successful personal catch completes it. An ordinary Obtain entry accepts purchases and gifts. A Loot entry requires an item dropped by a defeated monster. Consuming, selling, or gifting an item never removes completion.
 
 Unknown entries show question marks and approved hints. Secret entries are omitted from guide responses and standard totals until discovered; they remain bonuses after discovery. Excluded entries never appear or count.

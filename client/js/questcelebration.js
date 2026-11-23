@@ -10,6 +10,7 @@ define(['cardartwork', '../../shared/js/dialogueformat'], function (CardArtwork,
         constructor(app) {
             this.app = app;
             this.queue = [];
+            this.paused = !!app.game.scriptedSequence?.cameraActive;
             this.root = node('section', 'quest-celebration');
             this.root.hidden = true;
             this.root.setAttribute('aria-label', 'Quest rewards');
@@ -29,7 +30,17 @@ define(['cardartwork', '../../shared/js/dialogueformat'], function (CardArtwork,
                 this.session = session;
             }
             this.queue.push(notice);
-            if (this.root.hidden) this.next();
+            if (this.root.hidden && !this.paused) this.next();
+        }
+        setPaused(paused) {
+            if (this.paused === paused) return;
+            this.paused = paused;
+            if (paused) {
+                clearTimeout(this.timer);
+                if (!this.root.hidden && !this.leaving) this.queue.unshift(this.current);
+                this.current = null;
+                this.root.hidden = true;
+            } else if (this.queue.length) this.next();
         }
         next() {
             clearTimeout(this.timer);
@@ -37,6 +48,7 @@ define(['cardartwork', '../../shared/js/dialogueformat'], function (CardArtwork,
             this.root.classList.toggle('quest-leaving', false);
             this.root.replaceChildren();
             const notice = this.queue.shift();
+            this.current = notice;
             this.root.hidden = !notice;
             if (!notice) return;
             const quiet = this.app.settings.getReducedMotion() || !this.app.settings.getCombatEffectsEnabled() ||

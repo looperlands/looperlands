@@ -8212433,6 +8212433,7 @@
     <property name="map" value="oaoverworld"/>
     <property name="o" value="d"/>
     <property name="quest" value="OA_QUEST_3"/>
+    <property name="quest_reveal" value="The village exit to the overworld is open."/>
     <property name="quest_message" value="Complete &quot;The Slime King's Reign&quot; to leave!"/>
     <property name="x" value="77"/>
     <property name="y" value="323"/>
