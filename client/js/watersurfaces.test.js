@@ -1,5 +1,6 @@
 const fs = require('fs'), vm = require('vm');
 const Water = require('./watersurfaces');
+const WaterReflections = require('./waterreflections');
 const pond = {id:'pool', name:'Pool', kind:'pond', x:0, y:0, width:6, height:4, shape:'oval', depth:'swim', paint:true};
 const deck = {id:'deck', name:'Bridge', kind:'dry', x:2, y:1, width:1, height:2};
 const stream = {...pond, id:'flow', kind:'stream', shape:'rect', depth:'wade', flow:'east', paint:false};
@@ -115,10 +116,15 @@ test('both Main beaches lead into open sea, with the void sealed and Town dry', 
     expect(blocked(117,476)).toEqual([true,true]);
     expect(blocked(44,297)).toEqual([true,true]); // Palm trunk on the sand.
     expect(depth(23,240)).toBe(0);
-    expect(field.reflectionSources(client)[0].cells.length).toBeGreaterThan(12);
+    const reflections = new WaterReflections(client,field);
+    expect(field.scenery).toHaveLength(0);
+    expect(reflections.sources).toEqual(expect.arrayContaining([
+        expect.objectContaining({area:{x:19,y:293,width:5,height:5}}),
+        expect.objectContaining({area:{x:43,y:293,width:5,height:5}})
+    ]));
 });
 test.each(['m88n','m88n2'])('%s keeps ocean swimming on the existing water artwork', id => {
-    const {depth,blocked} = authoredCoast(id);
+    const {client,field,depth,blocked} = authoredCoast(id);
     for (let y=268;y<=272;y++) expect(blocked(166,y)).toEqual([false,false]);
     expect(depth(166,268)).toBe(0);
     expect(depth(166,272)).toBe(1);
@@ -126,6 +132,67 @@ test.each(['m88n','m88n2'])('%s keeps ocean swimming on the existing water artwo
     expect(depth(155,415)).toBe(0); // Planks layered over the sea.
     expect(depth(157,418)).toBe(1);
     expect(blocked(157,417)).toEqual([true,true]);
+    const reflections = new WaterReflections(client,field);
+    expect(reflections.sources).toEqual(expect.arrayContaining([
+        expect.objectContaining({area:{x:91,y:264,width:5,height:4}}),
+        expect.objectContaining({area:{x:156,y:414,width:3,height:3}})
+    ]));
+});
+
+test('the Paradise Point East tentacle entrance and return tile connect the sand to the m88n ocean', () => {
+    const {client,blocked,depth} = authoredCoast('m88n'), server = require('../../server/maps/world_server_m88n.json');
+    for (const map of [client,server]) {
+        const entrance = map.doors.filter(d=>d.x===157 && d.y===266);
+        const exit = map.doors.filter(d=>d.x===157 && d.y===268);
+        expect(entrance).toHaveLength(1);
+        expect(entrance[0]).toMatchObject({tx:156,ty:268,titem:'m88ntentacle'});
+        expect(exit).toHaveLength(1);
+        expect(exit[0]).toMatchObject({tx:156,ty:266});
+    }
+    for (const [x,y] of [[157,265],[157,266],[156,268],[156,269],[156,270],[156,271],[157,268],[156,266]]) {
+        expect(blocked(x,y)).toEqual([false,false]);
+    }
+    expect(depth(157,266)).toBe(0);
+    expect(depth(156,271)).toBe(1);
+    expect(depth(156,266)).toBe(0);
+});
+
+test('automatic reflections join only placed pieces of the same artwork and respect a manual waterline', () => {
+    const map = {width:8,height:10,tilesetColumns:8,high:[10,11,56],data:Array(80).fill(1)};
+    const area = {id:'ocean',name:'Ocean',kind:'ocean',x:0,y:0,width:8,height:10,tiles:[4]};
+    for (let i=32;i<64;i++) map.data[i]=4;
+    map.data[10]=[1,10]; map.data[11]=[1,11]; map.data[18]=[1,18,72]; map.data[19]=[1,19];
+    map.data[26]=[1,26]; map.data[27]=[1,27];
+    map.data[5]=56; // Elevated artwork too far from the shore.
+    const natural = new WaterReflections(map,new Water.Field([area],map));
+    expect(natural.sources).toHaveLength(1);
+    expect(natural.sources[0].area).toEqual({x:2,y:1,width:2,height:3});
+    expect(natural.sources[0].cells.flatMap(c=>c.layers).sort((a,b)=>a-b)).toEqual([10,11,18,19,26,27]);
+    expect(natural.reflectsActor(40,16)).toBe(false);
+    expect(natural.reflectsActor(40,62)).toBe(true);
+    const box = {id:'custom',name:'Custom tree',kind:'reflection',x:2,y:1,width:2,height:3};
+    const manual = new WaterReflections(map,new Water.Field([area,box],map));
+    expect(manual.sources.map(s=>s.area)).toEqual([box]);
+    expect(manual.sources[0].cells.flatMap(c=>c.layers)).toContain(72);
+});
+
+test('an untagged dock over ocean reflects while surf, level ground and isolated sand tiles stay out', () => {
+    const map = {width:10,height:10,tilesetColumns:10,high:[],data:Array(100).fill(400)};
+    const area = {id:'ocean',name:'Ocean',kind:'ocean',x:0,y:0,width:10,height:10,tiles:[400,20]};
+    map.data[34]=[400,41]; map.data[35]=[400,42]; map.data[44]=[400,51]; map.data[45]=[400,52];
+    map.data[11]=[400,10]; map.data[21]=[400,20]; // Sand above an animated surf tile.
+    map.data[67]=[1,71]; map.data[68]=[1,72]; map.data[77]=[1,81]; map.data[78]=[1,82];
+    const field = new Water.Field([area],map);
+    const reflection = new WaterReflections(map,field);
+    expect(reflection.sources.map(s=>s.area)).toEqual([{x:4,y:3,width:2,height:2}]);
+});
+
+test('offscreen scenery is not rasterized when an ocean spans the entire map', () => {
+    const self = {WaterSurfaces:Water};
+    vm.runInNewContext(fs.readFileSync(require.resolve('./water-renderer-worker'),'utf8'),{self});
+    const painter = new self.WaterPainter({wet:[],dry:[],sources:[{area:{x:40,y:30,width:3,height:4},cells:[]}]});
+    painter.drawScenery({}, {x:0,y:0,w:2000,h:2000}, {x:16,y:80,w:200,h:180}, {}, 0, false);
+    expect(painter.sources[0].image).toBeNull();
 });
 
 test('a natural bank samples the same pixel contour as the painter', () => {

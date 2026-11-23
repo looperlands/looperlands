@@ -145,10 +145,14 @@ Use [Ambient sounds](mapmaker-audio.md) to place campfires, water, surf, wind, b
 
 Main’s southern beach has a crossing beside the palm at **(46, 297)**. Walk south to **(46, 302)** to swim, then return to the sand. Party Beach and the oceans on **m88n** and **m88n2** also support swimming.
 
+On **m88n**, the entrance from Paradise Point East into the open ocean is at **(157, 266)**. Bring **Octopussy’s Tentacle**. For a local playtest, add one `m88ntentacle` to Starting inventory and start at **(157, 265)**. Step south onto the entrance, then swim south from the arrival tile. The return crossing is at **(157, 268)**.
+
 1. Open **Map & world → Water & swimming**, choose your map, and add an area.
 2. For an existing ocean, choose **Ocean from map tiles** and draw a box around the coastline. Use **Pick a water tile on the map** for each distinct surf or open-water tile. The highlighted tiles show where players swim. A dock or island drawn over the ocean stays dry.
 3. For a hand-drawn crossing, choose **Pond** or **Stream**, drag out the footprint, and choose the depth. **Use existing map art** keeps the original tiles. **Paint a water surface** adds a bank and water. A stream also has a current direction for foam, leaves and wakes.
-4. Add **Scenery reflection** around a tree or dock on the north bank, ending at its base. Its reflection extends south into the water. **Dry deck or island** gives players a place to stand inside any crossing.
+4. Players, NPCs and monsters reflect as they approach water. Raised shoreline scenery and recognizable objects over the ocean reflect automatically when their image reaches water to the south. For custom artwork or a different waterline, draw a **Scenery reflection** box and end it at the base of the object. This replaces its automatic reflection. Use **Dry deck or island** for places where players should stand inside a crossing.
 5. Click **Save water** and start a fresh playtest. Swimming follows the map’s collision. To open a blocked route, edit the collision in Tiled and rebuild the map. To switch off a crossing, remove its area and save.
 
 ![An equipped Looper leaves the sand and swims past the reflected palm on Main’s southern beach](images/ocean-swimming.webp)
+
+![A dock on m88n casts its automatic reflection into the ocean below the planks](images/m88n-dock-reflection.png)

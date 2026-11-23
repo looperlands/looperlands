@@ -5,6 +5,8 @@
 }(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
     const tile = 16;
+    const maxScenerySize = 12;
+    const actorMirror = {width:64, height:14};
     const currents = {east: [1, 0], west: [-1, 0], north: [0, -1], south: [0, 1]};
     function validate(areas, map) {
         const fail = message => { throw Object.assign(new Error(message), {status: 400}); };
@@ -24,7 +26,7 @@
             if (typeof a.name !== 'string' || !a.name.trim() || a.name.length > 100 || /[<>\x00-\x1f]/.test(a.name)) fail('Give each water area a plain-text name.');
             if (![a.x,a.y,a.width,a.height].every(Number.isSafeInteger) || a.x < 0 || a.y < 0 || a.width < 1 || a.height < 1 ||
                 a.x + a.width > map.width || a.y + a.height > map.height) fail('Draw the water area within the map.');
-            if (a.kind === 'reflection' && (a.width > 12 || a.height > 12)) fail('Choose scenery up to 12 by 12 tiles for each reflection.');
+            if (a.kind === 'reflection' && (a.width > maxScenerySize || a.height > maxScenerySize)) fail('Choose scenery up to 12 by 12 tiles for each reflection.');
             if (a.shape !== undefined && !['natural','oval','rect'].includes(a.shape)) fail('Choose a natural shoreline, oval or rectangle.');
             if (wet && (!['swim','wade'].includes(a.depth) || typeof a.paint !== 'boolean')) fail('Choose the water depth and artwork.');
             if (a.kind === 'stream' && !Object.hasOwn(currents, a.flow)) fail('Choose a stream direction.');
@@ -158,5 +160,5 @@
             return true;
         });
     }
-    return {tile, currents, validate, bankRow, shore, topTile, oceanRows, Field, immerse};
+    return {tile, maxScenerySize, actorMirror, currents, validate, bankRow, shore, topTile, oceanRows, Field, immerse};
 }));

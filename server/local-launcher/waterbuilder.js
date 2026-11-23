@@ -4,7 +4,7 @@
     const $ = selector => pane.querySelector(selector);
     const el = (tag, text, props = {}) => Object.assign(document.createElement(tag), {textContent: text, ...props});
     const kinds = {pond: 'Pond', stream: 'Stream', ocean: 'Ocean from map tiles', dry: 'Dry deck or island', reflection: 'Scenery reflection'};
-    pane.innerHTML = `<header class="pane-heading"><h2>Water &amp; swimming</h2><p>Draw a crossing or pick the ocean tiles on your map. Add dry decks and shoreline reflections where you need them.</p></header>
+    pane.innerHTML = `<header class="pane-heading"><h2>Water &amp; swimming</h2><p>Draw a crossing or pick your ocean tiles. Water reflects nearby characters and recognizable shoreline scenery automatically.</p></header>
         <div class="world-toolbar"><div class="field"><label for="water-map">Map</label><select id="water-map"></select></div>
         <button class="water-save primary" disabled>Save water</button><button class="water-reload">Reload</button><a class="water-build" href="#build">Build this map</a></div>
         <p class="water-status" role="status"></p><div class="water-discard" hidden><p>Discard the unsaved water changes?</p>
@@ -95,7 +95,7 @@
             if (a.kind === 'stream') field(form, a, 'flow', 'Current', {east: 'East →', west: 'West ←', north: 'North ↑', south: 'South ↓'});
         }
         const help = a.kind === 'ocean' ? 'Pick each water tile used in the area. The highlighted tiles support swimming. Docks and islands stay dry where their artwork covers the water.' :
-            a.kind === 'reflection' ? 'Box the scenery tiles, finishing at the base of the tree or dock. Its reflection extends south into nearby water.' :
+            a.kind === 'reflection' ? 'Use a box for custom artwork or to adjust an automatic reflection. End it at the base of the object. Its reflection extends south into nearby water.' :
             a.kind === 'dry' ? 'Players stand at full height here. Draw over bridges, decks or islands.' :
                 'Swimming follows the map’s walkability. To open a blocked route, update its collision in Tiled.';
         form.append(el('p', help, {className: 'field-hint'}));

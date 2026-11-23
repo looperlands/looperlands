@@ -1,7 +1,7 @@
 // Water is drawn on the native world canvas. Positions, wake spacing and reflection bands are art pixels.
 (function (root) {
     'use strict';
-    const {tile, currents, bankRow, shore, immerse} = root.WaterSurfaces;
+    const {tile, actorMirror, currents, bankRow, shore, immerse} = root.WaterSurfaces;
     const bounds = a => ({x: a.x * tile, y: a.y * tile, w: a.width * tile, h: a.height * tile});
     const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
     const grain = (x, y) => (Math.imul(x + 31, 73856093) ^ Math.imul(y + 17, 19349663)) >>> 0;
@@ -199,10 +199,10 @@
                     }
                     ctx.restore();
                 }
-                this.drawScenery(ctx, box, sheet, tick, area.kind === 'stream');
+                this.drawScenery(ctx, box, screen, sheet, tick, area.kind === 'stream');
                 for (const actor of view.entityData) {
-                    if (actor.waterPlayer == null) continue;
-                    const silhouette = {x: actor.waterX - 24, y: actor.waterY, w: 48, h: 16};
+                    if (!actor.waterMirror) continue;
+                    const silhouette = {x: actor.waterX - actorMirror.width/2, y: actor.waterY, w: actorMirror.width, h: actorMirror.height};
                     if (overlaps(silhouette, box)) this.drawMirror(ctx, actor, view.scale, tick, drawPart);
                 }
                 this.surfaceDetails(ctx, area, box, screen, tick);
@@ -211,13 +211,13 @@
             }
             ctx.restore();
         }
-        drawScenery(ctx, box, sheet, tick, flowing) {
+        drawScenery(ctx, box, screen, sheet, tick, flowing) {
             if (this.sheet !== sheet) {
                 for (const s of this.sources) s.image = null;
                 this.sheet = sheet;
             }
             for (const source of this.sources) {
-                if (!overlaps(box, source.box)) continue;
+                if (!overlaps(screen, source.box) || !overlaps(box, source.box)) continue;
                 const {x, y, w, h} = source.box;
                 const image = source.image ||= reflectionBitmap(source, sheet, this.columns);
                 for (let row = 0; row < h; row += 2) {
@@ -242,7 +242,7 @@
             }
             ink.restore();
             const x = Math.round(actor.waterX) - 32, y = Math.round(actor.waterY);
-            for (let row = 0; row < 14; row++) {
+            for (let row = 0; row < actorMirror.height; row++) {
                 if (row > 5 && row % 4 === 1) continue;
                 ctx.globalAlpha = (actor.globalAlpha ?? 1) * (.34 - .016 * row);
                 const shift = row < 2 ? 0 : Math.round(Math.sin(row * .55 + tick * .28));

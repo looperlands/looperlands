@@ -687,15 +687,22 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 this.game.worldFx?.decorate?.(entity, entityData, this.scale);
                 this.game.combatFeedback?.hitFeel?.decorate(entity, entityData, this.scale, this.game.currentTime);
                 const water = this.game.map?.waterSurfaces;
-                if (water && entity instanceof Player && anim && sprite && entity.isVisible() && !entity.isDead) {
-                    entityData.waterPlayer = entity.id;
-                    entityData.waterX = entity.x + 8;
-                    entityData.waterY = entity.y + 15;
-                    const wet = water.sample(entityData.waterX, entityData.waterY);
-                    if (wet) {
-                        entityData.immersion = wet.depth;
-                        entityData.waterArea = wet.area.id;
-                        entityData.waterBody = sprite.name;
+                if (water && entity instanceof Character && anim && sprite && entity.isVisible() && !entity.isDead && !entityData.groundEffect) {
+                    const x = entity.x + 8, y = entity.y + 15, player = entity instanceof Player;
+                    const mirror = this.game.map.waterReflections.reflectsActor(x, y);
+                    if (mirror) entityData.waterMirror = true;
+                    if (player || mirror) {
+                        entityData.waterX = x;
+                        entityData.waterY = y;
+                    }
+                    if (player) {
+                        entityData.waterPlayer = entity.id;
+                        const wet = water.sample(x, y);
+                        if (wet) {
+                            entityData.immersion = wet.depth;
+                            entityData.waterArea = wet.area.id;
+                            entityData.waterBody = sprite.name;
+                        }
                     }
                 }
                 return [textData, entityData];
@@ -1208,7 +1215,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 const field = this.game.map?.waterSurfaces;
                 if (field !== this.syncedWater || (field && this.waterSession !== this.game.sessionId)) {
                     this.worker.postMessage({type: 'setWaterSurfaces', wet: field?.wet || [], dry: field?.dry || [],
-                        sources: field?.reflectionSources(this.game.map) || [], columns: this.game.map?.tilesetColumns});
+                        sources: this.game.map?.waterReflections?.sources || [], columns: this.game.map?.tilesetColumns});
                     this.syncedWater = field;
                     this.waterSession = this.game.sessionId;
                 }
