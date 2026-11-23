@@ -30,6 +30,24 @@ test('consecutive quests queue rather than replacing unread rewards', () => {
     expect(text(ui.root)).not.toContain('Added to inventory');
     jest.runAllTimers(); expect(ui.root.hidden).toBe(true);
 });
+test('camera shots defer incoming rewards and return time to read an interrupted card', () => {
+    const {ui} = setup();
+    ui.show(notice);
+    jest.advanceTimersByTime(4500);
+    ui.setPaused(true);
+    ui.show({...notice, questName: 'Next quest'});
+    jest.advanceTimersByTime(8000);
+    expect(ui.root.hidden).toBe(true);
+    ui.setPaused(false);
+    expect(text(ui.root)).toContain('Help the village');
+    jest.advanceTimersByTime(4999);
+    expect(ui.leaving).toBe(false);
+    jest.advanceTimersByTime(221);
+    expect(text(ui.root)).toContain('Next quest');
+    ui.close();
+    ui.setPaused(true); ui.setPaused(false);
+    expect(ui.root.hidden).toBe(true);
+});
 test('a new session discards queued celebrations and reduced motion preserves rewards', () => {
     const {ui, app} = setup(); ui.show(notice); ui.show(notice);
     app.game.sessionId = 'two'; app.settings.getReducedMotion = () => true;

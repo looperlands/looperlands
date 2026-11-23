@@ -29,6 +29,12 @@ The game does **not** combine multiple main conditions. Legacy maps can contain 
 
 Ownership results depend on the session wallet and ownership service. Local playtest providers can differ from production. An edited collection ID is not proof that a live wallet passes that gate.
 
+## Quest gate reveal
+
+For an entrance opened by a completed quest alone, enter a **Quest gate reveal caption** to show its source tile to the player who finishes that quest on this map. Completing *The Slime King’s Reign*, for example, reveals the Village Exit on `oa`. The camera pauses at the entrance, shows the caption, and returns to the player. Escape or **Skip cutscene** ends the shot early.
+
+Leave the caption blank for a hidden route. For a doorway spanning several tiles, add the caption to one representative tile. In Tiled, the caption is a string property named `quest_reveal`. Save and build the map to publish the change.
+
 ## Trigger condition
 
 Enter a **Trigger ID** to also require an active trigger on this map. The trigger must already be defined by the map or its game behavior. Check **Require the trigger to be inactive instead** to invert it. In the TMX, inversion is stored as `!<trigger-id>`.

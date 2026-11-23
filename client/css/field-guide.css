@@ -40,6 +40,21 @@
 @keyframes journal-arrive{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
 @keyframes journal-idle{from{background-position-x:0}to{background-position-x:var(--quest-frame-end)}}
 @media(prefers-reduced-motion:reduce){.journal-enter .journal-quest,.journal-target-animated{animation:none}.field-guide .journal-quest{transition:none}.field-guide .journal-quest:hover{transform:none}}
+
+.fg-first-encounter::after{content:'?';position:absolute;inset:0;display:grid;place-items:center;background:#341e28;color:#d2ba2f;font:34px AdvoCut,GraphicPixel,sans-serif;pointer-events:none}
+.fg-reveal-pending .journal-target-animated{animation-play-state:paused}
+.fg-reveal-playing.fg-first-encounter::after{animation:fg-question-reveal 540ms steps(5,end) both}
+.fg-reveal-playing.fg-first-encounter .journal-target-animated{animation-delay:320ms;animation-iteration-count:3}
+.fg-reveal-pending.fg-first-defeat .fg-badge{visibility:hidden}
+.fg-reveal-playing.fg-first-defeat .fg-badge{z-index:1;animation:fg-defeat-stamp 360ms ease-out both}
+.fg-reveal-playing.fg-first-encounter.fg-first-defeat .fg-badge{animation-delay:540ms}
+@keyframes fg-question-reveal{0%,22%{opacity:1}100%{opacity:0;visibility:hidden}}
+@keyframes fg-defeat-stamp{0%{opacity:0;transform:scale(1.65) rotate(-14deg)}70%{opacity:1;transform:scale(.88) rotate(3deg)}100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+    .fg-first-encounter::after{display:none}
+    .fg-reveal-playing.fg-first-defeat .fg-badge{animation:none}
+    .fg-reveal-pending.fg-first-defeat .fg-badge{visibility:visible}
+}
 @media(max-width:650px){.journal-tabs{gap:8px;margin-bottom:12px}.field-guide .journal-tab{padding:8px 15px;font-size:13px}.journal-quest-tools{gap:7px;margin-bottom:12px}.journal-quest-tools .fg-button{font-size:11px;padding:6px 10px}.journal-quests{flex-direction:column;gap:18px}.journal-quest-list{width:100%;overflow:visible}.journal-quest-detail{border-left:0;border-top:1px solid #b86f50;padding:15px 0;overflow:visible;flex:none}.journal-quest-detail p{font-size:12px}}
 @media(max-width:900px){.fg-panel{padding:30px 16px 16px}.fg-section{padding:0 10px}.fg-summary{font-size:11px}}
 @media(max-width:650px){.fg-panel{width:calc(100vw - 28px);height:calc(100dvh - 85px);border-width:8px;border-image-width:8px;padding:27px 10px 14px}.fg-title{width:210px;font-size:20px;top:-29px;padding:10px}.field-guide .fg-close{right:-16px;top:-21px;width:48px;height:48px}.fg-close-sprite{width:32px;height:32px;background-size:844px auto;background-position:-708px -252px}.fg-close:hover .fg-close-sprite{background-position:-740px -252px}.fg-close:active .fg-close-sprite{background-position:-772px -252px}.fg-summary{order:2;flex:1;font-size:10px}.fg-sections{display:flex;flex-direction:column;gap:18px;overflow:auto}.fg-section,.fg-section:first-child,.fg-section:last-child{overflow:visible;border-right:0;border-bottom:1px solid #b86f50;padding:0 3px 13px}.fg-section:last-child{border-bottom:0}.field-guide h2{font-size:21px}.fg-category-progress{margin-bottom:12px}.fg-legend{font-size:10px;gap:8px;padding-top:12px}.fg-legend span{font-size:9px}}

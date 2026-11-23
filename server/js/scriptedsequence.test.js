@@ -1,5 +1,6 @@
 const {SequenceDirector}=require('./scriptedsequence'),S=require('../../shared/js/scriptedsequences');
 const {validate}=require('./scriptedsequenceconfig');
+const {questGateReveals} = require('./doorgates');
 function setup(steps,extra={}) {
     let time=1000;const packets=[],listeners=new Map(),memory=new Set();
     const player={id:1,nftId:'avatar',sessionId:'one',hasEnteredGame:true,x:2,y:2,getLevel:()=>5,connection:{_connection:{emit:(event,p)=>packets.push(p),on:(event,fn)=>listeners.set(event,fn),off:(event,fn)=>{if(listeners.get(event)===fn)listeners.delete(event);}}}};
@@ -15,6 +16,43 @@ test('timeline runs in order, restores routines and records one completion per a
     s.tick(2400);expect(s.packets.some(p=>p.step?.type==='camera')).toBe(true);s.tick(4400);s.tick(4600);
     expect(s.world.activateTrigger).toHaveBeenCalledWith('gate');expect(s.actor.definition.route).toBe(original);expect(s.player.sequenceLock).toBeUndefined();expect(s.memory.has('meetingsequence-finished')).toBe(true);expect(s.listeners.size).toBe(0);
     s.director.event(s.player,'SPAWNED');s.tick(100000);expect(s.director.runs.size).toBe(0);
+});
+test('finishing the Slime King quest shows one walkable village exit, then returns control', () => {
+    const map = require('../maps/world_server_oa.json'), client = require('../../client/maps/world_client_oa.json');
+    const gates = map.doors.filter(door => door.tquest === 'OA_QUEST_3' && door.tmap === 'oaoverworld');
+    expect(gates.length).toBeGreaterThan(1);
+    const reveals = questGateReveals(gates);
+    expect(reveals).toHaveLength(1);
+    expect(questGateReveals(client.doors)).toEqual(questGateReveals(map.doors));
+    const [gate] = gates.filter(door => door.tquest_reveal);
+    expect(map.collisions).not.toContain(gate.y * map.width + gate.x);
+    expect(client.collisions).not.toContain(gate.y * client.width + gate.x);
+    const s = setup([], reveals[0]);
+    s.director.event(s.player, 'QUEST_COMPLETED', {quest: {id: 'unrelated'}});
+    s.tick(1000);
+    expect(s.packets).toHaveLength(0);
+    s.director.event(s.player, 'QUEST_COMPLETED', {quest: {id: 'OA_QUEST_3'}});
+    s.tick(2000);
+    expect(s.packets[0]).toMatchObject({type: 'start', skippable: true});
+    expect(s.packets.at(-1).step).toMatchObject({type: 'camera', x: gate.x, y: gate.y});
+    s.tick(3000);
+    expect(s.packets.at(-1).step).toMatchObject({type: 'caption', text: gate.tquest_reveal});
+    s.tick(6000);
+    expect(s.packets.at(-1).step.type).toBe('camera_reset');
+    s.tick(6100);
+    expect(s.player.sequenceLock).toBeUndefined();
+    expect(s.world.activateTrigger).not.toHaveBeenCalled();
+});
+test('hidden routes and gates with outstanding requirements do not generate camera shots', () => {
+    for (const [map, quest] of [['m88n', 'MAILMAN_QUEST_2'], ['m88n2', 'GAMER_QUEST_4']]) {
+        const doors = require('../maps/world_server_' + map + '.json').doors.filter(door => door.tquest === quest);
+        expect(doors.length).toBeGreaterThan(0);
+        expect(questGateReveals(doors)).toEqual([]);
+    }
+    const door = {x: 4, y: 6, tquest: 'Q', tquest_reveal: 'Open.'};
+    for (const extra of [{ttid: '!hidden'}, {ttime_range: '08:00-10:00'}, {tnft: 'key'}, {titem: 'key'}, {tquest_reveal: ' '}, {tquest: ''}]) {
+        expect(questGateReveals([{...door, ...extra}])).toEqual([]);
+    }
 });
 test('skip is tied to the active run and restores actors without executing later gameplay actions',()=>{
     const s=setup([{type:'speech',actor:'host',text:'Hello',seconds:10},{type:'trigger_on',value:'gate',seconds:0}]);s.tick(1000);

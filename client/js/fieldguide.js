@@ -1,4 +1,4 @@
-define(['jquery', 'sprites'], function ($, sprites) {
+define(['jquery', 'sprites', 'fieldguidereveals'], function ($, sprites, MonsterReveals) {
     const categories = {items: ['Items', 'collected'], fish: ['Fish', 'caught'], monsters: ['Monsters', 'defeated']};
     function node(tag, className, text) {
         const element = document.createElement(tag);
@@ -29,6 +29,14 @@ define(['jquery', 'sprites'], function ($, sprites) {
             backgroundImage: 'url("img/1/' + name + '.png")',
             backgroundPosition: '0px ' + (-(definition.animations?.idle_down?.row || 0) * definition.height) + 'px',
             transform: 'scale(' + scale + ')'};
+    }
+    function animateIdle(sprite, definition) {
+        const frames = definition.animations?.idle_down?.length;
+        if (!(frames > 1)) return;
+        sprite.classList.add('journal-target-animated');
+        sprite.style.setProperty('--quest-frames', frames);
+        sprite.style.setProperty('--quest-duration', frames * 180 + 'ms');
+        sprite.style.setProperty('--quest-frame-end', -(definition.width * frames) + 'px');
     }
     function popoverPosition(anchor, popup, viewport) {
         const margin = 12, gap = 8;
@@ -87,6 +95,7 @@ define(['jquery', 'sprites'], function ($, sprites) {
             await this.load();
         }
         close() {
+            this.revealObserver?.disconnect();
             this.opened = false; this.request++; this.root.hidden = true;
             document.body.classList.remove('field-guide-open');
             $('#achievementsbutton').removeClass('active');
@@ -110,7 +119,8 @@ define(['jquery', 'sprites'], function ($, sprites) {
                 }
                 const unchanged = JSON.stringify(this.data) === JSON.stringify(response.data);
                 this.data = response.data;
-                if (!quiet || !unchanged || this.error) this.render();
+                if (!quiet || !unchanged || this.error || this.newMonsterProgress) this.render();
+                this.newMonsterProgress = false;
                 this.error = false;
             } catch (error) {
                 if (!this.opened || request !== this.request || map !== this.app.game.mapId) return;
@@ -136,7 +146,41 @@ define(['jquery', 'sprites'], function ($, sprites) {
             else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
         }
         switchView(view) {this.view = view; this.error = false; this.render(); this.load();}
+        monsterReveals() {
+            const avatar = !this.app.storage?.f2p && this.app.storage?.nftId;
+            const key = 'field-guide:reveals:' + (avatar ? 'avatar:' + avatar : 'session:' + this.app.sessionId);
+            if (this.reveals?.key !== key) this.reveals = new MonsterReveals(() => avatar ? window.localStorage : window.sessionStorage, key);
+            return this.reveals;
+        }
+        recordMonsters(receipts) {
+            this.monsterReveals().record(receipts);
+            if (this.opened && this.view === 'field-guide') {
+                this.newMonsterProgress = true;
+                this.load(true);
+            }
+        }
+        showVisibleReveals() {
+            const slots = this.root.querySelectorAll('.fg-reveal-pending');
+            if (!slots.length) return;
+            const show = slot => {
+                if (!this.opened || !this.root.contains(slot) || !slot.classList.contains('fg-reveal-pending')) return;
+                slot.classList.replace('fg-reveal-pending', 'fg-reveal-playing');
+                this.reveals.seen(slot.dataset.fgFocus, {
+                    discovered: slot.classList.contains('fg-first-encounter'),
+                    completed: slot.classList.contains('fg-first-defeat')
+                });
+            };
+            if (!window.IntersectionObserver) {slots.forEach(show); return;}
+            this.revealObserver = new window.IntersectionObserver((entries, observer) => {
+                for (const entry of entries) if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    show(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            }, {root: this.root, threshold: 0.5});
+            slots.forEach(slot => this.revealObserver.observe(slot));
+        }
         render(message, failure = false) {
+            this.revealObserver?.disconnect();
             const active = document.activeElement, focus = active?.dataset?.fgFocus;
             const wasInside = this.root.contains(active);
             const scroll = {root: this.root.scrollTop, grids: [...this.root.querySelectorAll('.fg-sections, .fg-section')].map(element => element.scrollTop)};
@@ -180,6 +224,7 @@ define(['jquery', 'sprites'], function ($, sprites) {
             if (selected) this.root.append(this.entryDetails(selected));
             this.restoreFocus(focus, wasInside, scroll);
             this.positionDetails();
+            this.showVisibleReveals();
         }
         restoreFocus(focus, wasInside, scroll) {
             const next = [...this.root.querySelectorAll('[data-fg-focus]')].find(element => element.dataset.fgFocus === focus);
@@ -230,13 +275,7 @@ define(['jquery', 'sprites'], function ($, sprites) {
                 if (style) {
                     const viewport = node('span', 'journal-target'), sprite = node('span', 'fg-sprite');
                     Object.assign(sprite.style, style, {transform: 'scale(' + Math.min(2, 80 / Math.max(definition.width, definition.height)) + ')'});
-                    const animation = definition.animations?.idle_down;
-                    if (animation?.length > 1) {
-                        sprite.classList.add('journal-target-animated');
-                        sprite.style.setProperty('--quest-frames', animation.length);
-                        sprite.style.setProperty('--quest-duration', animation.length * 180 + 'ms');
-                        sprite.style.setProperty('--quest-frame-end', -(definition.width * animation.length) + 'px');
-                    }
+                    animateIdle(sprite, definition);
                     viewport.setAttribute('aria-hidden', 'true'); viewport.append(sprite); artwork.append(viewport);
                 }
                 if (artwork.children.length) detail.append(artwork);
@@ -258,13 +297,25 @@ define(['jquery', 'sprites'], function ($, sprites) {
             const required = this.data.entries.filter(entry => entry.category === category && !entry.bonus);
             section.append(node('h2', '', title), node('p', 'fg-category-progress', required.filter(entry => entry.state === 'completed').length + ' / ' + required.length + ' ' + verb));
             const entries = this.data.entries.filter(entry => entry.category === category), slots = node('div', 'fg-slots');
+            const reveals = category === 'monsters' && this.monsterReveals();
             for (const entry of entries) {
                 const slot = button('', () => {this.selected = this.selected === entry.id ? null : entry.id; this.render();}, 'fg-slot' + (this.selected === entry.id ? ' fg-selected' : ''));
                 slot.dataset.fgFocus = entry.id; slot.setAttribute('aria-pressed', String(entry.id === this.selected));
                 if (entry.id === this.selected) slot.setAttribute('aria-controls', 'fg-entry-details');
                 slot.setAttribute('aria-label', (entry.name || 'Undiscovered entry') + ' · ' + status(entry)); slot.title = (entry.name || 'Undiscovered') + ' · ' + status(entry);
+                const cue = reveals && reveals.forEntry(entry);
+                if (cue) {
+                    slot.classList.add('fg-reveal-pending');
+                    if (cue.discovered) slot.classList.add('fg-first-encounter');
+                    if (cue.completed) slot.classList.add('fg-first-defeat');
+                }
                 const style = entry.sprite && spriteStyle(entry.sprite);
-                if (style) {const viewport = node('span', 'fg-sprite-viewport'), sprite = node('span', 'fg-sprite'); Object.assign(sprite.style, style); viewport.append(sprite); slot.append(viewport);}
+                if (style) {
+                    const viewport = node('span', 'fg-sprite-viewport'), sprite = node('span', 'fg-sprite');
+                    Object.assign(sprite.style, style);
+                    if (cue?.discovered) animateIdle(sprite, sprites[entry.sprite]);
+                    viewport.append(sprite); slot.append(viewport);
+                }
                 else slot.append(node('span', 'fg-unknown', '?'));
                 if (entry.state !== 'unknown') slot.append(node('span', 'fg-badge ' + (entry.state === 'completed' ? 'fg-complete' : ''), entry.state === 'completed' ? '✓' : entry.bonus ? '✧' : '•'));
                 slots.append(slot);
