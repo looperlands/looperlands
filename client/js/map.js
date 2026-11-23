@@ -185,7 +185,7 @@ define(['jquery', 'area', 'mapassets', 'watersurfaces'], function ($, Area, MapA
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
             this.ambientSounds = map.ambientSounds || [];
-            this.waterSurfaces = map.waterSurfaces?.length ? new WaterSurfaces.Field(map.waterSurfaces) : null;
+            this.waterSurfaces = map.waterSurfaces?.length ? new WaterSurfaces.Field(map.waterSurfaces, map) : null;
             this.placedFx = map.placedFx || [];
             this.pvpZones = map.pvpZones || [];
             this.fishingTiles = map.fishingTiles || {};

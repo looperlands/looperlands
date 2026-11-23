@@ -68,20 +68,64 @@ test('movement emits distance-spaced wakes, one crossing splash, and clears on d
     update(410,9100); painter.track([],9120,false);
     expect(painter.actors.size).toBe(0);
 });
-test('the Main crossing has a walkable route through both exports and real tree artwork on its north bank', () => {
-    const client = require('../maps/world_client_main.json'), server = require('../../server/maps/world_server_main.json');
-    const areas = require('../../tools/worlds/main.json').waterSurfaces;
+const ocean = {id:'sea', name:'Sea', kind:'ocean', x:0, y:0, width:7, height:7, tiles:[4,5]};
+test('ocean immersion follows the visible tile around a deck, including its corners', () => {
+    const tiles = Array(49).fill(4);
+    tiles[2 * 7 + 2] = [4, 9]; // A dry deck laid over the ocean.
+    tiles[4 * 7 + 3] = [9, 5]; // Surf laid over the sand.
+    const field = new Water.Field([ocean], {width:7, data:tiles});
+    expect(field.wet[0].rows[2]).toEqual([0,2,3,7]);
+    expect(field.sample(40,40)).toBeNull();
+    expect(field.sample(49,40).depth).toBeCloseTo(1/18);
+    expect(field.sample(50,52).depth).toBeCloseTo(Math.hypot(2,4)/18);
+    expect(field.sample(56,80).depth).toBe(1);
+    expect(field.sample(64,80).depth).toBe(1);
+    expect(field.sample(7*16,80)).toBeNull();
+    const bounded = {...ocean, x:1,y:1,width:3,height:3};
+    expect(new Water.Field([bounded],{width:7,data:tiles}).wet[0].rows).toEqual([[0,3],[0,1,2,3],[0,3]]);
+});
+test('ocean authoring accepts a tile selection and rejects ambiguous or missing IDs', () => {
+    expect(() => Water.validate([ocean],map)).not.toThrow();
+    for (const tiles of [undefined,[],[4,4],[0],[2.5],['4']]) expect(() => Water.validate([{...ocean,tiles}],map)).toThrow();
+});
+
+function authoredCoast(id) {
+    const client = require('../maps/world_client_' + id + '.json');
+    const server = require('../../server/maps/world_server_' + id + '.json');
+    const areas = require('../../tools/worlds/' + id + '.json').waterSurfaces;
     Water.validate(areas,client);
-    const water = new Water.Field(areas), y = 240;
-    for (let x=19;x<=27;x++) for (const m of [client,server]) {
-        const index=y*m.width+x;
-        expect(m.collisions).not.toContain(index);
-        expect(m.blocking || []).not.toContain(index);
+    const field = new Water.Field(areas,client);
+    const clientBlocked = new Set([...client.collisions,...client.blocking]), serverBlocked = new Set(server.collisions);
+    const blocked = (x,y) => [clientBlocked.has(y*client.width+x),serverBlocked.has(y*client.width+x)];
+    const depth = (x,y) => field.sample(x*16+8,y*16+15)?.depth || 0;
+    return {client,field,blocked,depth};
+}
+
+test('both Main beaches lead into open sea, with the void sealed and Town dry', () => {
+    const {client,field,blocked,depth} = authoredCoast('main');
+    for (const y of [299,467]) {
+        expect(depth(46,y-1)).toBe(0);
+        expect(depth(46,y)).toBeGreaterThan(0);
+        expect(depth(46,y)).toBeLessThan(1);
+        expect(depth(46,y+4)).toBe(1);
+        for (let step=-1;step<12;step++) expect(blocked(46,y+step)).toEqual([false,false]);
+        expect(blocked(46,y+12)).toEqual([true,true]);
     }
-    expect(water.sample(19*16+8,y*16+15)).toBeNull();
-    expect(water.sample(23*16+8,y*16+15).depth).toBe(1);
-    expect(water.sample(27*16+8,y*16+15)).toBeNull();
-    expect(water.reflectionSources(client)[0].cells.length).toBeGreaterThan(12);
+    expect(blocked(92,305)).toEqual([true,true]);
+    expect(blocked(117,476)).toEqual([true,true]);
+    expect(blocked(44,297)).toEqual([true,true]); // Palm trunk on the sand.
+    expect(depth(23,240)).toBe(0);
+    expect(field.reflectionSources(client)[0].cells.length).toBeGreaterThan(12);
+});
+test.each(['m88n','m88n2'])('%s keeps ocean swimming on the existing water artwork', id => {
+    const {depth,blocked} = authoredCoast(id);
+    for (let y=268;y<=272;y++) expect(blocked(166,y)).toEqual([false,false]);
+    expect(depth(166,268)).toBe(0);
+    expect(depth(166,272)).toBe(1);
+    expect(depth(100,302)).toBe(1);
+    expect(depth(155,415)).toBe(0); // Planks layered over the sea.
+    expect(depth(157,418)).toBe(1);
+    expect(blocked(157,417)).toEqual([true,true]);
 });
 
 test('a natural bank samples the same pixel contour as the painter', () => {

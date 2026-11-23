@@ -11,11 +11,12 @@
         if (!Array.isArray(areas) || areas.length > 100) fail('Choose up to 100 water areas.');
         const ids = new Set();
         for (const a of areas) {
-            if (!a || !['pond', 'stream', 'dry', 'reflection'].includes(a.kind)) fail('Choose a valid water area type.');
+            if (!a || !['pond', 'stream', 'ocean', 'dry', 'reflection'].includes(a.kind)) fail('Choose a valid water area type.');
             const wet = a.kind === 'pond' || a.kind === 'stream';
             const keys = ['id', 'name', 'kind', 'x', 'y', 'width', 'height'];
             if (wet) keys.push('depth', 'paint');
-            if (a.kind !== 'reflection') keys.push('shape');
+            if (a.kind === 'ocean') keys.push('tiles');
+            else if (a.kind !== 'reflection') keys.push('shape');
             if (a.kind === 'stream') keys.push('flow');
             if (Object.keys(a).some(k => !keys.includes(k))) fail('Unsupported water area field.');
             if (typeof a.id !== 'string' || !/^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/.test(a.id) || ids.has(a.id)) fail('Water areas need unique IDs.');
@@ -27,6 +28,10 @@
             if (a.shape !== undefined && !['natural','oval','rect'].includes(a.shape)) fail('Choose a natural shoreline, oval or rectangle.');
             if (wet && (!['swim','wade'].includes(a.depth) || typeof a.paint !== 'boolean')) fail('Choose the water depth and artwork.');
             if (a.kind === 'stream' && !Object.hasOwn(currents, a.flow)) fail('Choose a stream direction.');
+            if (a.kind === 'ocean' && (!Array.isArray(a.tiles) || !a.tiles.length || a.tiles.length > 256 ||
+                a.tiles.some(gid => !Number.isSafeInteger(gid) || gid <= 0) || new Set(a.tiles).size !== a.tiles.length)) {
+                fail('Choose between 1 and 256 distinct ocean tile IDs.');
+            }
         }
     }
 
@@ -42,7 +47,50 @@
         return {left: Math.max(cx - rx, center - radius), right: Math.min(cx + rx, center + radius)};
     }
 
+    function topTile(stack) {
+        return Array.isArray(stack) ? stack[stack.length - 1] : stack;
+    }
+
+    // Each row contains local [start, end) pairs. A dock drawn over the ocean breaks the run.
+    function oceanRows(area, tiles, columns) {
+        const allowed = new Set(area.tiles), rows = [];
+        for (let y = 0; y < area.height; y++) {
+            const row = [], offset = (area.y + y) * columns + area.x;
+            for (let x = 0; x < area.width; x++) {
+                if (!allowed.has(topTile(tiles[offset + x]))) continue;
+                if (row.length && row[row.length - 1] === x) row[row.length - 1]++;
+                else row.push(x, x + 1);
+            }
+            rows.push(row);
+        }
+        return rows;
+    }
+
+    const swimDepth = 18;
+    function oceanShore(area, x, y) {
+        x -= area.x * tile;
+        y -= area.y * tile;
+        const tileY = Math.floor(y / tile);
+        if (x < 0 || y < 0 || x >= area.width * tile || tileY >= area.height) return -tile;
+        // Only dry ground within the wading distance can affect the waterline.
+        let nearest = swimDepth;
+        for (let row = Math.floor((y - swimDepth) / tile); row <= Math.floor((y + swimDepth) / tile); row++) {
+            const spans = area.rows[row] || [];
+            let horizontal = 0;
+            for (let i = 0; i < spans.length; i += 2) {
+                const left = spans[i] * tile, right = spans[i + 1] * tile;
+                if (x < left) break;
+                if (x < right) { horizontal = Math.min(x - left, right - x); break; }
+            }
+            if (row === tileY && horizontal === 0) return 0;
+            const vertical = Math.max(0, row * tile - y, y - (row + 1) * tile);
+            nearest = Math.min(nearest, Math.hypot(horizontal, vertical));
+        }
+        return nearest;
+    }
+
     function shore(a, x, y) {
+        if (a.rows) return oceanShore(a, x, y);
         const rx = a.width * tile / 2, ry = a.height * tile / 2;
         const dx = Math.abs(x - a.x * tile - rx), dy = Math.abs(y - a.y * tile - ry);
         if (a.shape === 'natural') {
@@ -54,8 +102,12 @@
     }
 
     class Field {
-        constructor(areas) {
-            this.wet = areas.filter(a => a.kind === 'pond' || a.kind === 'stream');
+        constructor(areas, map) {
+            this.wet = [];
+            for (const area of areas) {
+                if (area.kind === 'ocean') this.wet.push({...area, rows: oceanRows(area, map.data, map.width)});
+                else if (area.kind === 'pond' || area.kind === 'stream') this.wet.push(area);
+            }
             this.dry = areas.filter(a => a.kind === 'dry');
             this.scenery = areas.filter(a => a.kind === 'reflection');
         }
@@ -67,7 +119,7 @@
                 if (distance <= 0) continue;
                 for (const deck of this.dry) distance = Math.min(distance, -shore(deck, x, y));
                 if (distance <= 0) return null;
-                return {area, depth: Math.min(1, distance / 18) * (area.depth === 'wade' ? .3 : 1)};
+                return {area, depth: Math.min(1, distance / swimDepth) * (area.depth === 'wade' ? .3 : 1)};
             }
             return null;
         }
@@ -106,5 +158,5 @@
             return true;
         });
     }
-    return {tile, currents, validate, bankRow, shore, Field, immerse};
+    return {tile, currents, validate, bankRow, shore, topTile, oceanRows, Field, immerse};
 }));

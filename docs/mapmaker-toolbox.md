@@ -143,10 +143,12 @@ Use [Ambient sounds](mapmaker-audio.md) to place campfires, water, surf, wind, b
 
 ## Author a water crossing
 
-1. Open **Map & world → Water & swimming** and choose your map. Main’s Town pond is a working example. Walk east from tile **(19, 240)** through **(23, 240)** to reach the far bank.
-2. Choose **Pond** or **Stream**, click **Add area**, and drag across the water. Choose **Use existing map art** for a pond already drawn in Tiled. **Paint a water surface** adds a bank and water over the selected ground. The natural shoreline works well for ponds.
-3. Choose **Swim at waist depth** for a crossing, or **Wade in the shallows** for a ford. For a stream, set its current direction. Foam, leaves and wakes travel with the flow. Player movement follows the existing walkable tiles. To add running-water audio, place a **Flowing water** source in **Ambient sounds**.
-4. Add a **Dry deck or island** over any bridge or stepping platform. For a reflection, choose **Scenery reflection**, box the tree or dock tiles on the north bank, and end the box at its base. The reflection extends south into the water.
-5. Click **Save water** and start a fresh playtest. To switch water off, remove the areas and save again.
+Main’s southern beach has a crossing beside the palm at **(46, 297)**. Walk south to **(46, 302)** to swim, then return to the sand. Party Beach and the oceans on **m88n** and **m88n2** also support swimming.
 
-![An equipped Looper crosses the Town pond beneath the north-bank tree](images/town-swimming.webp)
+1. Open **Map & world → Water & swimming**, choose your map, and add an area.
+2. For an existing ocean, choose **Ocean from map tiles** and draw a box around the coastline. Use **Pick a water tile on the map** for each distinct surf or open-water tile. The highlighted tiles show where players swim. A dock or island drawn over the ocean stays dry.
+3. For a hand-drawn crossing, choose **Pond** or **Stream**, drag out the footprint, and choose the depth. **Use existing map art** keeps the original tiles. **Paint a water surface** adds a bank and water. A stream also has a current direction for foam, leaves and wakes.
+4. Add **Scenery reflection** around a tree or dock on the north bank, ending at its base. Its reflection extends south into the water. **Dry deck or island** gives players a place to stand inside any crossing.
+5. Click **Save water** and start a fresh playtest. Swimming follows the map’s collision. To open a blocked route, edit the collision in Tiled and rebuild the map. To switch off a crossing, remove its area and save.
+
+![An equipped Looper leaves the sand and swims past the reflected palm on Main’s southern beach](images/ocean-swimming.webp)

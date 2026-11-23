@@ -23,7 +23,7 @@
             draw(ctx,context){options.draw?.(ctx,context);if(!editable()||mode==='pan')return;ctx.fillStyle='#ffffff';ctx.strokeStyle='#2563eb';ctx.lineWidth=2;for(const handle of G.handles(options.getRegion())){const p=context.project(handle);ctx.fillRect(p.x-5,p.y-5,10,10);ctx.strokeRect(p.x-5,p.y-5,10,10);}},
             keydown(event){if(!map||!editable()||mode==='pan')return false;const delta={ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0},ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1}}[event.key];if(!delta)return false;const r=options.getRegion();change(event.shiftKey?G.resize(r,'se',{x:r.x+r.width+delta.x,y:r.y+r.height+delta.y},map):G.move(r,delta,map));options.onCommit?.(options.getRegion());return true;}
         };
-        canvas=window.MapmakerCanvas.attach(root,mapId,{label:options.label||'Area editor. Drag to draw, move or resize the box. Arrow keys move; Shift and arrows resize.',area:options.area||options.getRegion,interaction,onLoad:data=>{map=data;options.onLoad?.(data);refresh();}});
+        canvas=window.MapmakerCanvas.attach(root,mapId,{label:options.label||'Area editor. Drag to draw, move or resize the box. Arrow keys move; Shift and arrows resize.',area:options.area||options.getRegion,interaction,onPick:options.onPick,onLoad:data=>{map=data;options.onLoad?.(data);refresh();}});
         function refresh(){const r=options.getRegion();canvas?.set({regions:options.getRegions?.()||[r]});for(const[id,button]of buttons)if(id!=='pan')button.disabled=!editable();}
         setMode(mode);refresh();
         return {ready:canvas.ready,refresh,fit:()=>canvas.fit(options.getRegion()),setMode,get mode(){return mode;},destroy:()=>canvas.destroy()};

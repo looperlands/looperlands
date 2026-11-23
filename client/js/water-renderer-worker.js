@@ -7,7 +7,36 @@
     const grain = (x, y) => (Math.imul(x + 31, 73856093) ^ Math.imul(y + 17, 19349663)) >>> 0;
     const wrap = (value, span) => ((value % span) + span) % span;
 
+    function oceanPath(area, left, top, right, bottom) {
+        const path = new Path2D();
+        let wet = false;
+        for (let y = Math.max(0, top - area.y); y < Math.min(area.height, bottom - area.y); y++) {
+            const row = area.rows[y];
+            for (let i = 0; i < row.length; i += 2) {
+                const start = Math.max(left, area.x + row[i]), end = Math.min(right, area.x + row[i + 1]);
+                if (end <= start) continue;
+                path.rect(start * tile, (area.y + y) * tile, (end - start) * tile, tile);
+                wet = true;
+            }
+        }
+        return wet ? path : null;
+    }
+
+    function visiblePath(surface, screen) {
+        if (!surface.area.rows) return surface.path;
+        // Cache a little beyond the viewport so camera movement reuses the same coastline clip.
+        const block = 16 * tile;
+        const left = Math.floor(screen.x / block), top = Math.floor(screen.y / block);
+        const right = Math.ceil((screen.x + screen.w) / block), bottom = Math.ceil((screen.y + screen.h) / block);
+        const cached = surface.clip;
+        if (cached && cached.left === left && cached.top === top && cached.right === right && cached.bottom === bottom) return cached.path;
+        const path = oceanPath(surface.area, left * 16, top * 16, right * 16, bottom * 16);
+        surface.clip = {left, top, right, bottom, path};
+        return path;
+    }
+
     function footprint(area, inset = 0) {
+        if (area.rows) return oceanPath(area, area.x, area.y, area.x + area.width, area.y + area.height) || new Path2D();
         const p = new Path2D(), box = bounds(area);
         const x = box.x + inset, y = box.y + inset, w = box.w - 2 * inset, h = box.h - 2 * inset;
         if (w <= 0 || h <= 0) return p;
@@ -149,7 +178,9 @@
             ctx.save();
             ctx.translate(-screen.x, -screen.y);
             for (const surface of visible) {
-                const {area, box, path, holes, shelves} = surface;
+                const {area, box, holes, shelves} = surface;
+                const path = visiblePath(surface, screen);
+                if (!path) continue;
                 ctx.save();
                 ctx.clip(path);
                 for (const hole of holes) ctx.clip(hole, 'evenodd');
@@ -278,7 +309,7 @@
             ctx.translate(-Math.round(view.cameraX), -Math.round(view.cameraY));
             const surface = this.byId.get(actor.waterArea);
             if (surface && actor.immersion < .55) {
-                ctx.clip(surface.path);
+                ctx.clip(surface.clip?.path || surface.path);
                 for (const hole of surface.holes) ctx.clip(hole, 'evenodd');
             }
             ctx.globalAlpha = (actor.globalAlpha ?? 1) * Math.min(1, actor.immersion * 3);

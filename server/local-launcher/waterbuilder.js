@@ -3,8 +3,8 @@
     const pane = document.getElementById('water-pane'), config = window.WaterSurfaces;
     const $ = selector => pane.querySelector(selector);
     const el = (tag, text, props = {}) => Object.assign(document.createElement(tag), {textContent: text, ...props});
-    const kinds = {pond: 'Pond', stream: 'Stream', dry: 'Dry deck or island', reflection: 'Scenery reflection'};
-    pane.innerHTML = `<header class="pane-heading"><h2>Water &amp; swimming</h2><p>Draw a pond or stream over walkable tiles to let players wade and swim. Add a dry area for a bridge, or select scenery along the north bank to reflect it.</p></header>
+    const kinds = {pond: 'Pond', stream: 'Stream', ocean: 'Ocean from map tiles', dry: 'Dry deck or island', reflection: 'Scenery reflection'};
+    pane.innerHTML = `<header class="pane-heading"><h2>Water &amp; swimming</h2><p>Draw a crossing or pick the ocean tiles on your map. Add dry decks and shoreline reflections where you need them.</p></header>
         <div class="world-toolbar"><div class="field"><label for="water-map">Map</label><select id="water-map"></select></div>
         <button class="water-save primary" disabled>Save water</button><button class="water-reload">Reload</button><a class="water-build" href="#build">Build this map</a></div>
         <p class="water-status" role="status"></p><div class="water-discard" hidden><p>Discard the unsaved water changes?</p>
@@ -15,6 +15,8 @@
     const choices = (select, items) => select.replaceChildren(...Object.entries(items).map(([id, label]) => el('option', label, {value: id})));
     choices($('#water-kind'), kinds);
     let data, selected, editor, snapshot, pending, busy = false, mapsLoaded = false;
+    let artwork, picking = false;
+    const oceanPreviews = new Map();
     const current = () => data?.entries.find(a => a.id === selected);
     const dirty = () => data && JSON.stringify(data.entries) !== snapshot;
     const defaultRegion = {x: 0, y: 0, width: 1, height: 1};
@@ -62,7 +64,20 @@
         };
         wrap.append(el('label', label, {htmlFor: id}), input); form.append(wrap);
     }
+    function oceanTiles(form, area) {
+        const input = el('input', '', {id:'water-tiles', type:'text', required:true, maxLength:3000, value:area.tiles.join(', ')});
+        input.oninput = () => { area.tiles = input.value.trim().split(/[\s,]+/).filter(Boolean).map(Number); touch(); };
+        const pick = el('button', picking ? 'Cancel tile picker' : 'Pick a water tile on the map', {type:'button', disabled:!artwork});
+        pick.onclick = () => {
+            picking = !picking;
+            editor.setMode(picking ? 'pan' : 'select');
+            select(area.id);
+            if (picking) status('Click an ocean tile to add it. Drag to pan or scroll to zoom.');
+        };
+        form.append(el('label', 'Ocean tile IDs', {htmlFor:input.id}), input, pick);
+    }
     function select(id) {
+        if (selected !== id && picking) { picking = false; editor?.setMode('select'); }
         selected = id;
         const form = $('.water-fields'), a = current();
         form.replaceChildren(); list(); editor?.refresh();
@@ -72,13 +87,15 @@
         const geometry = el('div', '', {className: 'asset-field-grid'});
         for (const [key, label] of Object.entries({x: 'X', y: 'Y', width: 'Width', height: 'Height'})) field(geometry, a, key, label);
         form.append(geometry);
-        if (a.kind !== 'reflection') field(form, a, 'shape', 'Footprint', {rect: 'Rectangle', oval: 'Oval', natural: 'Natural shore'});
+        if (a.kind === 'ocean') oceanTiles(form, a);
+        else if (a.kind !== 'reflection') field(form, a, 'shape', 'Footprint', {rect: 'Rectangle', oval: 'Oval', natural: 'Natural shore'});
         if (a.kind === 'pond' || a.kind === 'stream') {
             field(form, a, 'depth', 'At the center', {swim: 'Swim at waist depth', wade: 'Wade in the shallows'});
             field(form, a, 'paint', 'Surface artwork', {false: 'Use existing map art', true: 'Paint a water surface'});
             if (a.kind === 'stream') field(form, a, 'flow', 'Current', {east: 'East →', west: 'West ←', north: 'North ↑', south: 'South ↓'});
         }
-        const help = a.kind === 'reflection' ? 'Box the scenery tiles, finishing at the base of the tree or dock. Its reflection extends south into nearby water.' :
+        const help = a.kind === 'ocean' ? 'Pick each water tile used in the area. The highlighted tiles support swimming. Docks and islands stay dry where their artwork covers the water.' :
+            a.kind === 'reflection' ? 'Box the scenery tiles, finishing at the base of the tree or dock. Its reflection extends south into nearby water.' :
             a.kind === 'dry' ? 'Players stand at full height here. Draw over bridges, decks or islands.' :
                 'Swimming follows the map’s walkability. To open a blocked route, update its collision in Tiled.';
         form.append(el('p', help, {className: 'field-hint'}));
@@ -86,11 +103,29 @@
         remove.onclick = () => { data.entries = data.entries.filter(row => row !== a); select(data.entries[0]?.id); touch(); };
         form.append(remove);
     }
+    function oceanPreview(a) {
+        if (!artwork || ![a.x,a.y,a.width,a.height].every(Number.isSafeInteger) || a.x < 0 || a.y < 0 ||
+            a.x + a.width > artwork.width || a.y + a.height > artwork.height) return;
+        const key = [a.x,a.y,a.width,a.height,...a.tiles].join(',');
+        if (oceanPreviews.get(a.id)?.key !== key) {
+            const path = new Path2D();
+            config.oceanRows(a, artwork.tiles, artwork.width).forEach((row, y) => {
+                for (let i = 0; i < row.length; i += 2) path.rect(row[i], y, row[i + 1] - row[i], 1);
+            });
+            oceanPreviews.set(a.id, {key, path});
+        }
+        return oceanPreviews.get(a.id).path;
+    }
     function draw(ctx, view) {
         for (const a of data.entries) {
             if (![a.x,a.y,a.width,a.height].every(Number.isFinite) || a.width <= 0 || a.height <= 0) continue;
             const p = view.project(a), w = a.width * view.scale, h = a.height * view.scale;
             ctx.fillStyle = a.kind === 'dry' ? 'rgba(168,125,73,.5)' : a.kind === 'reflection' ? 'rgba(123,102,183,.4)' : 'rgba(42,170,192,.5)';
+            if (a.kind === 'ocean') {
+                const path = oceanPreview(a);
+                if (path) { ctx.save(); ctx.translate(p.x, p.y); ctx.scale(view.scale, view.scale); ctx.fill(path); ctx.restore(); }
+                continue;
+            }
             ctx.beginPath();
             if (a.shape === 'natural') {
                 const left = [], right = [];
@@ -125,8 +160,17 @@
             $('#water-map').value = id; $('.water-workspace').hidden = false;
             $('.water-build').href = '#build/?map=' + encodeURIComponent(id);
             editor?.destroy(); $('.water-canvas').replaceChildren(); selected = data.entries[0]?.id;
+            artwork = null; picking = false; oceanPreviews.clear();
             editor = window.MapmakerRegionEditor.attach($('.water-canvas'), id, {
                 area: () => current(), getRegion: () => current() || defaultRegion, getRegions: () => [], editable: () => !!current(),
+                onLoad: map => { artwork = map; select(selected); },
+                onPick: point => {
+                    if (!picking || current()?.kind !== 'ocean') return;
+                    const gid = config.topTile(artwork.tiles[point.y * artwork.width + point.x]);
+                    if (!gid) { status('Choose a tile with ocean artwork.'); return; }
+                    if (!current().tiles.includes(gid)) current().tiles.push(gid);
+                    picking = false; editor.setMode('select'); select(selected); touch();
+                },
                 onChange: region => { Object.assign(current(), region); touch(); }, onCommit: () => select(selected),
                 onSelect: point => { const a = data.entries.slice().reverse().find(r => config.shore(r, point.x * 16, point.y * 16) >= 0); if (a) select(a.id); }, draw
             });
@@ -139,7 +183,8 @@
         const kind = $('#water-kind').value;
         let i = 1; while (data.entries.some(a => a.id === 'water_' + i)) i++;
         const a = {id: 'water_' + i, name: kinds[kind] + ' ' + i, kind, x: current()?.x || 0, y: current()?.y || 0, width: 1, height: 1};
-        if (kind !== 'reflection') a.shape = kind === 'pond' ? 'oval' : 'rect';
+        if (kind === 'ocean') a.tiles = [];
+        else if (kind !== 'reflection') a.shape = kind === 'pond' ? 'oval' : 'rect';
         if (kind === 'pond' || kind === 'stream') Object.assign(a, {depth: 'swim', paint: false});
         if (kind === 'stream') a.flow = 'east';
         data.entries.push(a); select(a.id); editor.setMode('draw'); touch();

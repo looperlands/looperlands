@@ -2,17 +2,18 @@
   "version": 1,
   "waterSurfaces": [
     {
-      "id": "town_crossing",
-      "name": "Town swimming pond",
-      "kind": "pond",
-      "x": 20, "y": 237, "width": 7, "height": 6,
-      "shape": "natural", "depth": "swim", "paint": true
+      "id": "beach_ocean", "name": "Southern ocean", "kind": "ocean",
+      "x": 0, "y": 298, "width": 93, "height": 14,
+      "tiles": [1800, 1801, 1820, 1921]
     },
     {
-      "id": "town_tree",
-      "name": "North bank tree",
-      "kind": "reflection",
-      "x": 22, "y": 233, "width": 4, "height": 5
+      "id": "beach_palm", "name": "Beach palm", "kind": "reflection",
+      "x": 43, "y": 293, "width": 5, "height": 5
+    },
+    {
+      "id": "party_beach_ocean", "name": "Party Beach ocean", "kind": "ocean",
+      "x": 4, "y": 466, "width": 114, "height": 14,
+      "tiles": [1800, 1801, 1820, 1921]
     }
   ],
   "rules": [],
