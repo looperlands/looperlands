@@ -1,5 +1,12 @@
 {
   "version": 1,
+  "waterSurfaces": [
+    {
+      "id": "ocean", "name": "Ocean and island shores", "kind": "ocean",
+      "x": 0, "y": 0, "width": 172, "height": 500,
+      "tiles": [294, 298, 302, 720, 846, 1819, 2095, 2233, 2371, 2509, 2647, 2785, 2923, 3061, 3199, 3337, 3475, 3613, 3889]
+    }
+  ],
   "rules": [],
   "dialogues": [],
   "atmosphere": [

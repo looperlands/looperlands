@@ -120,6 +120,24 @@ test('returning from a suspended tab limits catch-up rather than racing through 
     expect(character.x).toBe(40);
 });
 
+test('a hero spawned before the first game tick fades in from that tick and finishes once', () => {
+    const {modules} = loadMovement();
+    const game = {}, updater = new modules.updater(game), hero = new modules.entity(1, 1);
+    hero.fadeIn(game.currentTime);
+    updater.updateEntityFading(hero);
+    expect(hero.fadingAlpha).toBe(0);
+    for (const [now, opacity] of [[100, 0], [600, .5], [1100, 1], [1200, 1]]) {
+        game.currentTime = now;
+        updater.updateEntityFading(hero);
+        expect(hero.fadingAlpha).toBe(opacity);
+        expect(hero.isFading).toBe(opacity < 1);
+    }
+    hero.fadeIn(game.currentTime);
+    game.currentTime += 250;
+    updater.updateEntityFading(hero);
+    expect(hero.fadingAlpha).toBe(.25);
+});
+
 test('game ticks render every worker animation frame at 60 Hz', () => {
     const {modules, sandbox} = loadMovement();
     let now = 0;

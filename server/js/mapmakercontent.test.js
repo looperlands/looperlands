@@ -116,3 +116,22 @@ test('custom sheets persist in identical client and server exports and missing a
     expect(client.placedFx).toEqual(placedFx);expect(server.placedFx).toEqual(placedFx);expect(JSON.parse(JSON.stringify(script.mapData.placedFx))).toEqual(placedFx);
     fs.unlinkSync(path.join(root,'client'+saved.image));expect(()=>Content.build(root)).toThrow('Missing effect sprite');
 });
+
+test('water opt-in reaches both client transports and removal clears a previously built map', () => {
+    const entry = {id:'flow',name:'Ford',kind:'stream',x:2,y:3,width:4,height:2,depth:'wade',flow:'west',paint:false};
+    const file = path.join(root, 'client/maps/world_client_one.json');
+    const read = () => JSON.parse(fs.readFileSync(file));
+    const baseline = read();
+    expect(Content.applyMap(root, 'one', baseline).waterSurfaces).toBeUndefined();
+    expect(Content.build(root)).toBe(0);
+    write('tools/worlds/one.json', {version:1,waterSurfaces:[entry]});
+    expect(Content.applyMap(root, 'one', baseline).waterSurfaces).toEqual([entry]);
+    Content.build(root);
+    const script = {}; vm.runInNewContext(fs.readFileSync(file.replace(/\.json$/,'.js'),'utf8'),script);
+    expect(script.mapData.waterSurfaces).toEqual([entry]);
+    expect(read().waterSurfaces).toEqual([entry]);
+    expect(read().collisions).toEqual(baseline.collisions);
+    write('tools/worlds/one.json', {version:1,waterSurfaces:[]}); Content.build(root);
+    expect(read().waterSurfaces).toBeUndefined();
+    expect(Content.build(root)).toBe(0);
+});

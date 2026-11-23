@@ -1,5 +1,17 @@
 {
   "version": 1,
+  "waterSurfaces": [
+    {
+      "id": "beach_ocean", "name": "Southern ocean", "kind": "ocean",
+      "x": 0, "y": 298, "width": 93, "height": 14,
+      "tiles": [1800, 1801, 1820, 1921]
+    },
+    {
+      "id": "party_beach_ocean", "name": "Party Beach ocean", "kind": "ocean",
+      "x": 4, "y": 466, "width": 114, "height": 14,
+      "tiles": [1800, 1801, 1820, 1921]
+    }
+  ],
   "rules": [],
   "dialogues": [],
   "atmosphere": [

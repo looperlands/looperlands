@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const World = require('./localworldauthoring');
+const Water = require('../../client/js/watersurfaces');
 const Tiles = require('./localtilebuilder');
 const Contract = require('../../shared/js/mapmakerauthoring');
 
@@ -30,6 +31,10 @@ function applyMap(root, mapId, map) {
     require('../../shared/js/placedfxconfig').validate(document.placedFx, map);
     require('./localfxassets').validateSprites(root,document.placedFx);
     map = {...map, ambientSounds: document.ambientSounds, placedFx: document.placedFx};
+    if (document.waterSurfaces?.length) {
+        Water.validate(document.waterSurfaces, map);
+        map.waterSurfaces = document.waterSurfaces;
+    } else delete map.waterSurfaces;
     return Tiles.applyMap(World.applyAtmosphere(require('./localworldscenes').applyScenes(map, document.scenes, document.sceneBaseline), document.atmosphere, document.weather), Tiles.document(root, mapId));
 }
 
@@ -51,7 +56,7 @@ function validate(root = projectRoot) {
         World.validateAtmosphere(doc.atmosphere);
         require('../../client/js/ambientconfig').validate(doc.ambientSounds, fishingMap);
         require('./localambientassets').validateReferences(root, doc.ambientSounds);
-        if (doc.scenes != null || doc.atmosphere.length || doc.weather || doc.ambientSounds.length || doc.placedFx.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
+        if (doc.scenes != null || doc.atmosphere.length || doc.weather || doc.ambientSounds.length || doc.placedFx.length || doc.waterSurfaces?.length || Object.keys(tileDoc.actions).length || tileDoc.placements.length) {
             const map = Tiles.readMap(root, mapId);
             applyMap(root, mapId, map);
             Tiles.validate(tileDoc, map, {base: Tiles.base(root, mapId), quests: registry.quests.map(quest => quest.id)});
@@ -71,7 +76,7 @@ function build(root = projectRoot) {
         const doc = World.readDocument(root, mapId), tiles = Tiles.document(root, mapId);
         const file = path.join(root, 'client/maps/world_client_' + mapId + '.json');
         const previous = JSON.parse(fs.readFileSync(file, 'utf8'));
-        if (doc.scenes == null && !doc.atmosphere.length && !doc.weather && !doc.ambientSounds.length && !doc.placedFx.length && !previous.placedFx?.length && !tiles.placements.length) continue;
+        if (doc.scenes == null && !doc.atmosphere.length && !doc.weather && !doc.ambientSounds.length && !doc.placedFx.length && !previous.placedFx?.length && !doc.waterSurfaces?.length && !previous.waterSurfaces?.length && !tiles.placements.length) continue;
         const map = applyMap(root, mapId, previous);
         outputs.push([file, JSON.stringify(map)], [file.replace(/\.json$/, '.js'), 'var mapData = ' + JSON.stringify(map) + ';']);
         const server = path.join(root, 'server/maps/world_server_' + mapId + '.json');

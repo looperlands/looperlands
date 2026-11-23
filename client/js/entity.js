@@ -249,6 +249,7 @@ define(function() {
     
         fadeIn: function(currentTime) {
             this.isFading = true;
+            this.fadingAlpha = 0;
             this.startFadingTime = currentTime;
         },
     

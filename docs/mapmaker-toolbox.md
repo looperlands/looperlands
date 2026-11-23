@@ -22,6 +22,7 @@ Expand a group to find its tools. **Map & world** starts open; opening a tool fr
 - **Map inspector:** place items, mobs and NPCs with sprite previews; explore searchable object layers and open their editors. See [Interactive map inspector](mapmaker-inspector.md).
 - **Doors & portals:** find entrances and edit access rules, opening hours and player messages. See [Doors & portals](mapmaker-doors.md).
 - **World connections:** explore map links and find broken destinations or missing return routes. See [World connections](mapmaker-connections.md).
+- **Water & swimming** lets you draw ponds, streams, dry decks and reflections. Use existing artwork or paint a new water surface on a walkable route. [Author a crossing](#author-a-water-crossing)
 - **Scene manager:** create, duplicate and place scene regions, then edit lighting, music and particles with a game-time preview. See [Scene manager](mapmaker-atmosphere.md).
 - **Temporary content:** create seasonal events on any map; edit their schedules, actors, decorations, tile appearance, parallax and positional sounds, even outside the active dates. Link custom quests to an event's dates in Quest builder. See [Temporary content](mapmaker-temporary-content.md).
 - **Lights & shadows:** place torches, lamps, area lights and shadow blockers, with a live lighting preview. See [Lights & shadows](mapmaker-lighting.md).
@@ -139,3 +140,19 @@ Use **Gameplay → Checkpoints & zones** to edit spawn and revival areas, trigge
 ## Sound design
 
 Use [Ambient sounds](mapmaker-audio.md) to place campfires, water, surf, wind, birds and lava sounds. Preview from a movable listener, adjust radius and volume, then save and playtest. Sources fade and pan relative to the player.
+
+## Author a water crossing
+
+Main’s southern beach has a crossing beside the palm at **(46, 297)**. Walk south to **(46, 302)** to swim, then return to the sand. Party Beach and the oceans on **m88n** and **m88n2** also support swimming.
+
+On **m88n**, the entrance from Paradise Point East into the open ocean is at **(157, 266)**. Bring **Octopussy’s Tentacle**. For a local playtest, add one `m88ntentacle` to Starting inventory and start at **(157, 265)**. Step south onto the entrance, then swim south from the arrival tile. The return crossing is at **(157, 268)**.
+
+1. Open **Map & world → Water & swimming**, choose your map, and add an area.
+2. For an existing ocean, choose **Ocean from map tiles** and draw a box around the coastline. Use **Pick a water tile on the map** for each distinct surf or open-water tile. The highlighted tiles show where players swim. A dock or island drawn over the ocean stays dry.
+3. For a hand-drawn crossing, choose **Pond** or **Stream**, drag out the footprint, and choose the depth. **Use existing map art** keeps the original tiles. **Paint a water surface** adds a bank and water. A stream also has a current direction for foam, leaves and wakes.
+4. Players, NPCs and monsters reflect as they approach water. A player's reflection grows shorter and fainter as they wade in. Raised shoreline scenery and recognizable objects over the ocean reflect automatically when their image reaches water to the south. For custom artwork or a different waterline, draw a **Scenery reflection** box and end it at the base of the object. This replaces its automatic reflection. Use **Dry deck or island** for places where players should stand inside a crossing.
+5. Click **Save water** and start a fresh playtest. Swimming follows the map’s collision. To open a blocked route, edit the collision in Tiled and rebuild the map. To switch off a crossing, remove its area and save.
+
+![An equipped Looper leaves the sand and swims past the reflected palm on Main’s southern beach](images/ocean-swimming.webp)
+
+![A dock on m88n casts its automatic reflection into the ocean below the planks](images/m88n-dock-reflection.png)

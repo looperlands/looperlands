@@ -6,7 +6,7 @@ const {validateScenes, applyScenes} = require('./localworldscenes');
 const {validateDialogue} = require('./localquestdialogue');
 const DialogueFormat = require('../../shared/js/dialogueformat');
 const fail = (message, status = 400) => {throw Object.assign(new Error(message), {status});};
-const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes', sequences: 'sequences', ambient: 'ambientSounds', fx: 'placedFx'};
+const tools = {events: 'rules', dialogues: 'dialogues', atmosphere: 'atmosphere', scenes: 'scenes', sequences: 'sequences', ambient: 'ambientSounds', fx: 'placedFx', water: 'waterSurfaces'};
 const empty = () => ({version: 1, rules: [], dialogues: [], atmosphere: [], sequences: [], ambientSounds: [], placedFx: []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -31,7 +31,7 @@ function readDocument(root, mapId) {
     if (!fs.existsSync(file)) return empty();
     const raw = fs.readFileSync(file, 'utf8');if (Buffer.byteLength(raw) > 262144) fail('World authoring source exceeds 256 KB.');
     let value;try {value = JSON.parse(raw);} catch (_) {fail('Repair tools/worlds/' + mapId + '.json: invalid JSON.', 422);}
-    fields(value, ['version','rules','dialogues','atmosphere','scenes','sceneBaseline','sequences','weather','ambientSounds','placedFx'], 'World authoring source');
+    fields(value, ['version','rules','dialogues','atmosphere','scenes','sceneBaseline','sequences','weather','ambientSounds','placedFx','waterSurfaces'], 'World authoring source');
     if (value.weather != null) require('../../client/js/sceneenvironment').weather(value.weather);
     if (value.sceneBaseline !== undefined) validateScenes(value.sceneBaseline, {width: Number.MAX_SAFE_INTEGER, height: Number.MAX_SAFE_INTEGER});
     if (value.version !== 1) fail('World authoring source requires version: 1.');
@@ -123,7 +123,7 @@ function validateAtmosphere(entries, catalog) {
     }
     return entries;
 }
-const validate = {fx:require('../../shared/js/placedfxconfig').validate,ambient:require('../../client/js/ambientconfig').validate,events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere,sequences:require('./scriptedsequenceconfig').validate};
+const validate = {water:require('../../client/js/watersurfaces').validate,fx:require('../../shared/js/placedfxconfig').validate,ambient:require('../../client/js/ambientconfig').validate,events:validateRules,dialogues:validateDialogues,atmosphere:validateAtmosphere,sequences:require('./scriptedsequenceconfig').validate};
 let baseline;
 function bundled() {return baseline ||= require('../world-definitions').register(new (require('./worlddefinitions').WorldDefinitions)(), {local:false});}
 async function catalog(root, mapId) {
@@ -150,7 +150,7 @@ async function catalog(root, mapId) {
         scenes:client.scenes||[],builtScenes:builtClient.scenes||[],width:client.width,height:client.height,collisions:server.collisions||[],music:audio('music'),sounds:audio('sounds'),bundledDialogues:bundled().dialogues(mapId).map(d=>({npc:d.npc,name:d.name||String(d.npc),start:d.start,nodeCount:Object.keys(d.nodes).length}))};
 }
 function sectionValue(doc, tool, catalog) {
-    return tool === 'scenes' ? {scenes:doc.scenes ?? null, sceneBaseline:doc.sceneBaseline ?? null, atmosphere:doc.atmosphere, weather:doc.weather ?? null, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]];
+    return tool === 'scenes' ? {scenes:doc.scenes ?? null, sceneBaseline:doc.sceneBaseline ?? null, atmosphere:doc.atmosphere, weather:doc.weather ?? null, builtScenes:catalog.builtScenes,width:catalog.width,height:catalog.height} : doc[tools[tool]] ?? [];
 }
 function sceneEntries(doc, catalog) {
     const orphan = doc.atmosphere.find(row => row.sceneId !== '*' && !catalog.scenes.some(scene => String(scene.id) === row.sceneId) &&
@@ -161,7 +161,7 @@ function sceneEntries(doc, catalog) {
 }
 async function readTool(root, mapId, tool, options) {
     if (!Object.hasOwn(tools,tool)) fail('Choose a world authoring tool.');const doc=readDocument(root,mapId);options ||= await catalog(root,mapId);
-    const entries=tool==='scenes'?sceneEntries(doc,options):doc[tools[tool]];
+    const entries=tool==='scenes'?sceneEntries(doc,options):doc[tools[tool]] ?? [];
     return {mapId,tool,entries,...(tool==='scenes'?{weather:doc.weather ?? null}:{}),revision:hash(sectionValue(doc,tool,options)),source:'tools/worlds/'+mapId+'.json',catalog:options};
 }
 async function saveTool(root, input, beforeWrite = () => {}) {
@@ -239,7 +239,7 @@ function installRuntime(app,root,getWorlds=()=>({})) {
             // area lookup, including when the local layout was removed or restored.
             const worlds=getWorlds()||{},world=worlds[mapId]||worlds['world_'+mapId];
             if(world?.map){world.map.scenes=value.scenes||[];world.map.placedFx=value.placedFx||[];world.placedFx?.configure(world.map.placedFx);}
-            if(doc.scenes==null&&!doc.atmosphere.length&&!doc.weather&&!doc.ambientSounds.length&&!doc.placedFx.length&&!map.placedFx?.length&&!tileDoc.placements.length)return next();
+            if(doc.scenes==null&&!doc.atmosphere.length&&!doc.weather&&!doc.ambientSounds.length&&!doc.placedFx.length&&!map.placedFx?.length&&!doc.waterSurfaces?.length&&!map.waterSurfaces?.length&&!tileDoc.placements.length)return next();
             res.setHeader('Cache-Control','no-store');
             if(match[2]==='js')return res.type('application/javascript').send('var mapData = '+JSON.stringify(value)+';');
             res.json(value);
