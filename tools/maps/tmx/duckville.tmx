@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1250">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1268">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_duckville.png" width="2208" height="2512"/>
   <tile id="0">
@@ -3033822,8 +3033822,8 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile gid="17736"/>
-   <tile gid="17736"/>
+   <tile/>
+   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3085348,21 +3085348,23 @@
   </object>
   <object id="1137" name="Torch" x="1080" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="4"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1138" name="Torch" x="1192" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="4"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1155" name="Torch" x="1688" y="7080" width="128" height="128">
    <properties>
@@ -3085483,102 +3085485,293 @@
   </object>
   <object id="1192" name="Torch copy" x="1816" y="2184" width="128" height="128">
    <properties>
-    <property name="color" value="62,214,42"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="2"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="62,214,42" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="2" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1193" name="Torch copy copy" x="1448" y="2200" width="128" height="128">
    <properties>
-    <property name="color" value="0,51,255"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="2"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="0,51,255" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="2" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1194" name="Torch copy copy copy" x="1464" y="2216" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,0"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="2"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,0,0" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="2" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1195" name="Torch copy copy copy" x="1480" y="2200" width="128" height="128">
    <properties>
-    <property name="color" value="0,255,17"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="2"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="0,255,17" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="2" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1196" name="Torch copy copy copy" x="1624" y="2120" width="128" height="128">
    <properties>
-    <property name="color" value="0,213,255"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="3"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="0,213,255" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="3" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1197" name="Torch copy copy copy" x="1784" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,234,0"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,234,0" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1198" name="Torch copy copy copy copy" x="1464" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,136,0"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,136,0" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1199" name="Torch copy copy copy copy" x="1496" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="140,0,255"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="140,0,255" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1200" name="Torch copy copy copy copy copy" x="1528" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,234"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,0,234" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1201" name="Torch copy copy copy copy" x="1848" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="0,238,255"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="0,238,255" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
   </object>
   <object id="1202" name="Torch copy copy copy copy" x="1816" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,221"/>
-    <property name="intensity" value="0.8"/>
-    <property name="radius" value="1"/>
-    <property name="shadow" value="0.8"/>
+    <property name="color" value="255,0,221" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="1" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
    </properties>
-   <ellipse/>
+   <ellipse />
+  </object>
+  <object id="1250" name="Torch copy" x="1240" y="3512" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1251" name="Torch copy" x="1352" y="3512" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1252" name="Torch copy" x="1560" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1253" name="Torch copy" x="1832" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1254" name="Torch copy" x="1736" y="3192" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1255" name="Torch copy" x="1640" y="3192" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1256" name="Torch copy" x="1880" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1257" name="Torch copy" x="2152" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1258" name="Torch copy" x="2056" y="3192" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1259" name="Torch copy" x="1960" y="3192" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1260" name="Torch copy" x="2152" y="3592" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1261" name="Torch copy" x="2056" y="3560" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1262" name="Torch copy" x="1960" y="3560" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1263" name="Torch copy" x="1880" y="3592" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1264" name="Torch copy" x="1560" y="3592" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1265" name="Torch copy" x="1640" y="3560" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1266" name="Torch copy" x="1736" y="3560" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
+  </object>
+  <object id="1267" name="Torch copy" x="1832" y="3592" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90" />
+    <property name="intensity" value="0.8" />
+    <property name="radius" value="4" />
+    <property name="shadow" value="0.8" />
+    <property name="glowIntensity" value="0.3" />
+   </properties>
+   <ellipse />
   </object>
  </objectgroup>
 </map>
