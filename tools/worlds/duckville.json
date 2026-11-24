@@ -160,6 +160,15 @@
       "particles": []
     },
     {
+      "sceneId": "1003",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
       "sceneId": "1094",
       "music": null,
       "cycle": true,
@@ -240,6 +249,42 @@
       "parallax": {
         "layers": []
       }
+    },
+    {
+      "sceneId": "1242",
+      "music": null,
+      "cycle": true,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1243",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1244",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1245",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
     }
   ],
   "sequences": [],
@@ -445,7 +490,7 @@
       "name": "The Tree Tops",
       "x": 0,
       "y": 202,
-      "w": 89,
+      "w": 90,
       "h": 19
     },
     {
@@ -474,7 +519,7 @@
     },
     {
       "id": "1004",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 90,
       "y": 221,
       "w": 10,
@@ -482,7 +527,7 @@
     },
     {
       "id": "1005",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 70,
       "y": 230,
       "w": 10,
@@ -490,7 +535,7 @@
     },
     {
       "id": "1006",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 80,
       "y": 230,
       "w": 10,
@@ -498,7 +543,7 @@
     },
     {
       "id": "1007",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 90,
       "y": 230,
       "w": 10,
@@ -506,7 +551,7 @@
     },
     {
       "id": "1008",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 70,
       "y": 239,
       "w": 10,
@@ -514,7 +559,7 @@
     },
     {
       "id": "1009",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 80,
       "y": 239,
       "w": 10,
@@ -522,7 +567,7 @@
     },
     {
       "id": "1010",
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "x": 90,
       "y": 239,
       "w": 10,
@@ -591,6 +636,86 @@
       "y": 133,
       "w": 35,
       "h": 14
+    },
+    {
+      "id": "1205",
+      "name": "Welcome home gardener!",
+      "x": 90,
+      "y": 212,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1206",
+      "name": "Welcome home gardener!",
+      "x": 90,
+      "y": 203,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "id": "1242",
+      "name": "33 Wings Way - Loft",
+      "x": 100,
+      "y": 202,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "id": "1243",
+      "name": "44 Wings Way - Loft",
+      "x": 120,
+      "y": 202,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "id": "1244",
+      "name": "11 Wings Way - Loft",
+      "x": 100,
+      "y": 225,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "id": "1245",
+      "name": "22 Wings Way - Loft",
+      "x": 120,
+      "y": 225,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "id": "1246",
+      "name": "11 Wings Way - Garden",
+      "x": 100,
+      "y": 237,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "id": "1247",
+      "name": "22 Wings Way - Garden",
+      "x": 120,
+      "y": 237,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "id": "1248",
+      "name": "33 Wings Way - Garden",
+      "x": 100,
+      "y": 214,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "id": "1249",
+      "name": "44 Wings Way - Garden",
+      "x": 120,
+      "y": 214,
+      "w": 20,
+      "h": 11
     }
   ],
   "weather": null,
@@ -696,7 +821,7 @@
       "id": 970,
       "x": 0,
       "y": 202,
-      "w": 89,
+      "w": 90,
       "h": 19
     },
     {
@@ -724,7 +849,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1004,
       "x": 90,
       "y": 221,
@@ -732,7 +857,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1005,
       "x": 70,
       "y": 230,
@@ -740,7 +865,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1006,
       "x": 80,
       "y": 230,
@@ -748,7 +873,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1007,
       "x": 90,
       "y": 230,
@@ -756,7 +881,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1008,
       "x": 70,
       "y": 239,
@@ -764,7 +889,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1009,
       "x": 80,
       "y": 239,
@@ -772,7 +897,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home m88nwalker!",
+      "name": "Welcome home gardener!",
       "id": 1010,
       "x": 90,
       "y": 239,
@@ -842,6 +967,86 @@
       "y": 133,
       "w": 35,
       "h": 14
+    },
+    {
+      "name": "Welcome home gardener!",
+      "id": 1205,
+      "x": 90,
+      "y": 212,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "name": "Welcome home gardener!",
+      "id": 1206,
+      "x": 90,
+      "y": 203,
+      "w": 10,
+      "h": 9
+    },
+    {
+      "name": "33 Wings Way - Loft",
+      "id": 1242,
+      "x": 100,
+      "y": 202,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "name": "44 Wings Way - Loft",
+      "id": 1243,
+      "x": 120,
+      "y": 202,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "name": "11 Wings Way - Loft",
+      "id": 1244,
+      "x": 100,
+      "y": 225,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "name": "22 Wings Way - Loft",
+      "id": 1245,
+      "x": 120,
+      "y": 225,
+      "w": 20,
+      "h": 12
+    },
+    {
+      "name": "11 Wings Way - Garden",
+      "id": 1246,
+      "x": 100,
+      "y": 237,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "name": "22 Wings Way - Garden",
+      "id": 1247,
+      "x": 120,
+      "y": 237,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "name": "33 Wings Way - Garden",
+      "id": 1248,
+      "x": 100,
+      "y": 214,
+      "w": 20,
+      "h": 11
+    },
+    {
+      "name": "44 Wings Way - Garden",
+      "id": 1249,
+      "x": 120,
+      "y": 214,
+      "w": 20,
+      "h": 11
     }
   ]
 }
