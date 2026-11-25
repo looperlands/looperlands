@@ -285,6 +285,42 @@
       "nightDarkness": 0.8,
       "color": "#000000",
       "particles": []
+    },
+    {
+      "sceneId": "1246",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1247",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1248",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1249",
+      "music": null,
+      "cycle": false,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
     }
   ],
   "sequences": [],

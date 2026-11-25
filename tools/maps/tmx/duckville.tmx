@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1268">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="172" height="500" tilewidth="16" tileheight="16" infinite="0" nextlayerid="123" nextobjectid="1302">
  <tileset firstgid="1" name="tilesheet" tilewidth="16" tileheight="16" tilecount="21666" columns="138">
   <image source="../../../client/img/1/tilesheet_duckville.png" width="2208" height="2512"/>
   <tile id="0">
@@ -281261,13 +281261,13 @@
    <tile gid="8168"/>
    <tile/>
    <tile/>
+   <tile gid="8305"/>
+   <tile/>
+   <tile gid="15775"/>
+   <tile gid="15776"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile/>
    <tile/>
@@ -281281,13 +281281,13 @@
    <tile gid="8168"/>
    <tile/>
    <tile/>
+   <tile gid="8305"/>
+   <tile/>
+   <tile gid="15775"/>
+   <tile gid="15776"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile/>
    <tile/>
@@ -281431,17 +281431,17 @@
    <tile/>
    <tile/>
    <tile gid="8444"/>
+   <tile gid="8029"/>
+   <tile gid="8030"/>
+   <tile/>
+   <tile/>
+   <tile gid="15913"/>
+   <tile gid="15914"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="11067"/>
+   <tile gid="11068"/>
    <tile/>
    <tile/>
    <tile/>
@@ -281451,17 +281451,17 @@
    <tile/>
    <tile/>
    <tile gid="8444"/>
+   <tile gid="8029"/>
+   <tile gid="8030"/>
+   <tile/>
+   <tile/>
+   <tile gid="15913"/>
+   <tile gid="15914"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="11067"/>
+   <tile gid="11068"/>
    <tile/>
    <tile/>
    <tile/>
@@ -281600,44 +281600,44 @@
    <tile gid="10647"/>
    <tile gid="10634"/>
    <tile gid="11321"/>
-   <tile/>
-   <tile/>
-   <tile gid="8582"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="11321"/>
-   <tile gid="11321"/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile gid="8582"/>
+   <tile gid="11631"/>
+   <tile gid="11632"/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
+   <tile gid="11635"/>
+   <tile gid="11636"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="8305"/>
+   <tile gid="11321"/>
+   <tile gid="11321"/>
+   <tile gid="8305"/>
+   <tile/>
+   <tile gid="8582"/>
+   <tile gid="11633"/>
+   <tile gid="11634"/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
+   <tile gid="11631"/>
+   <tile gid="11632"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile gid="11321"/>
    <tile/>
    <tile/>
@@ -285217,13 +285217,13 @@
    <tile gid="8168"/>
    <tile/>
    <tile/>
+   <tile gid="8305"/>
+   <tile/>
+   <tile gid="15775"/>
+   <tile gid="15776"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile/>
    <tile/>
@@ -285237,13 +285237,13 @@
    <tile gid="8168"/>
    <tile/>
    <tile/>
+   <tile gid="8305"/>
+   <tile/>
+   <tile gid="15775"/>
+   <tile gid="15776"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile/>
    <tile/>
@@ -285387,17 +285387,17 @@
    <tile/>
    <tile/>
    <tile gid="8444"/>
+   <tile gid="8029"/>
+   <tile gid="8030"/>
+   <tile/>
+   <tile/>
+   <tile gid="15913"/>
+   <tile gid="15914"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="11067"/>
+   <tile gid="11068"/>
    <tile/>
    <tile/>
    <tile/>
@@ -285407,17 +285407,17 @@
    <tile/>
    <tile/>
    <tile gid="8444"/>
+   <tile gid="8029"/>
+   <tile gid="8030"/>
+   <tile/>
+   <tile/>
+   <tile gid="15913"/>
+   <tile gid="15914"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="11067"/>
+   <tile gid="11068"/>
    <tile/>
    <tile/>
    <tile/>
@@ -285556,44 +285556,44 @@
    <tile gid="11059"/>
    <tile gid="11321"/>
    <tile gid="11321"/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile gid="8582"/>
+   <tile gid="11635"/>
+   <tile gid="11636"/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
+   <tile gid="11637"/>
+   <tile gid="11638"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile gid="11321"/>
    <tile gid="11321"/>
-   <tile/>
+   <tile gid="8305"/>
    <tile/>
    <tile gid="8582"/>
+   <tile gid="11637"/>
+   <tile gid="11638"/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="8635"/>
+   <tile gid="8636"/>
+   <tile gid="11633"/>
+   <tile gid="11634"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="8305"/>
    <tile gid="11321"/>
    <tile/>
    <tile/>
@@ -451880,6 +451880,17 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -451899,18 +451910,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -453428,7 +453428,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -454956,6 +454956,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -454965,6 +454966,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -454974,9 +454976,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -455846,6 +455846,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -455865,8 +455866,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -456504,6 +456504,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -456513,6 +456514,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -456522,9 +456524,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -458052,6 +458052,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -458061,6 +458062,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -458070,9 +458072,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="10153"/>
    <tile/>
    <tile/>
    <tile/>
@@ -542095,14 +542095,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="4164"/>
+   <tile gid="4577"/>
+   <tile gid="4577"/>
+   <tile gid="4577"/>
+   <tile gid="4577"/>
+   <tile gid="4577"/>
+   <tile gid="4577"/>
+   <tile gid="4163"/>
    <tile/>
    <tile/>
    <tile/>
@@ -542266,16 +542266,16 @@
    <tile/>
    <tile/>
    <tile gid="12160"/>
-   <tile gid="12161"/>
    <tile gid="4164"/>
-   <tile gid="4577"/>
-   <tile gid="4577"/>
-   <tile gid="4577"/>
-   <tile gid="4577"/>
-   <tile gid="4577"/>
-   <tile gid="4577"/>
+   <tile gid="4578"/>
+   <tile gid="350"/>
+   <tile gid="350"/>
+   <tile gid="350"/>
+   <tile gid="350"/>
+   <tile gid="350"/>
+   <tile gid="350"/>
+   <tile gid="4576"/>
    <tile gid="4163"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -542438,16 +542438,16 @@
    <tile/>
    <tile/>
    <tile gid="12298"/>
-   <tile gid="12299"/>
-   <tile gid="4578"/>
+   <tile gid="4440"/>
    <tile gid="350"/>
+   <tile gid="365"/>
+   <tile gid="366"/>
+   <tile gid="366"/>
+   <tile gid="366"/>
+   <tile gid="366"/>
+   <tile gid="367"/>
    <tile gid="350"/>
-   <tile gid="350"/>
-   <tile gid="350"/>
-   <tile gid="350"/>
-   <tile gid="350"/>
-   <tile gid="4576"/>
-   <tile gid="4163"/>
+   <tile gid="4438"/>
    <tile/>
    <tile/>
    <tile/>
@@ -542612,12 +542612,12 @@
    <tile/>
    <tile gid="4440"/>
    <tile gid="350"/>
-   <tile gid="365"/>
-   <tile gid="366"/>
-   <tile gid="366"/>
-   <tile gid="366"/>
-   <tile gid="366"/>
-   <tile gid="367"/>
+   <tile gid="503"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="505"/>
    <tile gid="350"/>
    <tile gid="4438"/>
    <tile/>
@@ -542646,6 +542646,178 @@
    <tile gid="3531"/>
    <tile gid="11884"/>
    <tile gid="11885"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="4440"/>
+   <tile gid="350"/>
+   <tile gid="503"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="488"/>
+   <tile gid="505"/>
+   <tile gid="350"/>
+   <tile gid="4438"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -543479,178 +543651,6 @@
    <tile gid="4301"/>
    <tile gid="4301"/>
    <tile gid="4025"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -625623,10 +625623,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9463"/>
+   <tile gid="9464"/>
+   <tile gid="9465"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11746"/>
+   <tile gid="11747"/>
    <tile/>
    <tile/>
    <tile/>
@@ -625638,10 +625643,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9463"/>
+   <tile gid="9464"/>
+   <tile gid="9465"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11746"/>
+   <tile gid="11747"/>
    <tile/>
    <tile/>
    <tile/>
@@ -625785,10 +625795,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9601"/>
+   <tile gid="9602"/>
+   <tile gid="9603"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11884"/>
+   <tile gid="11885"/>
    <tile/>
    <tile/>
    <tile/>
@@ -625800,10 +625815,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9601"/>
+   <tile gid="9602"/>
+   <tile gid="9603"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11884"/>
+   <tile gid="11885"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626117,11 +626137,13 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15481"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15482"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626135,11 +626157,13 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15482"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15481"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626453,6 +626477,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6703"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626467,10 +626492,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6705"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6703"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626485,6 +626512,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6705"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626628,6 +626656,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="4079"/>
+   <tile gid="4080"/>
    <tile/>
    <tile/>
    <tile/>
@@ -626646,38 +626676,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="4079"/>
+   <tile gid="4080"/>
    <tile/>
    <tile/>
    <tile/>
@@ -628270,7 +628270,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="12161"/>
    <tile/>
    <tile/>
    <tile/>
@@ -628442,13 +628442,13 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="4164"/>
+   <tile gid="12299"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
    <tile/>
    <tile/>
    <tile/>
@@ -628617,10 +628617,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -628789,10 +628789,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2976"/>
-   <tile gid="2977"/>
-   <tile gid="2978"/>
-   <tile gid="2979"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -628961,10 +628961,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="3114"/>
-   <tile gid="3115"/>
-   <tile gid="3116"/>
-   <tile gid="3117"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -629579,10 +629579,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9463"/>
+   <tile gid="9464"/>
+   <tile gid="9465"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11746"/>
+   <tile gid="11747"/>
    <tile/>
    <tile/>
    <tile/>
@@ -629594,10 +629599,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9463"/>
+   <tile gid="9464"/>
+   <tile gid="9465"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11746"/>
+   <tile gid="11747"/>
    <tile/>
    <tile/>
    <tile/>
@@ -629741,10 +629751,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9601"/>
+   <tile gid="9602"/>
+   <tile gid="9603"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="11884"/>
+   <tile gid="11885"/>
    <tile/>
    <tile/>
    <tile/>
@@ -629756,30 +629771,15 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="9601"/>
+   <tile gid="9602"/>
+   <tile gid="9603"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="11884"/>
+   <tile gid="11885"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630093,11 +630093,13 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15482"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15481"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630111,11 +630113,13 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15481"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="15482"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630429,6 +630433,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6703"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630443,10 +630448,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6705"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6703"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630461,6 +630468,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="6705"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630604,6 +630612,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="4079"/>
+   <tile gid="4080"/>
    <tile/>
    <tile/>
    <tile/>
@@ -630622,18 +630632,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="4079"/>
+   <tile gid="4080"/>
    <tile/>
    <tile/>
    <tile/>
@@ -711627,6 +711627,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="16047"/>
+   <tile gid="16185"/>
+   <tile gid="16186"/>
    <tile/>
    <tile/>
    <tile/>
@@ -711644,12 +711647,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="16047"/>
+   <tile gid="16185"/>
+   <tile gid="16186"/>
    <tile/>
    <tile/>
    <tile/>
@@ -714278,8 +714278,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="66"/>
+   <tile gid="2826"/>
    <tile/>
    <tile/>
    <tile/>
@@ -714450,8 +714450,8 @@
    <tile/>
    <tile gid="10641"/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="204"/>
+   <tile gid="2964"/>
    <tile gid="10784"/>
    <tile gid="10785"/>
    <tile/>
@@ -714619,12 +714619,16 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
    <tile/>
    <tile/>
-   <tile gid="3801"/>
-   <tile gid="1446"/>
-   <tile gid="4206"/>
-   <tile gid="4077"/>
    <tile/>
    <tile/>
    <tile/>
@@ -714787,18 +714791,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="1584"/>
-   <tile gid="4344"/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -715136,12 +715136,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="4079"/>
-   <tile gid="4080"/>
    <tile/>
-   <tile gid="4597"/>
-   <tile gid="4598"/>
-   <tile gid="4599"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -715480,7 +715480,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="4079"/>
+   <tile gid="4080"/>
    <tile/>
+   <tile gid="4597"/>
+   <tile gid="4598"/>
+   <tile gid="4599"/>
    <tile/>
    <tile/>
    <tile/>
@@ -715578,6 +715583,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="16047"/>
+   <tile gid="16185"/>
+   <tile gid="16186"/>
    <tile/>
    <tile/>
    <tile/>
@@ -715595,17 +715603,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="16047"/>
+   <tile gid="16185"/>
+   <tile gid="16186"/>
    <tile/>
    <tile/>
    <tile/>
@@ -800452,8 +800452,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="618"/>
+   <tile gid="3378"/>
    <tile/>
    <tile/>
+   <tile gid="894"/>
+   <tile gid="3654"/>
    <tile/>
    <tile/>
    <tile/>
@@ -800620,8 +800624,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="756"/>
+   <tile gid="3516"/>
    <tile/>
    <tile/>
+   <tile gid="1032"/>
+   <tile gid="3792"/>
    <tile/>
    <tile/>
    <tile/>
@@ -800789,6 +800797,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
    <tile/>
    <tile/>
    <tile/>
@@ -800957,22 +800969,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -886630,6 +886630,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="1170"/>
+   <tile gid="3930"/>
    <tile/>
    <tile/>
    <tile/>
@@ -886800,6 +886802,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="1308"/>
+   <tile gid="4068"/>
    <tile/>
    <tile/>
    <tile/>
@@ -886967,6 +886971,14 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
    <tile/>
    <tile/>
    <tile/>
@@ -887131,26 +887143,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -972804,8 +972804,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="1722"/>
+   <tile gid="4483"/>
    <tile/>
    <tile/>
+   <tile gid="1446"/>
+   <tile gid="4206"/>
    <tile/>
    <tile/>
    <tile/>
@@ -972972,8 +972976,12 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="1860"/>
+   <tile gid="4621"/>
    <tile/>
    <tile/>
+   <tile gid="1584"/>
+   <tile gid="4344"/>
    <tile/>
    <tile/>
    <tile/>
@@ -973141,6 +973149,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2976"/>
+   <tile gid="2977"/>
+   <tile gid="2978"/>
+   <tile gid="2979"/>
    <tile/>
    <tile/>
    <tile/>
@@ -973309,22 +973321,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="3114"/>
+   <tile gid="3115"/>
+   <tile gid="3116"/>
+   <tile gid="3117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1058982,6 +1058982,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2274"/>
+   <tile gid="5034"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1059152,6 +1059154,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2412"/>
+   <tile gid="5172"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1059324,11 +1059328,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="33"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2775721,15 +2775721,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="21761"/>
-   <tile/>
-   <tile gid="21761"/>
-   <tile/>
    <tile gid="21761"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="21761"/>
+   <tile gid="21761"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2775743,11 +2775742,12 @@
    <tile/>
    <tile/>
    <tile gid="21761"/>
-   <tile/>
    <tile gid="21761"/>
    <tile/>
-   <tile gid="21761"/>
    <tile/>
+   <tile/>
+   <tile gid="21761"/>
+   <tile gid="21761"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2779677,15 +2779677,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="21761"/>
-   <tile/>
-   <tile gid="21761"/>
-   <tile/>
    <tile gid="21761"/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="21761"/>
+   <tile gid="21761"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2779699,11 +2779698,12 @@
    <tile/>
    <tile/>
    <tile gid="21761"/>
-   <tile/>
    <tile gid="21761"/>
    <tile/>
-   <tile gid="21761"/>
    <tile/>
+   <tile/>
+   <tile gid="21761"/>
+   <tile gid="21761"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2825964,12 +2825964,12 @@
     <property name="y" value="35"/>
    </properties>
   </object>
-  <object id="1204" name="Audubon Society NFT Mint" x="128" y="3792" width="16" height="16">
+  <object id="1204" name="Audubon Society NFT Mint" x="128" y="3824" width="16" height="16">
    <properties>
     <property name="http_redirect" value="https://audubon-society.mintopia.top/ODZiMkM2NUM3MDY4NGU1OWU4RjMxOEYyZjMxMTVBQzRiODJGN2U1Ng/"/>
     <property name="o" value="u"/>
     <property name="x" value="8"/>
-    <property name="y" value="237"/>
+    <property name="y" value="239"/>
    </properties>
   </object>
   <object id="1207" name="Tree House Loft" x="1648" y="3440" width="16" height="16">
@@ -3034175,13 +3034175,11 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3034195,13 +3034193,14 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3034209,6 +3034208,7 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3036239,13 +3036239,6 @@
    <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3036256,16 +3036249,18 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3036273,6 +3036268,11 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3036407,15 +3036407,15 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3036427,15 +3036427,15 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3036927,13 +3036927,13 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3036944,16 +3036944,16 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3037440,14 +3037440,14 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3037466,8 +3037466,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3038131,13 +3038131,11 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3038151,10 +3038149,8 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile/>
@@ -3038165,6 +3038161,10 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039061,11 +3039061,11 @@
    <tile/>
    <tile/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039232,14 +3039232,14 @@
    <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039406,12 +3039406,12 @@
    <tile gid="17736"/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039578,12 +3039578,12 @@
    <tile gid="17736"/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039748,14 +3039748,14 @@
    <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3039920,14 +3039920,14 @@
    <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040092,14 +3040092,14 @@
    <tile gid="17736"/>
    <tile/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040195,13 +3040195,6 @@
    <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3040212,16 +3040205,15 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
+   <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
@@ -3040229,6 +3040221,14 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040363,15 +3040363,15 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040383,15 +3040383,15 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040880,16 +3040880,16 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3040903,13 +3040903,13 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3041396,14 +3041396,14 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3041416,14 +3041416,14 @@
    <tile gid="17736"/>
    <tile gid="17736"/>
    <tile gid="17736"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="17736"/>
+   <tile gid="17736"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3085348,23 +3085348,23 @@
   </object>
   <object id="1137" name="Torch" x="1080" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1138" name="Torch" x="1192" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1155" name="Torch" x="1688" y="7080" width="128" height="128">
    <properties>
@@ -3085485,293 +3085485,633 @@
   </object>
   <object id="1192" name="Torch copy" x="1816" y="2184" width="128" height="128">
    <properties>
-    <property name="color" value="62,214,42" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="2" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="62,214,42"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="2"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1193" name="Torch copy copy" x="1448" y="2200" width="128" height="128">
    <properties>
-    <property name="color" value="0,51,255" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="2" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="0,51,255"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="2"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1194" name="Torch copy copy copy" x="1464" y="2216" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,0" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="2" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,0,0"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="2"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1195" name="Torch copy copy copy" x="1480" y="2200" width="128" height="128">
    <properties>
-    <property name="color" value="0,255,17" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="2" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="0,255,17"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="2"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1196" name="Torch copy copy copy" x="1624" y="2120" width="128" height="128">
    <properties>
-    <property name="color" value="0,213,255" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="3" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="0,213,255"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="3"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1197" name="Torch copy copy copy" x="1784" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,234,0" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,234,0"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1198" name="Torch copy copy copy copy" x="1464" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,136,0" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,136,0"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1199" name="Torch copy copy copy copy" x="1496" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="140,0,255" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="140,0,255"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1200" name="Torch copy copy copy copy copy" x="1528" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,234" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,0,234"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1201" name="Torch copy copy copy copy" x="1848" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="0,238,255" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="0,238,255"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1202" name="Torch copy copy copy copy" x="1816" y="2136" width="128" height="128">
    <properties>
-    <property name="color" value="255,0,221" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="1" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,0,221"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="1"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1250" name="Torch copy" x="1240" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1251" name="Torch copy" x="1352" y="3512" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1252" name="Torch copy" x="1560" y="3224" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1253" name="Torch copy" x="1832" y="3224" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1254" name="Torch copy" x="1736" y="3192" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1255" name="Torch copy" x="1640" y="3192" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1256" name="Torch copy" x="1880" y="3224" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1257" name="Torch copy" x="2152" y="3224" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1258" name="Torch copy" x="2056" y="3192" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1259" name="Torch copy" x="1960" y="3192" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1260" name="Torch copy" x="2152" y="3592" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1261" name="Torch copy" x="2056" y="3560" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1262" name="Torch copy" x="1960" y="3560" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1263" name="Torch copy" x="1880" y="3592" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1264" name="Torch copy" x="1560" y="3592" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1265" name="Torch copy" x="1640" y="3560" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1266" name="Torch copy" x="1736" y="3560" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
   </object>
   <object id="1267" name="Torch copy" x="1832" y="3592" width="128" height="128">
    <properties>
-    <property name="color" value="255,180,90" />
-    <property name="intensity" value="0.8" />
-    <property name="radius" value="4" />
-    <property name="shadow" value="0.8" />
-    <property name="glowIntensity" value="0.3" />
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
    </properties>
-   <ellipse />
+   <ellipse/>
+  </object>
+  <object id="1268" name="Torch copy copy" x="1560" y="3416" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1269" name="Torch copy copy" x="1832" y="3416" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1270" name="Torch copy copy" x="1640" y="3384" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1271" name="Torch copy copy" x="1736" y="3384" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1272" name="Torch copy copy" x="1880" y="3416" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1273" name="Torch copy copy" x="2152" y="3416" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1274" name="Torch copy copy" x="2056" y="3384" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1275" name="Torch copy copy" x="1960" y="3384" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1276" name="Torch copy copy" x="1560" y="3784" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1277" name="Torch copy copy" x="1832" y="3784" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1278" name="Torch copy copy" x="1640" y="3752" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1279" name="Torch copy copy" x="1736" y="3752" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1280" name="Torch copy copy" x="1960" y="3752" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1281" name="Torch copy copy" x="2152" y="3784" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1282" name="Torch copy copy" x="2056" y="3752" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1283" name="Torch copy copy" x="1880" y="3784" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1284" name="Torch copy copy" x="1400" y="3512" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1285" name="Torch copy copy" x="1512" y="3512" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1286" name="Torch copy copy" x="1080" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1287" name="Torch copy copy" x="1192" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1288" name="Torch copy copy" x="1352" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1289" name="Torch copy copy" x="1240" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1290" name="Torch copy copy" x="1400" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1291" name="Torch copy copy" x="1512" y="3656" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1292" name="Torch copy copy" x="1400" y="3368" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1293" name="Torch copy copy" x="1512" y="3368" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1294" name="Torch copy copy" x="1400" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1295" name="Torch copy copy" x="1512" y="3224" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1296" name="Torch copy copy" x="1080" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1297" name="Torch copy copy" x="1192" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1298" name="Torch copy copy" x="1352" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1299" name="Torch copy copy" x="1240" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1300" name="Torch copy copy" x="1400" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="1301" name="Torch copy copy" x="1512" y="3800" width="128" height="128">
+   <properties>
+    <property name="color" value="255,180,90"/>
+    <property name="glowIntensity" value="0.3"/>
+    <property name="intensity" value="0.8"/>
+    <property name="radius" value="4"/>
+    <property name="shadow" value="0.8"/>
+   </properties>
+   <ellipse/>
   </object>
  </objectgroup>
 </map>
