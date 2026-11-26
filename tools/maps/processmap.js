@@ -272,17 +272,32 @@ module.exports = function processMap(json, options) {
 
     removeStagedTileAnimationTiming();
 
+    const nearestTile = pixels => Math.round(pixels / map.tilesize);
+
+    function tileBounds(object) {
+        const left = object.x / map.tilesize;
+        const top = object.y / map.tilesize;
+        const x = Math.ceil(left);
+        const y = Math.ceil(top);
+        // Preserve which whole tile coordinates fall inside the original half-open rectangle.
+        return {
+            x, y,
+            w: Math.ceil(left + object.width / map.tilesize) - x,
+            h: Math.ceil(top + object.height / map.tilesize) - y
+        };
+    }
+
     var processDoor = function (door) {
         let newDoor = {
-            x: door.x / map.tilesize,
-            y: door.y / map.tilesize,
+            x: nearestTile(door.x),
+            y: nearestTile(door.y),
             p: ((door.type || door.class) === 'portal') ? 1 : 0,
             map: door.map
         }
         var rawDoorProps = door.properties?.property;
         var doorProps = rawDoorProps ? (Array.isArray(rawDoorProps) ? rawDoorProps : [rawDoorProps]) : [];
-        for (var k = 0; k < doorProps.length; k += 1) {
-            newDoor['t' + doorProps[k].name] = doorProps[k].value;
+        for (const {name, value} of doorProps) {
+            newDoor['t' + name] = ['x', 'y', 'cx', 'cy'].includes(name) ? Math.round(value) : value;
         }
 
         map.doors.push(newDoor);
@@ -291,15 +306,13 @@ module.exports = function processMap(json, options) {
     var processRoamingArea = function (area, idx) {
         const props = [].concat(area.properties || []).flatMap(group => [].concat(group.property || []));
         const nb = Number(props.find(p => p.name === 'nb')?.value ?? props[0]?.value ?? 0);
+        const {x, y, w: width, h: height} = tileBounds(area);
 
         map.roamingAreas.push({
             id: idx,
             objectId: area.id,
             name: area.name,
-            x: area.x / map.tilesize,
-            y: area.y / map.tilesize,
-            width: area.width / map.tilesize,
-            height: area.height / map.tilesize,
+            x, y, width, height,
             type: area.type || area.class,
             nb: nb
         });
@@ -308,10 +321,7 @@ module.exports = function processMap(json, options) {
     var processTriggerArea = function (triggerArea, idx) {
         var trigger = {
             id: triggerArea.id,
-            x: triggerArea.x / map.tilesize,
-            y: triggerArea.y / map.tilesize,
-            w: triggerArea.width / map.tilesize,
-            h: triggerArea.height / map.tilesize,
+            ...tileBounds(triggerArea),
         };
 
         trigger.objectId = triggerArea.id;trigger.name = triggerArea.name || '';
@@ -443,10 +453,7 @@ module.exports = function processMap(json, options) {
             id: area.id,
             objectId: area.id,
             name: area.name,
-            x: area.x / map.tilesize,
-            y: area.y / map.tilesize,
-            w: area.width / map.tilesize,
-            h: area.height / map.tilesize
+            ...tileBounds(area)
         };
         _.each([].concat(area.properties || []).flatMap(group => [].concat(group.property || [])), function (prop) {
             if (prop.name === 'items') {
@@ -461,7 +468,7 @@ module.exports = function processMap(json, options) {
                     chestArea['c'][Types.getKindFromString(chance[0].trim())] = parseFloat(chance[1]);
                 }
             } else {
-                chestArea['t' + prop.name] = ['x','y'].includes(prop.name) ? Number(prop.value) : prop.value;
+                chestArea['t' + prop.name] = ['x','y'].includes(prop.name) ? Math.round(prop.value) : prop.value;
             }
         });
         map.chestAreas.push(chestArea);
@@ -471,8 +478,8 @@ module.exports = function processMap(json, options) {
             var newChest = {
                 objectId: chest.id,
                 name: chest.name,
-                y: chest.y / map.tilesize,
-                x: chest.x / map.tilesize
+                y: nearestTile(chest.y),
+                x: nearestTile(chest.x)
             }
             _.each([].concat(chest.properties || []).flatMap(group => [].concat(group.property || [])), function (prop) {
                 if (prop.name === 'items') {
@@ -497,10 +504,7 @@ module.exports = function processMap(json, options) {
 
     var processMusic = function (music) {
         var musicArea = {
-            x: music.x / map.tilesize,
-            y: music.y / map.tilesize,
-            w: music.width / map.tilesize,
-            h: music.height / map.tilesize,
+            ...tileBounds(music),
             objectId:music.id,name:music.name||'',
             id: Zones.properties(music).music ?? Object.values(Zones.properties(music))[0]
         };
@@ -511,10 +515,7 @@ module.exports = function processMap(json, options) {
         var cp = {
             id: Zones.checkpointId(checkpoint,idx),
             objectId:checkpoint.id, name:checkpoint.name||'',
-            x: checkpoint.x / map.tilesize,
-            y: checkpoint.y / map.tilesize,
-            w: checkpoint.width / map.tilesize,
-            h: checkpoint.height / map.tilesize
+            ...tileBounds(checkpoint)
         };
 
         if (mode === "server") {
@@ -528,10 +529,7 @@ module.exports = function processMap(json, options) {
     var processPvpZone = function (pvp) {
         var pvpZone = {
             objectId:pvp.id,name:pvp.name||'',
-            x: pvp.x / map.tilesize,
-            y: pvp.y / map.tilesize,
-            w: pvp.width / map.tilesize,
-            h: pvp.height / map.tilesize
+            ...tileBounds(pvp)
         };
         map.pvpZones.push(pvpZone);
     }
@@ -541,8 +539,9 @@ module.exports = function processMap(json, options) {
         if (object.rotation || object.gid || object.ellipse || object.polygon || object.point || object.polyline || object.text) throw new Error('Fishing areas must be unrotated rectangles.');
         const list = object.properties?.property || object.properties || [];
         const p = Object.fromEntries((Array.isArray(list) ? list : [list]).map(row => [row.name, row.value]));
+        const {x, y, w: width, h: height} = tileBounds(object);
         map.fishingAreas.push({id: String(object.id), kind: 'fishing', name: object.name || '',
-            x: object.x / map.tilesize, y: object.y / map.tilesize, width: object.width / map.tilesize, height: object.height / map.tilesize,
+            x, y, width, height,
             scope: p.scope || 'area', sourceLake: p.sourceLake || '', level: Number(p.level || 1),
             fish: String(p.fish || '').split(',').filter(Boolean).map(value => {const [item, rarity] = value.trim().split(':');return {item, rarity};})});
     });
@@ -552,7 +551,7 @@ module.exports = function processMap(json, options) {
     processGroup('scenes', processScene);
     map.eventBoards = [];
     processGroup('eventBoards', board => {
-        map.eventBoards.push({objectId:board.id,name:board.name||'',x: board.x / map.tilesize, y: board.y / map.tilesize, w: board.width / map.tilesize, h: board.height / map.tilesize});
+        map.eventBoards.push({objectId:board.id,name:board.name||'', ...tileBounds(board)});
     });
 
     if (mode === 'server') {
