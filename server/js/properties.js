@@ -2008,11 +2008,11 @@ let Properties = {
         level: 8,
         drops: {
             wood: 25,
-            m88nturkeyleg: 10,
-            m88nturkeydinner: 7,
-            m88nturkeyfeather: 4
+            m88nturkeyleg: 7,
+            m88nturkeydinner: 4,
+            m88nturkeyfeather: 1
         },
-        respawnDelay: 30000,
+        respawnDelay: 60000,
     },
 
     m88nicecrab: {

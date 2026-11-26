@@ -162,7 +162,16 @@
     {
       "sceneId": "1003",
       "music": null,
-      "cycle": false,
+      "cycle": true,
+      "dayDarkness": 0.8,
+      "nightDarkness": 0.8,
+      "color": "#000000",
+      "particles": []
+    },
+    {
+      "sceneId": "1004",
+      "music": null,
+      "cycle": true,
       "dayDarkness": 0.8,
       "nightDarkness": 0.8,
       "color": "#000000",
@@ -555,7 +564,7 @@
     },
     {
       "id": "1004",
-      "name": "Welcome home gardener!",
+      "name": "Welcome home Stollenbread!",
       "x": 90,
       "y": 221,
       "w": 10,
@@ -885,7 +894,7 @@
       "h": 9
     },
     {
-      "name": "Welcome home gardener!",
+      "name": "Welcome home Stollenbread!",
       "id": 1004,
       "x": 90,
       "y": 221,
