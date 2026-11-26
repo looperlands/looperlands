@@ -2824434,21 +2824434,7 @@
     <property name="items" value="GOLD3,manacrystal"/>
    </properties>
   </object>
-  <object id="773" x="2128" y="2112" width="16" height="16">
-   <properties>
-    <property name="chances" value="m88nkevlararmor:50,m88ngrenade:50"/>
-    <property name="delay" value="480"/>
-    <property name="items" value="m88nkevlararmor,m88ngrenade"/>
-   </properties>
-  </object>
   <object id="800" x="1584" y="1264" width="16" height="16">
-   <properties>
-    <property name="chances" value="m88nkevlararmor:1,m88ngrenade:1,GOLD3:98"/>
-    <property name="delay" value="480"/>
-    <property name="items" value="m88nkevlararmor,m88ngrenade,GOLD3"/>
-   </properties>
-  </object>
-  <object id="801" x="1456" y="1798" width="16" height="16">
    <properties>
     <property name="chances" value="m88nkevlararmor:1,m88ngrenade:1,GOLD3:98"/>
     <property name="delay" value="480"/>
@@ -2824460,13 +2824446,6 @@
     <property name="chances" value="m88nkevlararmor:1,m88ngrenade:1,GOLD3:98"/>
     <property name="delay" value="480"/>
     <property name="items" value="m88nkevlararmor,m88ngrenade,GOLD3"/>
-   </properties>
-  </object>
-  <object id="806" x="2064" y="2112" width="16" height="16">
-   <properties>
-    <property name="chances" value="m88nkevlararmor:50,m88ngrenade:50"/>
-    <property name="delay" value="180"/>
-    <property name="items" value="m88nkevlararmor,m88ngrenade"/>
    </properties>
   </object>
   <object id="846" x="1584" y="1488" width="16" height="16">
