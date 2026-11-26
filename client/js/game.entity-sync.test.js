@@ -17,7 +17,7 @@ function setup() {
         vm.runInContext(fs.readFileSync(require.resolve(file), 'utf8'), sandbox);
     }
     const Types = sandbox.Types;
-    for (const name of ['entity', 'transition', 'timer', 'character', 'player', 'item', 'mob', 'mobs']) {
+    for (const name of ['entity', 'transition', 'timer', 'character', 'player', 'item', 'chest', 'mob', 'mobs']) {
         vm.runInContext(fs.readFileSync(require.resolve('./' + name), 'utf8'), sandbox);
         modules[name] = modules.current;
     }
@@ -93,6 +93,22 @@ test('area cleanup also removes obsolete item-grid entries', () => {
     expect(game.itemGrid[1][1][7]).toBeUndefined();
     expect(game.renderingGrid[1][1][7]).toBeUndefined();
     expect(game.client.sendWho).not.toHaveBeenCalled();
+});
+
+test('an off-grid chest cannot prevent the next area from requesting its entities', () => {
+    const {game, actor, modules, callbacks} = setup();
+    const chest = new modules.chest(7);
+    chest.setGridPosition(91, 112.375);
+    // A failed spawn can leave an entry in the entity lookup without a grid cell.
+    game.entities[chest.id] = chest;
+    const staleMob = actor(8);
+    game.addEntity(staleMob);
+
+    callbacks.EntityList([9, 42]);
+
+    expect(Object.keys(game.entities)).toEqual(['42']);
+    expect(game.entityGrid[1][1][staleMob.id]).toBeUndefined();
+    expect(game.client.sendWho).toHaveBeenCalledWith([9]);
 });
 
 test('area snapshots preserve client-owned projectiles', () => {

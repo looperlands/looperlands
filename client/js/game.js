@@ -7066,25 +7066,31 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
             },
 
             removeFromRenderingGrid: function (entity, x, y) {
-                if (entity && this.renderingGrid[y][x]?.[entity.id] === entity) {
-                    delete this.renderingGrid[y][x][entity.id];
+                const cell = this.renderingGrid[y]?.[x];
+                if (entity && cell?.[entity.id] === entity) {
+                    delete cell[entity.id];
                 }
             },
 
             removeFromEntityGrid: function (entity, x, y) {
-                if (this.entityGrid[y][x][entity.id] === entity) {
-                    delete this.entityGrid[y][x][entity.id];
+                const cell = this.entityGrid[y]?.[x];
+                if (cell?.[entity.id] === entity) {
+                    delete cell[entity.id];
                 }
             },
 
             removeFromItemGrid: function (item, x, y) {
-                if (item && this.itemGrid[y][x][item.id] === item) {
-                    delete this.itemGrid[y][x][item.id];
+                const cell = this.itemGrid[y]?.[x];
+                if (item && cell?.[item.id] === item) {
+                    delete cell[item.id];
                 }
             },
 
             removeFromPathingGrid: function (x, y) {
-                this.pathingGrid[y][x] = 0;
+                const row = this.pathingGrid[y];
+                if (row?.[x] !== undefined) {
+                    row[x] = 0;
+                }
             },
 
             /**

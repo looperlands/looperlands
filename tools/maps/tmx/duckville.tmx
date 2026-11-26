@@ -2824364,7 +2824364,7 @@
     <property name="items" value="m88nkevlararmor,m88ngrenade,GOLD3"/>
    </properties>
   </object>
-  <object id="801" x="1456" y="1798" width="16" height="16">
+  <object id="801" x="1456" y="1792" width="16" height="16">
    <properties>
     <property name="chances" value="m88nkevlararmor:1,m88ngrenade:1,GOLD3:98"/>
     <property name="delay" value="480"/>
